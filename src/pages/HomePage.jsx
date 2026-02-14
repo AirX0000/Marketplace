@@ -72,35 +72,34 @@ export function HomePage() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* HERO SECTION WITH BANNER AND ICONS */}
-            <section className="container py-6 md:py-8 px-4 md:px-6">
-                <div className="flex flex-col gap-6">
+            <section className="container py-4 md:py-6 px-4 md:px-6">
+                <div className="flex flex-col gap-4 md:gap-6">
                     {/* Main Banner */}
-                    <div className="relative w-full h-[300px] md:h-[450px] rounded-3xl overflow-hidden shadow-xl">
+                    <div className="relative w-full h-[180px] md:h-[320px] rounded-3xl overflow-hidden shadow-lg bg-slate-100 dark:bg-slate-800/50">
                         <img
                             src="/images/banners/promo-combined.jpg"
                             alt="Marketplace Banner"
-                            className="absolute inset-0 w-full h-full object-cover"
+                            className="absolute inset-0 w-full h-full object-contain"
                         />
-                        <div className="absolute inset-0 bg-black/10" />
                     </div>
 
                     {/* Category Icons */}
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto w-full">
                         <Link
                             to="/marketplaces?category=Автомобили"
-                            className="group flex flex-col items-center justify-center p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg transition-all hover:scale-105 hover:shadow-2xl"
+                            className="group flex flex-col items-center justify-center p-4 md:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md transition-all hover:scale-105 hover:shadow-xl"
                         >
-                            <div className="p-6 rounded-full bg-blue-50 dark:bg-blue-900/20 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
-                                <Car className="w-16 h-16 md:w-24 md:h-24 text-blue-600 dark:text-blue-400" />
+                            <div className="p-4 md:p-5 rounded-full bg-blue-50 dark:bg-blue-900/20 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
+                                <Car className="w-10 h-10 md:w-14 md:h-14 text-blue-600 dark:text-blue-400" />
                             </div>
                         </Link>
 
                         <Link
                             to="/marketplaces?category=Недвижимость"
-                            className="group flex flex-col items-center justify-center p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg transition-all hover:scale-105 hover:shadow-2xl"
+                            className="group flex flex-col items-center justify-center p-4 md:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md transition-all hover:scale-105 hover:shadow-xl"
                         >
-                            <div className="p-6 rounded-full bg-emerald-50 dark:bg-emerald-900/20 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/40 transition-colors">
-                                <Building2 className="w-16 h-16 md:w-24 md:h-24 text-emerald-600 dark:text-emerald-400" />
+                            <div className="p-4 md:p-5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/40 transition-colors">
+                                <Building2 className="w-10 h-10 md:w-14 md:h-14 text-emerald-600 dark:text-emerald-400" />
                             </div>
                         </Link>
                     </div>
