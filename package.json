@@ -1,0 +1,51 @@
+{
+  "name": "marketplace-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "homepage": "https://AirX0000.github.io/Marketplace",
+  "scripts": {
+    "dev": "node ./node_modules/vite/bin/vite.js",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@pbe/react-yandex-maps": "^1.2.5",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.24.5",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.562.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.71.1",
+    "react-hot-toast": "^2.6.0",
+    "react-is": "^18.3.1",
+    "react-leaflet": "^4.2.1",
+    "react-router-dom": "^7.11.0",
+    "recharts": "^3.6.0",
+    "socket.io-client": "^4.8.3",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.23",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "gh-pages": "^6.3.0",
+    "globals": "^15.14.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "tinyglobby": "^0.2.15",
+    "vite": "^6.0.0"
+  }
+}
