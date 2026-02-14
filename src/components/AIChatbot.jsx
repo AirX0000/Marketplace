@@ -6,7 +6,7 @@ import { cn } from '../lib/utils';
 export function AIChatbot() {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { role: 'bot', content: 'Привет! Я ИИ-ассистент Aura. Чем могу помочь?' }
+        { role: 'bot', content: 'Привет! Я ИИ-ассистент autohouse. Чем могу помочь?' }
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -70,7 +70,7 @@ export function AIChatbot() {
                                 <Bot size={24} />
                             </div>
                             <div>
-                                <h3 className="font-bold text-sm">Aura AI</h3>
+                                <h3 className="font-bold text-sm">autohouse AI</h3>
                                 <div className="flex items-center gap-1.5">
                                     <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
                                     <span className="text-[10px] opacity-80 uppercase tracking-wider font-semibold">Online</span>

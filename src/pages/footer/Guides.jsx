@@ -87,7 +87,7 @@ export function Guides() {
                     <div className="text-center mb-12">
                         <h1 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">Центр Поддержки</h1>
                         <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
-                            Находите ответы, изучайте руководства и получайте максимум от платформы Aura Market.
+                            Находите ответы, изучайте руководства и получайте максимум от платформы autohouse.
                         </p>
 
                         <div className="relative max-w-xl mx-auto shadow-lg rounded-2xl">

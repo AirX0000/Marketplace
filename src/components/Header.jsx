@@ -43,13 +43,9 @@ export function Header() {
         <>
             <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900 shadow-sm">
                 <div className="container flex h-16 items-center px-4 md:px-6 gap-4">
-                    {/* Logo */}
                     <Link to="/" className="flex-none flex items-center space-x-2 mr-4">
-                        <span className="text-2xl font-black bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent italic tracking-tighter">
-                            AURA
-                        </span>
-                        <span className="text-2xl font-light text-white tracking-widest hidden sm:inline-block">
-                            MARKET
+                        <span className="text-2xl font-black bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent italic tracking-tighter uppercase">
+                            autohouse
                         </span>
                     </Link>
 
@@ -149,7 +145,7 @@ export function Header() {
                                         <div className="relative">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /><path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /><path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg>
                                         </div>
-                                        <span className="text-[10px] font-bold mt-1">Aura Pay</span>
+                                        <span className="text-[10px] font-bold mt-1">autohouse Pay</span>
                                     </Link>
                                 )}
 

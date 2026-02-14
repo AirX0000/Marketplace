@@ -37,7 +37,7 @@ export function EscrowInfo({ total, userBalance }) {
                 <div className="text-center">
                     <p className="text-sm text-red-600 font-medium mb-3">Недостаточно средств. Пополните кошелек для безопасной сделки.</p>
                     <button onClick={() => navigate('/profile')} className="w-full h-10 bg-slate-900 text-white rounded-lg font-bold text-sm hover:bg-slate-800 transition-colors">
-                        Пополнить Aura Кошелек
+                        Пополнить autohouse Кошелек
                     </button>
                 </div>
             ) : (

@@ -95,7 +95,7 @@ export function AdminDashboard() {
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">
-                        {isAdmin ? 'Панель Администратора AURA' : 'Панель Управления Магазина'}
+                        {isAdmin ? 'Панель Администратора autohouse' : 'Панель Управления Магазина'}
                     </h1>
                     <p className="text-slate-700">
                         {isAdmin ? 'Обзор показателей всей платформы.' : 'Обзор показателей вашего магазина за последние 30 дней.'}

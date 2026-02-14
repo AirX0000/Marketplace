@@ -46,11 +46,11 @@ export function Footer() {
                                 <span>@Air_A_P</span>
                             </a>
                             <a
-                                href="mailto:support@aura.com"
+                                href="mailto:support@autohouse.uz"
                                 className="flex items-center gap-2 text-sm text-slate-300 hover:text-primary transition-colors"
                             >
                                 <Mail size={18} />
-                                <span>support@aura.com</span>
+                                <span>support@autohouse.uz</span>
                             </a>
                         </div>
                     </div>

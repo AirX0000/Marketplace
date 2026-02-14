@@ -32,7 +32,7 @@ export function Careers() {
     return (
         <div className="container py-12 px-4 md:px-6">
             <div className="text-center max-w-2xl mx-auto mb-16">
-                <h1 className="text-4xl font-extrabold mb-4 text-slate-900">Присоединяйтесь к команде AURA</h1>
+                <h1 className="text-4xl font-extrabold mb-4 text-slate-900">Присоединяйтесь к команде autohouse</h1>
                 <p className="text-xl text-slate-600">
                     Мы строим инфраструктуру для следующего поколения цифровой коммерции. Создавайте с нами.
                 </p>
@@ -55,8 +55,8 @@ export function Careers() {
                             key={job.id}
                             onClick={() => toggleJob(job.id)}
                             className={`group rounded-xl border transition-all cursor-pointer overflow-hidden ${expandedId === job.id
-                                    ? 'border-emerald-500 bg-emerald-50/10 shadow-md'
-                                    : 'border-slate-200 bg-white hover:border-emerald-500 hover:shadow-sm'
+                                ? 'border-emerald-500 bg-emerald-50/10 shadow-md'
+                                : 'border-slate-200 bg-white hover:border-emerald-500 hover:shadow-sm'
                                 }`}
                         >
                             <div className="p-6 flex items-center justify-between">
