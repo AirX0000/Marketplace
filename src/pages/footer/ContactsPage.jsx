@@ -15,13 +15,13 @@ export function ContactsPage() {
                     <div>
                         <h2 className="font-semibold mb-1">Поддержка пользователей</h2>
                         <p className="text-sm text-muted-foreground">
-                            Email: <a href="mailto:support@aura-market.uz" className="text-primary">support@aura-market.uz</a>
+                            Email: <a href="mailto:support@autohouse.uz" className="text-primary">support@autohouse.uz</a>
                         </p>
                     </div>
                     <div>
                         <h2 className="font-semibold mb-1">Партнёрство и реклама</h2>
                         <p className="text-sm text-muted-foreground">
-                            Email: <a href="mailto:partners@aura-market.uz" className="text-primary">partners@aura-market.uz</a>
+                            Email: <a href="mailto:partners@autohouse.uz" className="text-primary">partners@autohouse.uz</a>
                         </p>
                     </div>
                     <div>

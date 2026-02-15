@@ -1,0 +1,448 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  avatar    String?
+  role      String   @default("USER") // USER, PARTNER, ADMIN
+  isBlocked Boolean  @default(false)
+  addresses String   @default("[]") // JSON string for user addresses
+  isPhoneVerified Boolean  @default(false)
+  isWishlistPublic Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  kyc              PartnerKYC?
+  
+  // Store Fields
+  storeName        String?
+  storeDescription String?
+  storeLogo        String?
+  storeBanner      String?
+  storeColor       String?  @default("#10b981") // Default to Emerald
+  
+  // Partner Business Fields
+  companyName         String?
+  taxId               String?
+  phone               String?
+  businessDescription String?
+  businessCategory    String?
+  businessAddress     String?
+  lat                 Float?
+  lng                 Float?
+
+  reviews      Review[]
+  savedAddresses Address[]
+  offers       Offer[]
+  favorites    Favorite[]
+  orders       Order[]
+  marketplaces Marketplace[] @relation("OwnedMarketplaces")
+  tickets      Ticket[]
+  ticketMessages TicketMessage[]
+  
+  sentTransactions     Transaction[] @relation("SentTransactions")
+  receivedTransactions Transaction[] @relation("ReceivedTransactions")
+  returnRequests       ReturnRequest[]
+  
+  chats                ChatRoom[]    @relation("ChatParticipants")
+  sentMessages         ChatMessage[] @relation("MessageSender")
+
+  // Wallet
+  balance      Float    @default(0)
+  accountId    String?  @unique // Short ID for top-up
+  
+  loanApplications LoanApplication[]
+}
+
+model Marketplace {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  region      String
+  category    String
+  lat         Float?
+  lng         Float?
+  rating      Float    @default(0)
+  views       Int      @default(0)
+  users       String   @default("0")
+  image       String   // Main image
+  images      String   @default("[]") // JSON string for additional images
+  price       Float    @default(4999000)
+  discount    Float    @default(0) // Discount percentage (0-100)
+  
+  // Installment Config
+  installmentsEnabled Boolean @default(true)
+  installmentPlans    String  @default("3,6,12") // CSV of available months
+  
+  // Stock Management
+  stock       Int      @default(0)
+  isAvailable Boolean  @default(true)
+  
+  // Product Attributes (Phase 3)
+  attributes          String?   // { "color": "black", "storage": "256GB" }
+  
+  // Monetization (Phase 4)
+  isFeatured          Boolean   @default(false)
+  featuredUntil       DateTime?
+  status             String  @default("PENDING") // PENDING, APPROVED, REJECTED, ARCHIVED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownerId     String?
+  owner       User?    @relation("OwnedMarketplaces", fields: [ownerId], references: [id])
+  reviews     Review[]
+  offers      Offer[]
+  favorites   Favorite[]
+  orderItems  OrderItem[]
+  
+  // PERFORMANCE INDEXES
+  @@index([category])
+  @@index([region])
+  @@index([status])
+  @@index([ownerId])
+  @@index([category, region, status]) // Composite for filtering
+  @@index([price])
+  @@index([rating])
+  @@index([createdAt])
+
+  loanApplications LoanApplication[]
+}
+
+model Favorite {
+  id            String      @id @default(uuid())
+  userId        String
+  marketplaceId String
+  user          User        @relation(fields: [userId], references: [id])
+  marketplace   Marketplace @relation(fields: [marketplaceId], references: [id])
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, marketplaceId])
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  
+  // Contact Info (Snapshot)
+  contactName  String?
+  contactPhone String?
+  contactEmail String?
+
+  // Shipping
+  shippingAddress String?
+  shippingCity    String?
+  shippingLocation String? // JSON: { lat: 41.2, lng: 69.2 }
+  shippingMethod  String? // COURIER, PICKUP
+  shippingCost    Float   @default(0)
+
+  // Payment & Totals
+  total         Float
+  subtotal      Float   @default(0)
+  commission    Float      @default(0)
+  status        String      @default("CREATED") // CREATED, PENDING_PAYMENT, PAID, PROCESSING, SHIPPED, COMPLETED, CANCELLED
+  paymentMethod String  @default("FULL") // FULL, INSTALLMENT
+  paymentProvider String? // CLICK, PAYME, UZUM, STRIPE, CASH
+  installmentPlan String? // e.g. "3_MONTHS", "6_MONTHS", "12_MONTHS"
+  paymentDetails  String? // JSON string: { cardLast4: "1234", schedule: [{date: "...", amount: ...}] }
+  
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  items     OrderItem[]
+  
+  // PERFORMANCE INDEXES
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId, status])
+}
+
+model OrderItem {
+  id            String      @id @default(uuid())
+  orderId       String
+  order         Order       @relation(fields: [orderId], references: [id])
+  marketplaceId String
+  marketplace   Marketplace @relation(fields: [marketplaceId], references: [id])
+  
+  price         Float
+  quantity      Int         @default(1)
+  total         Float       @default(0)
+  status        String      @default("CREATED") // CREATED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  returnRequests ReturnRequest[]
+}
+
+
+model Review {
+  id            String      @id @default(uuid())
+  rating        Int
+  comment       String?
+  photos        String      @default("[]") // JSON string of photo URLs
+  isVerified    Boolean     @default(false) // Verified Purchase
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  marketplaceId String
+  marketplace   Marketplace @relation(fields: [marketplaceId], references: [id])
+  createdAt     DateTime    @default(now())
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  name        String   // "Home", "Work"
+  fullName    String   // Contact Name
+  phone       String
+  city        String
+  street      String
+  details     String?  // Apartment, Floor
+  location    String?  // JSON {lat, lng}
+  isDefault   Boolean  @default(false)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+}
+
+model Offer {
+  id            String      @id @default(uuid())
+  amount        Float
+  status        String      @default("PENDING") // PENDING, ACCEPTED, REJECTED, COUNTERED
+  counterAmount Float?      // If partner counters
+  
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  
+  marketplaceId String
+  marketplace   Marketplace @relation(fields: [marketplaceId], references: [id])
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Category {
+  id            String   @id @default(uuid())
+  name          String   @unique
+  subcategories String   @default("[]") // JSON string of subcategory names
+}
+
+model Region {
+  id      String   @id @default(uuid())
+  name    String   @unique
+}
+
+
+model SystemSetting {
+  key   String @id
+  value String
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  amount      Float
+  type        String   // TRANSFER, PAYMENT, DEPOSIT, WITHDRAWAL, FEE
+  status      String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  
+  description String?
+  metadata    String?  // JSON for extra data (QR info, Order ID etc)
+  
+  // Relations
+  senderId    String?
+  sender      User?    @relation("SentTransactions", fields: [senderId], references: [id])
+  
+  receiverId  String?
+  receiver    User?    @relation("ReceivedTransactions", fields: [receiverId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}
+
+model JobPosting {
+  id           String   @id @default(uuid())
+  title        String
+  department   String
+  type         String   // Remote, Hybrid, Onsite
+  location     String
+  description  String
+  requirements String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model BlogPost {
+  id          String    @id @default(uuid())
+  title       String
+  excerpt     String
+  content     String
+  author      String    @default("AURA Team")
+  publishedAt DateTime?
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+
+model Ticket {
+  id        String   @id @default(uuid())
+  subject   String
+  status    String   @default("OPEN") // OPEN, CLOSED, IN_PROGRESS
+  priority  String   @default("NORMAL") // LOW, NORMAL, HIGH
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  messages  TicketMessage[]
+}
+
+model TicketMessage {
+  id        String   @id @default(uuid())
+  message   String
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model PartnerKYC {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  
+  licenseNumber  String?
+  licenseUrl     String?
+  passportUrl    String?
+  
+  adminComment   String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([phone])
+}
+
+model DistributionCenter {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  lat       Float
+  lng       Float
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Newsletter {
+  id          String   @id @default(uuid())
+  subject     String
+  message     String
+  targetRole  String   // ALL, PARTNER, USER
+  recipientCount Int
+  status      String   @default("SENT")
+  createdAt   DateTime @default(now())
+}
+
+model ReturnRequest {
+  id            String   @id @default(uuid())
+  orderItemId   String
+  orderItem     OrderItem @relation(fields: [orderItemId], references: [id])
+  
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  
+  reason        String
+  details       String?
+  images        String   @default("[]") // JSON string
+  
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED, REFUNDED
+  refundAmount  Float?
+  
+  adminComment  String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model ChatRoom {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  participants  User[]   @relation("ChatParticipants")
+  messages      ChatMessage[]
+  
+  lastMessage   String?
+  lastMessageAt DateTime?
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  content   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  senderId  String
+  sender    User     @relation("MessageSender", fields: [senderId], references: [id])
+  
+  chatRoomId String
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  
+  @@index([chatRoomId])
+  @@index([createdAt])
+}
+
+model StaticPage {
+  id        String   @id @default(uuid())
+  slug      String   @unique // 'privacy', 'terms', 'about', etc.
+  title     String
+  content   String   // HTML or Markdown
+  updatedAt DateTime @updatedAt
+}
+
+model LoanApplication {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  marketplaceId String?
+  marketplace Marketplace? @relation(fields: [marketplaceId], references: [id])
+  
+  type      String   // MORTGAGE, AUTO_LOAN
+  amount    Float
+  downPayment Float
+  term      Int      // Years usually
+  monthlyPayment Float?
+  
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+

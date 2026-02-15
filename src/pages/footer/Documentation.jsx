@@ -6,7 +6,7 @@ export function Documentation() {
         <div className="container py-12 px-4 md:px-6">
             <div className="max-w-3xl mx-auto text-center mb-12">
                 <h1 className="text-4xl font-extrabold mb-4 text-slate-900">Документация</h1>
-                <p className="text-xl text-slate-600">Все, что вам нужно для интеграции, создания и масштабирования с AURA.</p>
+                <p className="text-xl text-slate-600">Все, что вам нужно для интеграции, создания и масштабирования с autohouse.</p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -35,7 +35,7 @@ export function Documentation() {
             <div className="max-w-4xl mx-auto prose dark:prose-invert">
                 <h2 className="text-slate-900 font-bold">Введение</h2>
                 <p className="text-slate-600">
-                    Добро пожаловать в документацию для разработчиков AURA Market. Наша платформа предоставляет единый API для доступа к тысячам интеграций. Независимо от того, создаете ли вы собственный рабочий процесс или интегрируете стороннюю службу, у нас есть необходимые инструменты.
+                    Добро пожаловать в документацию для разработчиков autohouse. Наша платформа предоставляет единый API для доступа к тысячам интеграций. Независимо от того, создаете ли вы собственный рабочий процесс или интегрируете стороннюю службу, у нас есть необходимые инструменты.
                 </p>
                 <h3 className="text-slate-900 font-bold">Аутентификация</h3>
                 <p className="text-slate-600">

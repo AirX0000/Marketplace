@@ -206,7 +206,7 @@ export function ProfileSettingsPage() {
                     <div className="bg-white border rounded-2xl p-6 shadow-sm flex flex-col items-center text-center">
                         <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                            Ваш Aura QR
+                            Ваш autohouse QR
                         </h4>
                         <div className="bg-white p-2 border-2 border-emerald-500 rounded-lg mb-4">
                             {/* Using API for QR to avoid dependency issues if npm failed silently, serves as fallback */}

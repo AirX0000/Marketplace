@@ -68,7 +68,7 @@ export function CartPage() {
                                         </div>
                                         <div className="text-sm text-slate-600 flex items-center gap-1 mt-1 font-medium">
                                             <Store className="h-3 w-3" />
-                                            {item.owner?.storeName || 'Aura Market'}
+                                            {item.owner?.storeName || 'autohouse'}
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between mt-2">

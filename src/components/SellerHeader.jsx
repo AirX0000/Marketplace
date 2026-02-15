@@ -63,7 +63,7 @@ export function SellerHeader({ partner }) {
                                     </div>
                                     <div className="flex items-center">
                                         <Calendar className="h-4 w-4 mr-1 text-slate-400" />
-                                        На Auramarket с 2024
+                                        На autohouse с 2024
                                     </div>
                                 </div>
                             </div>

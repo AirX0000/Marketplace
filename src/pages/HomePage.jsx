@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { ServiceGrid } from '../components/home/ServiceGrid';
+import { BannerSlider } from '../components/home/BannerSlider';
 import { api } from '../lib/api';
 
 export function HomePage() {
@@ -74,13 +75,9 @@ export function HomePage() {
             {/* HERO SECTION WITH BANNER AND ICONS */}
             <section className="container py-4 md:py-6 px-4 md:px-6">
                 <div className="flex flex-col gap-4 md:gap-6">
-                    {/* Main Banner */}
+                    {/* Main Banner Slider */}
                     <div className="relative w-full h-[180px] md:h-[320px] rounded-3xl overflow-hidden shadow-lg bg-slate-100 dark:bg-slate-800/50">
-                        <img
-                            src="/images/banners/promo-combined.jpg"
-                            alt="Marketplace Banner"
-                            className="absolute inset-0 w-full h-full object-contain"
-                        />
+                        <BannerSlider />
                     </div>
 
                     {/* Category Icons */}

@@ -37,3 +37,4 @@ node_modules_bad
 server/node_modules_bad
 *trash*
 *copy*
+.git-corrupted/
