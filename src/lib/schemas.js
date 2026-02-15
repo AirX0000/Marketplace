@@ -2,9 +2,8 @@ import { z } from 'zod';
 
 // Auth schemas
 export const loginSchema = z.object({
-    email: z.string()
-        .min(1, 'Email обязателен')
-        .email('Некорректный email'),
+    identifier: z.string()
+        .min(1, 'Email или Телефон обязателен'),
     password: z.string()
         .min(1, 'Пароль обязателен')
         .min(6, 'Пароль должен содержать минимум 6 символов')

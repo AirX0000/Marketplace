@@ -36,7 +36,7 @@ export function LoginPage() {
             navigate(defaultRoute);
         } catch (err) {
             setError(err.message || 'Ошибка входа');
-            notify.error(err.message || 'Неверный email или пароль');
+            notify.error(err.message || 'Неверный логин или пароль');
         } finally {
             setLoading(false);
         }
@@ -91,21 +91,21 @@ export function LoginPage() {
 
                         <div className="space-y-5">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-900 dark:text-slate-200">Email</label>
+                                <label className="text-sm font-medium text-slate-900 dark:text-slate-200">Email или Телефон</label>
                                 <input
-                                    type="email"
-                                    className={`w-full h-11 px-4 rounded-lg bg-white dark:bg-slate-900 border ${errors.email ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'
-                                        } text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 ${errors.email ? 'focus:ring-red-500' : 'focus:ring-slate-900 dark:focus:ring-white'
+                                    type="text"
+                                    className={`w-full h-11 px-4 rounded-lg bg-white dark:bg-slate-900 border ${errors.identifier ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'
+                                        } text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 ${errors.identifier ? 'focus:ring-red-500' : 'focus:ring-slate-900 dark:focus:ring-white'
                                         } focus:border-transparent transition-all`}
-                                    placeholder="name@company.com"
-                                    {...register('email')}
+                                    placeholder="email@example.com или +7..."
+                                    {...register('identifier')}
                                 />
-                                {errors.email && (
+                                {errors.identifier && (
                                     <p className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1 mt-1">
                                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                         </svg>
-                                        {errors.email.message}
+                                        {errors.identifier.message}
                                     </p>
                                 )}
                             </div>

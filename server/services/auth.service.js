@@ -8,10 +8,23 @@ class AuthService {
     async register(userData) {
         const { email, password, name, role, companyName, taxId, phone, businessCategory, businessAddress, businessDescription } = userData;
 
-        // Check existing user
-        const existingUser = await prisma.user.findUnique({ where: { email } });
+        // Check existing user by email or phone
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email },
+                    { phone: phone ? phone : undefined }
+                ]
+            }
+        });
+
         if (existingUser) {
-            throw new ValidationError('Email already registered');
+            if (existingUser.email === email) {
+                throw new ValidationError('Email already registered');
+            }
+            if (phone && existingUser.phone === phone) {
+                throw new ValidationError('Phone number already registered');
+            }
         }
 
         // Hash password
@@ -48,15 +61,24 @@ class AuthService {
         };
     }
 
-    async login({ email, password }) {
-        const user = await prisma.user.findUnique({ where: { email } });
+    async login({ identifier, password }) {
+        // Try finding user by email or phone
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email: identifier },
+                    { phone: identifier }
+                ]
+            }
+        });
+
         if (!user) {
-            throw new AuthenticationError('Invalid email or password');
+            throw new AuthenticationError('Invalid email/phone or password');
         }
 
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
-            throw new AuthenticationError('Invalid email or password');
+            throw new AuthenticationError('Invalid email/phone or password');
         }
 
         const token = jwt.sign(

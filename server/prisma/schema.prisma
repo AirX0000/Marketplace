@@ -33,7 +33,7 @@ model User {
   // Partner Business Fields
   companyName         String?
   taxId               String?
-  phone               String?
+  phone               String?  @unique
   businessDescription String?
   businessCategory    String?
   businessAddress     String?
