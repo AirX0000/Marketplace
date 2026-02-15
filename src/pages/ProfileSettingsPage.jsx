@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { IMaskInput } from 'react-imask';
 import { api } from '../lib/api';
 import { User, Mail, Save, Camera, Settings, Check, AlertCircle, Building2, MapPin, Trash2, Plus } from 'lucide-react';
 
@@ -379,11 +380,12 @@ export function ProfileSettingsPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-bold text-slate-700">Телефон</label>
-                                        <input
-                                            type="tel"
+                                        <IMaskInput
+                                            mask="+{998} (00) 000-00-00"
                                             value={profile.phone || ''}
-                                            onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                            onAccept={(value) => setProfile({ ...profile, phone: value })}
                                             className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-emerald-500 transition-all outline-none shadow-sm"
+                                            placeholder="+998 (__) ___-__-__"
                                         />
                                     </div>
                                 </div>

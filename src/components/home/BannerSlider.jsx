@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BannerSkeleton } from './BannerSkeleton';
 
 const banners = [
     {
         id: 1,
         url: '/images/banners/banner2.png',
         alt: 'Продажа АВТО',
+        link: '/marketplaces?category=Автомобили'
     },
     {
         id: 2,
         url: '/images/banners/banner3.png',
         alt: 'Продажа ДОМОВ',
+        link: '/marketplaces?category=Недвижимость'
     },
 ];
 
@@ -25,8 +29,16 @@ export function BannerSlider() {
         return () => clearInterval(timer);
     }, []);
 
+    const [isLoading, setIsLoading] = useState(true);
+
+    const handleImageLoad = () => {
+        setIsLoading(false);
+    };
+
     return (
         <div className="relative w-full h-full overflow-hidden">
+            {isLoading && <BannerSkeleton className="absolute inset-0 z-20" />}
+
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentIndex}
@@ -36,11 +48,14 @@ export function BannerSlider() {
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                     className="absolute inset-0"
                 >
-                    <img
-                        src={banners[currentIndex].url}
-                        alt={banners[currentIndex].alt}
-                        className="w-full h-full object-cover"
-                    />
+                    <Link to={banners[currentIndex].link} className="block w-full h-full">
+                        <img
+                            src={banners[currentIndex].url}
+                            alt={banners[currentIndex].alt}
+                            className="w-full h-full object-cover"
+                            onLoad={handleImageLoad}
+                        />
+                    </Link>
                 </motion.div>
             </AnimatePresence>
 

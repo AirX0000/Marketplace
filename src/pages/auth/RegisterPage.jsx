@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { IMaskInput } from 'react-imask';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -227,11 +228,19 @@ export function RegisterPage() {
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-slate-900 dark:text-slate-200">Телефон</label>
-                                            <input
-                                                type="tel"
-                                                className={`w-full h-11 px-4 rounded-lg bg-white dark:bg-slate-900 border ${errors.phone ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'} text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:border-transparent`}
-                                                placeholder="+7..."
-                                                {...register("phone")}
+                                            <Controller
+                                                name="phone"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <IMaskInput
+                                                        mask="+{998} (00) 000-00-00"
+                                                        value={field.value}
+                                                        onAccept={(value) => field.onChange(value)}
+                                                        className={`w-full h-11 px-4 rounded-lg bg-white dark:bg-slate-900 border ${errors.phone ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'} text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:border-transparent`}
+                                                        placeholder="+998 (__) ___-__-__"
+                                                        inputRef={field.ref}
+                                                    />
+                                                )}
                                             />
                                             {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
                                         </div>
