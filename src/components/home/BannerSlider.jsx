@@ -39,7 +39,7 @@ export function BannerSlider() {
                     <img
                         src={banners[currentIndex].url}
                         alt={banners[currentIndex].alt}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-cover"
                     />
                 </motion.div>
             </AnimatePresence>
@@ -51,8 +51,8 @@ export function BannerSlider() {
                         key={index}
                         onClick={() => setCurrentIndex(index)}
                         className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex
-                                ? 'bg-white w-6'
-                                : 'bg-white/50 hover:bg-white/80'
+                            ? 'bg-white w-6'
+                            : 'bg-white/50 hover:bg-white/80'
                             }`}
                         aria-label={`Go to slide ${index + 1}`}
                     />

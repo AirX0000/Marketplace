@@ -76,7 +76,7 @@ export function HomePage() {
             <section className="container py-4 md:py-6 px-4 md:px-6">
                 <div className="flex flex-col gap-4 md:gap-6">
                     {/* Main Banner Slider */}
-                    <div className="relative w-full h-[180px] md:h-[320px] rounded-3xl overflow-hidden shadow-lg bg-slate-100 dark:bg-slate-800/50">
+                    <div className="relative w-full aspect-video md:max-h-[500px] rounded-3xl overflow-hidden shadow-lg bg-slate-100 dark:bg-slate-800/50">
                         <BannerSlider />
                     </div>
 
