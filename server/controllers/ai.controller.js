@@ -17,7 +17,7 @@ exports.chat = asyncHandler(async (req, res) => {
             "• Информацией о доставке и оплате\n" +
             "• Поиском товаров в каталоге\n" +
             "• Вопросами о регистрации\n\n" +
-            "Пожалуйста, свяжитесь с поддержкой: support@aura.com";
+            "Пожалуйста, свяжитесь с поддержкой: support@autohouse.uz";
 
         res.json({ response: fallbackResponse });
     }

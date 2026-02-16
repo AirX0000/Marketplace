@@ -50,69 +50,64 @@ class MarketplaceService {
             if (maxPrice) where.price.lte = parseFloat(maxPrice);
         }
 
-        // Fetch ALL matching basic criteria for memory filtering (since attributes are stored as String)
-        // If the dataset was huge, we would use raw SQL or migrate to JSONB.
-        // Fetch ALL matching basic criteria for memory filtering (since attributes are stored as String)
-        // If the dataset was huge, we would use raw SQL or migrate to JSONB.
-        let marketplaces = await prisma.marketplace.findMany({
+        // --- JSON Filtering (Cars & Real Estate) ---
+        // We use path-based filtering for JSON fields
+        if (["Cars", "Transport", "Автомобили"].includes(category)) {
+            if (minYear || maxYear || minMileage || maxMileage || (transmission && transmission !== 'Все') || (bodyType && bodyType !== 'Все')) {
+                where.attributes = {
+                    path: ['specs'],
+                    string_contains: '' // Placeholder to invoke JSON path filtering logic if needed, 
+                    // but Prisma's `path` filter is more specific.
+                };
+
+                // Refined JSON filtering logic for Prisma
+                const specsFilter = {};
+                if (minYear) specsFilter.year = { gte: parseInt(minYear) };
+                if (maxYear) specsFilter.year = { lte: parseInt(maxYear) };
+                if (minMileage) specsFilter.mileage = { gte: parseInt(minMileage) };
+                if (maxMileage) specsFilter.mileage = { lte: parseInt(maxMileage) };
+                if (transmission && transmission !== 'Все') specsFilter.transmission = { equals: transmission };
+                if (bodyType && bodyType !== 'Все') specsFilter.bodyType = { equals: bodyType };
+
+                where.attributes = { path: ['specs'], equals: specsFilter };
+                // Note: Complex range and exact match mix in deep JSON is better done via separate fields 
+                // but since we migrated to Json type, we can use prisma.marketplace.findMany with path logic.
+            }
+        }
+
+        if (["Real Estate", "Apartments", "Houses", "Недвижимость"].includes(category)) {
+            const specsFilter = {};
+            if (minArea) specsFilter.area = { gte: parseInt(minArea) };
+            if (maxArea) specsFilter.area = { lte: parseInt(maxArea) };
+            if (rooms && rooms !== 'Все') specsFilter.rooms = { equals: parseInt(rooms) };
+            if (floor && floor !== 'Все') specsFilter.floor = { equals: parseInt(floor) };
+
+            if (Object.keys(specsFilter).length > 0) {
+                where.attributes = { path: ['specs'], equals: specsFilter };
+            }
+        }
+
+        const marketplaces = await prisma.marketplace.findMany({
             where,
-            include: { owner: { select: { name: true, phone: true, storeName: true } } }, // Added phone
+            include: { owner: { select: { name: true, phone: true, storeName: true } } },
             orderBy: [
-                { isFeatured: 'desc' }, // Featured first
+                { isFeatured: 'desc' },
                 sort === 'price_asc' ? { price: 'asc' }
                     : sort === 'price_desc' ? { price: 'desc' }
                         : { createdAt: 'desc' }
-            ]
+            ],
+            skip: (page - 1) * limit,
+            take: parseInt(limit)
         });
 
-        // In-Memory Filtering for JSON Attributes
-        marketplaces = marketplaces.filter(item => {
-            if (!item.attributes) return true;
-            let attrs;
-            try {
-                attrs = typeof item.attributes === 'string' ? JSON.parse(item.attributes) : item.attributes;
-                if (!attrs.specs) attrs.specs = attrs; // fallback
-            } catch (e) {
-                return true;
-            }
-            // Specs might be top level or under 'specs' key depending on seed quality.
-            // Using a helper to find the value? For now assume `attrs.specs` or `attrs`.
-            const specs = attrs.specs || attrs;
-
-            // CARS
-            if (["Cars", "Transport", "Автомобили", "Седан", "Кроссовер", "Внедорожник"].includes(item.category) ||
-                (category && (category === 'Cars' || category === 'Transport' || category === 'Автомобили'))) {
-                if (minYear && specs.year < parseInt(minYear)) return false;
-                if (maxYear && specs.year > parseInt(maxYear)) return false;
-                if (minMileage && specs.mileage < parseInt(minMileage)) return false;
-                if (maxMileage && specs.mileage > parseInt(maxMileage)) return false;
-                if (transmission && transmission !== 'Все' && specs.transmission !== transmission) return false;
-                if (bodyType && bodyType !== 'Все' && specs.bodyType !== bodyType) return false;
-            }
-
-            // REAL ESTATE
-            if (["Real Estate", "Apartments", "Houses", "Недвижимость", "Квартиры", "Дома"].includes(item.category) ||
-                (category && (category === 'Real Estate' || category === 'Недвижимость'))) {
-                if (minArea && specs.area < parseInt(minArea)) return false;
-                if (maxArea && specs.area > parseInt(maxArea)) return false;
-                if (rooms && rooms !== 'Все' && parseInt(specs.rooms) !== parseInt(rooms)) return false;
-                if (floor && floor !== 'Все' && parseInt(specs.floor) !== parseInt(floor)) return false;
-            }
-
-            return true;
-        });
-
-        const total = marketplaces.length;
-        const totalPages = Math.ceil(total / limit);
-        const paginated = marketplaces.slice((page - 1) * limit, page * limit);
-
+        const total = await prisma.marketplace.count({ where });
         return {
-            listings: paginated,
+            listings: marketplaces,
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
                 total,
-                pages: totalPages
+                pages: Math.ceil(total / limit)
             }
         };
     }

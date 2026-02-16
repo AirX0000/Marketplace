@@ -218,7 +218,7 @@ export const api = {
         return response.json();
     },
 
-    // Aura Pay Wallet
+    // autohouse Pay Wallet
     getWallet: () => fetchAPI('/wallet'),
     walletDeposit: (amount) => fetchAPI('/wallet/deposit', { method: 'POST', body: JSON.stringify({ amount }) }),
     walletTransfer: (data) => fetchAPI('/wallet/transfer', { method: 'POST', body: JSON.stringify(data) }),

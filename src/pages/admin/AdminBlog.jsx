@@ -11,7 +11,7 @@ export function AdminBlog() {
         title: '',
         excerpt: '',
         content: '',
-        author: 'AURA Team',
+        author: 'autohouse Team',
         isPublished: false,
         publishedAt: null
     });
@@ -66,7 +66,7 @@ export function AdminBlog() {
                 title: '',
                 excerpt: '',
                 content: '',
-                author: 'AURA Team',
+                author: 'autohouse Team',
                 isPublished: false,
                 publishedAt: null
             });
@@ -175,7 +175,7 @@ export function AdminBlog() {
                                     value={formData.title}
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                                     className="w-full h-10 rounded-lg border px-3"
-                                    placeholder="Почему AURA — это будущее цифровой коммерции"
+                                    placeholder="Почему autohouse — это будущее цифровой коммерции"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -205,7 +205,7 @@ export function AdminBlog() {
                                         value={formData.author}
                                         onChange={e => setFormData({ ...formData, author: e.target.value })}
                                         className="w-full h-10 rounded-lg border px-3"
-                                        placeholder="AURA Team"
+                                        placeholder="autohouse Team"
                                     />
                                 </div>
                                 <div className="space-y-2">

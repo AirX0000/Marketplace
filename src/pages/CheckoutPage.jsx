@@ -142,6 +142,8 @@ export function CheckoutPage() {
 
     const paymentSchedule = calculateSchedule(totalWithInterest, formValues.installmentMonths || 6);
 
+    const isPropertyOrCar = cartItems.some(i => ['Apartments', 'Houses', 'Commercial', 'Land', 'Cars', 'Transport'].includes(i.category));
+
     const handleNext = async () => {
         let valid = false;
         if (step === 1) {

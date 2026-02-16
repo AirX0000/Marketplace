@@ -56,7 +56,7 @@ export function Footer() {
                     </div>
                 </div>
                 <div className="mt-10 border-t border-slate-800 pt-8 text-center text-sm text-slate-400">
-                    © 2024 MarketPlace Inc. Все права защищены.
+                    © 2024 autohouse. Все права защищены.
                 </div>
             </div>
         </footer>

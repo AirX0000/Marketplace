@@ -3,7 +3,7 @@ import { api } from '../../lib/api';
 import { Wallet, Send, Plus, History, QrCode, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-export function AuraPayDashboard() {
+export function AutohousePayDashboard() {
     const [wallet, setWallet] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showTransfer, setShowTransfer] = useState(false);
@@ -55,7 +55,7 @@ export function AuraPayDashboard() {
         }
     }
 
-    if (loading) return <div className="p-20 text-center font-medium text-slate-500">Загрузка Aura Pay...</div>;
+    if (loading) return <div className="p-20 text-center font-medium text-slate-500">Загрузка autohouse Pay...</div>;
 
     if (!wallet) {
         return (
@@ -77,7 +77,7 @@ export function AuraPayDashboard() {
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
                 <Wallet className="text-emerald-500 h-8 w-8" />
-                Aura Pay
+                autohouse Pay
             </h1>
 
             <div className="grid lg:grid-cols-2 gap-8">

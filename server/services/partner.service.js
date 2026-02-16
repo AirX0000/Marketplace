@@ -18,6 +18,12 @@ class PartnerService {
     }
 
     async createListing(userId, data) {
+        // KYC Check
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (user.kycStatus !== 'APPROVED') {
+            throw new Error("Ваша учетная запись партнера еще не прошла верификацию (KYC). Добавление товаров временно заблокировано.");
+        }
+
         const { name, description, region, category, price, discount, image, images, attributes, specs } = data;
 
         let imageList = [];
@@ -36,8 +42,8 @@ class PartnerService {
                 ownerId: userId,
                 image: imageList[0],
                 images: JSON.stringify(imageList),
-                attributes: JSON.stringify(attributes || {}),
-                specs: JSON.stringify(specs || {}),
+                attributes: attributes || {}, // Prisma now handles Json directly
+                specs: specs || {},
                 stock: 1,
                 status: 'PENDING'
             }
@@ -71,15 +77,17 @@ class PartnerService {
         const parsedDiscount = parseFloat(discount);
         if (!isNaN(parsedDiscount)) dataToUpdate.discount = parsedDiscount;
 
-        let finalAttributes = {};
-        if (attributes) finalAttributes = typeof attributes === 'string' ? JSON.parse(attributes) : attributes;
+        let finalAttributes = attributes || {};
+        if (typeof finalAttributes === 'string') {
+            try { finalAttributes = JSON.parse(finalAttributes); } catch (e) { finalAttributes = {}; }
+        }
+
         if (specs) {
-            const specsObj = typeof specs === 'string' ? JSON.parse(specs) : specs;
-            finalAttributes.specs = specsObj;
+            finalAttributes.specs = typeof specs === 'string' ? JSON.parse(specs) : specs;
         }
 
         if (Object.keys(finalAttributes).length > 0) {
-            dataToUpdate.attributes = JSON.stringify(finalAttributes);
+            dataToUpdate.attributes = finalAttributes;
         }
 
         return prisma.marketplace.update({

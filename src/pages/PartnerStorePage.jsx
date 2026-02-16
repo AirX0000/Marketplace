@@ -94,7 +94,7 @@ export function PartnerStorePage() {
                                         <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
                                             <li>Ташкент, ул. Амира Темура, 1</li>
                                             <li>+998 90 123 45 67</li>
-                                            <li>info@auramarket.uz</li>
+                                            <li>info@autohouse.uz</li>
                                         </ul>
                                     </div>
                                 </div>

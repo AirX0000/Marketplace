@@ -33,7 +33,7 @@ import { MyOffersPage } from './pages/MyOffersPage';
 import { ProfileSettingsPage } from './pages/ProfileSettingsPage';
 import { PaymentSuccess } from './pages/PaymentSuccess';
 import { PaymentFailure } from './pages/PaymentFailure';
-import { AuraPayDashboard } from './pages/fintech/AuraPayDashboard';
+import { AutohousePayDashboard } from './pages/fintech/AutohousePayDashboard';
 import { PriceAnalytics } from './pages/services/PriceAnalytics';
 import { CompareProvider } from './context/CompareContext';
 import { MyReturnsPage } from './pages/MyReturnsPage';
@@ -119,7 +119,7 @@ function App() {
                   <Route path="/profile/loans" element={<CreditApplicationsPage />} />
                   <Route path="/profile/offers" element={<MyOffersPage />} />
                   <Route path="/profile/returns" element={<MyReturnsPage />} />
-                  <Route path="/profile/wallet" element={<AuraPayDashboard />} />
+                  <Route path="/profile/wallet" element={<AutohousePayDashboard />} />
                   <Route path="/profile/chat" element={<ChatPage />} />
                   <Route path="/profile" element={<UserDashboard />} />
                   <Route path="/profile/settings" element={<ProfileSettingsPage />} />
@@ -155,7 +155,7 @@ function App() {
                     path="/wallet"
                     element={
                       <ProtectedRoute>
-                        <AuraPayDashboard />
+                        <AutohousePayDashboard />
                       </ProtectedRoute>
                     }
                   />

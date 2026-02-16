@@ -74,7 +74,7 @@ export function RegisterPage() {
                     className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-1000 hover:scale-105"
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-12 z-20 text-white">
-                    <h2 className="text-3xl font-bold mb-4">Начните свой путь с MarketApp</h2>
+                    <h2 className="text-3xl font-bold mb-4">Начните свой путь с autohouse</h2>
                     <ul className="space-y-4 text-white/90">
                         <li className="flex items-center gap-3">
                             <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
@@ -99,7 +99,7 @@ export function RegisterPage() {
                         <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
                             <LayoutDashboard className="h-4 w-4 text-white" />
                         </div>
-                        <span>MarketApp</span>
+                        <span>autohouse</span>
                     </Link>
                 </div>
 

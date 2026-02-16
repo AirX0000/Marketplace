@@ -14,14 +14,22 @@ class AIService {
     async generateContent(prompt, systemInstruction = "") {
         if (!this.genAI) throw new Error("AI Service not initialized. Missing API Key.");
 
-        const model = this.genAI.getGenerativeModel({
-            model: "gemini-2.0-flash",
-            systemInstruction
-        });
+        try {
+            const model = this.genAI.getGenerativeModel({
+                model: "gemini-2.0-flash",
+                systemInstruction
+            });
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        return response.text();
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            return response.text();
+        } catch (error) {
+            console.error("Gemini API Error:", error.message);
+            if (error.message.includes("429")) {
+                throw new Error("Ассистент временно перегружен запросами. Пожалуйста, попробуйте через минуту.");
+            }
+            throw error;
+        }
     }
 
     async supportChat(userMessage, chatHistory = []) {
@@ -29,7 +37,7 @@ class AIService {
 
         const model = this.genAI.getGenerativeModel({
             model: "gemini-2.0-flash",
-            systemInstruction: "You are a helpful and polite support assistant for 'Aura Marketplace'. " +
+            systemInstruction: "You are a helpful and polite support assistant for 'autohouse Marketplace'. " +
                 "You help users with their questions about products, delivery, payments, and account issues. " +
                 "Be concise and professional. Use the user's language (Russian if they use Russian)."
         });

@@ -80,7 +80,7 @@ class OrderService {
                     subtotal: calculatedTotal,
                     commission: calculatedTotal * 0.05,
                     paymentMethod: 'WALLET',
-                    paymentProvider: 'AURA_PAY',
+                    paymentProvider: 'AUTOHOUSE_PAY',
                     shippingAddress: typeof shippingAddress === 'object' ? JSON.stringify(shippingAddress) : shippingAddress,
                     items: {
                         create: orderItemsData

@@ -28,7 +28,7 @@ echo ""
 wait_for_port() {
     local port=$1
     local name=$2
-    local retries=120
+    local retries=300
     local verify_url=$3
 
     echo -e "${YELLOW}Waiting for $name (Port $port)...${NC}"
@@ -75,8 +75,9 @@ BACKEND_PID=$!
     echo -e "${YELLOW}[Frontend] Setup started...${NC}"
     
     # 1. Install deps if missing
-    if [ ! -d "node_modules" ]; then
-        echo "[Frontend] Installing dependencies..."
+    # 1. Install deps if missing or broken
+    if [ ! -f "node_modules/vite/bin/vite.js" ]; then
+        echo "[Frontend] Installing dependencies (vite missing)..."
         npm install --silent
     fi
     

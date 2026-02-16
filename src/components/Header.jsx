@@ -139,7 +139,7 @@ export function Header() {
                                     <span className="text-[10px] font-medium mt-1">Заказы</span>
                                 </Link>
 
-                                {/* Aura Pay */}
+                                {/* autohouse Pay */}
                                 {isBuyer() && (
                                     <Link to="/wallet" className="flex flex-col items-center justify-center h-full px-2 text-emerald-400 hover:text-emerald-300 transition-colors animate-pulse hover:animate-none">
                                         <div className="relative">

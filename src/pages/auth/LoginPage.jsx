@@ -57,7 +57,7 @@ export function LoginPage() {
                         <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
                             <LayoutDashboard className="h-6 w-6 text-white" />
                         </div>
-                        <h2 className="text-2xl font-bold tracking-tight">MarketApp</h2>
+                        <h2 className="text-2xl font-bold tracking-tight">autohouse</h2>
                     </div>
                     <blockquote className="text-3xl font-medium leading-normal mb-8 max-w-lg">
                         "Единая платформа для управления вашим бизнесом и покупками. Просто, быстро, надежно."
@@ -72,7 +72,7 @@ export function LoginPage() {
                         <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
                             <LayoutDashboard className="h-4 w-4 text-white" />
                         </div>
-                        <span>MarketApp</span>
+                        <span>autohouse</span>
                     </Link>
                 </div>
 

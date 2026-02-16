@@ -40,7 +40,7 @@ export function AIChatbot() {
             console.error("AI Chat failed", error);
             const errorMsg = error.message?.includes('timeout')
                 ? "Извините, сервер не отвечает. Пожалуйста, попробуйте позже."
-                : "Извините, произошла ошибка. Наша команда уже работает над этим. Попробуйте позже или свяжитесь с поддержкой: support@aura.com";
+                : "Извините, произошла ошибка. Наша команда уже работает над этим. Попробуйте позже или свяжитесь с поддержкой: support@autohouse.uz";
             setMessages(prev => [...prev, { role: 'bot', content: errorMsg }]);
         } finally {
             setLoading(false);

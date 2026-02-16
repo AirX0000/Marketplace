@@ -26,7 +26,7 @@ export function Careers() {
     };
 
     const handleApply = (title) => {
-        alert(`Спасибо за интерес к вакансии "${title || 'General'}"! \nПожалуйста, отправьте ваше резюме на hr@auramarket.com`);
+        alert(`Спасибо за интерес к вакансии "${title || 'General'}"! \nПожалуйста, отправьте ваше резюме на hr@autohouse.uz`);
     };
 
     return (
