@@ -88,7 +88,8 @@ model Marketplace {
   isAvailable Boolean  @default(true)
   
   // Product Attributes (Phase 3)
-  attributes          String?   // { "color": "black", "storage": "256GB" }
+  attributes          Json?   // { "color": "black", "storage": "256GB" }
+  specs               Json?   // Unified specifications
   
   // Monetization (Phase 4)
   isFeatured          Boolean   @default(false)

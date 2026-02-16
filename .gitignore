@@ -38,3 +38,6 @@ server/node_modules_bad
 *trash*
 *copy*
 .git-corrupted/
+node_modules_to_delete*
+node_modules 2
+server/node_modules 2
