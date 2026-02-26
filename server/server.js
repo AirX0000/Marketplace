@@ -136,6 +136,7 @@ console.log('🔹 Importing contentRoutes...');
 const contentRoutes = require('./routes/content.routes');
 console.log('🔹 Importing newsletterRoutes...');
 const newsletterRoutes = require('./routes/newsletter.routes');
+const settingsRouter = require('./routes/settings.routes');
 
 
 console.log('🔹 Importing chatRoutes...');
@@ -185,6 +186,7 @@ app.use('/api/admin/partners', adminPartnersRoutes); // Partner account manageme
 app.use('/api', contentRoutes); // /api/blog, /api/careers (public)
 app.use('/api/loans', loanRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/settings', settingsRouter);
 
 
 // Static Files
