@@ -82,53 +82,56 @@ export function HomePage() {
                 <meta property="og:title" content="Autohouse.uz" />
                 <meta property="og:type" content="website" />
             </Helmet>
-        <div className="flex flex-col min-h-screen">
-            {/* HERO SECTION WITH BANNER AND ICONS */}
-            <section className="container py-4 md:py-6 px-4 md:px-6">
-                <div className="flex flex-col gap-4 md:gap-6">
-                    {/* Main Banner Slider */}
-                    <div className="relative w-full aspect-video md:max-h-[500px] rounded-3xl overflow-hidden shadow-lg bg-slate-100 dark:bg-slate-800/50">
-                        <BannerSlider />
-            <RecentlyViewed />
+            <div className="flex flex-col min-h-screen">
+                {/* HERO SECTION WITH BANNER AND ICONS */}
+                <section className="container py-4 md:py-6 px-4 md:px-6">
+                    <div className="flex flex-col gap-4 md:gap-6">
+                        {/* Main Banner Slider */}
+                        <div className="relative w-full aspect-[16/10] md:aspect-video md:max-h-[500px] rounded-3xl overflow-hidden shadow-lg bg-slate-100 dark:bg-slate-800/50">
+                            <BannerSlider />
+                        </div>
+                        <RecentlyViewed />
+
+                        {/* Category Icons */}
+                        <div className="max-w-4xl mx-auto w-full">
+                            <ServiceGrid />
+                        </div>
                     </div>
-
-                    {/* Category Icons */}
-                    <div className="max-w-4xl mx-auto w-full">
-                        <ServiceGrid />
-                    </div>
-                </div>
-            </section>
-
-
+                </section>
 
 
-            {/* Featured Section */}
-            <section className="container py-8 md:py-12 px-4 md:px-6">
-                {loading ? (
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-pulse">
-                        {[...Array(3)].map((_, i) => (
-                            <div key={i} className="aspect-[4/3] rounded-xl bg-muted/50"></div>
-                        ))}
-                    </div>
-                ) : error ? (
-                    <div className="text-center py-12 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/20">
-                        <p className="text-red-600 dark:text-red-400 font-medium">{error}</p>
-                        <button onClick={() => window.location.reload()} className="mt-4 text-sm text-primary hover:underline">
-                            {t('home.try_again', 'Попробовать снова')}
-                        </button>
-                    </div>
-                ) : featured.length === 0 ? (
-                    <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
-                        <p className="text-muted-foreground">{t('home.no_products', 'Нет товаров')}</p>
-                    </div>
-                ) : (
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {featured.map((item) => (
-                            <MarketplaceCard key={item.id} marketplace={item} />
-                        ))}
-                    </div>
-                )}
-            </section>
+
+
+                {/* Featured Section */}
+                <section className="container py-8 md:py-12 px-4 md:px-6">
+                    {loading ? (
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-pulse">
+                            {[...Array(3)].map((_, i) => (
+                                <div key={i} className="aspect-[4/3] rounded-xl bg-muted/50"></div>
+                            ))}
+                        </div>
+                    ) : error ? (
+                        <div className="text-center py-12 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/20">
+                            <p className="text-red-600 dark:text-red-400 font-medium">{error}</p>
+                            <button onClick={() => window.location.reload()} className="mt-4 text-sm text-primary hover:underline">
+                                {t('home.try_again', 'Попробовать снова')}
+                            </button>
+                        </div>
+                    ) : featured.length === 0 ? (
+                        <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                            <p className="text-muted-foreground">{t('home.no_products', 'Нет товаров')}</p>
+                        </div>
+                    ) : (
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {featured.map((item) => (
+                                <MarketplaceCard key={item.id} marketplace={item} />
+                            ))}
+                        </div>
+                    )}
+                </section>
+            </div>
         </div>
     );
 }
+
+export default HomePage;

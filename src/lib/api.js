@@ -8,23 +8,7 @@ export const fetchAPI = async (endpoint, options = {}) => {
         'ngrok-skip-browser-warning': 'true',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         ...options.headers
-        getMarketplaceReviews: (id) => fetchAPI(`/reviews/marketplace/${id}`),
-    createReview: (id, data) => fetchAPI(`/reviews/marketplace/${id}`, {
-        method: 'POST',
-        body: JSON.stringify(data)
-    }),
-    deleteReview: (reviewId) => fetchAPI(`/reviews/${reviewId}`, {
-        method: 'DELETE'
-    }),
-    sendOTP: (phone) => fetchAPI('/auth/send-otp', {
-        method: 'POST',
-        body: JSON.stringify({ phone })
-    }),
-    verifyOTP: (phone, code) => fetchAPI('/auth/verify-otp', {
-        method: 'POST',
-        body: JSON.stringify({ phone, code })
-    }),
-};
+    };
 
     let url = `${API_URL}${endpoint}`;
     if (options.params) {
@@ -86,11 +70,24 @@ export const fetchAPI = async (endpoint, options = {}) => {
 };
 
 export const api = {
+    fetchAPI, // 🔧 Add for compatibility
     // Auth
     login: (data) => fetchAPI('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
     register: (data) => fetchAPI('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
     sendVerification: (phone) => fetchAPI('/auth/send-verification', { method: 'POST', body: JSON.stringify({ phone }) }),
     verifyPhone: (phone, code) => fetchAPI('/auth/verify-phone', { method: 'POST', body: JSON.stringify({ phone, code }) }),
+    sendOTP: (phone) => fetchAPI('/auth/send-otp', { method: 'POST', body: JSON.stringify({ phone }) }),
+    verifyOTP: (phone, code) => fetchAPI('/auth/verify-otp', { method: 'POST', body: JSON.stringify({ phone, code }) }),
+
+    // Reviews
+    getMarketplaceReviews: (id) => fetchAPI(`/reviews/marketplace/${id}`),
+    createReview: (id, data) => fetchAPI(`/reviews/marketplace/${id}`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+    deleteReview: (reviewId) => fetchAPI(`/reviews/${reviewId}`, {
+        method: 'DELETE'
+    }),
 
     // Security / KYC
     submitKYC: (data) => fetchAPI('/partner/kyc', { method: 'POST', body: JSON.stringify(data) }),
@@ -221,6 +218,7 @@ export const api = {
     replyTicket: (id, message) => fetchAPI(`/tickets/${id}/reply`, { method: 'POST', body: JSON.stringify({ message }) }),
     // Removed duplicate updateMarketplaceStatus
     updateOrderStatus: (id, status) => fetchAPI(`/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+    sellerConfirmOrder: (id) => fetchAPI(`/orders/${id}/seller-confirm`, { method: 'POST' }),
     updateTicketStatus: (id, status) => fetchAPI(`/tickets/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
 
     // Logistics (Centers)
