@@ -618,30 +618,7 @@ export function MarketplaceListing() {
                             </div>
                         )}
 
-                        {/* Category Intro / Info */}
-                        {isRealEstateCategory && (
-                            <div className="mb-6 rounded-2xl border border-emerald-100 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-900/10 p-4 md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                                <div>
-                                    <div className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-600 mb-1">
-                                        Раздел: Недвижимость
-                                    </div>
-                                    <p className="text-sm text-emerald-900 dark:text-emerald-100">
-                                        Квартиры в новостройках и вторичном фонде, коммерческая недвижимость и участки. Подберите объект, сравните варианты и рассчитайте ипотеку.
-                                    </p>
-                                </div>
-                                <div className="flex flex-wrap gap-2 text-xs">
-                                    <span className="px-3 py-1 rounded-full bg-white text-emerald-700 border border-emerald-100">
-                                        Ипотечный калькулятор в карточке объекта
-                                    </span>
-                                    <span className="px-3 py-1 rounded-full bg-white text-emerald-700 border border-emerald-100">
-                                        Выгодные программы от банков и застройщиков
-                                    </span>
-                                    <span className="px-3 py-1 rounded-full bg-white text-emerald-700 border border-emerald-100">
-                                        Квартиры в рассрочку от застройщика
-                                    </span>
-                                </div>
-                            </div>
-                        )}
+
 
                         {isAutoCategory && (
                             <div className="space-y-6 mb-8">

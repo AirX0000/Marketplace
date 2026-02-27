@@ -54,13 +54,13 @@ export function MarketplaceDetail() {
         async function load() {
             try {
                 const marketData = await api.getMarketplace(id);
-                
+
                 // Task 7: Recently Viewed
                 try {
                     const history = JSON.parse(localStorage.getItem('viewHistory') || '[]');
                     const updated = [marketData, ...history.filter(h => h.id !== marketData.id)].slice(0, 5);
                     localStorage.setItem('viewHistory', JSON.stringify(updated));
-                } catch (e) {}
+                } catch (e) { }
                 setMarketplace(marketData);
 
                 // Set initial active image
@@ -371,6 +371,7 @@ export function MarketplaceDetail() {
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6">Способы оплаты</h3>
                                     <div className="flex flex-wrap items-center gap-6 opacity-60">
                                         <img src="https://cdn.payme.uz/logo/payme_color.svg" alt="Payme" className="h-6 object-contain" />
+                                        <img src="https://logobank.uz:8005/static/logos_png/click-logo-uz-600.png" alt="Click" className="h-6 object-contain" />
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" className="h-4 object-contain" />
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="MC" className="h-6 object-contain" />
                                         <div className="h-6 w-px bg-slate-200" />
@@ -557,6 +558,16 @@ export function MarketplaceDetail() {
                                     >
                                         <Phone className="h-5 w-5 mr-3" />
                                         {marketplace.owner?.phone || "Связаться"}
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            addToCart(marketplace);
+                                            navigate('/checkout');
+                                        }}
+                                        className="w-full h-14 flex items-center justify-center rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg transition-all shadow-lg shadow-blue-600/20"
+                                    >
+                                        Купить сейчас
                                     </button>
 
                                     <button

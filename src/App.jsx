@@ -7,6 +7,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Auth Pages
+import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
+import { Navigate } from "react-router-dom";
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 
@@ -88,6 +90,8 @@ function App() {
               <div className="min-h-screen bg-background font-sans antialiased">
                 <Routes>
                   {/* Auth Routes */}
+                  <Route path="/cars" element={<Navigate to="/catalog?category=Transport" replace />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
 

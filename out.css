@@ -1,0 +1,137 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  :root {
+    --background: 245 247 250;
+    --foreground: 0 0 0;
+    --card: 255 255 255;
+    --card-foreground: 0 0 0;
+    --popover: 255 255 255;
+    --popover-foreground: 0 0 0;
+    --primary: 0 102 255;
+    --primary-foreground: 255 255 255;
+    --secondary: 230 242 255;
+    --secondary-foreground: 0 61 153;
+    --muted: 241 245 249;
+    --muted-foreground: 71 85 105;
+    --accent: 0 185 86;
+    --accent-foreground: 255 255 255;
+    --destructive: 255 59 48;
+    --destructive-foreground: 255 255 255;
+    --border: 229 231 235;
+    --input: 229 231 235;
+    --ring: 0 102 255;
+    --radius: 0.75rem;
+  }
+  .dark {
+    --background: 10 15 30;
+    --foreground: 255 255 255;
+    --card: 30 41 59;
+    --card-foreground: 255 255 255;
+    --popover: 30 41 59;
+    --popover-foreground: 255 255 255;
+    --primary: 56 189 248;
+    --primary-foreground: 15 23 42;
+    --secondary: 51 65 85;
+    --secondary-foreground: 248 250 252;
+    --muted: 51 65 85;
+    --muted-foreground: 148 163 184;
+    --accent: 34 197 94;
+    --accent-foreground: 15 23 42;
+    --destructive: 239 68 68;
+    --destructive-foreground: 248 250 252;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 56 189 248;
+  }
+}
+@layer base {
+  * {
+    border-color: rgb(var(--border));
+  }
+  body {
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Roboto",
+      sans-serif;
+    font-feature-settings:
+      "cv02",
+      "cv03",
+      "cv04",
+      "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    overflow-x: hidden;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background:
+      linear-gradient(
+        180deg,
+        rgb(var(--background)) 0%,
+        rgb(var(--card)) 100%);
+  }
+}
+@layer utilities {
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-hover:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    transform: translateY(-0.25rem);
+  }
+  .btn-press:active {
+    transform: scale(0.95);
+    transition: transform 0.1s;
+  }
+  .gradient-primary {
+    background:
+      linear-gradient(
+        135deg,
+        rgb(0, 102, 255) 0%,
+        rgb(0, 61, 153) 100%);
+  }
+  .gradient-success {
+    background:
+      linear-gradient(
+        135deg,
+        rgb(0, 185, 86) 0%,
+        rgb(0, 150, 70) 100%);
+  }
+  .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  .dark .glass {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}

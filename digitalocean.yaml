@@ -1,0 +1,32 @@
+name: autohouse-app
+region: fra
+services:
+  - name: autohouse-backend
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    source_dir: .
+    build_command: npm run build && cd server && npm install --no-package-lock && npx prisma@5.22.0 generate
+    run_command: cd server && npx prisma@5.22.0 db push --accept-data-loss && npm start
+    envs:
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        value: ${autohouse-db.DATABASE_URL}
+      - key: JWT_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: GEMINI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: NODE_ENV
+        scope: RUN_TIME
+        value: production
+    http_port: 3000
+    routes:
+      - path: /
+
+databases:
+  - engine: PG
+    name: autohouse-db
+    num_nodes: 1
+    size_slug: db-s-dev-database
+    version: "15"

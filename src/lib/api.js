@@ -78,6 +78,7 @@ export const api = {
     verifyPhone: (phone, code) => fetchAPI('/auth/verify-phone', { method: 'POST', body: JSON.stringify({ phone, code }) }),
     sendOTP: (phone) => fetchAPI('/auth/send-otp', { method: 'POST', body: JSON.stringify({ phone }) }),
     verifyOTP: (phone, code) => fetchAPI('/auth/verify-otp', { method: 'POST', body: JSON.stringify({ phone, code }) }),
+    resetPassword: (data) => fetchAPI('/auth/reset-password', { method: 'POST', body: JSON.stringify(data) }),
 
     // Reviews
     getMarketplaceReviews: (id) => fetchAPI(`/reviews/marketplace/${id}`),
