@@ -45,6 +45,7 @@ const centersRoutes = require('./routes/centers.routes');
 const newsletterRoutes = require('./routes/newsletter.routes');
 const contentRoutes = require('./routes/content.routes');
 const passwordResetRoutes = require('./routes/password_reset.routes');
+const uploadRoutes = require('./routes/upload.routes');
 
 // Mount all at /api
 const apiRouter = express.Router();
@@ -68,6 +69,7 @@ apiRouter.use('/centers', centersRoutes);
 apiRouter.use('/newsletter', newsletterRoutes);
 apiRouter.use('/content', contentRoutes);
 apiRouter.use('/auth', passwordResetRoutes);
+apiRouter.use('/upload', uploadRoutes);
 
 // Auth routes (login/register)
 try {

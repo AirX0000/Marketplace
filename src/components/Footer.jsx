@@ -57,7 +57,11 @@ export function Footer() {
                     </div>
                 </div>
                 <div className="mt-10 border-t border-slate-800 pt-8 flex flex-col items-center gap-4 text-sm text-slate-400">
-                    <img src="/logo.png" alt="Autohouse" className="h-8 w-auto opacity-80" />
+                    <div className="flex items-center opacity-80 scale-75">
+                        <span className="text-2xl font-black italic uppercase text-red-600">Aut</span>
+                        <img src="/logo-icon.png" alt="" className="h-9 w-auto mx-0.5 object-contain" />
+                        <span className="text-2xl font-black italic uppercase text-blue-600">house</span>
+                    </div>
                     <p>© {new Date().getFullYear()} autohouse. {t('footer.rights')}</p>
                 </div>
             </div>
