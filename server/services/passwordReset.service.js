@@ -3,7 +3,7 @@ const smsService = require('./sms.service');
 
 class PasswordResetService {
     async sendOTP(phone) {
-        const formattedPhone = phone.replace(/\D/g, '');
+        const formattedPhone = String(phone || '').replace(/\D/g, '');
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
@@ -36,7 +36,7 @@ class PasswordResetService {
     }
 
     async verifyOTP(phone, code) {
-        const formattedPhone = phone.replace(/\D/g, '');
+        const formattedPhone = String(phone || '').replace(/\D/g, '');
         try {
             const entry = await prisma.otp.findUnique({
                 where: { phone: formattedPhone }
@@ -56,7 +56,7 @@ class PasswordResetService {
         const verify = await this.verifyOTP(phone, code);
         if (!verify.success) return verify;
 
-        const formattedPhone = phone.replace(/\D/g, '');
+        const formattedPhone = String(phone || '').replace(/\D/g, '');
         const bcrypt = require('bcryptjs');
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 

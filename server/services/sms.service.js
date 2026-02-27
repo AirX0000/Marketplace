@@ -24,8 +24,8 @@ class SmsService {
 
     async sendSms(phone, message) {
         // Clean phone number: +998901234567 -> 998901234567
-        const cleanPhone = phone.replace(/\D/g, '');
-        
+        const cleanPhone = String(phone || '').replace(/\D/g, '');
+
         // Mock if environment variables are missing
         if (!this.email || !this.password) {
             console.log(`[MOCK SMS] To: ${cleanPhone}, Message: ${message}`);
