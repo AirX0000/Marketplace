@@ -340,7 +340,7 @@ export function MarketplaceListing() {
     const filteredMarketplaces = marketplaces; // Use this for the new structure
 
     return (
-        <div className="bg-slate-50 dark:bg-slate-950 min-h-screen py-8">
+        <div className="bg-background min-h-screen py-8">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col lg:flex-row gap-8">
 
