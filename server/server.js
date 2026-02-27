@@ -79,10 +79,19 @@ try {
 
 app.use('/api', apiRouter);
 
-// SPA Fallback
-app.use(express.static(path.join(__dirname, '../dist')));
+// SPA Fallback - Serve index.html for any unknown non-API routes
+const distPath = path.join(__dirname, '../dist');
+console.log('🔹 Static assets directory:', distPath);
+
+app.use(express.static(distPath));
+
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../dist/index.html'));
+    // Disable caching for index.html to ensure users always get the latest version
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+    res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Error handling
