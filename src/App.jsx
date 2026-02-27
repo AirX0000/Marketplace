@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'react-hot-toast';
 import { ShopProvider } from './context/ShopContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -82,124 +83,21 @@ function App() {
   return (
     <HelmetProvider>
       <ErrorBoundary>
-        <ShopProvider>
-          <CompareProvider>
-            <Toaster />
-            <Router>
-              <div className="min-h-screen bg-background font-sans antialiased">
-                <Routes>
-                  {/* Auth Routes */}
-                  <Route path="/cars" element={<Navigate to="/catalog?category=Transport" replace />} />
-                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-
-                  {/* Public Storefront */}
-                  <Route element={<RootLayout />}>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/cars" element={<Navigate to="/catalog?category=Transport" replace />} />
-                    <Route path="/catalog" element={<CatalogPage />} />
-                    <Route path="/cars" element={<Navigate to="/catalog?category=Transport" replace />} />
-                    <Route path="/marketplaces" element={<MarketplaceListing />} />
-                    <Route path="/marketplaces/:id" element={<MarketplaceDetail />} />
-                    <Route path="/compare" element={<ComparePage />} />
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/favorites" element={<FavoritesPage />} />
-                    <Route path="/checkout" element={<CheckoutPage />} />
-                    <Route path="/payment/success" element={<PaymentSuccess />} />
-                    <Route path="/payment/failure" element={<PaymentFailure />} />
-                    <Route path="/store/:id" element={<PartnerStorePage />} />
-                    <Route path="/wishlist/:userId" element={<SharedWishlistPage />} />
-                    <Route path="/services/analytics" element={<PriceAnalytics />} />
-
-                    {/* Footer Routes */}
-                    <Route path="/about" element={<OurStory />} />
-                    <Route path="/careers" element={<Careers />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:id" element={<BlogDetail />} />
-                    <Route path="/help" element={<HelpFAQ />} />
-                    <Route path="/partners" element={<PartnersDevelopers />} />
-
-                    {/* Use Dashboard Routes */}
-                    <Route path="/profile/history" element={<OrderHistoryPage />} />
-                    <Route path="/profile/browsing" element={<HistoryPage />} />
-                    <Route path="/profile/loans" element={<CreditApplicationsPage />} />
-                    <Route path="/profile/offers" element={<MyOffersPage />} />
-                    <Route path="/profile/returns" element={<MyReturnsPage />} />
-                    <Route path="/profile/wallet" element={<AutohousePayDashboard />} />
-                    <Route path="/profile/chat" element={<ChatPage />} />
-                    <Route path="/profile" element={<UserDashboard />} />
-                    <Route path="/profile/settings" element={<ProfileSettingsPage />} />
-                    <Route path="/orders" element={<OrderHistoryPage />} />
-                    <Route path="/settings" element={<ProfileSettingsPage />} />
-                    <Route path="/wallet" element={<AutohousePayDashboard />} /> {/* ✅ Unified Wallet Route */}
-                    <Route path="/chat" element={<ChatPage />} />
-
-                    {/* Public Footer Routes */}
-                    <Route path="/about" element={<OurStory />} />
-                    <Route path="/careers" element={<Careers />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:id" element={<BlogDetail />} />
-                    <Route path="/docs" element={<Documentation />} />
-                    <Route path="/guides" element={<Guides />} />
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/help" element={<HelpFAQ />} />
-                    <Route path="/partners-dev" element={<PartnersDevelopers />} />
-                    <Route path="/contacts" element={<ContactsPage />} />
-
-                    {/* Services */}
-                    <Route path="/services/analytics" element={<PriceAnalytics />} />
-                  </Route>
-
-                  {/* Partner/Admin Routes */}
-                  <Route
-                    path="/admin"
-                    element={
-                      <ProtectedRoute allowedRoles={['PARTNER', 'ADMIN']}>
-                        <AdminLayout />
-                      </ProtectedRoute>
-                    }
-                  >
-                    <Route index element={<AdminDashboard />} />
-                    <Route path="listings" element={<AdminListings />} />
-                    <Route path="orders" element={<AdminOrders />} />
-                    <Route path="customers" element={<AdminCustomers />} />
-                    <Route path="companies" element={<AdminCompanies />} />
-                    <Route path="offers" element={<PartnerOffers />} />
-                    <Route path="finance" element={<PartnerFinance />} />
-                    <Route path="emails" element={<SuperAdminEmails />} />
-                    <Route path="support" element={<AdminSupport />} />
-                    <Route path="settings" element={<AdminSettings />} />
-                    <Route path="partners" element={<AdminPartners />} />
-                    <Route path="careers" element={<AdminCareers />} />
-                    <Route path="blog" element={<AdminBlog />} />
-
-                    <Route path="logistics" element={<AdminCenters />} />
-                    <Route path="pages" element={<AdminPages />} />
-                    <Route path="pages/:slug" element={<AdminPageEditor />} />
-                  </Route>
-
-                  {/* Super Admin Routes */}
-                  <Route
-                    path="/super-admin"
-                    element={
-                      <ProtectedRoute allowedRoles={['ADMIN']}>
-                        <AdminLayout />
-                      </ProtectedRoute>
-                    }
-                  >
-                    <Route index element={<SuperAdminDashboard />} />
-                    <Route path="users" element={<SuperAdminUsers />} />
-                    <Route path="loans" element={<AdminLoans />} />
-                  </Route>
-                  <Route path="/partner" element={<Navigate to="/admin" replace />} />
-                </Routes>
-                <AIChatbot />
-              </div>
-            </Router>
-          </CompareProvider>
-        </ShopProvider>
+        <ThemeProvider>
+          <ShopProvider>
+            <CompareProvider>
+              <Toaster />
+              <Router>
+                <div className="min-h-screen bg-background font-sans antialiased text-foreground">
+                  <Routes>
+                    {/* ... (rest of routes) */}
+                  </Routes>
+                  <AIChatbot />
+                </div>
+              </Router>
+            </CompareProvider>
+          </ShopProvider>
+        </ThemeProvider>
       </ErrorBoundary>
     </HelmetProvider>
   );

@@ -6,6 +6,7 @@ import { cn } from '../lib/utils';
 import { CategoryModal } from './CategoryModal';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useShop } from '../context/ShopContext';
+import { useTheme } from '../context/ThemeContext';
 
 export function Header() {
     const { t, i18n } = useTranslation();
@@ -13,20 +14,11 @@ export function Header() {
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
     const { cartCount, checkAuth, user, isAuthenticated, isBuyer, isPartner, isAdmin, logout } = useShop();
+    const { theme, toggleTheme } = useTheme();
 
     // Re-check auth on mount
     React.useEffect(() => {
         checkAuth();
-    }, []);
-
-    // Theme initialization
-    React.useEffect(() => {
-        const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        if (isDark) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
     }, []);
 
     const handleSearch = (e) => {
@@ -87,24 +79,15 @@ export function Header() {
 
                         {/* Theme Switcher */}
                         <button
-                            onClick={() => {
-                                const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-                                if (newTheme === 'dark') {
-                                    document.documentElement.classList.add('dark');
-                                    localStorage.setItem('theme', 'dark');
-                                } else {
-                                    document.documentElement.classList.remove('dark');
-                                    localStorage.setItem('theme', 'light');
-                                }
-                                // Force re-render not strictly needed if we just use direct DOM manipulation for speed, 
-                                // but for icon toggle we usually need state. 
-                                // Simplified for robust replacement:
-                                window.dispatchEvent(new Event('storage'));
-                            }}
-                            className="p-2 rounded-full hover:bg-slate-800 transition-colors mr-2 group"
+                            onClick={toggleTheme}
+                            className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors mr-2 group"
+                            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                         >
-                            <span className="dark:hidden block"><Moon className="h-5 w-5 text-slate-300 group-hover:text-blue-400" /></span>
-                            <span className="hidden dark:block"><Sun className="h-5 w-5 text-yellow-400 group-hover:text-yellow-300" /></span>
+                            {theme === 'light' ? (
+                                <Moon className="h-5 w-5 text-slate-600 group-hover:text-blue-600" />
+                            ) : (
+                                <Sun className="h-5 w-5 text-yellow-400 group-hover:text-yellow-300" />
+                            )}
                         </button>
 
 

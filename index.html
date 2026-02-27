@@ -26,6 +26,21 @@
   <meta property="twitter:title" content="Autohouse - Маркетплейс Недвижимости и Авто">
   <meta property="twitter:description" content="Лучшие предложения по продаже и аренде недвижимости и автомобилей.">
   <meta property="twitter:image" content="/og-image.jpg">
+
+  <!-- Theme Initialization Script -->
+  <script>
+    (function () {
+      try {
+        const savedTheme = localStorage.getItem('theme');
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+        if (savedTheme === 'dark' || (!savedTheme && supportDarkMode)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) { }
+    })();
+  </script>
 </head>
 
 <body>

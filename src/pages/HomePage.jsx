@@ -75,7 +75,7 @@ export function HomePage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-transparent">
             <Helmet>
                 <title>Autohouse.uz - Автомобили и недвижимость в Узбекистане</title>
                 <meta name="description" content="Лучший маркетплейс автомобилей и недвижимости в Узбекистане. Безопасные сделки, проверенные продавцы." />
@@ -118,7 +118,7 @@ export function HomePage() {
                             </button>
                         </div>
                     ) : featured.length === 0 ? (
-                        <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                        <div className="text-center py-12 bg-white/50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
                             <p className="text-muted-foreground">{t('home.no_products', 'Нет товаров')}</p>
                         </div>
                     ) : (
