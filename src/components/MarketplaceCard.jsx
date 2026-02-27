@@ -49,8 +49,8 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
     if (viewMode === 'list') {
         return (
             <>
-                <div className="group relative flex overflow-hidden rounded-2xl border border-slate-200 bg-card transition-all hover-scale">
-                    <div className="w-48 h-48 flex-shrink-0 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 p-6 relative">
+                <div className="group relative flex overflow-hidden rounded-2xl border border-border bg-card transition-all hover-scale">
+                    <div className="w-48 h-48 flex-shrink-0 overflow-hidden bg-muted/30 p-6 relative">
                         <img
                             src={marketplace.image || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                             alt={displayName}
@@ -95,14 +95,14 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                         e.preventDefault();
                                         setShowQuickView(true);
                                     }}
-                                    className="rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg bg-white/90 text-slate-600 hover:bg-white hover:scale-105 md:hidden"
+                                    className="rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg bg-card/90 text-foreground hover:bg-card hover:scale-105 md:hidden"
                                     title="Быстрый просмотр"
                                 >
                                     <Eye className="h-5 w-5" />
                                 </button>
                                 <button
                                     onClick={handleShare}
-                                    className="rounded-full p-2.5 bg-white/90 text-slate-600 hover:bg-white hover:scale-105 backdrop-blur-md transition-all shadow-lg"
+                                    className="rounded-full p-2.5 bg-card/90 text-foreground hover:bg-card hover:scale-105 backdrop-blur-md transition-all shadow-lg"
                                     title="Поделиться"
                                 >
                                     <Share2 className="h-5 w-5" />
@@ -112,7 +112,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                         e.preventDefault();
                                         isInCompare ? removeFromCompare(marketplace.id) : addToCompare(marketplace);
                                     }}
-                                    className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-white/90 text-slate-600 hover:bg-white hover:scale-105'}`}
+                                    className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                                     title="Сравнить"
                                 >
                                     <Scale className="h-5 w-5" />
@@ -122,14 +122,14 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                         e.preventDefault();
                                         toggleFavorite(marketplace);
                                     }}
-                                    className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-white/90 text-slate-600 hover:bg-white hover:scale-105'}`}
+                                    className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                                 >
                                     <Heart className={`h-5 w-5 ${isFav ? 'fill-current' : ''}`} />
                                 </button>
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between border-t pt-4 mt-auto">
+                        <div className="flex items-center justify-between border-t border-border pt-4 mt-auto">
                             <div className="flex flex-col">
                                 {marketplace.discount > 0 && (
                                     <div className="flex items-center gap-2">
@@ -179,7 +179,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
                 className="group relative flex flex-col rounded-2xl border border-border bg-card transition-all shadow-sm hover:shadow-xl overflow-hidden"
             >
-                <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-600 p-6 relative">
+                <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-6 relative">
                     <img
                         src={marketplace.image || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                         alt={displayName}
@@ -192,7 +192,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             const parsed = marketplace.attributes ? (typeof marketplace.attributes === 'string' ? JSON.parse(marketplace.attributes) : marketplace.attributes) : {};
                             if (parsed.brandLogo) {
                                 return (
-                                    <div className="absolute top-3 left-3 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-lg p-1.5 shadow-sm border border-slate-100 flex items-center justify-center z-10">
+                                    <div className="absolute top-3 left-3 w-10 h-10 bg-card/90 backdrop-blur-sm rounded-lg p-1.5 shadow-sm border border-border flex items-center justify-center z-10">
                                         <img src={parsed.brandLogo} alt="brand" className="w-full h-full object-contain" />
                                     </div>
                                 );
@@ -208,7 +208,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         }}
                         className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold"
                     >
-                        <div className="bg-white text-slate-900 rounded-full px-4 py-2 flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <div className="bg-card text-foreground rounded-full px-4 py-2 flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg border border-border">
                             <Eye className="w-4 h-4" />
                             <span>Быстрый просмотр</span>
                         </div>
@@ -220,7 +220,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 e.preventDefault();
                                 toggleFavorite(marketplace);
                             }}
-                            className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-white/90 text-slate-600 hover:bg-white hover:scale-105'}`}
+                            className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                         >
                             <Heart className={`h-4 w-4 ${isFav ? 'fill-current' : ''}`} />
                         </button>
@@ -229,7 +229,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 e.preventDefault();
                                 isInCompare ? removeFromCompare(marketplace.id) : addToCompare(marketplace);
                             }}
-                            className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-white/90 text-slate-600 hover:bg-white hover:scale-105'}`}
+                            className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                             title="Сравнить"
                         >
                             <Scale className="h-4 w-4" />
@@ -289,22 +289,20 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                     <div className="mb-4 min-h-[40px] flex flex-col justify-start">
                         {(() => {
                             const parsed = marketplace.attributes ? (typeof marketplace.attributes === 'string' ? JSON.parse(marketplace.attributes) : marketplace.attributes) : {};
-                            const attrs = parsed.specs || parsed; // Fallback to root or use specs
+                            const attrs = parsed.specs || parsed;
 
-                            // Real Estate Attributes
                             if (["Квартиры", "Дома", "Коммерческая", "Земля", "Apartments", "Houses"].includes(marketplace.category)) {
                                 if (attrs.area || attrs.rooms) {
                                     return (
-                                        <div className="flex flex-wrap gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
-                                            {attrs.rooms && <div className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">{attrs.rooms} комн.</div>}
-                                            {attrs.area && <div className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">{attrs.area} м²</div>}
-                                            {attrs.floor && <div className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">{attrs.floor} эт.</div>}
+                                        <div className="flex flex-wrap gap-2 text-xs font-medium text-muted-foreground">
+                                            {attrs.rooms && <div className="bg-muted px-2 py-1 rounded">{attrs.rooms} комн.</div>}
+                                            {attrs.area && <div className="bg-muted px-2 py-1 rounded">{attrs.area} м²</div>}
+                                            {attrs.floor && <div className="bg-muted px-2 py-1 rounded">{attrs.floor} эт.</div>}
                                         </div>
                                     );
                                 }
                             }
 
-                            // Car Attributes
                             if (["Седан", "Кроссовер", "Внедорожник", "Электромобиль", "Cars", "Transport"].includes(marketplace.category)) {
                                 if (attrs.year || attrs.mileage) {
                                     return (
@@ -345,7 +343,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         {["Квартиры", "Дома", "Коммерческая", "Земля", "Седан", "Кроссовер", "Внедорожник", "Apartments", "Houses", "Transport"].includes(marketplace.category) ? (
                             <Link
                                 to={`/marketplaces/${marketplace.id}`}
-                                className="inline-flex h-10 items-center justify-center rounded-xl px-5 text-sm font-bold transition-all duration-300 shadow-sm border border-slate-200 hover:border-blue-600 hover:text-blue-600 active:scale-95"
+                                className="inline-flex h-10 items-center justify-center rounded-xl px-5 text-sm font-bold transition-all duration-300 shadow-sm border border-border bg-card text-foreground hover:bg-muted active:scale-95"
                             >
                                 Подробнее
                             </Link>
@@ -355,7 +353,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 disabled={isAdded}
                                 className={`inline-flex h-10 items-center justify-center rounded-xl px-5 text-sm font-bold transition-all duration-300 shadow-sm active:scale-95 ${isAdded
                                     ? 'bg-emerald-500 text-white'
-                                    : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20'
+                                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
                                     }`}
                             >
                                 {isAdded ? 'В корзине' : 'Купить'}

@@ -49,16 +49,16 @@ export function Header() {
                     isScrolled ? "h-16 shadow-sm" : "h-20"
                 )}
             >
-                <div className="container flex h-16 items-center px-4 md:px-6 gap-4">
+                <div className="container mx-auto flex h-full items-center px-4 md:px-6 gap-4">
                     <Link to="/" className="flex-none flex items-center mr-4 group">
-                        <img src="/logo-full.png" alt="Autohouse" className="h-10 md:h-12 w-auto object-contain" />
+                        <img src="/logo-full.png" alt="Autohouse" className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
                     </Link>
 
                     {/* Catalog Button - Only for buyers */}
                     {(!isAuthenticated || isBuyer()) && (
                         <button
                             onClick={() => setIsCatalogOpen(true)}
-                            className="hidden md:flex items-center justify-center h-10 px-6 rounded-lg font-bold transition-all bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-95"
+                            className="hidden md:flex items-center justify-center h-10 px-6 rounded-lg font-bold transition-all bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95"
                         >
                             <Menu className="mr-2 h-5 w-5" />
                             {t('common.catalog')}
@@ -98,130 +98,33 @@ export function Header() {
                             {theme === 'light' ? (
                                 <Moon className="h-5 w-5 text-foreground group-hover:text-primary" />
                             ) : (
-                                <Sun className="h-5 w-5 text-yellow-400 group-hover:text-yellow-300" />
+                                <Sun className="h-5 w-5 text-foreground group-hover:text-primary" />
                             )}
                         </button>
 
+                        <div className="w-px h-6 bg-border mx-2 hidden md:block" />
 
+                        {/* User Profile / Login */}
+                        <Link
+                            to={isAuthenticated ? (isAdmin() ? "/admin" : "/profile") : "/login"}
+                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors group"
+                        >
+                            <User className="h-5 w-5 text-foreground group-hover:text-primary" />
+                            <span className="hidden lg:block text-sm font-medium text-foreground group-hover:text-primary">
+                                {isAuthenticated ? (user?.name || t('common.profile')) : t('common.login')}
+                            </span>
+                        </Link>
 
-                        {!isAuthenticated ? (
-                            <>
-                                <Link to="/login" className="hidden md:inline-flex h-9 px-4 items-center justify-center rounded-md text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
-                                    {t('common.login')}
-                                </Link>
-                                <Link to="/register" className="inline-flex h-9 px-4 items-center justify-center rounded-md text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
-                                    {t('common.register')}
-                                </Link>
-                            </>
-                        ) : (
-                            <>
-                                {/* Navigation icons - visible for all authenticated users */}
-                                <Link to="/favorites" className="hidden md:flex flex-col items-center justify-center h-full px-2 text-muted-foreground hover:text-primary transition-colors">
-                                    <Heart className="h-5 w-5" />
-                                    <span className="text-[10px] font-medium mt-1">{t('common.wishlist', 'Избранное')}</span>
-                                </Link>
-
-                                <Link to="/cart" className="flex flex-col items-center justify-center h-full px-2 text-muted-foreground hover:text-primary transition-colors">
-                                    <div className="relative">
-                                        <ShoppingCart className="h-5 w-5" />
-                                        {cartCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-blue-600 text-[10px] font-bold text-white flex items-center justify-center">
-                                                {cartCount}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <span className="text-[10px] font-medium mt-1">{t('common.cart', 'Корзина')}</span>
-                                </Link>
-
-                                <Link to="/orders" className="hidden md:flex flex-col items-center justify-center h-full px-2 text-slate-300 hover:text-primary transition-colors">
-                                    <Package className="h-5 w-5" />
-                                    <span className="text-[10px] font-medium mt-1">{t('common.orders', 'Заказы')}</span>
-                                </Link>
-
-                                {/* autohouse Pay */}
-                                {isBuyer() && (
-                                    <Link to="/wallet" className="flex flex-col items-center justify-center h-full px-2 text-emerald-400 hover:text-emerald-300 transition-colors animate-pulse hover:animate-none">
-                                        <div className="relative">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /><path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /><path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg>
-                                        </div>
-                                        <span className="text-[10px] font-bold mt-1">autohouse Pay</span>
-                                    </Link>
-                                )}
-
-                                {/* User Menu Dropdown */}
-                                <div className="group relative flex flex-col items-center justify-center h-full px-2 text-slate-300 hover:text-primary transition-colors cursor-pointer">
-                                    {user?.avatar ? (
-                                        <img src={user.avatar} alt="avatar" className="h-7 w-7 rounded-full object-cover border-2 border-slate-200" />
-                                    ) : (
-                                        <div className="h-7 w-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
-                                            {user?.name ? user.name[0].toUpperCase() : <User className="h-4 w-4" />}
-                                        </div>
-                                    )}
-                                    <span className="text-[10px] font-medium mt-0.5">
-                                        {isPartner() ? t('common.partner') : isAdmin() ? t('common.admin') : t('common.profile')}
+                        {/* Cart - Only for buyers */}
+                        {(!isAuthenticated || isBuyer()) && (
+                            <Link to="/cart" className="relative p-2 rounded-lg hover:bg-muted transition-colors group">
+                                <ShoppingCart className="h-5 w-5 text-foreground group-hover:text-primary" />
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white ring-2 ring-background animate-in zoom-in">
+                                        {cartCount}
                                     </span>
-
-                                    {/* Dropdown */}
-                                    <div className="absolute top-11 right-0 w-56 bg-white border shadow-lg rounded-xl overflow-hidden hidden group-hover:block animate-in fade-in zoom-in-95 duration-200 z-50">
-                                        <div className="p-3 border-b bg-gradient-to-br from-slate-50 to-slate-100 flex items-center gap-3">
-                                            {user?.avatar ? (
-                                                <img src={user.avatar} alt="avatar" className="h-10 w-10 rounded-full object-cover border-2 border-white shadow" />
-                                            ) : (
-                                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow">
-                                                    {user?.name ? user.name[0].toUpperCase() : '?'}
-                                                </div>
-                                            )}
-                                            <div className="overflow-hidden">
-                                                <div className="text-sm font-bold text-slate-800 truncate">{user?.name || 'Мой аккаунт'}</div>
-                                                <div className="text-xs text-slate-400 truncate">{user?.phone || ''}</div>
-                                            </div>
-                                        </div>
-
-                                        {/* Role-specific menu items */}
-                                        {isPartner() && (
-                                            <Link to="/partner" className="block px-4 py-3 text-sm hover:bg-slate-100 transition-colors border-b font-medium text-slate-700">
-                                                📊 Мой Магазин
-                                            </Link>
-                                        )}
-
-                                        {isAdmin() && (
-                                            <Link to="/admin" className="block px-4 py-3 text-sm hover:bg-slate-100 transition-colors border-b font-medium text-slate-700">
-                                                ⚙️ Панель Управления
-                                            </Link>
-                                        )}
-
-                                        {isBuyer() && (
-                                            <>
-                                                <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-slate-100 transition-colors text-slate-700">
-                                                    Личный Кабинет
-                                                </Link>
-                                                <Link to="/orders" className="block px-4 py-2 text-sm hover:bg-slate-100 transition-colors text-slate-700">
-                                                    Мои заказы
-                                                </Link>
-                                                <Link to="/chat" className="block px-4 py-2 text-sm hover:bg-slate-100 transition-colors text-slate-700">
-                                                    Сообщения
-                                                </Link>
-                                                <Link to="/profile/offers" className="block px-4 py-2 text-sm hover:bg-slate-100 transition-colors text-slate-700">
-                                                    Мои предложения
-                                                </Link>
-                                                <Link to="/favorites" className="block px-4 py-2 text-sm hover:bg-slate-100 transition-colors text-slate-700">
-                                                    Список желаний
-                                                </Link>
-                                            </>
-                                        )}
-
-                                        <Link to="/settings" className="block px-4 py-2 text-sm hover:bg-slate-100 transition-colors border-t text-slate-700">
-                                            Настройки
-                                        </Link>
-                                        <button
-                                            onClick={handleLogout}
-                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 font-medium hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/20"
-                                        >
-                                            {t('common.logout')}
-                                        </button>
-                                    </div>
-                                </div>
-                            </>
+                                )}
+                            </Link>
                         )}
                     </div>
                 </div>

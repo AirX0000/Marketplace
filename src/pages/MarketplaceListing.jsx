@@ -77,20 +77,56 @@ export function MarketplaceListing() {
 
         api.getCategories().then(data => {
             if (data && data.length > 0) {
-                // If backend has data, you might want to merge or just use backend. 
-                // For now, let's use backend BUT ensure our new subcategories exist in specific groups if they are missing.
-                // Or simply prefer static if backend is barebones.
-                // Let's merge: Find matching name, merge 'sub' arrays
-                let merged = [...data];
+                // Normalize and merge categories
+                let normalized = [];
+                const seenNames = new Set();
+
+                // Advanced Grouping / Merging
+                const CATEGORY_MAP = {
+                    'Real Estate': 'Недвижимость',
+                    'RealEstate': 'Недвижимость',
+                    'Properties': 'Недвижимость',
+                    'Apartment': 'Недвижимость',
+                    'House': 'Недвижимость'
+                };
+
+                // Helper to get normalized name
+                const getNormalizedName = (item) => {
+                    const rawName = typeof item === 'string' ? item : (item.name || "");
+                    return CATEGORY_MAP[rawName] || rawName;
+                };
+
+                data.forEach(item => {
+                    const name = getNormalizedName(item);
+                    if (!name) return;
+
+                    if (seenNames.has(name)) {
+                        const existing = normalized.find(c => (typeof c === 'string' ? c : c.name) === name);
+                        if (typeof existing === 'object' && typeof item === 'object' && item.sub) {
+                            if (!existing.sub) existing.sub = [];
+                            item.sub.forEach(s => {
+                                if (!existing.sub.includes(s)) existing.sub.push(s);
+                            });
+                        }
+                    } else {
+                        seenNames.add(name);
+                        if (typeof item === 'object') {
+                            normalized.push({ ...item, name });
+                        } else {
+                            normalized.push(name);
+                        }
+                    }
+                });
+
+                // Merge with STATIC structures for subcategories if missing
+                let merged = [...normalized];
                 STATIC_CATEGORIES.forEach(staticCat => {
-                    const index = merged.findIndex(c => (c.name || c) === staticCat.name);
+                    const index = merged.findIndex(c => (typeof c === 'string' ? c : c.name) === staticCat.name);
                     if (index !== -1) {
                         const existing = merged[index];
                         if (typeof existing === 'string') {
-                            // Convert string to object to attach subcategories
                             merged[index] = { name: existing, sub: staticCat.sub };
-                        } else if (typeof existing === 'object') {
-                            // Merge subs
+                        } else {
                             if (!existing.sub) existing.sub = [];
                             staticCat.sub.forEach(s => {
                                 if (!existing.sub.includes(s)) existing.sub.push(s);
@@ -153,19 +189,19 @@ export function MarketplaceListing() {
 
 
             if (filters.category !== "Все") {
-                if (["Недвижимость", "Недвижимость", "House", "Apartment", "Houses", "Land", "New Building", "Private House"].includes(filters.category)) {
+                if (["Недвижимость", "Real Estate", "House", "Apartment", "Houses", "Land", "New Building", "Private House"].includes(filters.category)) {
                     // Match any subcategory of Real Estate OR the main category itself
-                    params.category = "Real Estate,Недвижимость,Квартиры,Дома,Коммерческая,Земля,Apartments,Houses,New Building,Private House";
+                    params.category = "Real Estate,Недвижимость,Квартиры,Дома,Коммерческая,Земля,Apartments,Houses,New Building,Private House,Property";
                 } else if (["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category)) {
                     // Match any subcategory of Cars OR the main category itself
-                    params.category = "Transport,Cars,Автомобили,Авто,Седан,Кроссовер,Внедорожник,Электромобиль,Dealer,Private Auto";
+                    params.category = "Transport,Cars,Автомобили,Авто,Седан,Кроссовер,Внедорожник,Электромобиль,Dealer,Private Auto,Vehicle";
                 } else if (["Электроника", "Electronics"].includes(filters.category)) {
                     params.category = "Смартфоны,Ноутбуки,Планшеты,Аксессуары,Electronics";
-                } else if (filters.subcategory) {
-                    // If explicit subcategory is selected for other categories
+                }
+
+                // If a subcategory is selected, override with specific subcategory
+                if (filters.subcategory) {
                     params.category = filters.subcategory;
-                } else {
-                    params.category = filters.category;
                 }
             }
 
