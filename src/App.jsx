@@ -87,7 +87,7 @@ function App() {
           <ShopProvider>
             <CompareProvider>
               <Toaster />
-              <Router>
+              <Router basename="/">
                 <div className="min-h-screen bg-background font-sans antialiased text-foreground">
                   <Routes>
                     {/* Auth Routes */}
@@ -96,51 +96,51 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
 
                     {/* Public Storefront */}
-                    <Route element={<RootLayout />}>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/catalog" element={<CatalogPage />} />
-                      <Route path="/marketplaces" element={<MarketplaceListing />} />
-                      <Route path="/marketplaces/:id" element={<MarketplaceDetail />} />
-                      <Route path="/compare" element={<ComparePage />} />
-                      <Route path="/cart" element={<CartPage />} />
-                      <Route path="/favorites" element={<FavoritesPage />} />
-                      <Route path="/checkout" element={<CheckoutPage />} />
-                      <Route path="/payment/success" element={<PaymentSuccess />} />
-                      <Route path="/payment/failure" element={<PaymentFailure />} />
-                      <Route path="/store/:id" element={<PartnerStorePage />} />
-                      <Route path="/wishlist/:userId" element={<SharedWishlistPage />} />
-                      <Route path="/services/analytics" element={<PriceAnalytics />} />
+                    <Route path="/" element={<RootLayout />}>
+                      <Route index element={<HomePage />} />
+                      <Route path="catalog" element={<CatalogPage />} />
+                      <Route path="marketplaces" element={<MarketplaceListing />} />
+                      <Route path="marketplaces/:id" element={<MarketplaceDetail />} />
+                      <Route path="compare" element={<ComparePage />} />
+                      <Route path="cart" element={<CartPage />} />
+                      <Route path="favorites" element={<FavoritesPage />} />
+                      <Route path="checkout" element={<CheckoutPage />} />
+                      <Route path="payment/success" element={<PaymentSuccess />} />
+                      <Route path="payment/failure" element={<PaymentFailure />} />
+                      <Route path="store/:id" element={<PartnerStorePage />} />
+                      <Route path="wishlist/:userId" element={<SharedWishlistPage />} />
+                      <Route path="services/analytics" element={<PriceAnalytics />} />
 
                       {/* Footer Routes */}
-                      <Route path="/about" element={<OurStory />} />
-                      <Route path="/careers" element={<Careers />} />
-                      <Route path="/blog" element={<Blog />} />
-                      <Route path="/blog/:id" element={<BlogDetail />} />
-                      <Route path="/help" element={<HelpFAQ />} />
-                      <Route path="/partners" element={<PartnersDevelopers />} />
+                      <Route path="about" element={<OurStory />} />
+                      <Route path="careers" element={<Careers />} />
+                      <Route path="blog" element={<Blog />} />
+                      <Route path="blog/:id" element={<BlogDetail />} />
+                      <Route path="help" element={<HelpFAQ />} />
+                      <Route path="partners" element={<PartnersDevelopers />} />
 
-                      {/* Use Dashboard Routes */}
-                      <Route path="/profile/history" element={<OrderHistoryPage />} />
-                      <Route path="/profile/browsing" element={<HistoryPage />} />
-                      <Route path="/profile/loans" element={<CreditApplicationsPage />} />
-                      <Route path="/profile/offers" element={<MyOffersPage />} />
-                      <Route path="/profile/returns" element={<MyReturnsPage />} />
-                      <Route path="/profile/wallet" element={<AutohousePayDashboard />} />
-                      <Route path="/profile/chat" element={<ChatPage />} />
-                      <Route path="/profile" element={<UserDashboard />} />
-                      <Route path="/profile/settings" element={<ProfileSettingsPage />} />
-                      <Route path="/orders" element={<OrderHistoryPage />} />
-                      <Route path="/settings" element={<ProfileSettingsPage />} />
-                      <Route path="/wallet" element={<AutohousePayDashboard />} />
-                      <Route path="/chat" element={<ChatPage />} />
+                      {/* User Dashboard Routes */}
+                      <Route path="profile/history" element={<OrderHistoryPage />} />
+                      <Route path="profile/browsing" element={<HistoryPage />} />
+                      <Route path="profile/loans" element={<CreditApplicationsPage />} />
+                      <Route path="profile/offers" element={<MyOffersPage />} />
+                      <Route path="profile/returns" element={<MyReturnsPage />} />
+                      <Route path="profile/wallet" element={<AutohousePayDashboard />} />
+                      <Route path="profile/chat" element={<ChatPage />} />
+                      <Route path="profile" element={<UserDashboard />} />
+                      <Route path="profile/settings" element={<ProfileSettingsPage />} />
+                      <Route path="orders" element={<OrderHistoryPage />} />
+                      <Route path="settings" element={<ProfileSettingsPage />} />
+                      <Route path="wallet" element={<AutohousePayDashboard />} />
+                      <Route path="chat" element={<ChatPage />} />
 
                       {/* Public Footer Routes */}
-                      <Route path="/docs" element={<Documentation />} />
-                      <Route path="/guides" element={<Guides />} />
-                      <Route path="/privacy" element={<Privacy />} />
-                      <Route path="/terms" element={<Terms />} />
-                      <Route path="/partners-dev" element={<PartnersDevelopers />} />
-                      <Route path="/contacts" element={<ContactsPage />} />
+                      <Route path="docs" element={<Documentation />} />
+                      <Route path="guides" element={<Guides />} />
+                      <Route path="privacy" element={<Privacy />} />
+                      <Route path="terms" element={<Terms />} />
+                      <Route path="partners-dev" element={<PartnersDevelopers />} />
+                      <Route path="contacts" element={<ContactsPage />} />
                     </Route>
 
                     {/* Partner/Admin Routes */}
@@ -186,6 +186,9 @@ function App() {
                     </Route>
                     <Route path="/partner" element={<Navigate to="/admin" replace />} />
                     <Route path="/cars" element={<Navigate to="/catalog?category=Transport" replace />} />
+
+                    {/* Catch all */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                   <AIChatbot />
                 </div>
