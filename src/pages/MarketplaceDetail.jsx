@@ -627,7 +627,7 @@ export function MarketplaceDetail() {
 function SpecIconItem({ icon, label, value }) {
     if (!value) return null;
     return (
-        <div className="flex flex-col items-center p-6 bg-slate-50 dark:bg-slate-800 rounded-[28px] border border-slate-100 dark:border-slate-700/50 hover:bg-white hover:shadow-xl transition-all duration-300 group">
+        <div className="flex flex-col items-center p-6 bg-slate-50 dark:bg-slate-800 rounded-[28px] border border-slate-100 dark:border-slate-700/50 hover:bg-white dark:hover:bg-slate-700 hover:shadow-xl transition-all duration-300 group">
             <div className="mb-3 transform group-hover:scale-110 transition-transform duration-300">{icon}</div>
             <div className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-[0.2em] mb-1">{label}</div>
             <div className="text-slate-900 dark:text-white font-black text-base md:text-lg leading-tight text-center">{value}</div>
