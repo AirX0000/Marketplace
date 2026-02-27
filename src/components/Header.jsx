@@ -49,8 +49,8 @@ export function Header() {
                     <Link to="/" className="flex-none flex items-center mr-4 group">
                         <div className="flex items-center font-black italic uppercase text-2xl tracking-tighter leading-none">
                             <span className="text-red-600">Aut</span>
-                            <img src="/logo-tire.png" alt="" className="h-[1.1em] w-auto -mx-0.5 mb-0.5 object-contain" />
-                            <img src="/logo-building.png" alt="" className="h-[1.2em] w-auto -mx-1 mb-1 object-contain" />
+                            <img src="/logo-tire.png" alt="" className="h-[1.1em] w-auto -mx-0.5 mb-1 object-contain" />
+                            <img src="/logo-building.png" alt="" className="h-[1.25em] w-auto -mx-1 mb-1 object-contain" />
                             <span className="text-blue-600">ouse</span>
                         </div>
                     </Link>
