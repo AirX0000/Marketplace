@@ -1,4 +1,4 @@
-const prisma = require('../prisma');
+const prisma = require('../config/database');
 const smsService = require('./sms.service');
 
 class PasswordResetService {
