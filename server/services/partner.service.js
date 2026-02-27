@@ -170,14 +170,14 @@ class PartnerService {
         return updatedItem;
     }
 
-        async getStats(userId) {
+    async getStats(userId) {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
         const listingsCount = await prisma.marketplace.count({ where: { ownerId: userId } });
-        
+
         const orderItems = await prisma.orderItem.findMany({
-            where: { 
+            where: {
                 marketplace: { ownerId: userId },
                 order: { createdAt: { gte: thirtyDaysAgo } }
             },
@@ -219,33 +219,6 @@ class PartnerService {
                 price: item.price,
                 date: item.order.createdAt
             }))
-        };
-    } });
-        const orderItems = await prisma.orderItem.findMany({
-            where: { marketplace: { ownerId: userId } },
-            include: { order: { include: { user: true } }, marketplace: true },
-            orderBy: { order: { createdAt: 'desc' } }
-        });
-
-        const totalRevenue = orderItems.reduce((acc, item) => acc + item.price, 0);
-        const totalOrders = orderItems.length;
-        const uniqueCustomers = new Set(orderItems.map(item => item.order.userId));
-        const activeUsersCount = uniqueCustomers.size;
-
-        const recentActivity = orderItems.slice(0, 5).map(item => ({
-            id: item.id,
-            productName: item.marketplace.name,
-            buyerName: item.order.user.name || "Anonymous",
-            price: item.price,
-            date: item.order.createdAt
-        }));
-
-        return {
-            listings: listingsCount,
-            revenue: totalRevenue,
-            orders: totalOrders,
-            activeUsers: activeUsersCount,
-            recentActivity
         };
     }
 
