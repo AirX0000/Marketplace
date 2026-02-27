@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Mail, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import logo from '../assets/logo.png';
 
 export function Footer() {
     const { t } = useTranslation();
@@ -56,8 +57,9 @@ export function Footer() {
                         </div>
                     </div>
                 </div>
-                <div className="mt-10 border-t border-slate-800 pt-8 text-center text-sm text-slate-400">
-                    © {new Date().getFullYear()} autohouse. {t('footer.rights')}
+                <div className="mt-10 border-t border-slate-800 pt-8 flex flex-col items-center gap-4 text-sm text-slate-400">
+                    <img src={logo} alt="Autohouse" className="h-8 w-auto opacity-80" />
+                    <p>© {new Date().getFullYear()} autohouse. {t('footer.rights')}</p>
                 </div>
             </div>
         </footer>
