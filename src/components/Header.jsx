@@ -47,12 +47,7 @@ export function Header() {
             <header className="sticky top-0 z-50 w-full border-b border-slate-200/50 dark:border-slate-800/50 glass-morphism shadow-sm">
                 <div className="container flex h-16 items-center px-4 md:px-6 gap-4">
                     <Link to="/" className="flex-none flex items-center mr-4 group">
-                        <div className="flex items-center font-black italic text-2xl tracking-tighter leading-none">
-                            <span className="text-red-600 uppercase">Aut</span>
-                            <img src="/logo-tire.png" alt="" className="h-[1.1em] w-auto -mx-1 mb-1 object-contain" />
-                            <img src="/logo-building.png" alt="" className="h-[1.25em] w-auto -mx-1.5 mb-1 object-contain" />
-                            <span className="text-blue-600 lowercase">house</span>
-                        </div>
+                        <img src="/logo-full.png" alt="Autohouse" className="h-10 md:h-12 w-auto object-contain" />
                     </Link>
 
                     {/* Catalog Button - Only for buyers */}
