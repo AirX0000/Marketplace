@@ -11,14 +11,21 @@ import { useTheme } from '../context/ThemeContext';
 export function Header() {
     const { t, i18n } = useTranslation();
     const [isCatalogOpen, setIsCatalogOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
     const { cartCount, checkAuth, user, isAuthenticated, isBuyer, isPartner, isAdmin, logout } = useShop();
     const { theme, toggleTheme } = useTheme();
 
-    // Re-check auth on mount
+    // Re-check auth on mount and handle scroll
     React.useEffect(() => {
         checkAuth();
+
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const handleSearch = (e) => {
