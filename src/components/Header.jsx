@@ -47,10 +47,12 @@ export function Header() {
             <header className="sticky top-0 z-50 w-full border-b border-slate-200/50 dark:border-slate-800/50 glass-morphism shadow-sm">
                 <div className="container flex h-16 items-center px-4 md:px-6 gap-4">
                     <Link to="/" className="flex-none flex items-center mr-4 group">
-                        <div className="flex items-center">
-                            <span className="text-2xl font-black italic uppercase text-red-600 tracking-tighter">Aut</span>
-                            <img src="/logo-icon.png" alt="" className="h-7 md:h-8 w-auto mx-0 object-contain" />
-                            <span className="text-2xl font-black italic uppercase text-blue-600 tracking-tighter">house</span>
+                        <div className="flex items-center font-black italic uppercase text-2xl tracking-tighter">
+                            <span className="text-red-600">Aut</span>
+                            <img src="/logo-tire.png" alt="" className="h-6 md:h-7 w-auto mx-0.5 object-contain" />
+                            <span className="text-blue-600">H</span>
+                            <img src="/logo-building.png" alt="" className="h-6 md:h-7 w-auto mx-0.5 object-contain" />
+                            <span className="text-blue-600">use</span>
                         </div>
                     </Link>
 
