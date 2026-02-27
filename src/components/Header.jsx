@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, User, Menu, Heart, X, Package, Sun, Moon, Globe } from 'lucide-react';
-import logo from '../assets/logo.png';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { CategoryModal } from './CategoryModal';
@@ -48,7 +47,7 @@ export function Header() {
             <header className="sticky top-0 z-50 w-full border-b border-slate-200/50 dark:border-slate-800/50 glass-morphism shadow-sm">
                 <div className="container flex h-16 items-center px-4 md:px-6 gap-4">
                     <Link to="/" className="flex-none flex items-center mr-4 group">
-                        <img src={logo} alt="Autohouse" className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
+                        <img src="/logo.png" alt="Autohouse" className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
                     </Link>
 
                     {/* Catalog Button - Only for buyers */}
