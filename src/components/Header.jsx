@@ -36,7 +36,12 @@ export function Header() {
 
     return (
         <>
-            <header className="sticky top-0 z-50 w-full border-b border-slate-200/50 dark:border-slate-800/50 glass-morphism shadow-sm">
+            <header
+                className={cn(
+                    "sticky top-0 z-[100] w-full border-b border-border bg-background/80 backdrop-blur-md transition-all duration-300",
+                    isScrolled ? "h-16 shadow-sm" : "h-20"
+                )}
+            >
                 <div className="container flex h-16 items-center px-4 md:px-6 gap-4">
                     <Link to="/" className="flex-none flex items-center mr-4 group">
                         <img src="/logo-full.png" alt="Autohouse" className="h-10 md:h-12 w-auto object-contain" />
@@ -57,13 +62,13 @@ export function Header() {
                     {(!isAuthenticated || isBuyer()) && (
                         <form onSubmit={handleSearch} className="flex-1 md:max-w-xl mx-2 md:mx-0">
                             <div className="relative w-full">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                 <input
                                     type="text"
                                     placeholder={t('common.search_placeholder')}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full h-10 pl-10 pr-4 rounded-lg border border-slate-200/50 dark:border-slate-700 bg-white/50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
+                                    className="w-full h-10 pl-10 pr-4 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
                                 />
                             </div>
                         </form>
@@ -75,16 +80,16 @@ export function Header() {
                     <div className="flex items-center gap-1">
                         <LanguageSwitcher />
 
-                        <div className="w-px h-6 bg-slate-700 mx-2 hidden md:block" />
+                        <div className="w-px h-6 bg-border mx-2 hidden md:block" />
 
                         {/* Theme Switcher */}
                         <button
                             onClick={toggleTheme}
-                            className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors mr-2 group"
+                            className="p-2 rounded-full hover:bg-muted transition-colors mr-2 group"
                             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                         >
                             {theme === 'light' ? (
-                                <Moon className="h-5 w-5 text-slate-600 group-hover:text-blue-600" />
+                                <Moon className="h-5 w-5 text-foreground group-hover:text-primary" />
                             ) : (
                                 <Sun className="h-5 w-5 text-yellow-400 group-hover:text-yellow-300" />
                             )}
@@ -94,22 +99,22 @@ export function Header() {
 
                         {!isAuthenticated ? (
                             <>
-                                <Link to="/login" className="hidden md:inline-flex h-9 px-4 items-center justify-center rounded-md text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">
+                                <Link to="/login" className="hidden md:inline-flex h-9 px-4 items-center justify-center rounded-md text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
                                     {t('common.login')}
                                 </Link>
-                                <Link to="/register" className="inline-flex h-9 px-4 items-center justify-center rounded-md text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">
+                                <Link to="/register" className="inline-flex h-9 px-4 items-center justify-center rounded-md text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
                                     {t('common.register')}
                                 </Link>
                             </>
                         ) : (
                             <>
                                 {/* Navigation icons - visible for all authenticated users */}
-                                <Link to="/favorites" className="hidden md:flex flex-col items-center justify-center h-full px-2 text-slate-300 hover:text-primary transition-colors">
+                                <Link to="/favorites" className="hidden md:flex flex-col items-center justify-center h-full px-2 text-muted-foreground hover:text-primary transition-colors">
                                     <Heart className="h-5 w-5" />
                                     <span className="text-[10px] font-medium mt-1">{t('common.wishlist', 'Избранное')}</span>
                                 </Link>
 
-                                <Link to="/cart" className="flex flex-col items-center justify-center h-full px-2 text-slate-300 hover:text-primary transition-colors">
+                                <Link to="/cart" className="flex flex-col items-center justify-center h-full px-2 text-muted-foreground hover:text-primary transition-colors">
                                     <div className="relative">
                                         <ShoppingCart className="h-5 w-5" />
                                         {cartCount > 0 && (

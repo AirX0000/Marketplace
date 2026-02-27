@@ -8,7 +8,7 @@ export function ServiceGrid() {
 
             {/* Auto */}
             <Link to="/marketplaces?category=Transport" className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105 active:scale-95">
-                <div className="w-24 h-24 md:w-32 md:h-32 bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-xl shadow-blue-500/10 flex items-center justify-center group-hover:shadow-blue-500/30 transition-all border border-slate-100 dark:border-slate-700 relative">
+                <div className="w-24 h-24 md:w-32 md:h-32 bg-card rounded-3xl overflow-hidden shadow-xl shadow-blue-500/10 flex items-center justify-center group-hover:shadow-blue-500/30 transition-all border border-border relative">
                     <img
                         src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=400"
                         alt="Cars"
@@ -23,7 +23,7 @@ export function ServiceGrid() {
 
             {/* Real Estate */}
             <Link to="/marketplaces?category=Недвижимость" className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105 active:scale-95">
-                <div className="w-24 h-24 md:w-32 md:h-32 bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-xl shadow-emerald-500/10 flex items-center justify-center group-hover:shadow-emerald-500/30 transition-all border border-slate-100 dark:border-slate-700 relative">
+                <div className="w-24 h-24 md:w-32 md:h-32 bg-card rounded-3xl overflow-hidden shadow-xl shadow-emerald-500/10 flex items-center justify-center group-hover:shadow-emerald-500/30 transition-all border border-border relative">
                     <img
                         src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=400"
                         alt="Недвижимость"

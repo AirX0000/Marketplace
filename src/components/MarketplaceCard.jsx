@@ -177,7 +177,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                className="group relative flex flex-col rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 transition-all shadow-sm hover:shadow-xl overflow-hidden"
+                className="group relative flex flex-col rounded-2xl border border-border bg-card transition-all shadow-sm hover:shadow-xl overflow-hidden"
             >
                 <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-600 p-6 relative">
                     <img
@@ -252,7 +252,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         </div>
                         <div className="flex items-center gap-1.5 text-yellow-500">
                             <Star className="h-3.5 w-3.5 fill-current" />
-                            <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{marketplace.rating ? marketplace.rating.toFixed(1) : 'Новинка'}</span>
+                            <span className="text-sm font-bold text-foreground">{marketplace.rating ? marketplace.rating.toFixed(1) : 'Новинка'}</span>
                         </div>
                     </div>
 
@@ -282,7 +282,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
 
 
                     <Link to={`/marketplaces/${marketplace.id}`} className="mb-2 block">
-                        <h3 className="line-clamp-1 text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{displayName}</h3>
+                        <h3 className="line-clamp-1 text-lg font-bold text-foreground group-hover:text-primary transition-colors">{displayName}</h3>
                     </Link>
 
                     {/* Attributes Display */}
@@ -323,7 +323,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         })()}
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-4 mt-auto">
+                    <div className="flex items-center justify-between border-t border-border pt-4 mt-auto">
                         <div className="flex flex-col gap-0.5">
                             {marketplace.discount > 0 && (
                                 <div className="flex items-center gap-2">
@@ -332,7 +332,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                     </span>
                                 </div>
                             )}
-                            <div className="font-extrabold text-slate-900 dark:text-white text-xl tracking-tight">
+                            <div className="font-extrabold text-foreground text-xl tracking-tight">
                                 {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
                             </div>
                             {["Седан", "Кроссовер", "Внедорожник", "Электромобиль", "Cars", "Transport"].includes(marketplace.category) && (
