@@ -105,15 +105,97 @@ export function Header() {
                         <div className="w-px h-6 bg-border mx-2 hidden md:block" />
 
                         {/* User Profile / Login */}
-                        <Link
-                            to={isAuthenticated ? (isAdmin() ? "/admin" : "/profile") : "/login"}
-                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors group"
-                        >
-                            <User className="h-5 w-5 text-foreground group-hover:text-primary" />
-                            <span className="hidden lg:block text-sm font-medium text-foreground group-hover:text-primary">
-                                {isAuthenticated ? (user?.name || t('common.profile')) : t('common.login')}
-                            </span>
-                        </Link>
+                        {isAuthenticated ? (
+                            <div className="relative group">
+                                <button className="flex items-center gap-2 p-2 rounded-xl hover:bg-muted transition-colors">
+                                    {user?.avatar ? (
+                                        <img src={user.avatar} alt="avatar" className="h-8 w-8 rounded-full object-cover border border-border" />
+                                    ) : (
+                                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                                            {user?.name ? user.name[0].toUpperCase() : <User size={16} />}
+                                        </div>
+                                    )}
+                                    <div className="flex flex-col items-start hidden lg:flex text-foreground">
+                                        <span className="text-sm font-bold leading-none">
+                                            {user?.name || t('common.profile')}
+                                        </span>
+                                        <span className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                                            {isPartner() ? t('common.partner') : isAdmin() ? t('common.admin') : t('common.profile')}
+                                        </span>
+                                    </div>
+                                </button>
+
+                                {/* Dropdown */}
+                                <div className="absolute top-11 right-0 w-56 bg-card border border-border shadow-lg rounded-xl overflow-hidden hidden group-hover:block animate-in fade-in zoom-in-95 duration-200 z-50">
+                                    <div className="p-3 border-b border-border bg-muted/30 flex items-center gap-3">
+                                        {user?.avatar ? (
+                                            <img src={user.avatar} alt="avatar" className="h-10 w-10 rounded-full object-cover border-2 border-background shadow" />
+                                        ) : (
+                                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow">
+                                                {user?.name ? user.name[0].toUpperCase() : '?'}
+                                            </div>
+                                        )}
+                                        <div className="overflow-hidden">
+                                            <div className="text-sm font-bold text-foreground truncate">{user?.name || 'Мой аккаунт'}</div>
+                                            <div className="text-xs text-muted-foreground truncate">{user?.phone || ''}</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Role-specific menu items */}
+                                    {isPartner() && (
+                                        <Link to="/partner" className="block px-4 py-3 text-sm hover:bg-muted transition-colors border-b border-border font-medium text-foreground">
+                                            📊 Мой Магазин
+                                        </Link>
+                                    )}
+
+                                    {isAdmin() && (
+                                        <Link to="/admin" className="block px-4 py-3 text-sm hover:bg-muted transition-colors border-b border-border font-medium text-foreground">
+                                            ⚙️ Панель Управления
+                                        </Link>
+                                    )}
+
+                                    {isBuyer() && (
+                                        <>
+                                            <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
+                                                Личный Кабинет
+                                            </Link>
+                                            <Link to="/orders" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
+                                                Мои заказы
+                                            </Link>
+                                            <Link to="/chat" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
+                                                Сообщения
+                                            </Link>
+                                            <Link to="/profile/offers" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
+                                                Мои предложения
+                                            </Link>
+                                            <Link to="/favorites" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
+                                                Список желаний
+                                            </Link>
+                                        </>
+                                    )}
+
+                                    <Link to="/settings" className="block px-4 py-2 text-sm hover:bg-muted transition-colors border-t border-border text-foreground">
+                                        Настройки
+                                    </Link>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="block w-full text-left px-4 py-2 text-sm text-red-600 font-medium hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/20"
+                                    >
+                                        {t('common.logout')}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <Link
+                                to="/login"
+                                className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors group"
+                            >
+                                <User className="h-5 w-5 text-foreground group-hover:text-primary" />
+                                <span className="hidden lg:block text-sm font-medium text-foreground group-hover:text-primary">
+                                    {t('common.login')}
+                                </span>
+                            </Link>
+                        )}
 
                         {/* Cart - Only for buyers */}
                         {(!isAuthenticated || isBuyer()) && (
