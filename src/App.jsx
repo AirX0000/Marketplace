@@ -8,7 +8,6 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Auth Pages
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
-import { Navigate } from "react-router-dom";
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 
