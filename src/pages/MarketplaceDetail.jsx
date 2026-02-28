@@ -370,7 +370,6 @@ export function MarketplaceDetail() {
                                 <div className="mt-10 pt-10 border-t border-slate-100 dark:border-slate-800">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6">Способы оплаты</h3>
                                     <div className="flex flex-wrap items-center gap-6 opacity-60">
-                                        <img src="https://logobank.uz:8005/static/logos_png/payme-logo-uz-600.png" alt="Payme" className="h-6 object-contain" />
                                         <img src="https://logobank.uz:8005/static/logos_png/uzcard-logo-uz-600.png" alt="Uzcard" className="h-6 object-contain" />
                                         <img src="https://logobank.uz:8005/static/logos_png/visa-0-logo-uz-600.png" alt="Visa" className="h-4 object-contain opacity-80" />
                                         <img src="https://logobank.uz:8005/static/logos_png/mastercard-0-logo-uz-600.png" alt="Mastercard" className="h-6 object-contain" />
