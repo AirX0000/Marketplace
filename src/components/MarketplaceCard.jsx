@@ -334,7 +334,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
                             </div>
                             {["Седан", "Кроссовер", "Внедорожник", "Электромобиль", "Cars", "Transport"].includes(marketplace.category) && (
-                                <div className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded w-fit">
+                                <div className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded w-fit">
                                     От {(Math.round(((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100)) / 60)).toLocaleString()} сум/мес
                                 </div>
                             )}
