@@ -17,7 +17,7 @@ export function ChatPage() {
 
     useEffect(() => {
         if (!user) return;
-        
+
         // Connect to Socket
         const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || window.location.origin;
         socketRef.current = io(socketUrl, {
@@ -29,10 +29,10 @@ export function ChatPage() {
                 setMessages(prev => [...prev, message]);
             }
             // Update rooms list last message
-            setRooms(prev => prev.map(r => 
-                r.id === message.chatRoomId 
-                ? { ...r, lastMessage: message.content, updatedAt: message.createdAt }
-                : r
+            setRooms(prev => prev.map(r =>
+                r.id === message.chatRoomId
+                    ? { ...r, lastMessage: message.content, updatedAt: message.createdAt }
+                    : r
             ));
         });
 
@@ -86,42 +86,42 @@ export function ChatPage() {
         setNewMessage('');
     };
 
-    if (!user) return <div className="p-12 text-center">Войдите в систему для доступа к чатам</div>;
+    if (!user) return <div className="p-12 text-center text-foreground">Войдите в систему для доступа к чатам</div>;
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
-            <div className="bg-white rounded-[32px] shadow-2xl border border-slate-100 overflow-hidden flex h-[700px]">
+            <div className="bg-card rounded-[32px] shadow-2xl border border-border overflow-hidden flex h-[700px]">
                 {/* Sidebar */}
-                <div className="w-80 border-r border-slate-100 flex flex-col bg-slate-50/50">
-                    <div className="p-6 border-b border-slate-100 bg-white">
-                        <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                <div className="w-80 border-r border-border flex flex-col bg-muted/30">
+                    <div className="p-6 border-b border-border bg-card">
+                        <h2 className="text-xl font-black text-foreground flex items-center gap-2">
                             <MessageSquare className="w-5 h-5 text-primary" /> Сообщения
                         </h2>
                     </div>
                     <div className="flex-1 overflow-y-auto">
                         {rooms.length === 0 && !loading && (
-                            <div className="p-8 text-center text-slate-400 text-sm">Нет активных чатов</div>
+                            <div className="p-8 text-center text-muted-foreground text-sm">Нет активных чатов</div>
                         )}
                         {rooms.map(room => (
                             <button
                                 key={room.id}
                                 onClick={() => handleSelectRoom(room)}
-                                className={`w-full p-4 flex gap-3 hover:bg-white transition-all text-left border-b border-slate-100/50 ${activeRoom?.id === room.id ? 'bg-white shadow-sm border-l-4 border-l-primary' : ''}`}
+                                className={`w-full p-4 flex gap-3 hover:bg-muted/50 transition-all text-left border-b border-border ${activeRoom?.id === room.id ? 'bg-muted shadow-inner border-l-4 border-l-primary' : ''}`}
                             >
-                                <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0">
+                                <div className="w-12 h-12 rounded-full overflow-hidden bg-muted shrink-0">
                                     {room.partner?.avatar ? (
                                         <img src={room.partner.avatar} alt="" className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                                             {room.partner?.role === 'PARTNER' ? <Store className="w-6 h-6" /> : <UserIcon className="w-6 h-6" />}
                                         </div>
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-slate-900 truncate">
+                                    <div className="font-bold text-foreground truncate">
                                         {room.partner?.storeName || room.partner?.name || "Пользователь"}
                                     </div>
-                                    <div className="text-xs text-slate-400 truncate mt-0.5">{room.lastMessage || "Начните чат..."}</div>
+                                    <div className="text-xs text-muted-foreground truncate mt-0.5">{room.lastMessage || "Начните чат..."}</div>
                                 </div>
                             </button>
                         ))}
@@ -129,25 +129,25 @@ export function ChatPage() {
                 </div>
 
                 {/* Message Window */}
-                <div className="flex-1 flex flex-col bg-white">
+                <div className="flex-1 flex flex-col bg-background">
                     {activeRoom ? (
                         <>
-                            <div className="p-4 border-b border-slate-100 flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100">
+                            <div className="p-4 border-b border-border flex items-center gap-3 bg-card">
+                                <div className="w-10 h-10 rounded-full overflow-hidden bg-muted">
                                     {activeRoom.partner?.avatar ? (
                                         <img src={activeRoom.partner.avatar} alt="" className="w-full h-full object-cover" />
-                                    ) : <div className="w-full h-full flex items-center justify-center text-slate-400"><UserIcon className="w-5 h-5" /></div>}
+                                    ) : <div className="w-full h-full flex items-center justify-center text-muted-foreground"><UserIcon className="w-5 h-5" /></div>}
                                 </div>
                                 <div>
-                                    <div className="font-bold text-slate-900">{activeRoom.partner?.storeName || activeRoom.partner?.name}</div>
+                                    <div className="font-bold text-foreground">{activeRoom.partner?.storeName || activeRoom.partner?.name}</div>
                                     <div className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">Online</div>
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/30">
+                            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-muted/10">
                                 {messages.map((msg) => (
                                     <div key={msg.id} className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[70%] p-4 rounded-2xl shadow-sm text-sm ${msg.senderId === user.id ? 'bg-primary text-white rounded-tr-none' : 'bg-white text-slate-700 rounded-tl-none border border-slate-100'}`}>
+                                        <div className={`max-w-[70%] p-4 rounded-2xl shadow-sm text-sm ${msg.senderId === user.id ? 'bg-primary text-primary-foreground rounded-tr-none' : 'bg-card text-foreground rounded-tl-none border border-border'}`}>
                                             {msg.content}
                                             <div className={`text-[10px] mt-1 opacity-60 ${msg.senderId === user.id ? 'text-right' : 'text-left'}`}>
                                                 {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -158,24 +158,24 @@ export function ChatPage() {
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-100 flex gap-3">
+                            <form onSubmit={handleSendMessage} className="p-4 border-t border-border flex gap-3 bg-card">
                                 <input
                                     type="text"
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
                                     placeholder="Введите сообщение..."
-                                    className="flex-1 bg-slate-50 border border-slate-100 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                    className="flex-1 bg-muted border border-border text-foreground rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
                                 />
                                 <button
                                     type="submit"
-                                    className="bg-primary text-white p-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg"
+                                    className="bg-primary text-primary-foreground p-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg"
                                 >
                                     <Send className="w-5 h-5" />
                                 </button>
                             </form>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-slate-300">
+                        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
                             <MessageSquare className="w-16 h-16 mb-4 opacity-10" />
                             <p className="font-bold">Выберите чат, чтобы начать общение</p>
                         </div>
