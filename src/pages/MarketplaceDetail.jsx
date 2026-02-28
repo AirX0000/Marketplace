@@ -370,10 +370,10 @@ export function MarketplaceDetail() {
                                 <div className="mt-10 pt-10 border-t border-slate-100 dark:border-slate-800">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6">Способы оплаты</h3>
                                     <div className="flex flex-wrap items-center gap-6 opacity-60">
-                                        <img src="https://cdn.payme.uz/logo/payme_color.svg" alt="Payme" className="h-6 object-contain" />
-                                        <img src="https://mpe.uz/images/click-logo.png" alt="Click" className="h-6 object-contain" />
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa" className="h-4 object-contain" />
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard" className="h-6 object-contain" />
+                                        <img src="https://logobank.uz:8005/static/logos_png/payme-logo-uz-600.png" alt="Payme" className="h-6 object-contain" />
+                                        <img src="https://logobank.uz:8005/static/logos_png/uzcard-logo-uz-600.png" alt="Uzcard" className="h-6 object-contain" />
+                                        <img src="https://logobank.uz:8005/static/logos_png/visa-0-logo-uz-600.png" alt="Visa" className="h-4 object-contain opacity-80" />
+                                        <img src="https://logobank.uz:8005/static/logos_png/mastercard-0-logo-uz-600.png" alt="Mastercard" className="h-6 object-contain" />
                                         <div className="h-6 w-px bg-slate-200" />
                                         <span className="font-bold text-slate-400 text-xs">Direct Bank Transfer</span>
                                     </div>
