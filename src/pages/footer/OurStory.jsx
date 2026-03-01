@@ -8,7 +8,7 @@ export function OurStory() {
                 <h1 className="text-4xl font-extrabold mb-6 tracking-tight text-slate-900 dark:text-white">Наша История</h1>
                 <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
                     <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 text-center md:text-left">
-                        Расширяем возможности цифровой коммерции через бесшовные интеграции.
+                        Делаем процесс покупки и продажи автомобилей и недвижимости прозрачным и безопасным.
                     </p>
 
                     <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -18,14 +18,14 @@ export function OurStory() {
                         <div className="flex flex-col justify-center space-y-4">
                             <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Начало</h3>
                             <p className="text-slate-600 dark:text-slate-300">
-                                autohouse начался с простой идеи: связывать бизнесы не должно быть сложно. В 2024 году наши основатели увидели пробел на рынке для единой платформы, где разработчики и компании могли бы легко находить, покупать и управлять цифровыми интеграциями.
+                                autohouse начался с простой идеи: поиск идеального автомобиля или дома не должен быть сложным. В 2026 году наши основатели увидели потребность в единой и безопасной платформе, где продавцы и покупатели могли бы легко находить друг друга и совершать прозрачные сделки.
                             </p>
                         </div>
                     </div>
 
                     <h2 className="text-2xl font-bold mt-12 mb-4 text-slate-900 dark:text-white">Наша Миссия</h2>
                     <p className="text-slate-600 dark:text-slate-300 mb-6">
-                        Ускорить цифровую трансформацию, предоставляя надежную, безопасную и эффективную площадку для программных интеграций. Мы верим, что устраняя трения в подключении, мы открываем инновации.
+                        Стать самым надежным маркетплейсом автомобилей и недвижимости, предоставляя удобную площадку как для частных лиц, так и для бизнеса. Мы верим, что открытость информации и прямая связь между участниками рынка делают любые сделки проще и выгоднее.
                     </p>
 
                     <div className="grid sm:grid-cols-3 gap-6 mt-12 text-center">
