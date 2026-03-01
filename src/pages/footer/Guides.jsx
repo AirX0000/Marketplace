@@ -1,18 +1,27 @@
 import React, { useState } from 'react';
 import { Search, Book, Code, ShoppingBag, Truck, DollarSign, Settings, ChevronRight, ChevronDown, FileText } from 'lucide-react';
 import { ContentPage } from '../../components/ContentPage';
+import { useAuth } from '../../context/AuthContext';
 
 export function Guides() {
+    const { user } = useAuth();
     const [searchTerm, setSearchTerm] = useState("");
     const [activeCategory, setActiveCategory] = useState("all");
     const [expandedGuide, setExpandedGuide] = useState(null);
 
-    const categories = [
+    const allCategories = [
         { id: "all", label: "Все", icon: Book },
         { id: "buyer", label: "Покупателям", icon: ShoppingBag },
         { id: "partner", label: "Партнерам", icon: DollarSign },
         { id: "dev", label: "Разработчикам", icon: Code },
     ];
+
+    const categories = allCategories.filter(cat => {
+        if (cat.id === "dev") {
+            return user?.role === "ADMIN" || user?.role === "SUPERADMIN";
+        }
+        return true;
+    });
 
     const guides = [
         {
