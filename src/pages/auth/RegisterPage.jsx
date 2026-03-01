@@ -46,7 +46,7 @@ export function RegisterPage() {
     const role = watch("role");
 
     const onSubmit = async (data) => {
-        if (!isVerified) return toast.error("Подтвердите телефон через СМС");
+        if (!isVerified) return notify.error("Подтвердите телефон через СМС");
         setLoading(true);
         setError("");
         try {
