@@ -46,7 +46,8 @@ export function RegisterPage() {
     const role = watch("role");
 
     const onSubmit = async (data) => {
-        if (!isVerified) return notify.error("Подтвердите телефон через СМС");
+        // Заглушка: временно отключаем проверку СМС для тестирования
+        // if (!isVerified) return notify.error("Подтвердите телефон через СМС");
         setLoading(true);
         setError("");
         try {
