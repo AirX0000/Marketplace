@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Search, Book, Code, ShoppingBag, Truck, DollarSign, Settings, ChevronRight, ChevronDown, FileText } from 'lucide-react';
 import { ContentPage } from '../../components/ContentPage';
-import { useAuth } from '../../context/AuthContext';
 
 export function Guides() {
-    const { user } = useAuth();
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
     const [searchTerm, setSearchTerm] = useState("");
     const [activeCategory, setActiveCategory] = useState("all");
     const [expandedGuide, setExpandedGuide] = useState(null);
