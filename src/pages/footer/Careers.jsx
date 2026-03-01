@@ -32,8 +32,8 @@ export function Careers() {
     return (
         <div className="container py-12 px-4 md:px-6">
             <div className="text-center max-w-2xl mx-auto mb-16">
-                <h1 className="text-4xl font-extrabold mb-4 text-slate-900">Присоединяйтесь к команде autohouse</h1>
-                <p className="text-xl text-slate-600">
+                <h1 className="text-4xl font-extrabold mb-4 text-slate-900 dark:text-white">Присоединяйтесь к команде autohouse</h1>
+                <p className="text-xl text-slate-600 dark:text-slate-300">
                     Мы строим инфраструктуру для следующего поколения цифровой коммерции. Создавайте с нами.
                 </p>
             </div>
@@ -56,13 +56,13 @@ export function Careers() {
                             onClick={() => toggleJob(job.id)}
                             className={`group rounded-xl border transition-all cursor-pointer overflow-hidden ${expandedId === job.id
                                 ? 'border-emerald-500 bg-emerald-50/10 shadow-md'
-                                : 'border-slate-200 bg-white hover:border-emerald-500 hover:shadow-sm'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-card hover:border-emerald-500 hover:shadow-sm'
                                 }`}
                         >
                             <div className="p-6 flex items-center justify-between">
                                 <div>
-                                    <h3 className="text-lg font-bold group-hover:text-emerald-600 transition-colors text-slate-900">{job.title}</h3>
-                                    <div className="flex gap-4 mt-2 text-sm text-slate-600">
+                                    <h3 className="text-lg font-bold group-hover:text-emerald-600 transition-colors text-slate-900 dark:text-white">{job.title}</h3>
+                                    <div className="flex gap-4 mt-2 text-sm text-slate-600 dark:text-slate-300">
                                         <span>{job.department}</span>
                                         <span>•</span>
                                         <span>{job.type}</span>
@@ -78,12 +78,12 @@ export function Careers() {
                             {expandedId === job.id && (
                                 <div className="px-6 pb-6 pt-0 animate-in slide-in-from-top-2 fade-in duration-200 cursor-default" onClick={e => e.stopPropagation()}>
                                     <hr className="mb-4 border-slate-100" />
-                                    <div className="prose prose-sm max-w-none text-slate-600">
+                                    <div className="prose prose-sm dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
                                         <p className="mb-4">{job.description || "Описание вакансии временно недоступно."}</p>
 
                                         {job.requirements && job.requirements.length > 0 && (
                                             <>
-                                                <h4 className="font-semibold text-slate-900 mb-2">Требования:</h4>
+                                                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Требования:</h4>
                                                 <ul className="list-disc pl-4 space-y-1 mb-6">
                                                     {job.requirements.map((req, idx) => (
                                                         <li key={idx}>{req}</li>
@@ -107,10 +107,10 @@ export function Careers() {
             )}
 
             <div className="mt-16 text-center">
-                <p className="text-slate-600 mb-4">Не нашли подходящую вакансию?</p>
+                <p className="text-slate-600 dark:text-slate-300 mb-4">Не нашли подходящую вакансию?</p>
                 <button
                     onClick={() => handleApply('General Application')}
-                    className="px-6 py-2 rounded-lg bg-slate-100 text-slate-900 font-bold hover:bg-slate-200 transition-colors"
+                    className="px-6 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                 >
                     Отправьте нам резюме
                 </button>

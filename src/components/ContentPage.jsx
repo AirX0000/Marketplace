@@ -27,9 +27,9 @@ export function ContentPage({ slug, defaultTitle, children }) {
     if (data && data.content && data.content.trim().length > 0) {
         return (
             <div className="container py-12 px-4 md:px-6 max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold mb-6 text-slate-900">{data.title || defaultTitle}</h1>
+                <h1 className="text-3xl font-bold mb-6 text-slate-900 dark:text-white">{data.title || defaultTitle}</h1>
                 <div
-                    className="prose dark:prose-invert max-w-none prose-headings:text-slate-900 text-slate-600 prose-a:text-emerald-600"
+                    className="prose dark:prose-invert max-w-none prose-headings:text-slate-900 dark:prose-headings:text-white text-slate-600 dark:text-slate-300 prose-a:text-emerald-600 dark:prose-a:text-emerald-400"
                     dangerouslySetInnerHTML={{ __html: data.content }}
                 />
             </div>
