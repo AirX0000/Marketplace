@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MOCK_POSTS } from './Blog';

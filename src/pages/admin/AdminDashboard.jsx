@@ -73,6 +73,7 @@ export function AdminDashboard() {
     }
 
     const isAdmin = user?.role === 'ADMIN';
+    const isPartner = user?.role === 'PARTNER' || user?.role === 'ADMIN';
 
     if (error) {
         return (
@@ -97,10 +98,10 @@ export function AdminDashboard() {
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">
-                        {isAdmin ? 'Панель Администратора autohouse' : t('admin.partner_dashboard_title', 'Панель Управления Магазина')}
+                        {isAdmin ? 'Панель Администратора autohouse' : isPartner ? t('admin.partner_dashboard_title', 'Панель Управления Магазина') : 'Мои Объявления'}
                     </h1>
                     <p className="text-slate-700">
-                        {isAdmin ? 'Обзор показателей всей платформы.' : t('admin.partner_dashboard_subtitle', 'Обзор показателей вашего магазина за последние 30 дней.')}
+                        {isAdmin ? 'Обзор показателей всей платформы.' : isPartner ? t('admin.partner_dashboard_subtitle', 'Обзор показателей вашего магазина за последние 30 дней.') : 'Статистика ваших объявлений и продаж.'}
                     </p>
                 </div>
             </div>

@@ -12,6 +12,7 @@ export function AdminLayout() {
     const { t, i18n } = useTranslation();
     const isActive = (path) => location.pathname === path;
     const isAdmin = user?.role === 'ADMIN';
+    const isPartner = user?.role === 'PARTNER' || user?.role === 'ADMIN';
 
     // Force Russian for Admin if they happen to have it switched
     useEffect(() => {
@@ -57,7 +58,7 @@ export function AdminLayout() {
                     </Link>
 
                     {/* ORDERS (PARTNER ONLY) */}
-                    {!isAdmin && (
+                    {isPartner && !isAdmin && (
                         <>
                             <Link
                                 to="/admin/orders"
@@ -151,7 +152,7 @@ export function AdminLayout() {
                     )}
 
                     {/* OFFERS (PARTNER ONLY) */}
-                    {!isAdmin && (
+                    {isPartner && !isAdmin && (
                         <Link
                             to="/admin/offers"
                             className={cn(
@@ -165,16 +166,18 @@ export function AdminLayout() {
                     )}
 
                     {/* Shared: Finance */}
-                    <Link
-                        to="/admin/finance"
-                        className={cn(
-                            "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                            isActive('/admin/finance') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                        )}
-                    >
-                        <BadgeDollarSign className="mr-3 h-5 w-5" />
-                        {t('admin.finance', 'Финансы')}
-                    </Link>
+                    {isPartner && (
+                        <Link
+                            to="/admin/finance"
+                            className={cn(
+                                "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                isActive('/admin/finance') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                            )}
+                        >
+                            <BadgeDollarSign className="mr-3 h-5 w-5" />
+                            {t('admin.finance', 'Финансы')}
+                        </Link>
+                    )}
 
                     {/* CMS Section (Admin mostly) */}
                     <div className="pt-4 pb-2 px-4">

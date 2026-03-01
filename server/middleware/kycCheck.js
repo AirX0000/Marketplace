@@ -10,8 +10,8 @@ const kycCheck = async (req, res, next) => {
             return res.status(401).json({ error: "User not found" });
         }
 
-        if (user.role !== 'PARTNER' && user.role !== 'ADMIN') {
-            return res.status(403).json({ error: "Only partners can perform this action" });
+        if (user.role !== 'USER' && user.role !== 'PARTNER' && user.role !== 'ADMIN') {
+            return res.status(403).json({ error: "Only registered users can perform this action" });
         }
 
         if (user.role === 'PARTNER' && user.kycStatus !== 'APPROVED') {

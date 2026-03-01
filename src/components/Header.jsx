@@ -159,6 +159,9 @@ export function Header() {
                                             <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
                                                 Личный Кабинет
                                             </Link>
+                                            <Link to="/admin/listings" className="block px-4 py-2 text-sm hover:bg-muted font-bold transition-colors text-primary">
+                                                Мои объявления
+                                            </Link>
                                             <Link to="/orders" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
                                                 Мои заказы
                                             </Link>
