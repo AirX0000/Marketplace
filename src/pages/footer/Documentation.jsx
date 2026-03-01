@@ -10,22 +10,22 @@ export function Documentation() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-card hover:border-emerald-500 transition-colors cursor-pointer shadow-sm">
+                <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-500 transition-colors cursor-pointer shadow-sm">
                     <Book className="h-8 w-8 text-emerald-600 mb-4" />
                     <h3 className="font-bold mb-2 text-slate-900 dark:text-white">Начало работы</h3>
                     <p className="text-sm text-slate-600 dark:text-slate-300">Руководства по быстрому старту для всех платформ и языков.</p>
                 </div>
-                <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-card hover:border-emerald-500 transition-colors cursor-pointer shadow-sm">
+                <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-500 transition-colors cursor-pointer shadow-sm">
                     <Code className="h-8 w-8 text-emerald-600 mb-4" />
                     <h3 className="font-bold mb-2 text-slate-900 dark:text-white">Справочник API</h3>
                     <p className="text-sm text-slate-600 dark:text-slate-300">Подробная документация конечных точек и схем.</p>
                 </div>
-                <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-card hover:border-emerald-500 transition-colors cursor-pointer shadow-sm">
+                <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-500 transition-colors cursor-pointer shadow-sm">
                     <Terminal className="h-8 w-8 text-emerald-600 mb-4" />
                     <h3 className="font-bold mb-2 text-slate-900 dark:text-white">SDK и Библиотеки</h3>
                     <p className="text-sm text-slate-600 dark:text-slate-300">Официальные библиотеки для Node, Python и Go.</p>
                 </div>
-                <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-card hover:border-emerald-500 transition-colors cursor-pointer shadow-sm">
+                <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-500 transition-colors cursor-pointer shadow-sm">
                     <FileText className="h-8 w-8 text-emerald-600 mb-4" />
                     <h3 className="font-bold mb-2 text-slate-900 dark:text-white">Руководства</h3>
                     <p className="text-sm text-slate-600 dark:text-slate-300">Пошаговые учебники для распространенных случаев использования.</p>
