@@ -6,7 +6,7 @@ console.log('🔹 [MarketplaceService] Database required.');
 class MarketplaceService {
     async getAllListings(filters) {
         const {
-            category, minPrice, maxPrice, region, sort, search, isFeatured,
+            category, minPrice, maxPrice, region, sort, search, isFeatured, ids,
             // Car Filters
             minYear, maxYear,
             minMileage, maxMileage,
@@ -42,6 +42,10 @@ class MarketplaceService {
 
         if (isFeatured === 'true' || isFeatured === true) {
             where.isFeatured = true;
+        }
+
+        if (ids) {
+            where.id = { in: ids.split(',') };
         }
 
         if (minPrice || maxPrice) {
