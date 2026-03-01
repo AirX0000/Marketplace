@@ -26,7 +26,7 @@ export function Careers() {
     };
 
     const handleApply = (title) => {
-        alert(`Спасибо за интерес к вакансии "${title || 'General'}"! \nПожалуйста, отправьте ваше резюме на hr@autohouse.uz`);
+        window.location.href = `mailto:hr@autohouse.uz?subject=Резюме на вакансию: ${title || 'General Application'}`;
     };
 
     return (
@@ -81,7 +81,7 @@ export function Careers() {
                                     <div className="prose prose-sm dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
                                         <p className="mb-4">{job.description || "Описание вакансии временно недоступно."}</p>
 
-                                        {job.requirements && job.requirements.length > 0 && (
+                                        {job.requirements && Array.isArray(job.requirements) && job.requirements.length > 0 ? (
                                             <>
                                                 <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Требования:</h4>
                                                 <ul className="list-disc pl-4 space-y-1 mb-6">
@@ -90,7 +90,12 @@ export function Careers() {
                                                     ))}
                                                 </ul>
                                             </>
-                                        )}
+                                        ) : job.requirements && typeof job.requirements === 'string' && job.requirements.trim() !== '' ? (
+                                            <div className="mb-6 whitespace-pre-wrap">
+                                                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Требования:</h4>
+                                                <p>{job.requirements}</p>
+                                            </div>
+                                        ) : null}
 
                                         <button
                                             onClick={() => handleApply(job.title)}

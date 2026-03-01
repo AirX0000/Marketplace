@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Clock } from 'lucide-react';
+import { api } from '../../lib/api';
 
 export const MOCK_POSTS = [
     {
@@ -55,6 +56,24 @@ export const MOCK_POSTS = [
 ];
 
 export function Blog() {
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadPosts() {
+            try {
+                const data = await api.getBlogPosts();
+                setPosts(data.filter(p => p.isPublished)); // Only show published ones
+            } catch (error) {
+                console.error("Failed to load blog posts:", error);
+                setPosts(MOCK_POSTS); // Fallback to mock if API fails
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadPosts();
+    }, []);
+
     return (
         <div className="container py-12 px-4 md:px-6 animate-in fade-in duration-500">
             <div className="text-center max-w-2xl mx-auto mb-16">
@@ -67,11 +86,20 @@ export function Blog() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {MOCK_POSTS.map((post) => (
+                {loading ? (
+                    // Loading Skeletons
+                    [...Array(3)].map((_, i) => (
+                        <div key={`sk-${i}`} className="h-96 bg-slate-100 animate-pulse rounded-2xl border border-slate-200"></div>
+                    ))
+                ) : posts.length === 0 ? (
+                    <div className="col-span-full justify-center text-center py-20 text-slate-500">
+                        Пока нет опубликованных статей. Ожидайте обновления!
+                    </div>
+                ) : posts.map((post) => (
                     <Link key={post.id} to={`/blog/${post.id}`} className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                         <div className="relative h-56 overflow-hidden">
                             <span className="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-slate-900 z-10 shadow-sm uppercase tracking-wide">
-                                {post.category}
+                                {post.category || 'Статья'}
                             </span>
                             <img
                                 src={post.image}
@@ -81,8 +109,8 @@ export function Blog() {
                         </div>
                         <div className="p-6 flex-1 flex flex-col">
                             <div className="flex items-center gap-4 text-xs font-medium text-slate-400 mb-4 uppercase tracking-wider">
-                                <span className="flex items-center gap-1"><Calendar size={14} /> {post.date}</span>
-                                <span className="flex items-center gap-1"><Clock size={14} /> {post.readTime}</span>
+                                <span className="flex items-center gap-1"><Calendar size={14} /> {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Скоро'}</span>
+                                <span className="flex items-center gap-1"><Clock size={14} /> {post.readTime || '5 мин'}</span>
                             </div>
                             <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                                 {post.title}

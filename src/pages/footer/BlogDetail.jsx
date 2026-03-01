@@ -2,16 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MOCK_POSTS } from './Blog';
 import { Calendar, User, Clock, ArrowLeft, Facebook, Twitter, Linkedin, Share2 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { api } from '../../lib/api';
 
 export function BlogDetail() {
     const { id } = useParams();
     const [post, setPost] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Simulate fetch
-        const found = MOCK_POSTS.find(p => p.id === parseInt(id));
-        setPost(found);
+        async function loadPost() {
+            setLoading(true);
+            try {
+                const data = await api.getBlogPost(id);
+                setPost(data);
+            } catch (error) {
+                console.error("Failed to load blog post", error);
+                const found = MOCK_POSTS.find(p => p.id === parseInt(id));
+                setPost(found || null);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadPost();
     }, [id]);
 
     const handleShare = () => {
@@ -19,7 +31,8 @@ export function BlogDetail() {
         toast.success("Ссылка скопирована!");
     };
 
-    if (!post) return <div className="text-center py-20">Загрузка...</div>;
+    if (loading) return <div className="text-center py-20 flex justify-center"><div className="h-10 w-10 border-4 border-primary border-t-white rounded-full animate-spin"></div></div>;
+    if (!post) return <div className="text-center py-20 text-xl font-bold text-slate-700">Статья не найдена</div>;
 
     return (
         <article className="min-h-screen bg-white">
@@ -38,10 +51,10 @@ export function BlogDetail() {
                         </Link>
                         <div className="flex items-center gap-3 mb-4">
                             <span className="px-3 py-1 bg-primary text-white text-xs font-bold rounded-full uppercase tracking-wider">
-                                {post.category}
+                                {post.category || 'Статья'}
                             </span>
                             <span className="text-white/80 text-sm font-medium flex items-center gap-2">
-                                <Clock size={14} /> {post.readTime} чтения
+                                <Clock size={14} /> {post.readTime || '5 мин'} чтения
                             </span>
                         </div>
                         <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white max-w-4xl leading-tight">
@@ -68,7 +81,7 @@ export function BlogDetail() {
                             </div>
                             <div className="text-sm text-slate-500 mb-6">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Calendar size={14} /> {post.date}
+                                    <Calendar size={14} /> {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : post.date || ''}
                                 </div>
                             </div>
                             <div className="border-t border-slate-200 pt-6">
@@ -95,17 +108,16 @@ export function BlogDetail() {
                             dangerouslySetInnerHTML={{ __html: post.content }} // In real app, sanitize this!
                         />
 
-                        {/* Tags or Footer actions */}
                         <div className="mt-12 pt-8 border-t border-slate-100">
                             <h3 className="text-2xl font-bold mb-6">Похожие статьи</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {MOCK_POSTS.filter(p => p.id !== post.id).slice(0, 2).map((related) => (
+                                {MOCK_POSTS.filter(p => String(p.id) !== String(post.id)).slice(0, 2).map((related) => (
                                     <Link key={related.id} to={`/blog/${related.id}`} className="group flex items-start gap-4">
                                         <div className="h-24 w-24 rounded-lg overflow-hidden shrink-0">
                                             <img src={related.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                                         </div>
                                         <div>
-                                            <div className="text-xs font-bold text-primary mb-1 uppercase">{related.category}</div>
+                                            <div className="text-xs font-bold text-primary mb-1 uppercase">{related.category || 'Статья'}</div>
                                             <h4 className="font-bold text-slate-900 leading-tight group-hover:text-primary transition-colors">
                                                 {related.title}
                                             </h4>
