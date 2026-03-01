@@ -121,7 +121,7 @@ export function CatalogPage() {
                 {/* Mobile/Main Content */}
                 <div className="flex-1">
                     {/* Top Bar for Mobile */}
-                    <div className="bg-white rounded-xl border shadow-sm p-4 mb-6 sticky top-20 z-10 lg:static">
+                    <div className="bg-white dark:bg-[#1a202c] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 mb-6 sticky top-20 z-10 lg:static">
                         <div className="flex items-center gap-4">
                             <div className="flex-1 relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
@@ -136,7 +136,7 @@ export function CatalogPage() {
 
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className="lg:hidden flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                                className="lg:hidden flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
                             >
                                 <SlidersHorizontal size={20} />
                             </button>
@@ -145,7 +145,7 @@ export function CatalogPage() {
                             <select
                                 value={filters.sortBy || 'newest'}
                                 onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                                className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary shrink-0 cursor-pointer"
+                                className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-[#1a202c] text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary shrink-0 cursor-pointer"
                             >
                                 <option value="newest">📅 Новые</option>
                                 <option value="price_asc">💰 Цена ↑</option>
@@ -153,24 +153,24 @@ export function CatalogPage() {
                                 <option value="popular">🔥 Популярные</option>
                             </select>
 
-                            <div className="flex border rounded-lg overflow-hidden shrink-0">
+                            <div className="flex border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden shrink-0">
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'hover:bg-gray-50'}`}
+                                    className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-400'}`}
                                     title="Сетка"
                                 >
                                     <Grid size={20} />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2 ${viewMode === 'list' ? 'bg-primary text-white' : 'hover:bg-gray-50'}`}
+                                    className={`p-2 ${viewMode === 'list' ? 'bg-primary text-white' : 'hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-400'}`}
                                     title="Список"
                                 >
                                     <List size={20} />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('map')}
-                                    className={`p-2 ${viewMode === 'map' ? 'bg-primary text-white' : 'hover:bg-gray-50'}`}
+                                    className={`p-2 ${viewMode === 'map' ? 'bg-primary text-white' : 'hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-400'}`}
                                     title="На карте"
                                 >
                                     <MapIcon size={20} />
