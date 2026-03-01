@@ -137,15 +137,15 @@ export function UserDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50">
+        <div className="min-h-screen bg-gray-50/50 dark:bg-slate-950 text-slate-900 dark:text-white">
             <div className="container py-8 px-4 md:px-6">
                 <div className="grid md:grid-cols-[280px_1fr] gap-8">
 
                     {/* Sidebar */}
                     <div className="space-y-6">
                         {/* Profile Summary Card */}
-                        <div className="bg-white rounded-2xl p-6 border shadow-sm text-center">
-                            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg ring-4 ring-white">
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+                            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg ring-4 ring-white dark:ring-slate-800">
                                 {user?.name?.[0]?.toUpperCase() || <User size={40} />}
                             </div>
                             <h2 className="font-bold text-xl truncate">{user?.name}</h2>
@@ -156,7 +156,7 @@ export function UserDashboard() {
                         </div>
 
                         {/* Navigation */}
-                        <nav className="bg-white rounded-2xl border shadow-sm overflow-hidden p-2">
+                        <nav className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden p-2">
                             {[
                                 { id: 'overview', label: 'Обзор', icon: LayoutDashboard },
                                 { id: 'orders', label: 'Мои Заказы', icon: Package },
@@ -175,7 +175,7 @@ export function UserDashboard() {
                                     onClick={() => setActiveTab(item.id)}
                                     className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all ${activeTab === item.id
                                         ? 'bg-blue-600 text-white shadow-md'
-                                        : 'text-gray-600 hover:bg-gray-100'
+                                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
                                         }`}
                                 >
                                     <div className="flex items-center gap-3">
@@ -186,11 +186,11 @@ export function UserDashboard() {
                                 </button>
                             ))}
 
-                            <div className="my-2 border-t border-gray-100 mx-2" />
+                            <div className="my-2 border-t border-gray-100 dark:border-slate-800 mx-2" />
 
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                                className="w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors"
                             >
                                 <LogOut size={18} />
                                 Выйти
@@ -230,7 +230,7 @@ export function UserDashboard() {
                                     />
                                 </div>
 
-                                <div className="bg-white rounded-2xl border shadow-sm p-6">
+                                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
                                     <div className="flex justify-between items-center mb-6">
                                         <h3 className="font-bold text-lg">Последние заказы</h3>
                                         <button onClick={() => setActiveTab('orders')} className="text-primary text-sm font-medium hover:underline">Все заказы</button>
@@ -263,11 +263,11 @@ export function UserDashboard() {
 
                         {/* CONTENT: ORDERS */}
                         {activeTab === 'orders' && (
-                            <div className="bg-white rounded-2xl border shadow-sm p-6 animate-in fade-in">
+                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 animate-in fade-in">
                                 <h2 className="text-xl font-bold mb-6">История Заказов</h2>
                                 <div className="space-y-4">
                                     {orders.map(order => (
-                                        <div key={order.id} className="border rounded-xl p-4 hover:border-primary transition-colors">
+                                        <div key={order.id} className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 hover:border-primary transition-colors">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
                                                     <div className="text-sm text-muted-foreground">Заказ #{order.id.slice(0, 8)} от {new Date(order.createdAt).toLocaleDateString()}</div>
@@ -281,7 +281,7 @@ export function UserDashboard() {
                                             <div className="space-y-2">
                                                 {order.items.map(item => (
                                                     <div key={item.id} className="flex justify-between text-sm">
-                                                        <span className="text-gray-600">{item.product?.name || "Товар удален"} x {item.quantity}</span>
+                                                        <span className="text-gray-600 dark:text-gray-300">{item.product?.name || "Товар удален"} x {item.quantity}</span>
                                                         <span className="font-medium">{(item.price * item.quantity).toLocaleString()} UZS</span>
                                                     </div>
                                                 ))}
@@ -309,9 +309,9 @@ export function UserDashboard() {
                                 </div>
                                 <div className="grid md:grid-cols-2 gap-4">
                                     {profileData.addresses.map(addr => (
-                                        <div key={addr.id} className="bg-white border-2 border-transparent hover:border-primary rounded-xl p-6 shadow-sm relative group transition-all">
-                                            <div className="absolute top-4 right-4 flex gap-2  transition-opacity">
-                                                <button onClick={() => removeAddress(addr.id)} className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"><Trash2 size={16} /></button>
+                                        <div key={addr.id} className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-primary dark:hover:border-primary rounded-xl p-6 shadow-sm relative group transition-all">
+                                            <div className="absolute top-4 right-4 flex gap-2 transition-opacity">
+                                                <button onClick={() => removeAddress(addr.id)} className="p-2 bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50"><Trash2 size={16} /></button>
                                             </div>
                                             <div className="flex items-center gap-3 mb-4 text-primary">
                                                 <MapPin size={24} />
@@ -357,7 +357,7 @@ export function UserDashboard() {
 
                         {/* CONTENT: PROFILE */}
                         {activeTab === 'profile' && (
-                            <div className="bg-white rounded-2xl border shadow-sm p-8 animate-in fade-in">
+                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 animate-in fade-in">
                                 <h2 className="text-xl font-bold mb-6">Личные данные</h2>
                                 <div className="grid gap-6 max-w-xl">
                                     <div className="space-y-2">
@@ -402,10 +402,10 @@ export function UserDashboard() {
                                 {favorites.length > 0 ? (
                                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {favorites.map(fav => (
-                                            <div key={fav.id} className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative group">
+                                            <div key={fav.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative group">
                                                 <button
                                                     onClick={() => removeFavorite(fav.marketplaceId)}
-                                                    className="absolute top-2 right-2 p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                                                    className="absolute top-2 right-2 p-2 bg-red-50 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900 transition-colors"
                                                     title="Удалить из избранного"
                                                 >
                                                     <Trash2 size={16} />
@@ -432,8 +432,8 @@ export function UserDashboard() {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="bg-white rounded-2xl border shadow-sm p-12 text-center">
-                                        <Heart size={48} className="mx-auto text-gray-300 mb-4" />
+                                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-12 text-center">
+                                        <Heart size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
                                         <h3 className="text-lg font-bold mb-2">Нет избранных товаров</h3>
                                         <p className="text-muted-foreground mb-4">Добавьте товары в избранное, чтобы быстро находить их позже</p>
                                         <Link to="/catalog" className="inline-block px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90">
@@ -446,7 +446,7 @@ export function UserDashboard() {
 
                         {/* CONTENT: SECURITY */}
                         {activeTab === 'security' && (
-                            <div className="bg-white rounded-2xl border shadow-sm p-8 animate-in fade-in">
+                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 animate-in fade-in">
                                 <h2 className="text-xl font-bold mb-6">Безопасность</h2>
                                 <div className="space-y-6 max-w-md">
                                     <div>
@@ -503,7 +503,7 @@ export function UserDashboard() {
 
                         {/* CONTENT: PARTNER VERIFICATION */}
                         {activeTab === 'verification' && user?.role === 'PARTNER' && (
-                            <div className="bg-white rounded-2xl border shadow-sm p-8 animate-in fade-in">
+                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 animate-in fade-in">
                                 <PartnerVerification user={user} onRefreshProfile={() => window.location.reload()} />
                             </div>
                         )}
@@ -517,12 +517,12 @@ export function UserDashboard() {
 
 function StatCard({ label, value, icon, bg }) {
     return (
-        <div className="bg-white p-6 rounded-2xl border shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div className={`w-12 h-12 ${bg} rounded-xl flex items-center justify-center`}>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div className={`w-12 h-12 ${bg} dark:bg-opacity-20 rounded-xl flex items-center justify-center`}>
                 {icon}
             </div>
             <div>
-                <div className="text-sm text-muted-foreground">{label}</div>
+                <div className="text-sm text-slate-500 dark:text-slate-400">{label}</div>
                 <div className="text-xl font-bold">{value}</div>
             </div>
         </div>
