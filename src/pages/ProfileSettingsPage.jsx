@@ -546,7 +546,7 @@ export function ProfileSettingsPage() {
                                     placeholder="Например: 123456"
                                     value={recipientId}
                                     onChange={e => setRecipientId(e.target.value)}
-                                    className="w-full h-11 rounded-lg border border-slate-300 px-3 focus:border-primary outline-none"
+                                    className="w-full h-11 rounded-lg border border-slate-300 px-3 text-slate-900 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
@@ -558,7 +558,7 @@ export function ProfileSettingsPage() {
                                     placeholder="0"
                                     value={transferAmount}
                                     onChange={e => setTransferAmount(e.target.value)}
-                                    className="w-full h-11 rounded-lg border border-slate-300 px-3 focus:border-primary outline-none"
+                                    className="w-full h-11 rounded-lg border border-slate-300 px-3 text-slate-900 focus:border-primary outline-none"
                                 />
                             </div>
                             <div className="flex gap-3 pt-2">
