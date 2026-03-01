@@ -50,7 +50,19 @@ class AuthService {
             businessDescription: role === 'PARTNER' ? businessDescription : undefined
         };
 
-        const accountId = Math.floor(100000 + Math.random() * 900000).toString();
+        // Generate sequential accountId starting from 1
+        const allUsers = await prisma.user.findMany({ select: { accountId: true } });
+        let maxId = 0;
+        for (const u of allUsers) {
+            if (u.accountId) {
+                const numericId = parseInt(u.accountId, 10);
+                if (!isNaN(numericId) && numericId > maxId) {
+                    maxId = numericId;
+                }
+            }
+        }
+        const accountId = (maxId + 1).toString();
+
         const user = await prisma.user.create({ data: { ...data, accountId } });
 
         const token = jwt.sign(
