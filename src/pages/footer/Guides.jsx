@@ -82,11 +82,11 @@ export function Guides() {
 
     return (
         <ContentPage slug="guides" defaultTitle="Центр Поддержки">
-            <div className="min-h-screen bg-slate-50 py-12 px-4 md:px-6">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12 px-4 md:px-6">
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-12">
-                        <h1 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">Центр Поддержки</h1>
-                        <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
+                        <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">Центр Поддержки</h1>
+                        <p className="text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
                             Находите ответы, изучайте руководства и получайте максимум от платформы autohouse.
                         </p>
 
@@ -97,7 +97,7 @@ export function Guides() {
                                 placeholder="Поиск по статьям (например: API, возврат, комиссия)..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full h-14 pl-12 pr-4 rounded-2xl border-0 bg-white text-slate-900 text-lg focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400"
+                                className="w-full h-14 pl-12 pr-4 rounded-2xl border-0 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-lg focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400"
                             />
                         </div>
                     </div>
@@ -110,7 +110,7 @@ export function Guides() {
                                 onClick={() => setActiveCategory(cat.id)}
                                 className={`flex items-center px-6 py-3 rounded-full text-sm font-bold transition-all transform hover:scale-105 ${activeCategory === cat.id
                                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                                     }`}
                             >
                                 <cat.icon className="mr-2 h-4 w-4" />
@@ -125,7 +125,7 @@ export function Guides() {
                             {filteredGuides.map((guide) => (
                                 <div
                                     key={guide.id}
-                                    className={`bg-white border text-left border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 ${expandedGuide === guide.id ? 'shadow-lg ring-1 ring-blue-500/20' : 'hover:shadow-md hover:border-blue-200'
+                                    className={`bg-white dark:bg-slate-800 border text-left border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden transition-all duration-300 ${expandedGuide === guide.id ? 'shadow-lg ring-1 ring-blue-500/20' : 'hover:shadow-md hover:border-blue-200 dark:hover:border-slate-600'
                                         }`}
                                 >
                                     <button
@@ -141,15 +141,15 @@ export function Guides() {
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${guide.category === 'dev' ? 'bg-purple-50 text-purple-700' :
-                                                        guide.category === 'partner' ? 'bg-emerald-50 text-emerald-700' :
-                                                            'bg-blue-50 text-blue-700'
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${guide.category === 'dev' ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' :
+                                                        guide.category === 'partner' ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' :
+                                                            'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                                                         }`}>
                                                         {guide.badge}
                                                     </span>
-                                                    <span className="text-xs text-slate-400">• {guide.time} чтения</span>
+                                                    <span className="text-xs text-slate-400 dark:text-slate-500">• {guide.time} чтения</span>
                                                 </div>
-                                                <h3 className="text-lg font-bold text-slate-800">{guide.title}</h3>
+                                                <h3 className="text-lg font-bold text-slate-800 dark:text-white">{guide.title}</h3>
                                             </div>
                                         </div>
                                         {expandedGuide === guide.id ? (
@@ -161,8 +161,8 @@ export function Guides() {
 
                                     {expandedGuide === guide.id && (
                                         <div className="px-6 pb-6 pt-0 animate-in slide-in-from-top-2 duration-200">
-                                            <div className="h-px w-full bg-slate-100 mb-4" />
-                                            <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line">
+                                            <div className="h-px w-full bg-slate-100 dark:bg-slate-700 mb-4" />
+                                            <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
                                                 {guide.content}
                                             </div>
                                         </div>
@@ -172,11 +172,11 @@ export function Guides() {
                         </div>
                     ) : (
                         <div className="text-center py-20">
-                            <div className="bg-slate-100 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div className="bg-slate-100 dark:bg-slate-800 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Search className="h-10 w-10 text-slate-400" />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">Ничего не найдено</h3>
-                            <p className="text-slate-500">Попробуйте изменить запрос или категорию.</p>
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Ничего не найдено</h3>
+                            <p className="text-slate-500 dark:text-slate-400">Попробуйте изменить запрос или категорию.</p>
                         </div>
                     )}
                 </div>
