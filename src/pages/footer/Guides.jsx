@@ -23,7 +23,7 @@ export function Guides() {
         return true;
     });
 
-    const guides = [
+    const allGuides = [
         {
             id: 1,
             title: "Как оформить первый заказ",
@@ -82,7 +82,15 @@ export function Guides() {
         }
     ];
 
-    const filteredGuides = guides.filter(guide => {
+    // Filter guides based on user role BEFORE applying search/category filters
+    const availableGuides = allGuides.filter(guide => {
+        if (guide.category === 'dev') {
+            return user?.role === "ADMIN" || user?.role === "SUPERADMIN";
+        }
+        return true;
+    });
+
+    const filteredGuides = availableGuides.filter(guide => {
         const matchesSearch = guide.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             guide.content.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = activeCategory === "all" || guide.category === activeCategory;
