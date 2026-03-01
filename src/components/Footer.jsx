@@ -33,9 +33,6 @@ export function Footer() {
                     </div>
                     <div>
                         <h3 className="text-lg font-semibold mb-4 text-foreground">{t('footer.contact')}</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            {t('footer.contact_us')}
-                        </p>
                         <div className="space-y-3 font-medium">
                             <a
                                 href="https://t.me/Air_A_P"
