@@ -84,7 +84,7 @@ export function Guides() {
 
     // Filter guides based on user role BEFORE applying search/category filters
     const availableGuides = allGuides.filter(guide => {
-        if (guide.category === 'dev') {
+        if (guide.category === 'dev' || guide.badge === 'Логистика') {
             return user?.role === "ADMIN" || user?.role === "SUPERADMIN";
         }
         return true;
