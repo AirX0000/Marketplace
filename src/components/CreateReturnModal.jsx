@@ -1,14 +1,32 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { api } from '../lib/api';
-import { X, Upload, Loader2, AlertCircle } from 'lucide-react';
+import { X, Upload, Loader2, AlertCircle, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export function CreateReturnModal({ isOpen, onClose, orderItem, onSuccess }) {
     const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [imageUrl, setImageUrl] = useState('');
     const { register, handleSubmit, formState: { errors } } = useForm();
 
     if (!isOpen || !orderItem) return null;
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const data = await api.uploadImage(file);
+            setImageUrl(data.url);
+            toast.success("Фото загружено");
+        } catch (error) {
+            toast.error('Ошибка загрузки фото');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const onSubmit = async (data) => {
         setLoading(true);
@@ -17,7 +35,7 @@ export function CreateReturnModal({ isOpen, onClose, orderItem, onSuccess }) {
                 orderItemId: orderItem.id,
                 reason: data.reason,
                 details: data.details,
-                images: [] // TODO: Add image upload logic if needed
+                images: imageUrl ? [imageUrl] : []
             });
             toast.success("Запрос на возврат создан");
             onSuccess();
@@ -65,6 +83,36 @@ export function CreateReturnModal({ isOpen, onClose, orderItem, onSuccess }) {
                             className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-slate-900 outline-none resize-none"
                         />
                         {errors.details && <p className="text-xs text-red-500 mt-1">{errors.details.message}</p>}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Прикрепить фото дефекта (необязательно)</label>
+                        <div className="flex items-center gap-4">
+                            {imageUrl ? (
+                                <div className="relative h-24 w-24 rounded-lg overflow-hidden border">
+                                    <img src={imageUrl} alt="Defect" className="h-full w-full object-cover" />
+                                    <button
+                                        type="button"
+                                        onClick={() => setImageUrl('')}
+                                        className="absolute top-1 right-1 bg-white/80 rounded-full p-1 hover:bg-white transition-colors"
+                                    >
+                                        <X size={12} className="text-red-500 hover:scale-110" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer bg-slate-50 border-slate-300 hover:bg-slate-100 transition-colors">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        {uploading ? (
+                                            <Loader2 className="animate-spin h-6 w-6 text-slate-500 mb-2" />
+                                        ) : (
+                                            <Camera className="h-6 w-6 text-slate-500 mb-2" />
+                                        )}
+                                        <p className="text-xs text-slate-500">{uploading ? 'Загрузка...' : 'Нажмите, чтобы выбрать фото'}</p>
+                                    </div>
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} disabled={uploading} />
+                                </label>
+                            )}
+                        </div>
                     </div>
 
                     <div className="bg-blue-50 p-4 rounded-lg flex gap-3 text-sm text-blue-700">
