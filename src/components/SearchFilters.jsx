@@ -54,13 +54,8 @@ export function SearchFilters({ filters, onChange, onClose }) {
                         className="w-full px-3 py-2 border rounded-lg text-sm bg-background text-slate-900 dark:text-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:outline-none"
                     >
                         <option value="">Все категории</option>
-                        <option value="Electronics">Электроника</option>
-                        <option value="Appliances">Бытовая техника</option>
-                        <option value="Clothing">Одежда</option>
-                        <option value="Home & Garden">Дом и Сад</option>
-                        <option value="Beauty & Health">Красота и Здоровье</option>
                         <option value="Недвижимость">Недвижимость</option>
-                        <option value="Transport">Транспорт</option>
+                        <option value="Автомобили">Автомобили</option>
                     </select>
                 </div>
 
