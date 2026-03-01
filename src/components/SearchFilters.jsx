@@ -2,42 +2,11 @@
 import React from 'react';
 import { X, Check } from 'lucide-react';
 
-const ATTRIBUTE_FACETS = [
-    {
-        id: 'brand',
-        label: 'Бренд',
-        options: ['Apple', 'Samsung', 'Sony', 'Nike', 'Adidas', 'Xiaomi']
-    },
-    {
-        id: 'color',
-        label: 'Цвет',
-        options: ['Black', 'White', 'Silver', 'Gold', 'Blue', 'Red', 'Natural Titanium', 'Midnight']
-    },
-    {
-        id: 'storage',
-        label: 'Память',
-        options: ['64GB', '128GB', '256GB', '512GB', '1TB']
-    },
-    {
-        id: 'size',
-        label: 'Размер (Одежда/Обувь)',
-        options: ['S', 'M', 'L', 'XL', '40', '41', '42', '43', '44']
-    }
-];
+
 
 export function SearchFilters({ filters, onChange, onClose }) {
 
-    const handleAttributeChange = (key, value) => {
-        // Toggle logic or Single Select logic? 
-        // For simple MVP let's do Single Select per attribute for now to match backend 'equals' logic
-        // If same value clicked, unset it
-        const currentVal = filters[`attr_${key}`];
-        if (currentVal === value) {
-            onChange(`attr_${key}`, '');
-        } else {
-            onChange(`attr_${key}`, value);
-        }
-    };
+
 
     return (
         <div className="bg-white dark:bg-slate-900 md:p-4 rounded-xl md:border md:border-slate-200 dark:md:border-slate-800 md:shadow-sm space-y-6">
@@ -193,33 +162,7 @@ export function SearchFilters({ filters, onChange, onClose }) {
                 </div>
             )}
 
-            {/* Dynamic Attribute Facets (Generic) */}
-            <div className="space-y-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-                <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Дополнительно</h4>
 
-                {ATTRIBUTE_FACETS.map(facet => (
-                    <div key={facet.id}>
-                        <h5 className="font-medium text-sm mb-3">{facet.label}</h5>
-                        <div className="flex flex-wrap gap-2">
-                            {facet.options.map(opt => {
-                                const isActive = filters[`attr_${facet.id}`] === opt;
-                                return (
-                                    <button
-                                        key={opt}
-                                        onClick={() => handleAttributeChange(facet.id, opt)}
-                                        className={`px-3 py-1.5 text-xs rounded-full border transition-all ${isActive
-                                            ? 'bg-primary text-white border-primary ring-2 ring-primary/20'
-                                            : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'
-                                            }`}
-                                    >
-                                        {opt}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                ))}
-            </div>
 
             <button
                 onClick={() => onChange('reset', null)}
