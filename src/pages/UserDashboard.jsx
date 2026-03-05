@@ -196,6 +196,14 @@ export function UserDashboard() {
                                 Выйти
                             </button>
                         </nav>
+
+                        {/* Add Listing Button */}
+                        <Link
+                            to="/post-ad"
+                            className="w-full mt-4 flex justify-center items-center gap-2 bg-emerald-600 dark:bg-emerald-500 text-white p-3 rounded-xl font-bold shadow-lg shadow-emerald-600/25 hover:-translate-y-1 transition-all"
+                        >
+                            <Plus size={20} /> Разместить объявление
+                        </Link>
                     </div>
 
                     {/* Main Content Area */}

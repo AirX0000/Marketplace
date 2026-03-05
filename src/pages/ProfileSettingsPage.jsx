@@ -361,10 +361,9 @@ export function ProfileSettingsPage() {
                                             className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-emerald-500 transition-all outline-none shadow-sm"
                                         >
                                             <option value="Retail">Розничная торговля</option>
-                                            <option value="Electronics">Электроника</option>
-                                            <option value="Fashion">Одежда</option>
-                                            <option value="Home">Дом</option>
-                                            <option value="Auto">Авто</option>
+                                            <option value="Auto">Автомобили</option>
+                                            <option value="Недвижимость">Недвижимость</option>
+                                            <option value="Услуги">Услуги</option>
                                         </select>
                                     </div>
                                 </div>

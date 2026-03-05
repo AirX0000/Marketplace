@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, Settings, LogOut, Package, Users, BadgeDollarSign, Briefcase, FileText, Mail, Shield, Truck, HandCoins, Store } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Settings, LogOut, Package, Users, BadgeDollarSign, Briefcase, FileText, Mail, Shield, Truck, HandCoins, Store, Home, ClipboardList, BookOpen, UserCircle, PhoneCall, CalendarDays } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { cn } from '../lib/utils';
@@ -13,6 +13,13 @@ export function AdminLayout() {
     const isActive = (path) => location.pathname === path;
     const isAdmin = user?.role === 'ADMIN';
     const isPartner = user?.role === 'PARTNER' || user?.role === 'ADMIN';
+    const businessCategory = user?.businessCategory || '';
+
+    const isRealtor = businessCategory === 'Риелтор';
+    const isNotary = businessCategory === 'Нотариус';
+    const isEvaluation = businessCategory === 'Оценка';
+    const isInsurance = businessCategory === 'Страхование';
+    const isStandardRetail = !isRealtor && !isNotary && !isEvaluation && !isInsurance;
 
     // Force Russian for Admin if they happen to have it switched
     useEffect(() => {
@@ -53,11 +60,21 @@ export function AdminLayout() {
                             isActive('/admin/listings') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
                         )}
                     >
-                        <Package className="mr-3 h-5 w-5" />
-                        {isAdmin ? 'Управление Товарами' : t('admin.my_listings', 'Мои Товары')}
+                        {isRealtor ? <Home className="mr-3 h-5 w-5" /> :
+                            isNotary ? <FileText className="mr-3 h-5 w-5" /> :
+                                isEvaluation ? <ClipboardList className="mr-3 h-5 w-5" /> :
+                                    isInsurance ? <Shield className="mr-3 h-5 w-5" /> :
+                                        <Package className="mr-3 h-5 w-5" />}
+
+                        {isAdmin ? 'Управление Товарами' :
+                            isRealtor ? 'Мои Объекты' :
+                                isNotary ? 'Мои Документы / Услуги' :
+                                    isEvaluation ? 'Мои Отчеты' :
+                                        isInsurance ? 'Мои Полисы' :
+                                            t('admin.my_listings', 'Мои Товары')}
                     </Link>
 
-                    {/* ORDERS (PARTNER ONLY) */}
+                    {/* ORDERS/REQUESTS (PARTNER ONLY) */}
                     {isPartner && !isAdmin && (
                         <>
                             <Link
@@ -67,8 +84,12 @@ export function AdminLayout() {
                                     isActive('/admin/orders') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
                                 )}
                             >
-                                <Users className="mr-3 h-5 w-5" />
-                                {t('admin.orders', 'Заказы')}
+                                {isNotary ? <CalendarDays className="mr-3 h-5 w-5" /> : <ClipboardList className="mr-3 h-5 w-5" />}
+                                {isRealtor ? 'Заявки' :
+                                    isNotary ? 'Записи на прием' :
+                                        isEvaluation ? 'Запросы на оценку' :
+                                            isInsurance ? 'Заявки на страхование' :
+                                                t('admin.orders', 'Заказы')}
                             </Link>
                             <Link
                                 to="/admin/customers"
@@ -83,18 +104,65 @@ export function AdminLayout() {
                         </>
                     )}
 
-                    {/* ADMIN ONLY */}
+                    {/* ADMIN ONLY (SUPER ADMIN) */}
                     {isAdmin && (
                         <>
+                            <div className="pt-4 pb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Сфера Услуг
+                            </div>
+                            <Link
+                                to="/super-admin/users?role=PARTNER&category=Риелтор"
+                                className={cn(
+                                    "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                    isActive('/super-admin/users') && location.search.includes('Риелтор') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                )}
+                            >
+                                <Home className="mr-3 h-5 w-5" />
+                                Риелторы
+                            </Link>
+                            <Link
+                                to="/super-admin/users?role=PARTNER&category=Нотариус"
+                                className={cn(
+                                    "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                    isActive('/super-admin/users') && location.search.includes('Нотариус') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                )}
+                            >
+                                <FileText className="mr-3 h-5 w-5" />
+                                Нотариусы
+                            </Link>
+                            <Link
+                                to="/super-admin/users?role=PARTNER&category=Оценка"
+                                className={cn(
+                                    "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                    isActive('/super-admin/users') && location.search.includes('Оценка') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                )}
+                            >
+                                <ClipboardList className="mr-3 h-5 w-5" />
+                                Оценщики
+                            </Link>
+                            <Link
+                                to="/super-admin/users?role=PARTNER&category=Страхование"
+                                className={cn(
+                                    "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                    isActive('/super-admin/users') && location.search.includes('Страхование') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                )}
+                            >
+                                <Shield className="mr-3 h-5 w-5" />
+                                Страхование
+                            </Link>
+
+                            <div className="pt-4 pb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Главное Управление
+                            </div>
                             <Link
                                 to="/super-admin/users"
                                 className={cn(
                                     "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                    isActive('/super-admin/users') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                    isActive('/super-admin/users') && !location.search.includes('category=') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
                                 )}
                             >
                                 <Users className="mr-3 h-5 w-5" />
-                                Пользователи
+                                Все Пользователи
                             </Link>
                             <Link
                                 to="/super-admin/loans"

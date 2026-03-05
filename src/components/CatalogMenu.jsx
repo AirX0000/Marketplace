@@ -4,11 +4,9 @@ import { ChevronRight } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 const CATEGORIES = [
-    { id: 1, key: "Electronics", name: "Электроника", sub: ["Смартфоны", "Ноутбуки", "Наушники"] },
-    { id: 2, key: "Appliances", name: "Бытовая техника", sub: ["Холодильники", "Стиральные машины", "Пылесосы"] },
-    { id: 3, key: "Clothing", name: "Одежда", sub: ["Мужская", "Женская", "Детская"] },
-    { id: 4, key: "Home & Garden", name: "Дом и Сад", sub: ["Мебель", "Декор", "Сад"] },
-    { id: 5, key: "Beauty & Health", name: "Красота и Здоровье", sub: ["Макияж", "Уход за кожей", "Витамины"] },
+    { id: 1, key: "Transport", name: "Автомобили", sub: ["Автосалон", "Вторичка", "Первичка"] },
+    { id: 2, key: "Недвижимость", name: "Недвижимость", sub: ["Вторичные", "Новостройки", "Нежилое помещение", "Аренда"] },
+    { id: 3, key: "Услуги", name: "Услуги", sub: ["Страхование", "Оценка", "Нотариус", "Риелтор"] }
 ];
 
 export function CatalogMenu({ isOpen, onClose }) {

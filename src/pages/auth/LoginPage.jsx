@@ -154,6 +154,16 @@ export function LoginPage() {
                         </button>
                     </form>
 
+                    {/* OTP Alternative Divider */}
+                    <div className="relative pb-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-white dark:bg-slate-950 px-2 text-slate-500">Войти через СМС код (в разработке)</span>
+                        </div>
+                    </div>
+
                     <p className="text-center text-sm text-slate-600 dark:text-slate-400">
                         {t('auth.no_account')}{' '}
                         <Link to="/register" className="font-semibold text-slate-900 dark:text-white hover:underline">

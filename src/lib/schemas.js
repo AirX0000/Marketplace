@@ -3,7 +3,17 @@ import { z } from 'zod';
 // Auth schemas
 export const loginSchema = z.object({
     identifier: z.string()
-        .min(1, 'Email или Телефон обязателен'),
+        .min(1, 'Email или Телефон обязателен')
+        .refine((val) => {
+            // If it looks like a phone number (contains digits and optional characters)
+            if (/^[\d\s\+\-\(\)]+$/.test(val)) {
+                return val.replace(/[\D]/g, '').length >= 9; // At least 9 digits
+            }
+            // Otherwise, validate as email
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+        }, {
+            message: 'Введите корректный номер телефона или email'
+        }),
     password: z.string()
         .min(1, 'Пароль обязателен')
         .min(6, 'Пароль должен содержать минимум 6 символов')

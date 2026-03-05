@@ -1,14 +1,27 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { Shield, User, Search, Store, Lock, Unlock, Mail, Calendar, Check, Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export function SuperAdminUsers() {
+    const [searchParams] = useSearchParams();
+    const urlRole = searchParams.get('role');
+    const urlCategory = searchParams.get('category');
+
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
-    const [roleFilter, setRoleFilter] = useState('ALL'); // ALL, ADMIN, PARTNER, USER
+    const [roleFilter, setRoleFilter] = useState(urlRole || 'ALL'); // ALL, ADMIN, PARTNER, USER
+
+    useEffect(() => {
+        if (urlRole) {
+            setRoleFilter(urlRole);
+        } else {
+            setRoleFilter('ALL');
+        }
+    }, [urlRole, urlCategory]);
 
     useEffect(() => {
         loadUsers();
@@ -22,17 +35,23 @@ export function SuperAdminUsers() {
             result = result.filter(u => u.role === roleFilter);
         }
 
+        // Filter by business category (from URL)
+        if (urlCategory) {
+            result = result.filter(u => u.businessCategory === urlCategory);
+        }
+
         // Filter by search
         if (search) {
             const q = search.toLowerCase();
             result = result.filter(u =>
                 u.name?.toLowerCase().includes(q) ||
-                u.email?.toLowerCase().includes(q)
+                u.email?.toLowerCase().includes(q) ||
+                u.phone?.includes(q)
             );
         }
 
         setFilteredUsers(result);
-    }, [users, roleFilter, search]);
+    }, [users, roleFilter, search, urlCategory]);
 
     const loadUsers = () => {
         api.getAdminUsers()
@@ -94,8 +113,12 @@ export function SuperAdminUsers() {
     return (
         <div className="space-y-6 pb-10 animate-in fade-in">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Управление Пользователями</h1>
-                <p className="text-slate-700">Просмотр и управление всеми пользователями платформы</p>
+                <h1 className="text-3xl font-bold tracking-tight">
+                    {urlCategory ? `Управление Партнерами: ${urlCategory}` : 'Управление Пользователями'}
+                </h1>
+                <p className="text-slate-700">
+                    {urlCategory ? `Список зарегистрированных пользователей в категории ${urlCategory}` : 'Просмотр и управление всеми пользователями платформы'}
+                </p>
             </div>
 
             {/* Filters and Search */}
@@ -106,19 +129,24 @@ export function SuperAdminUsers() {
                         { id: 'ADMIN', label: 'Админы', icon: Shield },
                         { id: 'PARTNER', label: 'Партнеры', icon: Store },
                         { id: 'USER', label: 'Пользователи', icon: User }
-                    ].map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setRoleFilter(tab.id)}
-                            className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${roleFilter === tab.id
-                                ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200'
-                                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
-                                }`}
-                        >
-                            {tab.id === 'ALL' ? <User size={14} /> : <tab.icon size={14} />}
-                            {tab.label}
-                        </button>
-                    ))}
+                    ].map(tab => {
+                        // Hide other role tabs if we are specifically looking at a category (which implies PARTNER)
+                        if (urlCategory && tab.id !== 'PARTNER' && tab.id !== 'ALL') return null;
+
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setRoleFilter(tab.id)}
+                                className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${roleFilter === tab.id
+                                    ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200'
+                                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                                    }`}
+                            >
+                                {tab.id === 'ALL' ? <User size={14} /> : <tab.icon size={14} />}
+                                {tab.label}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 <div className="relative w-full md:w-64 mr-2">

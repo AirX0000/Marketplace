@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, Heart, X, Package, Sun, Moon, Globe } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, Heart, X, Package, Sun, Moon, Globe, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { CategoryModal } from './CategoryModal';
@@ -85,6 +85,14 @@ export function Header() {
 
                     {/* Right Side Actions */}
                     <div className="flex items-center gap-1">
+                        <Link
+                            to="/post-ad"
+                            className="hidden md:flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 hover:-translate-y-0.5 transition-all mr-2"
+                        >
+                            <Plus size={16} />
+                            {t('common.add_listing', 'Разместить объявление')}
+                        </Link>
+
                         <LanguageSwitcher />
 
                         <div className="w-px h-6 bg-border mx-2 hidden md:block" />

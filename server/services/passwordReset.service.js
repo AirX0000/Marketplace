@@ -1,4 +1,5 @@
-const prisma = require('../config/database');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const smsService = require('./sms.service');
 
 class PasswordResetService {
@@ -8,8 +9,8 @@ class PasswordResetService {
         const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
         try {
-            await prisma.otp.delete({ where: { phone: formattedPhone } }).catch(() => { });
-            await prisma.otp.create({
+            await prisma.oTP.delete({ where: { phone: formattedPhone } }).catch(() => { });
+            await prisma.oTP.create({
                 data: {
                     phone: formattedPhone,
                     code: otp,
@@ -38,7 +39,7 @@ class PasswordResetService {
     async verifyOTP(phone, code) {
         const formattedPhone = String(phone || '').replace(/\D/g, '');
         try {
-            const entry = await prisma.otp.findUnique({
+            const entry = await prisma.oTP.findUnique({
                 where: { phone: formattedPhone }
             });
 
@@ -67,7 +68,7 @@ class PasswordResetService {
             });
 
             // Cleanup OTP
-            await prisma.otp.delete({ where: { phone: formattedPhone } }).catch(() => { });
+            await prisma.oTP.delete({ where: { phone: formattedPhone } }).catch(() => { });
 
             return { success: true, message: 'Password reset successful' };
         } catch (error) {

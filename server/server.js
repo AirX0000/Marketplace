@@ -54,7 +54,7 @@ apiRouter.use('/', marketplaceRoutes); // provides /listings, /categories, /regi
 apiRouter.use('/user', userRoutes.userRouter);
 apiRouter.use('/admin', userRoutes.adminRouter);
 apiRouter.use('/orders', orderRoutes);
-apiRouter.use('/partner', partnerRoutes);
+apiRouter.use('/', partnerRoutes); // partnerRoutes already has /partner and /partners internally
 apiRouter.use('/payment', paymentRoutes);
 apiRouter.use('/wallet', walletRoutes);
 apiRouter.use('/favorites', favoritesRoutes);
@@ -68,16 +68,16 @@ apiRouter.use('/support', supportRoutes);
 apiRouter.use('/centers', centersRoutes);
 apiRouter.use('/newsletter', newsletterRoutes);
 apiRouter.use('/content', contentRoutes);
-apiRouter.use('/auth', passwordResetRoutes);
-apiRouter.use('/upload', uploadRoutes);
-
-// Auth routes (login/register)
+// Auth routes (login/register/otp)
 try {
     const authRoutes = require('./routes/auth.routes');
     apiRouter.use('/auth', authRoutes);
 } catch (e) {
     console.warn('⚠️ auth.routes.js load failed');
 }
+
+apiRouter.use('/auth', passwordResetRoutes); // Password reset routes (e.g. /auth/reset)
+apiRouter.use('/upload', uploadRoutes);
 
 app.use('/api', apiRouter);
 

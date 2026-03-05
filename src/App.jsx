@@ -62,6 +62,7 @@ import AdminCenters from './pages/admin/AdminCenters';
 import { PartnerOffers } from './pages/partner/PartnerOffers';
 import { AdminPages } from './pages/admin/AdminPages';
 import { AdminPageEditor } from './pages/admin/AdminPageEditor';
+import { PostAdPage } from './pages/PostAdPage';
 import { AdminLoans } from './pages/admin/AdminLoans';
 
 
@@ -98,6 +99,7 @@ function App() {
                     {/* Public Storefront */}
                     <Route path="/" element={<RootLayout />}>
                       <Route index element={<HomePage />} />
+                      <Route path="post-ad" element={<PostAdPage />} />
                       <Route path="catalog" element={<CatalogPage />} />
                       <Route path="marketplaces" element={<MarketplaceListing />} />
                       <Route path="marketplaces/:id" element={<MarketplaceDetail />} />

@@ -4,7 +4,7 @@ import { MarketplaceCard } from '../components/MarketplaceCard';
 import { ProductSkeleton } from '../components/ui/ProductSkeleton';
 import { MapSearch } from '../components/MapSearch';
 import { useCompare } from '../context/CompareContext';
-import { LayoutGrid, Map as MapIcon, RotateCw, Filter, ArrowUpDown, Search, SortAsc, List as ListIcon } from 'lucide-react';
+import { LayoutGrid, Map as MapIcon, RotateCw, Filter, ArrowUpDown, Search, SortAsc, List as ListIcon, Shield, Calculator, FileText, Building2, Briefcase, ArrowLeft } from 'lucide-react';
 import { api } from '../lib/api';
 import { cn } from '../lib/utils'; // Assuming cn utility is available here
 import { Link } from 'react-router-dom'; // Assuming Link is available for the new card structure
@@ -37,6 +37,8 @@ export function MarketplaceListing() {
         maxYear: searchParams.get('maxYear') || "",
         minMileage: searchParams.get('minMileage') || "",
         maxMileage: searchParams.get('maxMileage') || "",
+        brand: searchParams.get('brand') || "",
+        color: searchParams.get('color') || "",
 
         bounds: searchParams.get('bounds') || "",
         sort: searchParams.get('sort') || "popular"
@@ -47,6 +49,7 @@ export function MarketplaceListing() {
     const regions = ["Все", "Tashkent", "Tashkent Region", "Samarkand", "Bukhara", "Andijan", "Fergana"];
     const isRealEstateCategory = ["Недвижимость", "Недвижимость", "House", "Apartment", "Houses", "Land", "New Building", "Private House"].includes(filters.category);
     const isAutoCategory = ["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category);
+    const isServicesCategory = filters.category === "Услуги";
 
     // Load categories from backend or use defaults
     useEffect(() => {
@@ -56,23 +59,28 @@ export function MarketplaceListing() {
                 name: "Недвижимость",
                 sub: [
                     "Новостройки",
-                    "Вторичное жильё",
-                    "Коммерческая недвижимость",
-                    "Земельные участки",
-                    "Квартиры в рассрочку"
+                    "Вторичные",
+                    "Нежилое помещение",
+                    "Аренда"
                 ]
             },
             {
                 name: "Автомобили",
                 sub: [
-                    "Новые автомобили",
-                    "Авто с пробегом",
-                    "Коммерческий транспорт"
+                    "Автосалон",
+                    "Вторичка",
+                    "Первичка"
                 ]
             },
-            { name: "Электроника", sub: ["Смартфоны", "Ноутбуки", "Аксессуары"] },
-            { name: "Одежда", sub: ["Мужская", "Женская", "Детская"] },
-            { name: "Товары для дома", sub: ["Мебель", "Декор", "Сад"] },
+            {
+                name: "Услуги",
+                sub: [
+                    "Страхование",
+                    "Оценка",
+                    "Нотариус",
+                    "Риелтор"
+                ]
+            }
         ];
 
         api.getCategories().then(data => {
@@ -165,6 +173,8 @@ export function MarketplaceListing() {
             maxYear: searchParams.get('maxYear') || "",
             minMileage: searchParams.get('minMileage') || "",
             maxMileage: searchParams.get('maxMileage') || "",
+            brand: searchParams.get('brand') || "",
+            color: searchParams.get('color') || "",
 
             bounds: searchParams.get('bounds') || "",
             sort: searchParams.get('sort') || "popular"
@@ -194,9 +204,9 @@ export function MarketplaceListing() {
                     params.category = "Real Estate,Недвижимость,Квартиры,Дома,Коммерческая,Земля,Apartments,Houses,New Building,Private House,Property";
                 } else if (["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category)) {
                     // Match any subcategory of Cars OR the main category itself
-                    params.category = "Transport,Cars,Автомобили,Авто,Седан,Кроссовер,Внедорожник,Электромобиль,Dealer,Private Auto,Vehicle";
-                } else if (["Электроника", "Electronics"].includes(filters.category)) {
-                    params.category = "Смартфоны,Ноутбуки,Планшеты,Аксессуары,Electronics";
+                    params.category = "Transport,Cars,Автомобили,Авто,Автосалон,Вторичка,Первичка,Dealer,Private Auto,Vehicle";
+                } else if (filters.category === "Услуги") {
+                    params.category = "Услуги,Services,Страхование,Оценка,Нотариус,Риелтор,Realtor";
                 }
 
                 // If a subcategory is selected, override with specific subcategory
@@ -288,6 +298,10 @@ export function MarketplaceListing() {
                         if (filters.minMileage && (!specs.mileage || Number(specs.mileage) < Number(filters.minMileage))) return false;
                         if (filters.maxMileage && (!specs.mileage || Number(specs.mileage) > Number(filters.maxMileage))) return false;
 
+                        // Brand & Color Filter
+                        if (filters.brand && (!specs.brand || !specs.brand.toLowerCase().includes(filters.brand.toLowerCase()))) return false;
+                        if (filters.color && (!specs.color || !specs.color.toLowerCase().includes(filters.color.toLowerCase()))) return false;
+
                         return true;
                     } catch (e) {
                         console.error("Car Filter error", e);
@@ -332,6 +346,8 @@ export function MarketplaceListing() {
             maxYear: "",
             minMileage: "",
             maxMileage: "",
+            brand: "",
+            color: "",
             sort: "popular"
         });
         setSearchParams({});
@@ -477,6 +493,30 @@ export function MarketplaceListing() {
                                                 />
                                             </div>
                                         </div>
+
+                                        {/* Brand */}
+                                        <div>
+                                            <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Марка</h4>
+                                            <input
+                                                type="text"
+                                                placeholder="Например, Toyota"
+                                                value={filters.brand}
+                                                onChange={(e) => updateFilter('brand', e.target.value)}
+                                                className="w-full rounded-md border border-input px-3 py-2 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                            />
+                                        </div>
+
+                                        {/* Color */}
+                                        <div>
+                                            <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Цвет</h4>
+                                            <input
+                                                type="text"
+                                                placeholder="Например, Белый"
+                                                value={filters.color}
+                                                onChange={(e) => updateFilter('color', e.target.value)}
+                                                className="w-full rounded-md border border-input px-3 py-2 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                            />
+                                        </div>
                                     </div>
                                 )}
 
@@ -510,7 +550,9 @@ export function MarketplaceListing() {
                                 {filters.category !== "Все" && categories.find(c => (c.name || c) === filters.category)?.sub && (
                                     <div className="animate-in slide-in-from-left-2 fade-in">
                                         <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">
-                                            Тип {filters.category === "Автомобили" ? "кузова" : "недвижимости"}
+                                            {filters.category === "Автомобили" ? "Тип кузова" :
+                                                filters.category === "Услуги" ? "Вид услуги" :
+                                                    "Тип недвижимости"}
                                         </h4>
                                         <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
                                             <label className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
@@ -587,7 +629,9 @@ export function MarketplaceListing() {
                                         ? "Недвижимость"
                                         : isAutoCategory
                                             ? "Автомобили"
-                                            : "Каталог Магазинов"}
+                                            : isServicesCategory
+                                                ? "Услуги"
+                                                : "Каталог"}
                                 </h1>
                                 <p className="text-muted-foreground text-sm dark:text-slate-400">
                                     Найдено {marketplaces.length} результатов.
@@ -654,7 +698,26 @@ export function MarketplaceListing() {
                             </div>
                         )}
 
-
+                        {/* Pill Categories for Real Estate */}
+                        {isRealEstateCategory && (
+                            <div className="flex gap-2 overflow-x-auto pb-6 no-scrollbar scroll-smooth">
+                                {["Все", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда"].map(pill => {
+                                    const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
+                                    return (
+                                        <button
+                                            key={pill}
+                                            onClick={() => updateFilter('subcategory', pill === "Все" ? "" : pill)}
+                                            className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${isActive
+                                                ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/25 scale-105'
+                                                : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-600 hover:text-emerald-600'
+                                                }`}
+                                        >
+                                            {pill}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
 
                         {isAutoCategory && (
                             <div className="space-y-6 mb-8">
@@ -684,7 +747,7 @@ export function MarketplaceListing() {
 
                                 {/* Pill Categories for Cars */}
                                 <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
-                                    {["Все", "Электромобили", "Гибриды", "Кроссоверы", "Седаны", "Внедорожники", "Коммерческие"].map(pill => {
+                                    {["Все", "Автосалон", "Вторичка", "Первичка"].map(pill => {
                                         // Map pill names if necessary to match data subcategories
                                         const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
                                         return (
@@ -704,7 +767,56 @@ export function MarketplaceListing() {
                             </div>
                         )}
 
-                        {loading ? (
+                        {isServicesCategory && !filters.subcategory && (
+                            <div className="mb-8">
+                                <div className="mb-6 text-center sm:text-left">
+                                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Каталог услуг</h2>
+                                    <p className="text-slate-500 dark:text-slate-400 text-sm">Выберите подходящую категорию услуг для решения ваших задач.</p>
+                                </div>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {["Страхование", "Оценка", "Нотариус", "Риелтор"].map(sub => {
+                                        let Icon = Briefcase;
+                                        if (sub === "Страхование") Icon = Shield;
+                                        if (sub === "Оценка") Icon = Calculator;
+                                        if (sub === "Нотариус") Icon = FileText;
+                                        if (sub === "Риелтор") Icon = Building2;
+
+                                        return (
+                                            <button
+                                                key={sub}
+                                                onClick={() => updateFilter('subcategory', sub)}
+                                                className="group flex flex-col items-center p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-cyan-500 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 cursor-pointer overflow-hidden relative"
+                                            >
+                                                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-500/10 to-teal-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+                                                <div className="w-16 h-16 rounded-2xl bg-cyan-50 dark:bg-slate-700 text-cyan-600 dark:text-cyan-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-sm">
+                                                    <Icon size={28} strokeWidth={1.5} />
+                                                </div>
+                                                <span className="font-bold text-slate-800 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">{sub}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {isServicesCategory && filters.subcategory && (
+                            <div className="mb-6 flex">
+                                <button
+                                    onClick={() => updateFilter('subcategory', '')}
+                                    className="flex items-center gap-2 text-sm text-cyan-700 hover:text-cyan-800 font-bold bg-cyan-50 hover:bg-cyan-100 px-5 py-2.5 rounded-xl transition-colors border border-cyan-100"
+                                >
+                                    <ArrowLeft size={16} /> Назад ко всем услугам
+                                </button>
+                            </div>
+                        )}
+
+                        {isServicesCategory && !filters.subcategory ? (
+                            <div className="text-center py-16 text-slate-400 border border-slate-200 dark:border-slate-700 border-dashed rounded-2xl bg-white dark:bg-slate-800 flex flex-col items-center shadow-sm">
+                                <Briefcase size={48} className="text-slate-300 mb-4" strokeWidth={1} />
+                                <h3 className="text-lg font-medium text-slate-600 dark:text-slate-300 mb-1">Выберите услугу</h3>
+                                <p className="text-sm">Нажмите на одну из категорий выше, чтобы просмотреть предложения.</p>
+                            </div>
+                        ) : loading ? (
                             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                 {[...Array(6)].map((_, i) => (
                                     <ProductSkeleton key={i} />
