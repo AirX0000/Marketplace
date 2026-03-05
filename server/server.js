@@ -6,7 +6,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000; // Force 3000 to match DigitalOcean component config, bypassing Heroku buildpack's PORT=8080 injection
 
 // Middleware
 app.use(helmet({
