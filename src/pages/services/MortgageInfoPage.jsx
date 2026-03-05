@@ -1,67 +1,95 @@
 import React, { useState } from 'react';
 import { Building2, Percent, Calendar, Wallet, CheckCircle2, ChevronRight, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
+// Data stored with localized strings
 const BANKS_DATA = [
     {
-        name: "Халқ банки",
-        primary: { percent: "17%", term: "20 йилгача", initial: "15% дан", max: "420 млн сўмгача" },
-        secondary: { percent: "25%", term: "15 йил", initial: "25%", max: "800 млн сўмгача" }
+        name: { uz: "Халқ банки", ru: "Народный банк (Xalq banki)" },
+        primary: { percent: "17%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "15% дан", ru: "от 15%" }, max: { uz: "420 млн сўмгача", ru: "до 420 млн сум" } },
+        secondary: { percent: "25%", term: { uz: "15 йил", ru: "15 лет" }, initial: { uz: "25%", ru: "25%" }, max: { uz: "800 млн сўмгача", ru: "до 800 млн сум" } }
     },
     {
-        name: "Азия Альянс Банк",
-        primary: { percent: "18%", term: "20 йилгача", initial: "15% дан", max: "420 млн сўмгача" },
-        secondary: { percent: "26%", term: "15 йил", initial: "26% дан", max: "1 млрд 318 млн сўмгача" }
+        name: { uz: "Азия Альянс Банк", ru: "Азия Альянс Банк" },
+        primary: { percent: "18%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "15% дан", ru: "от 15%" }, max: { uz: "420 млн сўмгача", ru: "до 420 млн сум" } },
+        secondary: { percent: "26%", term: { uz: "15 йил", ru: "15 лет" }, initial: { uz: "26% дан", ru: "от 26%" }, max: { uz: "1 млрд 318 млн сўмгача", ru: "до 1 млрд 318 млн сум" } }
     },
     {
-        name: "БРБ",
-        primary: { percent: "17.5% - 18%", term: "20 йилгача", initial: "15% - 25%", max: "420 млн сўмгача" },
-        secondary: { percent: "24.5% - 26%", term: "15 йилгача", initial: "20% дан", max: "2 млрд 60 млн сўмгача" }
+        name: { uz: "БРБ", ru: "БРБ (BRB)" },
+        primary: { percent: "17.5% - 18%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "15% - 25%", ru: "15% - 25%" }, max: { uz: "420 млн сўмгача", ru: "до 420 млн сум" } },
+        secondary: { percent: "24.5% - 26%", term: { uz: "15 йилгача", ru: "до 15 лет" }, initial: { uz: "20% дан", ru: "от 20%" }, max: { uz: "2 млрд 60 млн сўмгача", ru: "до 2 млрд 60 млн сум" } }
     },
     {
-        name: "Гарант банк",
+        name: { uz: "Гарант банк", ru: "Гарант банк" },
         primary: null,
-        secondary: { percent: "26% - 28%", term: "20 йилгача", initial: "25% - 45%", max: "420 млн сўмгача" }
+        secondary: { percent: "26% - 28%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "25% - 45%", ru: "25% - 45%" }, max: { uz: "420 млн сўмгача", ru: "до 420 млн сум" } }
     },
     {
-        name: "Тенге Банк",
-        primary: { percent: "23.9% - 24.9%", term: "15 йилгача", initial: "25% дан", max: "820 млн сўмгача" },
-        secondary: { percent: "24.6%", term: "10 йилгача", initial: "28% дан", max: "820 млн сўмгача" }
+        name: { uz: "Тенге Банк", ru: "Тенге Банк" },
+        primary: { percent: "23.9% - 24.9%", term: { uz: "15 йилгача", ru: "до 15 лет" }, initial: { uz: "25% дан", ru: "от 25%" }, max: { uz: "820 млн сўмгача", ru: "до 820 млн сум" } },
+        secondary: { percent: "24.6%", term: { uz: "10 йилгача", ru: "до 10 лет" }, initial: { uz: "28% дан", ru: "от 28%" }, max: { uz: "820 млн сўмгача", ru: "до 820 млн сум" } }
     },
     {
-        name: "Ипак Йули Банк",
-        primary: { percent: "16.5% - 17.5%", term: "20 йилгача", initial: "5% - 15%", max: "420 млн сўмгача" },
-        secondary: { percent: "23% - 24.9%", term: "15 йил", initial: "25% - 50%", max: "1.5 млрд сўмгача" }
+        name: { uz: "Ипак Йўли Банк", ru: "Ипак Йули Банк" },
+        primary: { percent: "16.5% - 17.5%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "5% - 15%", ru: "5% - 15%" }, max: { uz: "420 млн сўмгача", ru: "до 420 млн сум" } },
+        secondary: { percent: "23% - 24.9%", term: { uz: "15 йил", ru: "15 лет" }, initial: { uz: "25% - 50%", ru: "25% - 50%" }, max: { uz: "1.5 млрд сўмгача", ru: "до 1.5 млрд сум" } }
     },
     {
-        name: "МКБанк",
-        primary: { percent: "18%", term: "20 йилгача", initial: "15% дан", max: "420 млн сўмгача" },
-        secondary: { percent: "24% - 26%", term: "20 йилгача", initial: "25% дан", max: "1 млрд 648 млн сўмгача" }
+        name: { uz: "МКБанк", ru: "МКБанк" },
+        primary: { percent: "18%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "15% дан", ru: "от 15%" }, max: { uz: "420 млн сўмгача", ru: "до 420 млн сум" } },
+        secondary: { percent: "24% - 26%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "25% дан", ru: "от 25%" }, max: { uz: "1 млрд 648 млн сўмгача", ru: "до 1 млрд 648 млн сум" } }
     },
     {
-        name: "Ўзмиллийбанк",
-        primary: { percent: "17% - 17.5%", term: "20 йилгача", initial: "15% - 40%", max: "420 млн сўмгача" },
-        secondary: { percent: "21.5% - 22%", term: "20 йилгача", initial: "25% дан", max: "800 млн сўмгача" }
+        name: { uz: "Ўзмиллийбанк", ru: "Узнацбанк (NBU)" },
+        primary: { percent: "17% - 17.5%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "15% - 40%", ru: "15% - 40%" }, max: { uz: "420 млн сўмгача", ru: "до 420 млн сум" } },
+        secondary: { percent: "21.5% - 22%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "25% дан", ru: "от 25%" }, max: { uz: "800 млн сўмгача", ru: "до 800 млн сум" } }
     },
     {
-        name: "Туронбанк",
-        primary: { percent: "17% - 18%", term: "20 йилгача", initial: "15% - 70%", max: "420 млн сўмгача" },
-        secondary: { percent: "26%", term: "10 йилгача", initial: "20% - 30%", max: "1 млрд 648 млн сўмгача" }
+        name: { uz: "Туронбанк", ru: "Туронбанк" },
+        primary: { percent: "17% - 18%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "15% - 70%", ru: "15% - 70%" }, max: { uz: "420 млн сўмгача", ru: "до 420 млн сум" } },
+        secondary: { percent: "26%", term: { uz: "10 йилгача", ru: "до 10 лет" }, initial: { uz: "20% - 30%", ru: "20% - 30%" }, max: { uz: "1 млрд 648 млн сўмгача", ru: "до 1 млрд 648 млн сум" } }
     },
     {
-        name: "Асакабанк",
-        primary: { percent: "20%", term: "20 йилгача", initial: "25% дан", max: "800 млн сўмгача" },
-        secondary: { percent: "24.5%", term: "10 йилгача", initial: "25%", max: "800 млн сўмгача" }
+        name: { uz: "Асакабанк", ru: "Асакабанк" },
+        primary: { percent: "20%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "25% дан", ru: "от 25%" }, max: { uz: "800 млн сўмгача", ru: "до 800 млн сум" } },
+        secondary: { percent: "24.5%", term: { uz: "10 йилгача", ru: "до 10 лет" }, initial: { uz: "25%", ru: "25%" }, max: { uz: "800 млн сўмгача", ru: "до 800 млн сум" } }
     },
     {
-        name: "ЎзСҚБ",
-        primary: { percent: "19%", term: "20 йилгача", initial: "25% дан", max: "800 млн сўмгача" },
-        secondary: { percent: "23.5% - 24.5%", term: "15 йилгача", initial: "20% дан", max: "1.5 млрд сўмгача" }
+        name: { uz: "ЎзСҚБ", ru: "Узпромстройбанк (SQB)" },
+        primary: { percent: "19%", term: { uz: "20 йилгача", ru: "до 20 лет" }, initial: { uz: "25% дан", ru: "от 25%" }, max: { uz: "800 млн сўмгача", ru: "до 800 млн сум" } },
+        secondary: { percent: "23.5% - 24.5%", term: { uz: "15 йилгача", ru: "до 15 лет" }, initial: { uz: "20% дан", ru: "от 20%" }, max: { uz: "1.5 млрд сўмгача", ru: "до 1.5 млрд сум" } }
     }
 ];
 
 export function MortgageInfoPage() {
+    const { i18n } = useTranslation();
+    const isRu = i18n.language === 'ru';
+
     const [marketType, setMarketType] = useState('primary'); // 'primary' | 'secondary'
+
+    const tString = (obj) => {
+        if (!obj) return '';
+        if (typeof obj === 'string') return obj;
+        return isRu ? obj.ru : obj.uz;
+    };
+
+    const text = {
+        title: isRu ? 'Ипотечные Кредиты' : 'Ипотека Кредитлари',
+        desc: isRu ? 'Самая актуальная информация по ипотечным кредитам для первичного и вторичного рынков. Подготовлено на основе данных от ответственных сотрудников головных офисов банков.' : 'Бирламчи ва иккиламчи бозор учун ипотека кредитлари бўйича энг сўнгги маълумотлар. Банкларнинг бош офис масъул ходимлари томонидан берилган маълумот асосида тайёрланди.',
+        primaryToggle: isRu ? 'Первичный Рынок' : 'Бирламчи Бозор',
+        secondaryToggle: isRu ? 'Вторичный Рынок' : 'Иккиламчи Бозор',
+        percentLbl: isRu ? 'Процент' : 'Фоизи',
+        termLbl: isRu ? 'Срок' : 'Муддати',
+        initialLbl: isRu ? 'Первоначальный взнос' : 'Бошланғич тўлов',
+        maxLbl: isRu ? 'Сумма' : 'Миқдори',
+        detailsBtn: isRu ? 'Подробнее' : 'Батафсил',
+        extraTitle: isRu ? 'Дополнительная информация' : 'Қўшимча маълумотлар',
+        extraText1: isRu ? '◾️ Список вкладов в долларах США и СУМ' : '◾️ АҚШ доллари ва СЎМдаги омонатлар рўйхати',
+        extraText2: isRu ? '◾️ Список микрозаймов (Скоро)' : '◾️ Микроқарзлар рўйхати (Тез кунда қўшилади)',
+        viewHousesBtn: isRu ? 'Смотреть дома' : 'Уйларни кўриш',
+        realEstateTag: isRu ? 'Недвижимость' : 'Кўчмас мулк'
+    };
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pb-20">
@@ -70,28 +98,28 @@ export function MortgageInfoPage() {
                 <div className="max-w-6xl mx-auto">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-emerald-50 text-xs font-semibold uppercase tracking-wider mb-6">
                         <Building2 size={16} />
-                        Недвижимость
+                        {text.realEstateTag}
                     </div>
                     <h1 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">
-                        Ипотека Кредитлари
+                        {text.title}
                     </h1>
                     <p className="text-emerald-100 max-w-2xl text-lg mb-8">
-                        Бирламчи ва иккиламчи бозор учун ипотека кредитлари бўйича энг сўнгги маълумотлар. Банкларнинг бош офис масъул ходимлари томонидан берилган маълумот асосида тайёрланди.
+                        {text.desc}
                     </p>
 
                     {/* Toggle */}
-                    <div className="inline-flex p-1 bg-black/20 backdrop-blur-md rounded-2xl">
+                    <div className="inline-flex p-1 bg-black/20 backdrop-blur-md rounded-2xl flex-wrap">
                         <button
                             onClick={() => setMarketType('primary')}
                             className={`px-6 md:px-8 py-3 rounded-xl font-bold transition-all ${marketType === 'primary' ? 'bg-white text-emerald-600 shadow-lg scale-100' : 'text-white/80 hover:bg-white/10 hover:text-white scale-95'}`}
                         >
-                            Бирламчи Бозор
+                            {text.primaryToggle}
                         </button>
                         <button
                             onClick={() => setMarketType('secondary')}
                             className={`px-6 md:px-8 py-3 rounded-xl font-bold transition-all ${marketType === 'secondary' ? 'bg-white text-emerald-600 shadow-lg scale-100' : 'text-white/80 hover:bg-white/10 hover:text-white scale-95'}`}
                         >
-                            Иккиламчи Бозор
+                            {text.secondaryToggle}
                         </button>
                     </div>
                 </div>
@@ -120,9 +148,9 @@ export function MortgageInfoPage() {
                                             <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
                                                 <Percent size={14} className="text-emerald-600" />
                                             </div>
-                                            <span className="text-sm font-medium">Фоизи</span>
+                                            <span className="text-sm font-medium">{text.percentLbl}</span>
                                         </div>
-                                        <div className="font-bold text-slate-900 dark:text-white">{data.percent}</div>
+                                        <div className="font-bold text-slate-900 dark:text-white">{tString(data.percent)}</div>
                                     </div>
 
                                     {/* Term */}
@@ -131,9 +159,9 @@ export function MortgageInfoPage() {
                                             <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
                                                 <Calendar size={14} className="text-blue-500" />
                                             </div>
-                                            <span className="text-sm font-medium">Муддати</span>
+                                            <span className="text-sm font-medium">{text.termLbl}</span>
                                         </div>
-                                        <div className="font-bold text-slate-900 dark:text-white">{data.term}</div>
+                                        <div className="font-bold text-slate-900 dark:text-white">{tString(data.term)}</div>
                                     </div>
 
                                     {/* Initial Payment */}
@@ -142,9 +170,9 @@ export function MortgageInfoPage() {
                                             <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
                                                 <Wallet size={14} className="text-purple-500" />
                                             </div>
-                                            <span className="text-sm font-medium">Бошланғич тўлов</span>
+                                            <span className="text-sm font-medium">{text.initialLbl}</span>
                                         </div>
-                                        <div className="font-bold text-slate-900 dark:text-white">{data.initial}</div>
+                                        <div className="font-bold text-slate-900 dark:text-white">{tString(data.initial)}</div>
                                     </div>
 
                                     {/* Max Amount */}
@@ -153,14 +181,14 @@ export function MortgageInfoPage() {
                                             <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
                                                 <CheckCircle2 size={14} className="text-orange-500" />
                                             </div>
-                                            <span className="text-sm font-medium">Миқдори</span>
+                                            <span className="text-sm font-medium">{text.maxLbl}</span>
                                         </div>
-                                        <div className="font-bold text-emerald-600">{data.max}</div>
+                                        <div className="font-bold text-emerald-600">{tString(data.max)}</div>
                                     </div>
                                 </div>
 
                                 <button className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 text-slate-700 dark:text-slate-200 font-semibold hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
-                                    Батафсил <ChevronRight size={16} />
+                                    {text.detailsBtn} <ChevronRight size={16} />
                                 </button>
                             </div>
                         );
@@ -174,15 +202,15 @@ export function MortgageInfoPage() {
                             <Info size={24} />
                         </div>
                         <div>
-                            <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Қўшимча маълумотлар</h4>
+                            <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{text.extraTitle}</h4>
                             <p className="text-slate-600 dark:text-slate-400 text-sm max-w-xl">
-                                ◾️ АҚШ доллари ва СЎМдаги омонатлар рўйхати <br />
-                                ◾️ Микроқарзлар рўйхати (Тез кунда қўшилади)
+                                {text.extraText1} <br />
+                                {text.extraText2}
                             </p>
                         </div>
                     </div>
                     <Link to="/marketplaces?category=Недвижимость" className="shrink-0 px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/25">
-                        Уйларни кўриш
+                        {text.viewHousesBtn}
                     </Link>
                 </div>
             </div>
