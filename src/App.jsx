@@ -42,6 +42,7 @@ import { CompareProvider } from './context/CompareContext';
 import { MyReturnsPage } from './pages/MyReturnsPage';
 import { ChatPage } from './pages/ChatPage';
 import { SharedWishlistPage } from './pages/SharedWishlistPage';
+import { MortgageInfoPage } from './pages/services/MortgageInfoPage';
 
 // Admin Pages
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -143,6 +144,7 @@ function App() {
                       <Route path="terms" element={<Terms />} />
                       <Route path="partners-dev" element={<PartnersDevelopers />} />
                       <Route path="contacts" element={<ContactsPage />} />
+                      <Route path="mortgage" element={<MortgageInfoPage />} />
                     </Route>
 
                     {/* Partner/Admin Routes */}
