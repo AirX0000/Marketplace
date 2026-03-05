@@ -20,6 +20,8 @@
         "categories": "Kategoriyalar",
         "auto": "Avto",
         "real_estate": "Ko'chmas mulk",
+        "services": "Xizmatlar",
+        "mortgage": "Ipoteka",
         "featured": "Tavsiya etilgan mahsulotlar",
         "load_error": "Ma'lumotlarni yuklab bo'lmadi. Server bilan bog'lanishda muammo bo'lishi mumkin.",
         "try_again": "Taqrorlash",
