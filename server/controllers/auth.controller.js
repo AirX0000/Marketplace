@@ -55,3 +55,41 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
     await prisma.otp.delete({ where: { phone } });
     res.json({ message: 'Phone verified' });
 });
+
+exports.loginByOTP = asyncHandler(async (req, res) => {
+    const { phone, code } = req.body;
+    if (!phone || !code) return res.status(400).json({ error: 'Phone and code are required' });
+
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    const jwt = require('jsonwebtoken');
+    const env = require('../config/env');
+
+    // Validate OTP
+    const otp = await prisma.oTP.findUnique({ where: { phone } });
+    if (!otp || otp.code !== code || otp.expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Invalid or expired OTP' });
+    }
+
+    // Find user with that phone
+    const user = await prisma.user.findFirst({ where: { phone } });
+    if (!user) {
+        return res.status(404).json({ error: 'No account found with this phone number. Please register first.' });
+    }
+
+    // Delete used OTP
+    await prisma.oTP.delete({ where: { phone } });
+
+    // Mark phone as verified
+    await prisma.user.update({ where: { id: user.id }, data: { isPhoneVerified: true } });
+
+    // Issue JWT
+    const token = jwt.sign(
+        { userId: user.id, role: user.role },
+        env.JWT_SECRET,
+        { expiresIn: '7d' }
+    );
+
+    const { password: _, ...safeUser } = user;
+    res.json({ token, user: safeUser });
+});

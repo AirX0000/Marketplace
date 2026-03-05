@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -26,6 +26,7 @@ const safeParse = (str, fallback = []) => {
 
 export function MarketplaceDetail() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [marketplace, setMarketplace] = useState(null);
     const [loading, setLoading] = useState(true);
     const { addToCart, toggleFavorite, isFavorite, isAuthenticated, user } = useShop();
@@ -54,6 +55,13 @@ export function MarketplaceDetail() {
         async function load() {
             try {
                 const marketData = await api.getMarketplace(id);
+
+                // Redirect service listings to dedicated ServiceDetail page
+                const serviceSubcategories = ['Риелтор', 'Нотариус', 'Оценка', 'Страхование'];
+                if (serviceSubcategories.includes(marketData.subcategory) || marketData.category === 'Услуги') {
+                    navigate(`/services/${id}`, { replace: true });
+                    return;
+                }
 
                 // Task 7: Recently Viewed
                 try {

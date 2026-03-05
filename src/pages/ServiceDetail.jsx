@@ -1,0 +1,242 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { api } from '../lib/api';
+import { useShop } from '../context/ShopContext';
+import { toast } from 'react-hot-toast';
+import {
+    Phone, MessageSquare, ArrowLeft, MapPin, Star, Shield,
+    Briefcase, CalendarDays, Share2, Heart, Flag, Check
+} from 'lucide-react';
+import { cn } from '../lib/utils';
+
+const SERVICE_ICONS = {
+    'Риелтор': '🏡',
+    'Нотариус': '📜',
+    'Оценка': '📊',
+    'Страхование': '🛡️',
+};
+
+const SERVICE_COLORS = {
+    'Риелтор': 'from-emerald-500 to-teal-600',
+    'Нотариус': 'from-violet-500 to-purple-700',
+    'Оценка': 'from-blue-500 to-indigo-700',
+    'Страхование': 'from-orange-400 to-amber-600',
+};
+
+export function ServiceDetail() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const [service, setService] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const { toggleFavorite, isFavorite, isAuthenticated, user } = useShop();
+
+    useEffect(() => {
+        async function load() {
+            try {
+                const data = await api.getMarketplace(id);
+                setService(data);
+            } catch {
+                toast.error('Не удалось загрузить данные');
+            } finally {
+                setLoading(false);
+            }
+        }
+        load();
+    }, [id]);
+
+    if (loading) return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+        </div>
+    );
+
+    if (!service) return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Объявление не найдено</h1>
+            <Link to="/marketplaces" className="mt-4 px-6 py-2 bg-primary text-white rounded-lg">В каталог</Link>
+        </div>
+    );
+
+    const isFav = isFavorite(service.id);
+    const icon = SERVICE_ICONS[service.subcategory] || SERVICE_ICONS[service.category] || '💼';
+    const gradient = SERVICE_COLORS[service.subcategory] || SERVICE_COLORS[service.category] || 'from-blue-500 to-indigo-700';
+    const phone = service.owner?.phone || service.phone;
+
+    const handleChat = async () => {
+        if (!isAuthenticated) return toast.error('Войдите, чтобы написать');
+        try {
+            await api.initiateChat(service.owner.id);
+            navigate('/profile/chat');
+        } catch { toast.error('Ошибка чата'); }
+    };
+
+    const handleShare = () => {
+        navigator.clipboard.writeText(window.location.href);
+        toast.success('Ссылка скопирована!');
+    };
+
+    return (
+        <div className="bg-slate-50 dark:bg-slate-950 min-h-screen pb-24">
+
+            {/* Sticky Header */}
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-16 z-30">
+                <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+                    <Link to="/marketplaces" className="flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
+                        <ArrowLeft className="h-4 w-4 mr-2" />Назад
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        <button onClick={handleShare} className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 hover:text-blue-600 transition-colors">
+                            <Share2 size={18} />
+                        </button>
+                        <button
+                            onClick={() => toggleFavorite(service)}
+                            className={cn("p-2 rounded-xl bg-slate-50 dark:bg-slate-800 transition-colors", isFav ? "text-red-500" : "text-slate-500 hover:text-red-500")}
+                        >
+                            <Heart size={18} className={cn(isFav && "fill-current")} />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="container mx-auto px-4 py-8 max-w-4xl">
+
+                {/* Hero Card */}
+                <div className={`bg-gradient-to-br ${gradient} rounded-3xl p-8 md:p-12 text-white mb-8 shadow-2xl relative overflow-hidden`}>
+                    <div className="absolute inset-0 bg-black/10 rounded-3xl" />
+                    <div className="relative z-10">
+                        <div className="flex items-start justify-between flex-wrap gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-4xl shadow-lg border border-white/30">
+                                    {icon}
+                                </div>
+                                <div>
+                                    <div className="text-xs font-bold uppercase tracking-widest text-white/70 mb-1">
+                                        {service.subcategory || service.category}
+                                    </div>
+                                    <h1 className="text-2xl md:text-3xl font-black leading-tight">{service.name}</h1>
+                                    {service.region && (
+                                        <div className="flex items-center gap-1.5 mt-2 text-white/80 text-sm">
+                                            <MapPin size={14} />
+                                            {service.region}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-black">
+                                    {service.price ? `${Number(service.price).toLocaleString()} сум` : 'По договорённости'}
+                                </div>
+                                {service.price && <div className="text-xs text-white/70 mt-1">за услугу</div>}
+                            </div>
+                        </div>
+
+                        {/* Badges */}
+                        <div className="flex flex-wrap gap-2 mt-6">
+                            <span className="px-3 py-1 rounded-full bg-white/20 text-xs font-bold flex items-center gap-1.5">
+                                <Shield size={12} />Проверенный специалист
+                            </span>
+                            <span className="px-3 py-1 rounded-full bg-white/20 text-xs font-bold flex items-center gap-1.5">
+                                <Check size={12} />Лицензировано
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    {/* Left: Info */}
+                    <div className="md:col-span-2 space-y-6">
+
+                        {/* About */}
+                        {service.description && (
+                            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
+                                <h2 className="text-lg font-black text-slate-900 dark:text-white mb-4">Об услуге</h2>
+                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{service.description}</p>
+                            </div>
+                        )}
+
+                        {/* Gallery */}
+                        {service.image && (
+                            <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm">
+                                <img src={service.image} alt={service.name} className="w-full h-64 object-cover" />
+                            </div>
+                        )}
+
+                        {/* Info Grid */}
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
+                            <h2 className="text-lg font-black text-slate-900 dark:text-white mb-4">Детали</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                {[
+                                    { icon: <Briefcase size={16} />, label: 'Категория', val: service.subcategory || service.category },
+                                    { icon: <MapPin size={16} />, label: 'Регион', val: service.region || '—' },
+                                    { icon: <CalendarDays size={16} />, label: 'Дата публикации', val: new Date(service.createdAt).toLocaleDateString('ru-RU') },
+                                    { icon: <Star size={16} />, label: 'Рейтинг', val: service.rating ? `${service.rating} / 5` : 'Нет отзывов' },
+                                ].map(({ icon, label, val }) => (
+                                    <div key={label} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+                                        <div className="mt-0.5 text-blue-500">{icon}</div>
+                                        <div>
+                                            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">{label}</div>
+                                            <div className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">{val}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right: Contact Sidebar */}
+                    <div className="space-y-4">
+
+                        {/* Seller */}
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
+                            <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Специалист</div>
+                            <div className="flex items-center gap-4 mb-5">
+                                <div className={`h-14 w-14 rounded-xl bg-gradient-to-br ${gradient} text-white flex items-center justify-center font-black text-xl shadow-lg`}>
+                                    {service.owner?.name?.[0] || 'S'}
+                                </div>
+                                <div>
+                                    <div className="font-black text-slate-900 dark:text-white">{service.owner?.name || 'Специалист'}</div>
+                                    <div className="text-xs font-bold text-emerald-500 flex items-center gap-1 mt-0.5">
+                                        <Check size={12} />Верифицирован
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* CTA Buttons */}
+                            <div className="space-y-3">
+                                {phone && (
+                                    <a
+                                        href={`tel:${phone}`}
+                                        className="w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-lg shadow-emerald-500/20"
+                                    >
+                                        <Phone size={16} />
+                                        Позвонить
+                                    </a>
+                                )}
+
+                                <button
+                                    onClick={handleChat}
+                                    className="w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-lg shadow-blue-600/20"
+                                >
+                                    <MessageSquare size={16} />
+                                    Написать
+                                </button>
+
+                                <button className="w-full h-12 flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-blue-600 text-slate-900 dark:text-white font-bold transition-all">
+                                    <CalendarDays size={16} />
+                                    Записаться на консультацию
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Report */}
+                        <button className="w-full text-center text-xs text-slate-400 hover:text-red-500 flex items-center justify-center gap-1.5 transition-colors py-2">
+                            <Flag size={12} />
+                            Пожаловаться на объявление
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

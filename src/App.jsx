@@ -43,6 +43,7 @@ import { MyReturnsPage } from './pages/MyReturnsPage';
 import { ChatPage } from './pages/ChatPage';
 import { SharedWishlistPage } from './pages/SharedWishlistPage';
 import { MortgageInfoPage } from './pages/services/MortgageInfoPage';
+import { ServiceDetail } from './pages/ServiceDetail';
 
 // Admin Pages
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -145,6 +146,7 @@ function App() {
                       <Route path="partners-dev" element={<PartnersDevelopers />} />
                       <Route path="contacts" element={<ContactsPage />} />
                       <Route path="mortgage" element={<MortgageInfoPage />} />
+                      <Route path="services/:id" element={<ServiceDetail />} />
                     </Route>
 
                     {/* Partner/Admin Routes */}
