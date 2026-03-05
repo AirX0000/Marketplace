@@ -134,7 +134,7 @@ export function MortgageInfoPage() {
                             <div key={idx} className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 hover:-translate-y-1 transition-transform group">
                                 <div className="flex justify-between items-start mb-6">
                                     <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 transition-colors">
-                                        {bank.name}
+                                        {tString(bank.name)}
                                     </h3>
                                     <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
                                         🏦
