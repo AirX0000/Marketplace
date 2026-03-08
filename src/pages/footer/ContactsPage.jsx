@@ -1,4 +1,20 @@
 import React from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapPin } from 'lucide-react';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for default marker icon in react-leaflet
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 export function ContactsPage() {
     return (
@@ -66,6 +82,29 @@ export function ContactsPage() {
                             Отправить
                         </button>
                     </form>
+                </div>
+            </div>
+
+            {/* Interactive Map */}
+            <div className="mt-12">
+                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <MapPin className="text-primary" /> Мы на карте
+                </h2>
+                <div className="h-[400px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 relative z-0 relative z-0">
+                    <MapContainer
+                        center={[41.311081, 69.240562]} // Tashkent center
+                        zoom={13}
+                        scrollWheelZoom={false}
+                        className="h-full w-full"
+                    >
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <Marker position={[41.311081, 69.240562]}>
+                            <Popup>
+                                <div className="font-bold">Главный офис Autohouse</div>
+                                <div className="text-xs">г. Ташкент, Мирабадский район</div>
+                            </Popup>
+                        </Marker>
+                    </MapContainer>
                 </div>
             </div>
         </div>

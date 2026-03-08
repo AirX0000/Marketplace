@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, Grid, List, Map as MapIcon, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { api } from '../lib/api';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { SearchFilters } from '../components/SearchFilters';
@@ -81,7 +82,7 @@ export function CatalogPage() {
         const urlKeys = [
             'q', 'category', 'minPrice', 'maxPrice', 'region', 'sort',
             // Car Filters
-            'minYear', 'maxYear', 'minMileage', 'maxMileage', 'transmission', 'bodyType',
+            'minYear', 'maxYear', 'minMileage', 'maxMileage', 'transmission', 'bodyType', 'brand', 'model',
             // Недвижимость Filters
             'minArea', 'maxArea', 'rooms', 'floor'
         ];
@@ -101,25 +102,29 @@ export function CatalogPage() {
     };
 
     return (
-        <div className="container py-8 px-4">
+        <main className="container py-8 px-4">
+            <Helmet>
+                <title>Каталог Товаров | Autohouse.uz</title>
+                <link rel="canonical" href="https://autohouse.uz/catalog" />
+            </Helmet>
             {/* Header */}
-            <div className="mb-8">
+            <header className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">Каталог Товаров</h1>
                 <p className="text-muted-foreground">Найдено {products.length} товаров</p>
-            </div>
+            </header>
 
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Desktop Filters Sidebar */}
-                <div className="hidden lg:block w-64 shrink-0">
+                <aside className="hidden lg:block w-64 shrink-0">
                     <SearchFilters
                         filters={filters}
                         onChange={handleFilterChange}
                         onClose={() => { }}
                     />
-                </div>
+                </aside>
 
                 {/* Mobile/Main Content */}
-                <div className="flex-1">
+                <section className="flex-1">
                     {/* Top Bar for Mobile */}
                     <div className="bg-white dark:bg-[#1a202c] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 mb-6 sticky top-20 z-10 lg:static">
                         <div className="flex items-center gap-4">
@@ -240,16 +245,17 @@ export function CatalogPage() {
                             : 'space-y-4'
                         }>
                             {products.map(product => (
-                                <MarketplaceCard
-                                    key={product.id}
-                                    marketplace={product}
-                                    viewMode={viewMode}
-                                />
+                                <article key={product.id}>
+                                    <MarketplaceCard
+                                        marketplace={product}
+                                        viewMode={viewMode}
+                                    />
+                                </article>
                             ))}
                         </div>
                     )}
-                </div>
+                </section>
             </div>
-        </div>
+        </main>
     );
 }

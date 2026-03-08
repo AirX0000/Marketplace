@@ -145,7 +145,7 @@ export function ProfileSettingsPage() {
                         <div className="relative group mb-3">
                             <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-slate-100 shadow-inner bg-slate-50 mx-auto">
                                 {profile.avatar ? (
-                                    <img src={profile.avatar} alt="Avatar" className="h-full w-full object-cover" />
+                                    <img src={profile.avatar} alt={`Avatar of ${profile.name || 'user'}`} className="h-full w-full object-cover" />
                                 ) : (
                                     <div className="h-full w-full flex items-center justify-center text-slate-300">
                                         <User className="h-16 w-16" />

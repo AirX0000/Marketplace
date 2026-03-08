@@ -54,6 +54,27 @@ export function SearchFilters({ filters, onChange, onClose }) {
                 <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2">
                     <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Авто параметры</h4>
 
+                    <div className="grid grid-cols-2 gap-2">
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-slate-900 dark:text-slate-100">Марка</label>
+                            <input
+                                type="text" placeholder="Напр. Toyota"
+                                value={filters.brand || ''}
+                                onChange={(e) => onChange('brand', e.target.value)}
+                                className="w-full px-3 py-2 border rounded-lg text-sm bg-transparent dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-slate-900 dark:text-slate-100">Модель</label>
+                            <input
+                                type="text" placeholder="Напр. Camry"
+                                value={filters.model || ''}
+                                onChange={(e) => onChange('model', e.target.value)}
+                                className="w-full px-3 py-2 border rounded-lg text-sm bg-transparent dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:outline-none"
+                            />
+                        </div>
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium mb-2 text-slate-900 dark:text-slate-100">Год выпуска</label>
                         <div className="flex gap-2">

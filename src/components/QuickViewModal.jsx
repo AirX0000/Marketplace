@@ -140,7 +140,7 @@ export function QuickViewModal({ product, onClose }) {
                     </div>
 
                     <Link
-                        to={`/marketplaces/${product.id}`}
+                        to={`/marketplaces/${product.slug || product.id}`}
                         className="block text-center text-sm text-primary hover:underline mt-4"
                         onClick={onClose}
                     >

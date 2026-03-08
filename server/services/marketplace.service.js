@@ -32,7 +32,9 @@ class MarketplaceService {
         if (search) {
             where.OR = [
                 { name: { contains: search, mode: 'insensitive' } },
-                { description: { contains: search, mode: 'insensitive' } }
+                { description: { contains: search, mode: 'insensitive' } },
+                { vin: { contains: search, mode: 'insensitive' } },
+                { partNumber: { contains: search, mode: 'insensitive' } }
             ];
         }
 
@@ -116,9 +118,14 @@ class MarketplaceService {
         };
     }
 
-    async getListingById(id) {
-        const listing = await prisma.marketplace.findUnique({
-            where: { id },
+    async getListingById(idOrSlug) {
+        const listing = await prisma.marketplace.findFirst({
+            where: {
+                OR: [
+                    { id: idOrSlug },
+                    { slug: idOrSlug }
+                ]
+            },
             include: {
                 owner: {
                     select: {

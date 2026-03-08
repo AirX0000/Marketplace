@@ -91,6 +91,121 @@ class UserService {
             select: { isWishlistPublic: true }
         });
     }
+
+    // Virtual Garage Methods
+    async getGarageCars(userId) {
+        return prisma.userCar.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' }
+        });
+    }
+
+    async addGarageCar(userId, data) {
+        return prisma.userCar.create({
+            data: {
+                ...data,
+                userId
+            }
+        });
+    }
+
+    async deleteGarageCar(userId, carId) {
+        return prisma.userCar.deleteMany({
+            where: {
+                id: carId,
+                userId
+            }
+        });
+    }
+
+    // Price Drop Watch & Push Notifications
+    async toggleWatchPrice(userId, marketplaceId) {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { watchedListings: true }
+        });
+
+        let watched = JSON.parse(user.watchedListings || "[]");
+        let isWatching = false;
+
+        if (watched.includes(marketplaceId)) {
+            watched = watched.filter(id => id !== marketplaceId);
+        } else {
+            watched.push(marketplaceId);
+            isWatching = true;
+        }
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { watchedListings: JSON.stringify(watched) }
+        });
+
+        return { isWatching, watched };
+    }
+
+    async savePushSubscription(userId, subscription) {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { pushSubscriptions: true }
+        });
+
+        let subs = user.pushSubscriptions || [];
+        if (!Array.isArray(subs)) subs = [];
+
+        // Add if not exists
+        const exists = subs.find(s => s.endpoint === subscription.endpoint);
+        if (!exists) {
+            subs.push(subscription);
+            await prisma.user.update({
+                where: { id: userId },
+                data: { pushSubscriptions: subs }
+            });
+        }
+
+        return { success: true };
+    }
+
+    async getRecommendations(userId) {
+        const cars = await prisma.userCar.findMany({ where: { userId } });
+
+        let recommended = [];
+
+        if (cars.length > 0) {
+            const searchTerms = cars.flatMap(c => [c.brand, c.model]).filter(Boolean);
+            if (searchTerms.length > 0) {
+                recommended = await prisma.marketplace.findMany({
+                    where: {
+                        status: 'APPROVED',
+                        OR: searchTerms.map(term => ({
+                            OR: [
+                                { name: { contains: term, mode: 'insensitive' } },
+                                { description: { contains: term, mode: 'insensitive' } }
+                            ]
+                        }))
+                    },
+                    take: 8,
+                    orderBy: { views: 'desc' },
+                    include: { owner: { select: { id: true, name: true, storeName: true, isVerified: true } } }
+                });
+            }
+        }
+
+        // Fallback to popular items
+        if (recommended.length < 8) {
+            const extra = await prisma.marketplace.findMany({
+                where: {
+                    status: 'APPROVED',
+                    id: { notIn: recommended.map(r => r.id) }
+                },
+                take: 8 - recommended.length,
+                orderBy: { views: 'desc' },
+                include: { owner: { select: { id: true, name: true, storeName: true, isVerified: true } } }
+            });
+            recommended = [...recommended, ...extra];
+        }
+
+        return recommended;
+    }
 }
 
 module.exports = new UserService();

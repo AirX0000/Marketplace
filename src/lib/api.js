@@ -102,6 +102,7 @@ export const api = {
     },
     getFeaturedMarketplaces: () => fetchAPI('/listings/featured'),
     getMarketplace: (id) => fetchAPI(`/listings/${id}`),
+    setTrustFlags: (id, flags) => fetchAPI(`/listings/${id}/trust`, { method: 'PATCH', body: JSON.stringify(flags) }),
 
     // AI
     getAIRecommendations: (query) => fetchAPI('/ai/recommend', { method: 'POST', body: JSON.stringify({ query }) }),
@@ -141,6 +142,19 @@ export const api = {
     getProfile: () => fetchAPI('/user/profile'),
     getUserProfile: () => fetchAPI('/user/profile'), // Alias for compatibility
     updateProfile: (data) => fetchAPI('/user/profile', { method: 'PUT', body: JSON.stringify(data) }),
+
+    // Price Drop Alerts & Push Subscriptions
+    watchPrice: (marketplaceId) => fetchAPI(`/users/watch-price/${marketplaceId}`, { method: 'POST' }),
+    subscribePush: (subscription) => fetchAPI('/users/push-subscribe', { method: 'POST', body: JSON.stringify(subscription) }),
+
+    // Recommendations
+    getRecommendations: () => fetchAPI('/users/recommendations'),
+
+    // Virtual Garage
+    getGarageCars: () => fetchAPI('/user/garage'),
+    addGarageCar: (data) => fetchAPI('/user/garage', { method: 'POST', body: JSON.stringify(data) }),
+    deleteGarageCar: (carId) => fetchAPI(`/user/garage/${carId}`, { method: 'DELETE' }),
+
     transfer: (recipientId, amount) => fetchAPI('/wallet/transfer', { method: 'POST', body: JSON.stringify({ recipientIdentifier: recipientId, amount }) }),
     topUp: (amount) => fetchAPI('/wallet/topup', { method: 'POST', body: JSON.stringify({ amount }) }),
     createPayment: (data) => fetchAPI('/payment/create', { method: 'POST', body: JSON.stringify(data) }),

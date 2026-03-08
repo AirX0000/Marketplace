@@ -39,3 +39,35 @@ exports.toggleWishlistPrivacy = asyncHandler(async (req, res) => {
     const result = await userService.toggleWishlistPrivacy(req.user.userId);
     res.json(result);
 });
+
+// Virtual Garage Controllers
+exports.getGarageCars = asyncHandler(async (req, res) => {
+    const cars = await userService.getGarageCars(req.user.userId);
+    res.json(cars);
+});
+
+exports.addGarageCar = asyncHandler(async (req, res) => {
+    const car = await userService.addGarageCar(req.user.userId, req.body);
+    res.status(201).json(car);
+});
+
+exports.deleteGarageCar = asyncHandler(async (req, res) => {
+    await userService.deleteGarageCar(req.user.userId, req.params.carId);
+    res.json({ success: true });
+});
+
+// Price Drop Alerts & Push Notifications
+exports.toggleWatchPrice = asyncHandler(async (req, res) => {
+    const result = await userService.toggleWatchPrice(req.user.userId, req.params.marketplaceId);
+    res.json(result);
+});
+
+exports.savePushSubscription = asyncHandler(async (req, res) => {
+    const result = await userService.savePushSubscription(req.user.userId, req.body);
+    res.json(result);
+});
+
+exports.getRecommendations = asyncHandler(async (req, res) => {
+    const result = await userService.getRecommendations(req.user.userId);
+    res.json(result);
+});

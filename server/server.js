@@ -46,6 +46,7 @@ const newsletterRoutes = require('./routes/newsletter.routes');
 const contentRoutes = require('./routes/content.routes');
 const passwordResetRoutes = require('./routes/password_reset.routes');
 const uploadRoutes = require('./routes/upload.routes');
+const seoRoutes = require('./routes/seo.routes');
 
 // Mount all at /api
 const apiRouter = express.Router();
@@ -78,6 +79,7 @@ try {
 
 apiRouter.use('/auth', passwordResetRoutes); // Password reset routes (e.g. /auth/reset)
 apiRouter.use('/upload', uploadRoutes);
+apiRouter.use('/seo', seoRoutes);
 
 app.use('/api', apiRouter);
 

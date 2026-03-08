@@ -1,5 +1,6 @@
 const prisma = require('../config/database');
 const emailService = require('../emailService');
+const { slugify } = require('../utils/slugify');
 
 class PartnerService {
     async getPartner(id) {
@@ -24,17 +25,23 @@ class PartnerService {
             throw new Error("Ваша учетная запись партнера еще не прошла верификацию (KYC). Добавление товаров временно заблокировано.");
         }
 
-        const { name, description, region, category, price, discount, image, images, attributes, specs } = data;
+        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl } = data;
 
         let imageList = [];
         if (Array.isArray(images) && images.length > 0) imageList = images;
         else if (image) imageList = [image];
         else imageList = ["https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"];
 
+        let baseSlug = slugify(name) || 'product';
+        const uniqueSuffix = Math.random().toString(36).substring(2, 8);
+        const slug = `${baseSlug}-${uniqueSuffix}`;
+
         return prisma.marketplace.create({
             data: {
+                slug,
                 name,
                 description,
+                videoUrl,
                 region,
                 category,
                 price: parseFloat(price) || 0,
@@ -58,9 +65,10 @@ class PartnerService {
             throw new Error("Unauthorized");
         }
 
-        const { name, description, region, category, price, discount, image, images, attributes, specs } = data;
+        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl } = data;
 
         const dataToUpdate = { name, description, region, category };
+        if (videoUrl !== undefined) dataToUpdate.videoUrl = videoUrl;
 
         // Handle Images
         if (Array.isArray(images)) {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useSearchParams } from 'react-router-dom';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { ProductSkeleton } from '../components/ui/ProductSkeleton';
@@ -357,6 +358,32 @@ export function MarketplaceListing() {
 
     return (
         <div className="bg-background min-h-screen py-8">
+            {/* Dynamic SEO per category */}
+            <Helmet>
+                <title>
+                    {isRealEstateCategory
+                        ? 'Недвижимость в Узбекистане — купить квартиру, дом, участок | Autohouse.uz'
+                        : isAutoCategory
+                            ? 'Автомобили в Узбекистане — новые и б/у авто, автосалоны | Autohouse.uz'
+                            : isServicesCategory
+                                ? 'Услуги — страхование, нотариус, оценка, риелтор | Autohouse.uz'
+                                : filters.search
+                                    ? `Поиск: «${filters.search}» — Autohouse.uz`
+                                    : 'Каталог объявлений — авто, недвижимость, запчасти | Autohouse.uz'}
+                </title>
+                <meta name="description" content={
+                    isRealEstateCategory
+                        ? 'Купить квартиру, дом или коммерческое помещение в Ташкенте и по всему Узбекистану. Новостройки, вторичка, аренда. Ипотечный калькулятор на сайте.'
+                        : isAutoCategory
+                            ? 'Купить новый или б/у автомобиль в Узбекистане. Официальные дилеры, выгодная рассрочка, Trade-in. Сотни предложений на Autohouse.uz.'
+                            : 'Маркетплейс Autohouse.uz — авто, недвижимость, запчасти, услуги по всему Узбекистану.'
+                } />
+                <link rel="canonical" href={`https://autohouse.uz/marketplaces${filters.category !== 'Все' ? `?category=${encodeURIComponent(filters.category)}` : ''}`} />
+                <meta property="og:title" content="Каталог | Autohouse.uz" />
+                <meta property="og:description" content="Авто, недвижимость, запчасти и услуги на Autohouse.uz" />
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="Autohouse.uz" />
+            </Helmet>
             <div className="container mx-auto px-4">
                 <div className="flex flex-col lg:flex-row gap-8">
 

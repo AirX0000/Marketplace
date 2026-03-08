@@ -1,6 +1,6 @@
 {
     "common": {
-        "search_placeholder": "Поиск товаров или услуг...",
+        "search_placeholder": "Поиск по названию, VIN или Артикулу...",
         "login": "Войти",
         "register": "Регистрация",
         "logout": "Выйти",

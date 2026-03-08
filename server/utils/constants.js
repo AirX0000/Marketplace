@@ -19,7 +19,8 @@ const safeUserSelect = {
     taxId: true,
     businessDescription: true,
     businessCategory: true,
-    businessAddress: true
+    businessAddress: true,
+    watchedListings: true
 };
 
 module.exports = { safeUserSelect };

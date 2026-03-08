@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
     Package, Heart, Settings, User, MapPin,
     LogOut, Bell, Shield, Wallet, ChevronRight,
@@ -16,7 +16,11 @@ import { notify } from '../lib/notify';
 export function UserDashboard() {
     const { user, logout } = useShop();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('overview');
+    const location = useLocation();
+    const [activeTab, setActiveTab] = useState(() => {
+        const params = new URLSearchParams(location.search);
+        return params.get('tab') || 'overview';
+    });
     const [loading, setLoading] = useState(false);
 
     // Data States
@@ -172,7 +176,10 @@ export function UserDashboard() {
                             ].map(item => (
                                 <button
                                     key={item.id}
-                                    onClick={() => setActiveTab(item.id)}
+                                    onClick={() => {
+                                        setActiveTab(item.id);
+                                        navigate(`/profile?tab=${item.id}`, { replace: true });
+                                    }}
                                     className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all ${activeTab === item.id
                                         ? 'bg-blue-600 text-white shadow-md'
                                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'

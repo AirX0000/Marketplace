@@ -5,6 +5,9 @@ import 'leaflet/dist/leaflet.css';
 import './i18n';
 import App from './App.jsx'
 import * as Sentry from "@sentry/react"
+import { registerSW } from 'virtual:pwa-register'
+
+registerSW({ immediate: true });
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,

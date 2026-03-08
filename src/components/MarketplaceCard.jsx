@@ -25,7 +25,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
     const handleShare = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const url = `${window.location.origin}/marketplaces/${marketplace.id}`;
+        const url = `${window.location.origin}/marketplaces/${marketplace.slug || marketplace.id}`;
         if (navigator.share) {
             navigator.share({
                 title: marketplace.name,
@@ -61,6 +61,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 e.preventDefault();
                                 setShowQuickView(true);
                             }}
+                            aria-label="Быстрый просмотр"
                             className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold"
                         >
                             <Eye className="w-8 h-8" />
@@ -80,7 +81,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                     </div>
                                 </div>
 
-                                <Link to={`/marketplaces/${marketplace.id}`}>
+                                <Link to={`/marketplaces/${marketplace.slug || marketplace.id}`}>
                                     <h3 className="text-xl font-bold group-hover:text-primary transition-colors mb-2">{displayName}</h3>
                                 </Link>
 
@@ -95,6 +96,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                         e.preventDefault();
                                         setShowQuickView(true);
                                     }}
+                                    aria-label="Быстрый просмотр"
                                     className="rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg bg-card/90 text-foreground hover:bg-card hover:scale-105 md:hidden"
                                     title="Быстрый просмотр"
                                 >
@@ -102,6 +104,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 </button>
                                 <button
                                     onClick={handleShare}
+                                    aria-label="Поделиться"
                                     className="rounded-full p-2.5 bg-card/90 text-foreground hover:bg-card hover:scale-105 backdrop-blur-md transition-all shadow-lg"
                                     title="Поделиться"
                                 >
@@ -112,6 +115,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                         e.preventDefault();
                                         isInCompare ? removeFromCompare(marketplace.id) : addToCompare(marketplace);
                                     }}
+                                    aria-label="Сравнить"
                                     className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                                     title="Сравнить"
                                 >
@@ -122,6 +126,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                         e.preventDefault();
                                         toggleFavorite(marketplace);
                                     }}
+                                    aria-label="В избранное"
                                     className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                                 >
                                     <Heart className={`h-5 w-5 ${isFav ? 'fill-current' : ''}`} />
@@ -193,7 +198,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             if (parsed.brandLogo) {
                                 return (
                                     <div className="absolute top-3 left-3 w-10 h-10 bg-card/90 backdrop-blur-sm rounded-lg p-1.5 shadow-sm border border-border flex items-center justify-center z-10">
-                                        <img src={parsed.brandLogo} alt="brand" className="w-full h-full object-contain" />
+                                        <img src={parsed.brandLogo} alt="brand" loading="lazy" decoding="async" className="w-full h-full object-contain" />
                                     </div>
                                 );
                             }
@@ -206,6 +211,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             e.preventDefault();
                             setShowQuickView(true);
                         }}
+                        aria-label="Быстрый просмотр"
                         className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold"
                     >
                         <div className="bg-card text-foreground rounded-full px-4 py-2 flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg border border-border">
@@ -220,6 +226,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 e.preventDefault();
                                 toggleFavorite(marketplace);
                             }}
+                            aria-label="В избранное"
                             className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                         >
                             <Heart className={`h-4 w-4 ${isFav ? 'fill-current' : ''}`} />
@@ -229,6 +236,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 e.preventDefault();
                                 isInCompare ? removeFromCompare(marketplace.id) : addToCompare(marketplace);
                             }}
+                            aria-label="Сравнить"
                             className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                             title="Сравнить"
                         >
@@ -258,6 +266,11 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
 
                     {/* Category badges */}
                     <div className="mb-2 flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-wider">
+                        {marketplace.isVerified && (
+                            <span className="rounded-md bg-emerald-500 text-white px-2 py-0.5 shadow-sm shadow-emerald-500/20 flex items-center gap-1">
+                                <Check className="w-2.5 h-2.5" /> Проверено
+                            </span>
+                        )}
                         {["Квартиры", "Дома", "Коммерческая", "Земля", "Apartments", "Houses", "Недвижимость"].includes(marketplace.category) && (
                             <span className="rounded-md bg-emerald-50 text-emerald-700 px-2 py-0.5 border border-emerald-100 italic">
                                 Недвижимость
@@ -281,7 +294,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                     </div>
 
 
-                    <Link to={`/marketplaces/${marketplace.id}`} className="mb-2 block">
+                    <Link to={`/marketplaces/${marketplace.slug || marketplace.id}`} className="mb-2 block">
                         <h3 className="line-clamp-1 text-lg font-bold text-foreground group-hover:text-primary transition-colors">{displayName}</h3>
                     </Link>
 
@@ -342,7 +355,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
 
                         {["Квартиры", "Дома", "Коммерческая", "Земля", "Седан", "Кроссовер", "Внедорожник", "Apartments", "Houses", "Transport"].includes(marketplace.category) ? (
                             <Link
-                                to={`/marketplaces/${marketplace.id}`}
+                                to={`/marketplaces/${marketplace.slug || marketplace.id}`}
                                 className="inline-flex h-10 items-center justify-center rounded-xl px-5 text-sm font-bold transition-all duration-300 shadow-sm border border-border bg-card text-foreground hover:bg-muted active:scale-95"
                             >
                                 Подробнее
@@ -361,8 +374,9 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         )}
                     </div>
                 </div>
-            </motion.div>
-            {showQuickView && <QuickViewModal product={marketplace} onClose={() => setShowQuickView(false)} />}
+            </motion.div >
+            {showQuickView && <QuickViewModal product={marketplace} onClose={() => setShowQuickView(false)} />
+            }
         </>
     );
 }

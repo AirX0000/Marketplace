@@ -58,6 +58,7 @@ export function Header() {
                     {(!isAuthenticated || isBuyer()) && (
                         <button
                             onClick={() => setIsCatalogOpen(true)}
+                            aria-label="Открыть каталог"
                             className="hidden md:flex items-center justify-center h-10 px-6 rounded-lg font-bold transition-all bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95"
                         >
                             <Menu className="mr-2 h-5 w-5" />
@@ -100,6 +101,7 @@ export function Header() {
                         {/* Theme Switcher */}
                         <button
                             onClick={toggleTheme}
+                            aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить темную тему'}
                             className="p-2 rounded-full hover:bg-muted transition-colors mr-2 group"
                             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                         >
@@ -115,9 +117,9 @@ export function Header() {
                         {/* User Profile / Login */}
                         {isAuthenticated ? (
                             <div className="relative group">
-                                <button className="flex items-center gap-2 p-2 rounded-xl hover:bg-muted transition-colors">
+                                <button aria-label="Профиль пользователя" className="flex items-center gap-2 p-2 rounded-xl hover:bg-muted transition-colors">
                                     {user?.avatar ? (
-                                        <img src={user.avatar} alt="avatar" className="h-8 w-8 rounded-full object-cover border border-border" />
+                                        <img src={user.avatar} alt={`Avatar of ${user.name || 'user'}`} className="h-8 w-8 rounded-full object-cover border border-border" />
                                     ) : (
                                         <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
                                             {user?.name ? user.name[0].toUpperCase() : <User size={16} />}
@@ -137,7 +139,7 @@ export function Header() {
                                 <div className="absolute top-11 right-0 w-56 bg-card border border-border shadow-lg rounded-xl overflow-hidden hidden group-hover:block animate-in fade-in zoom-in-95 duration-200 z-50">
                                     <div className="p-3 border-b border-border bg-muted/30 flex items-center gap-3">
                                         {user?.avatar ? (
-                                            <img src={user.avatar} alt="avatar" className="h-10 w-10 rounded-full object-cover border-2 border-background shadow" />
+                                            <img src={user.avatar} alt={`Avatar of ${user?.name || 'user'}`} className="h-10 w-10 rounded-full object-cover border-2 border-background shadow" />
                                         ) : (
                                             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow">
                                                 {user?.name ? user.name[0].toUpperCase() : '?'}
@@ -166,6 +168,10 @@ export function Header() {
                                         <>
                                             <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
                                                 Личный Кабинет
+                                            </Link>
+                                            <Link to="/profile?tab=garage" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground font-bold flex items-center justify-between">
+                                                Мой Гараж
+                                                <span className="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded uppercase">New</span>
                                             </Link>
                                             <Link to="/admin/listings" className="block px-4 py-2 text-sm hover:bg-muted font-bold transition-colors text-primary">
                                                 Мои объявления
@@ -210,7 +216,7 @@ export function Header() {
 
                         {/* Cart - Only for buyers */}
                         {(!isAuthenticated || isBuyer()) && (
-                            <Link to="/cart" className="relative p-2 rounded-lg hover:bg-muted transition-colors group">
+                            <Link to="/cart" aria-label="Корзина" className="relative p-2 rounded-lg hover:bg-muted transition-colors group">
                                 <ShoppingCart className="h-5 w-5 text-foreground group-hover:text-primary" />
                                 {cartCount > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white ring-2 ring-background animate-in zoom-in">

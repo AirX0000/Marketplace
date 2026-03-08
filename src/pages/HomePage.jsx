@@ -9,10 +9,13 @@ import { BannerSlider } from '../components/home/BannerSlider';
 import { RecentlyViewed } from '../components/home/RecentlyViewed';
 import { useTranslation } from 'react-i18next';
 import { api } from '../lib/api';
+import { useShop } from '../context/ShopContext';
 
 export function HomePage() {
     const { t } = useTranslation();
+    const { isAuthenticated } = useShop();
     const [featured, setFeatured] = useState([]);
+    const [recommendations, setRecommendations] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const [error, setError] = useState(null);
@@ -30,6 +33,15 @@ export function HomePage() {
                 // Handle both { listings: [...] } and [...] formats
                 const listings = Array.isArray(data) ? data : (data?.listings || []);
                 setFeatured(listings);
+
+                if (isAuthenticated) {
+                    try {
+                        const recs = await api.getRecommendations();
+                        setRecommendations(Array.isArray(recs) ? recs : []);
+                    } catch (e) {
+                        console.error("Failed to load recommendations", e);
+                    }
+                }
             } catch (error) {
                 console.error("Failed to load featured", error);
                 setError(t('home.load_error', 'Не удалось загрузить данные. Возможно, проблема с подключением к серверу.'));
@@ -75,14 +87,16 @@ export function HomePage() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent">
+        <main className="min-h-screen bg-transparent">
             <Helmet>
                 <title>Autohouse.uz - Автомобили и недвижимость в Узбекистане</title>
                 <meta name="description" content="Лучший маркетплейс автомобилей и недвижимости в Узбекистане. Безопасные сделки, проверенные продавцы." />
                 <meta property="og:title" content="Autohouse.uz" />
                 <meta property="og:type" content="website" />
             </Helmet>
+            <h1 className="sr-only">Autohouse.uz - Автомобили и недвижимость в Узбекистане</h1>
             <div className="flex flex-col min-h-screen">
+                {/* HERO SECTION WITH BANNER AND ICONS */}
                 {/* HERO SECTION WITH BANNER AND ICONS */}
                 <section className="container py-4 md:py-6 px-4 md:px-6">
                     <div className="flex flex-col gap-4 md:gap-6">
@@ -102,8 +116,29 @@ export function HomePage() {
 
 
 
+                {/* Recommendations Section */}
+                {isAuthenticated && recommendations.length > 0 && (
+                    <section className="container py-8 md:py-12 px-4 md:px-6">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                                Рекомендуем для вас
+                            </h2>
+                        </div>
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {recommendations.slice(0, 4).map((item) => (
+                                <MarketplaceCard key={`rec-${item.id}`} marketplace={item} />
+                            ))}
+                        </div>
+                    </section>
+                )}
+
                 {/* Featured Section */}
                 <section className="container py-8 md:py-12 px-4 md:px-6">
+                    <div className="flex items-center justify-between mb-8">
+                        <h2 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                            {t('home.popular', 'Популярное')}
+                        </h2>
+                    </div>
                     {loading ? (
                         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-pulse">
                             {[...Array(3)].map((_, i) => (
@@ -130,7 +165,7 @@ export function HomePage() {
                     )}
                 </section>
             </div>
-        </div>
+        </main>
     );
 }
 

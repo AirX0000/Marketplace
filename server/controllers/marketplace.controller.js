@@ -90,3 +90,18 @@ exports.deleteRegion = asyncHandler(async (req, res) => {
     res.json({ success: true });
 });
 
+// Admin: Set isVerified / isOfficial trust flags
+exports.setTrustFlags = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { isVerified, isOfficial } = req.body;
+    const prisma = require('../config/database');
+    const listing = await prisma.marketplace.update({
+        where: { id },
+        data: {
+            ...(typeof isVerified === 'boolean' && { isVerified }),
+            ...(typeof isOfficial === 'boolean' && { isOfficial }),
+        }
+    });
+    res.json(listing);
+});
+

@@ -53,10 +53,13 @@ export function AIChatbot() {
             {!isOpen && (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="h-14 w-14 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 flex items-center justify-center hover:scale-110 active:scale-95 transition-all group overflow-hidden"
+                    className="h-14 px-6 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all group overflow-hidden"
                 >
-                    <Sparkles className="h-6 w-6 absolute opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity" />
-                    <MessageSquare className="h-6 w-6 group-hover:opacity-0 transition-opacity" />
+                    <div className="relative flex items-center justify-center">
+                        <Sparkles className="h-6 w-6 absolute opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity" />
+                        <MessageSquare className="h-6 w-6 group-hover:opacity-0 transition-opacity" />
+                    </div>
+                    <span className="font-bold tracking-wide">Чат с поддержкой</span>
                 </button>
             )}
 

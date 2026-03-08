@@ -1,40 +1,67 @@
-import React, { useState } from 'react';
-import { Car, Plus, Fuel, AlertTriangle, Shield, CreditCard, X, TrendingUp, HandCoins } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Car, Plus, Fuel, AlertTriangle, Shield, CreditCard, X, TrendingUp, HandCoins, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { api } from '../../lib/api';
 
 export function MyGarage() {
-    // Mock Data - In real app, fetch from API
-    const [cars, setCars] = useState([
-        {
-            id: 1,
-            brand: "Chevrolet",
-            model: "Cobalt",
-            year: 2023,
-            plate: "01 A 777 AA",
-            color: "White",
-            mileage: 49000,
-            estimatedPrice: 10850,
-            image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=600"
-        }
-    ]);
-
+    const [cars, setCars] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [newCar, setNewCar] = useState({ brand: '', model: '', year: new Date().getFullYear(), plate: '' });
+    const [newCar, setNewCar] = useState({ brand: '', model: '', year: new Date().getFullYear(), plateNumber: '', vin: '' });
 
-    const handleAddCar = (e) => {
-        e.preventDefault();
-        const car = {
-            id: Date.now(),
-            ...newCar,
-            estimatedPrice: 12000, // Mock calculation
-            image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600"
-        };
-        setCars([...cars, car]);
-        setIsAddModalOpen(false);
-        setNewCar({ brand: '', model: '', year: new Date().getFullYear(), plate: '' });
-        toast.success("Автомобиль добавлен в гараж!");
+    useEffect(() => {
+        fetchCars();
+    }, []);
+
+    const fetchCars = async () => {
+        try {
+            setLoading(true);
+            const data = await api.getGarageCars();
+            setCars(data);
+        } catch (error) {
+            console.error('Failed to fetch garage cars:', error);
+            toast.error('Ошибка загрузки гаража');
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const handleAddCar = async (e) => {
+        e.preventDefault();
+        try {
+            const addedCar = await api.addGarageCar({
+                brand: newCar.brand,
+                model: newCar.model,
+                year: Number(newCar.year),
+                plateNumber: newCar.plateNumber,
+                vin: newCar.vin
+            });
+            setCars([addedCar, ...cars]);
+            setIsAddModalOpen(false);
+            setNewCar({ brand: '', model: '', year: new Date().getFullYear(), plateNumber: '', vin: '' });
+            toast.success("Автомобиль добавлен в гараж!");
+        } catch (error) {
+            console.error('Failed to add car:', error);
+            toast.error('Ошибка при добавлении автомобиля');
+        }
+    };
+
+    const handleDeleteCar = async (id) => {
+        if (!confirm('Вы уверены, что хотите удалить этот автомобиль?')) return;
+        try {
+            await api.deleteGarageCar(id);
+            setCars(cars.filter(car => car.id !== id));
+            toast.success("Автомобиль удален из гаража!");
+        } catch (error) {
+            console.error('Failed to delete car:', error);
+            toast.error('Ошибка при удалении автомобиля');
+        }
+    };
+
+    if (loading) {
+        return <div className="p-12 text-center text-slate-500 animate-pulse font-bold">Загрузка гаража...</div>;
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
@@ -66,7 +93,7 @@ export function MyGarage() {
                                     <img src={car.image} alt={car.model} className="w-full h-full object-cover" />
                                 </div>
                                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-lg border shadow-sm text-xs font-bold uppercase tracking-widest text-slate-900 whitespace-nowrap">
-                                    {car.plate || "NO PLATE"}
+                                    {car.plateNumber || "NO PLATE"}
                                 </div>
                             </div>
 
@@ -76,14 +103,17 @@ export function MyGarage() {
                                     <div>
                                         <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">{car.brand}</div>
                                         <h3 className="text-3xl font-black text-slate-900">{car.model}</h3>
-                                        <div className="text-slate-500 font-medium">{car.year} • {car.mileage?.toLocaleString() || 0} км</div>
+                                        <div className="text-slate-500 font-medium">{car.year} • Уникальный ID: {car.id.slice(0, 8)}</div>
+                                        {car.vin && <div className="mt-2 text-xs font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded w-fit">VIN: {car.vin}</div>}
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Оценка</div>
-                                        <div className="text-2xl font-black text-blue-600">${car.estimatedPrice.toLocaleString()}</div>
-                                        <div className="text-xs text-green-500 font-bold flex items-center justify-end gap-1">
-                                            <TrendingUp size={12} /> +2.4% за месяц
-                                        </div>
+                                        <button
+                                            onClick={() => handleDeleteCar(car.id)}
+                                            className="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors"
+                                            title="Удалить из гаража"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
                                     </div>
                                 </div>
 
@@ -94,17 +124,11 @@ export function MyGarage() {
                                     <StatusBadge label="Штрафы" active={false} count={0} />
                                 </div>
 
-                                {/* Actions Grid */}
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                    <QuickAction icon={Fuel} label="Заправки" color="text-purple-600" bg="bg-purple-50 hover:bg-purple-100" />
-                                    <QuickAction icon={HandCoins} label="Мойки" color="text-blue-600" bg="bg-blue-50 hover:bg-blue-100" />
-                                    <QuickAction icon={AlertTriangle} label="Штрафы" color="text-orange-600" bg="bg-orange-50 hover:bg-orange-100" count={0} />
-                                    <QuickAction icon={CreditCard} label="Документы" color="text-emerald-600" bg="bg-emerald-50 hover:bg-emerald-100" />
-                                </div>
+                                {/* Removed action grid to simplify MVP */}
 
                                 <div className="pt-4 border-t border-slate-100 flex gap-4">
-                                    <Link to={`/admin/listings?create=true&carId=${car.id}`} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 rounded-xl flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-blue-500/20">
-                                        Продать за ${car.estimatedPrice.toLocaleString()}
+                                    <Link to={`/marketplaces?vin=${car.vin}`} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 rounded-xl flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-blue-500/20">
+                                        Найти запчасти на {car.model}
                                     </Link>
                                     <button className="h-12 w-12 rounded-xl border-2 border-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-slate-900 transition-colors">
                                         <Shield size={20} />
@@ -173,8 +197,12 @@ export function MyGarage() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium mb-1">Гос. номер</label>
-                                    <input type="text" value={newCar.plate} onChange={e => setNewCar({ ...newCar, plate: e.target.value.toUpperCase() })} className="w-full p-3 bg-slate-50 rounded-xl border-transparent focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-bold uppercase" placeholder="01 A..." />
+                                    <input type="text" value={newCar.plateNumber} onChange={e => setNewCar({ ...newCar, plateNumber: e.target.value.toUpperCase() })} className="w-full p-3 bg-slate-50 rounded-xl border-transparent focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-bold uppercase" placeholder="01 A KLA" />
                                 </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">VIN (Номер кузова) <span className="text-xs text-slate-400 font-normal">(опционально)</span></label>
+                                <input type="text" value={newCar.vin} onChange={e => setNewCar({ ...newCar, vin: e.target.value.toUpperCase() })} className="w-full p-3 bg-slate-50 rounded-xl border-transparent focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-bold uppercase" placeholder="XWB0000..." />
                             </div>
                             <button type="submit" className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg shadow-slate-900/20 active:scale-95 transition-all mt-4">
                                 Добавить в гараж

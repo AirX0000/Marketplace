@@ -17,6 +17,18 @@ router.delete('/addresses/:id', authenticateToken, userController.deleteAddress)
 router.get('/wishlist/:userId', userController.getSharedFavorites); // Public
 router.put('/wishlist/privacy', authenticateToken, userController.toggleWishlistPrivacy);
 
+// Virtual Garage
+router.get('/garage', authenticateToken, userController.getGarageCars);
+router.post('/garage', authenticateToken, userController.addGarageCar);
+router.delete('/garage/:carId', authenticateToken, userController.deleteGarageCar);
+
+// Price Drop / Push Notifications
+router.post('/watch-price/:marketplaceId', authenticateToken, userController.toggleWatchPrice);
+router.post('/push-subscribe', authenticateToken, userController.savePushSubscription);
+
+// Recommendations
+router.get('/recommendations', authenticateToken, userController.getRecommendations);
+
 // Admin Routes (mounted at /api/admin)
 const adminRouter = express.Router();
 

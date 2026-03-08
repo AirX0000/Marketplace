@@ -315,6 +315,35 @@ export function AdminListings() {
                                                                     <X size={16} />
                                                                 </button>
                                                             )}
+                                                            {/* Trust Badge Toggles */}
+                                                            <button
+                                                                onClick={async () => {
+                                                                    try {
+                                                                        const next = !item.isVerified;
+                                                                        await api.setTrustFlags(item.id, { isVerified: next });
+                                                                        setListings(listings.map(l => l.id === item.id ? { ...l, isVerified: next } : l));
+                                                                        toast.success(next ? '✅ Продавец верифицирован' : 'Верификация снята');
+                                                                    } catch { toast.error('Ошибка'); }
+                                                                }}
+                                                                className={`h-8 w-8 inline-flex items-center justify-center rounded-md border transition-colors ${item.isVerified ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-200 text-slate-500 hover:bg-emerald-50 hover:text-emerald-700'}`}
+                                                                title={item.isVerified ? 'Снять верификацию' : 'Верифицировать продавца'}
+                                                            >
+                                                                <Shield size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={async () => {
+                                                                    try {
+                                                                        const next = !item.isOfficial;
+                                                                        await api.setTrustFlags(item.id, { isOfficial: next });
+                                                                        setListings(listings.map(l => l.id === item.id ? { ...l, isOfficial: next } : l));
+                                                                        toast.success(next ? '⭐ Официальный дилер присвоен' : 'Статус дилера снят');
+                                                                    } catch { toast.error('Ошибка'); }
+                                                                }}
+                                                                className={`h-8 w-8 inline-flex items-center justify-center rounded-md border transition-colors ${item.isOfficial ? 'bg-amber-500 text-white border-amber-500' : 'border-slate-200 text-slate-500 hover:bg-amber-50 hover:text-amber-700'}`}
+                                                                title={item.isOfficial ? 'Снять статус дилера' : 'Присвоить официального дилера'}
+                                                            >
+                                                                <Sparkles size={14} />
+                                                            </button>
                                                             <button
                                                                 onClick={() => handleDelete(item.id)}
                                                                 className="h-8 w-8 inline-flex items-center justify-center rounded-md border text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"

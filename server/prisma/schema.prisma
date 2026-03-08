@@ -62,12 +62,37 @@ model User {
   
   loanApplications LoanApplication[]
   paymentOrders    PaymentOrder[]
+  cars             UserCar[] // Added for Virtual Garage
+  
+  // Push Notifications & Price Alerts
+  pushSubscriptions Json?
+  watchedListings   String @default("[]") // JSON array of Marketplace IDs
+}
+
+model UserCar {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  brand     String
+  model     String
+  year      Int?
+  vin       String?
+  bodyType  String?
+  plateNumber String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Marketplace {
   id          String   @id @default(uuid())
+  slug        String?  @unique
   name        String
   description String
+  videoUrl    String?
   name_uz     String?  // Uzbek translation of name
   description_uz String? // Uzbek translation of description
   region      String
@@ -91,10 +116,14 @@ model Marketplace {
   isAvailable Boolean  @default(true)
   
   // Product Attributes (Phase 3)
+  partNumber          String? // Added for Advanced Search
+  vin                 String? // Added for Advanced Search
   attributes          Json?   // { "color": "black", "storage": "256GB" }
   specs               Json?   // Unified specifications
   
   // Monetization (Phase 4)
+  isVerified          Boolean   @default(false) // Trust Badge
+  isOfficial          Boolean   @default(false) // Trust Badge
   isFeatured          Boolean   @default(false)
   featuredUntil       DateTime?
   status             String  @default("PENDING") // PENDING, APPROVED, REJECTED, ARCHIVED
