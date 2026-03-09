@@ -95,102 +95,108 @@ export function CatalogPage() {
             </div>
 
             <div className="container mx-auto py-12 px-4 relative z-10">
-                {/* Header Section */}
-                <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="h-2 w-12 bg-purple-600 rounded-full" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-400">Маркетплейс</span>
+                {/* Header Section - Hidden in Map Mode for immersive experience */}
+                {viewMode !== 'map' && (
+                    <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="h-2 w-12 bg-purple-600 rounded-full" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-400">Маркетплейс</span>
+                            </div>
+                            <h1 className="text-5xl font-black uppercase tracking-tighter">
+                                Каталог <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">Объявлений</span>
+                            </h1>
+                            <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">
+                                Найдено {products.length} уникальных предложений
+                            </p>
                         </div>
-                        <h1 className="text-5xl font-black uppercase tracking-tighter">
-                            Каталог <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">Объявлений</span>
-                        </h1>
-                        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">
-                            Найдено {products.length} уникальных предложений
-                        </p>
-                    </div>
 
-                    {/* View Controls & Sort */}
-                    <div className="flex flex-wrap items-center gap-4 bg-[#191624] p-3 rounded-3xl border border-white/5 shadow-2xl">
-                        <div className="flex bg-[#13111C] p-1.5 rounded-2xl border border-white/10">
-                            {[
-                                { id: 'grid', icon: Grid, label: 'Сетка' },
-                                { id: 'list', icon: List, label: 'Список' },
-                                { id: 'map', icon: MapIcon, label: 'Карта' }
-                            ].map((mode) => (
-                                <button
-                                    key={mode.id}
-                                    onClick={() => setViewMode(mode.id)}
-                                    className={cn(
-                                        "p-2.5 rounded-xl transition-all active:scale-90 flex items-center gap-2",
-                                        viewMode === mode.id
-                                            ? "bg-purple-600 text-white shadow-lg"
-                                            : "text-slate-500 hover:text-white hover:bg-white/5"
-                                    )}
-                                    title={mode.label}
+                        {/* View Controls & Sort */}
+                        <div className="flex flex-wrap items-center gap-4 bg-[#191624] p-3 rounded-3xl border border-white/5 shadow-2xl">
+                            <div className="flex bg-[#13111C] p-1.5 rounded-2xl border border-white/10">
+                                {[
+                                    { id: 'grid', icon: Grid, label: 'Сетка' },
+                                    { id: 'list', icon: List, label: 'Список' },
+                                    { id: 'map', icon: MapIcon, label: 'Карта' }
+                                ].map((mode) => (
+                                    <button
+                                        key={mode.id}
+                                        onClick={() => setViewMode(mode.id)}
+                                        className={cn(
+                                            "p-2.5 rounded-xl transition-all active:scale-90 flex items-center gap-2",
+                                            viewMode === mode.id
+                                                ? "bg-purple-600 text-white shadow-lg"
+                                                : "text-slate-500 hover:text-white hover:bg-white/5"
+                                        )}
+                                        title={mode.label}
+                                    >
+                                        <mode.icon size={18} />
+                                        {viewMode === mode.id && <span className="text-[10px] font-black uppercase tracking-widest overflow-hidden block max-w-[100px] transition-all">{mode.label}</span>}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="h-8 w-[1px] bg-white/10 mx-2 hidden sm:block" />
+
+                            <div className="relative group">
+                                <select
+                                    value={filters.sortBy || 'newest'}
+                                    onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                                    className="pl-4 pr-10 py-3 bg-[#13111C] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-300 focus:outline-none focus:border-purple-500/50 appearance-none cursor-pointer group-hover:bg-white/5 transition-all outline-none"
                                 >
-                                    <mode.icon size={18} />
-                                    {viewMode === mode.id && <span className="text-[10px] font-black uppercase tracking-widest overflow-hidden block max-w-[100px] transition-all">{mode.label}</span>}
-                                </button>
-                            ))}
+                                    <option value="newest">Новинки</option>
+                                    <option value="price_asc">Дешевле</option>
+                                    <option value="price_desc">Дороже</option>
+                                    <option value="popular">Популярные</option>
+                                </select>
+                                <SlidersHorizontal size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none group-hover:text-purple-400 transition-colors" />
+                            </div>
                         </div>
-
-                        <div className="h-8 w-[1px] bg-white/10 mx-2 hidden sm:block" />
-
-                        <div className="relative group">
-                            <select
-                                value={filters.sortBy || 'newest'}
-                                onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                                className="pl-4 pr-10 py-3 bg-[#13111C] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-300 focus:outline-none focus:border-purple-500/50 appearance-none cursor-pointer group-hover:bg-white/5 transition-all outline-none"
-                            >
-                                <option value="newest">Новинки</option>
-                                <option value="price_asc">Дешевле</option>
-                                <option value="price_desc">Дороже</option>
-                                <option value="popular">Популярные</option>
-                            </select>
-                            <SlidersHorizontal size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none group-hover:text-purple-400 transition-colors" />
-                        </div>
-                    </div>
-                </header>
+                    </header>
+                )}
 
                 <div className="flex flex-col lg:flex-row gap-10">
-                    {/* Desktop Filters Sidebar */}
-                    <aside className="hidden lg:block w-72 shrink-0 space-y-8">
-                        <div className="bg-[#191624] rounded-[2.5rem] border border-white/5 p-8 shadow-2xl sticky top-28">
-                            <div className="flex items-center justify-between mb-8">
-                                <h3 className="font-black text-xs uppercase tracking-[0.2em] text-slate-400">Фильтры</h3>
-                                <button onClick={() => handleFilterChange('reset', null)} className="text-[9px] font-black uppercase tracking-widest text-purple-400 hover:text-purple-300 transition-colors">Сбросить</button>
+                    {/* Desktop Filters Sidebar - Hidden in Map Mode */}
+                    {viewMode !== 'map' && (
+                        <aside className="hidden lg:block w-72 shrink-0 space-y-8">
+                            <div className="bg-[#191624] rounded-[2.5rem] border border-white/5 p-8 shadow-2xl sticky top-28">
+                                <div className="flex items-center justify-between mb-8">
+                                    <h3 className="font-black text-xs uppercase tracking-[0.2em] text-slate-400">Фильтры</h3>
+                                    <button onClick={() => handleFilterChange('reset', null)} className="text-[9px] font-black uppercase tracking-widest text-purple-400 hover:text-purple-300 transition-colors">Сбросить</button>
+                                </div>
+                                <SearchFilters
+                                    filters={filters}
+                                    onChange={handleFilterChange}
+                                    onClose={() => { }}
+                                />
                             </div>
-                            <SearchFilters
-                                filters={filters}
-                                onChange={handleFilterChange}
-                                onClose={() => { }}
-                            />
-                        </div>
-                    </aside>
+                        </aside>
+                    )}
 
                     {/* Main Content Area */}
                     <section className="flex-1">
-                        {/* Instant Search Bar */}
-                        <div className="bg-[#191624] rounded-[2.5rem] border border-white/5 p-4 mb-10 shadow-2xl relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-blue-600/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
-                            <div className="relative flex items-center gap-4">
-                                <Search className="ml-4 text-slate-500 group-focus-within:text-purple-400 transition-colors" size={24} />
-                                <input
-                                    type="text"
-                                    placeholder="Найти среди тысяч объявлений..."
-                                    value={filters.search || ''}
-                                    onChange={(e) => handleFilterChange('search', e.target.value)}
-                                    className="flex-1 bg-transparent py-4 text-lg font-bold placeholder:text-slate-700 outline-none text-white uppercase tracking-tight"
-                                />
-                                <button
-                                    onClick={() => setShowFilters(true)}
-                                    className="lg:hidden p-4 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 text-white transition-all active:scale-90"
-                                >
-                                    <SlidersHorizontal size={20} />
-                                </button>
+                        {/* Instant Search Bar - Hidden in Map Mode (MapSearch has its own) */}
+                        {viewMode !== 'map' && (
+                            <div className="bg-[#191624] rounded-[2.5rem] border border-white/5 p-4 mb-10 shadow-2xl relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-blue-600/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
+                                <div className="relative flex items-center gap-4">
+                                    <Search className="ml-4 text-slate-500 group-focus-within:text-purple-400 transition-colors" size={24} />
+                                    <input
+                                        type="text"
+                                        placeholder="Найти среди тысяч объявлений..."
+                                        value={filters.search || ''}
+                                        onChange={(e) => handleFilterChange('search', e.target.value)}
+                                        className="flex-1 bg-transparent py-4 text-lg font-bold placeholder:text-slate-700 outline-none text-white uppercase tracking-tight"
+                                    />
+                                    <button
+                                        onClick={() => setShowFilters(true)}
+                                        className="lg:hidden p-4 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 text-white transition-all active:scale-90"
+                                    >
+                                        <SlidersHorizontal size={20} />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Mobile Filters Drawer */}
                         <AnimatePresence>
@@ -271,12 +277,14 @@ export function CatalogPage() {
                                     key="map"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    className="h-[700px] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl relative"
+                                    className="h-[calc(100vh-100px)] -mt-10 -mx-4 md:-mx-10 lg:-mx-4 rounded-none md:rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl relative z-[100]"
                                 >
-                                    <MapSearch products={products} onBoundsChange={() => { }} />
-                                    <div className="absolute top-6 right-6 bg-[#191624]/80 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-white shadow-xl">
-                                        Интерактивная карта
-                                    </div>
+                                    <MapSearch
+                                        products={products}
+                                        onBoundsChange={() => { }}
+                                        viewMode={viewMode}
+                                        setViewMode={setViewMode}
+                                    />
                                 </motion.div>
                             ) : (
                                 <motion.div
