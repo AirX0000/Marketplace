@@ -11,7 +11,7 @@ export default function CheckoutMap({ onLocationSelect, onAddressFound }) {
 
     // API Key (Start with empty string or demo key if available, Yandex often allows basic generic usage or warns)
     // For production, you should get a real key: https://developer.tech.yandex.ru/
-    const API_KEY = '';
+    const API_KEY = import.meta.env.VITE_YANDEX_MAP_KEY || '';
 
     const mapRef = useRef(null);
     const ymapsRef = useRef(null);

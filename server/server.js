@@ -13,8 +13,10 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "img-src": ["'self'", "data:", "https:", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
-            "connect-src": ["'self'", "https:", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
+            "script-src": ["'self'", "'unsafe-inline'", "https://api-maps.yandex.ru", "https://yandex.st"],
+            "img-src": ["'self'", "data:", "https:", "https://*.maps.yandex.net", "https://yandex.ru", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
+            "connect-src": ["'self'", "https:", "https://api-maps.yandex.ru", "https://*.maps.yandex.net", "https://yandex.ru", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
+            "frame-src": ["'self'", "https://api-maps.yandex.ru"],
         },
     },
 }));

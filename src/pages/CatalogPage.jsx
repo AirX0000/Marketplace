@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, Grid, List, Map as MapIcon, X } from 'lucide-react';
+import { Search, SlidersHorizontal, Grid, List, Map as MapIcon, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { api } from '../lib/api';
+import { cn } from '../lib/utils';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { SearchFilters } from '../components/SearchFilters';
-import { MapSearch } from '../components/MapSearch'; // Import MapSearch
+import { MapSearch } from '../components/MapSearch';
 
 export function CatalogPage() {
     const [searchParams, setSearchParams] = useSearchParams();

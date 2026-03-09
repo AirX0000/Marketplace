@@ -4,9 +4,10 @@ import { ChevronRight } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 const CATEGORIES = [
-    { id: 1, key: "Transport", name: "Автомобили", sub: ["Автосалон", "Вторичка", "Первичка"] },
-    { id: 2, key: "Недвижимость", name: "Недвижимость", sub: ["Вторичные", "Новостройки", "Нежилое помещение", "Аренда"] },
-    { id: 3, key: "Услуги", name: "Услуги", sub: ["Страхование", "Оценка", "Нотариус", "Риелтор"] }
+    { id: 1, key: "Transport", name: "Transport", sub: ["Avtosalon", "Vtorichka", "Pervichka", "Cars", "Motorcycles", "Trucks"] },
+    { id: 2, key: "Недвижимость", name: "Недвижимость", sub: ["Vtorichnye", "Novostroyki", "Nejiloe", "Arenda", "Apartments", "Houses", "Commercial", "Land"] },
+    { id: 3, key: "Услуги", name: "Услуги", sub: ["Strahovanie", "Otsenka", "Notarius", "Rieltor", "Services"] },
+    { id: 4, key: "Электроника", name: "Электроника", sub: ["Smartphones", "Laptops", "Tablets", "Accessories"] }
 ];
 
 export function CatalogMenu({ isOpen, onClose }) {

@@ -65,7 +65,9 @@ export function MarketplaceDetail() {
     // Price Watch State
     const [isWatchingPrice, setIsWatchingPrice] = useState(false);
 
-    const displayPrice = selectedMod?.price || marketplace?.price || 0;
+    const displayPrice = useMemo(() => {
+        return selectedMod?.price || marketplace?.price || 0;
+    }, [selectedMod, marketplace]);
 
     // Monthly Payment Calculation
     const monthlyPayment = useMemo(() => {
@@ -84,6 +86,36 @@ export function MarketplaceDetail() {
         return loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
     }, [displayPrice, downPayment, term, selectedBank, marketplace]);
 
+    // Images and attributes memoized for safety
+    const allImages = useMemo(() => {
+        if (!marketplace) return ['/placeholder.jpg'];
+        let imagesArray = [];
+        try {
+            if (Array.isArray(marketplace.images)) {
+                imagesArray = marketplace.images;
+            } else if (typeof marketplace.images === 'string') {
+                if (marketplace.images.startsWith('[')) {
+                    imagesArray = JSON.parse(marketplace.images);
+                } else {
+                    imagesArray = [marketplace.images];
+                }
+            }
+        } catch (e) {
+            console.error("Failed to parse images", e);
+        }
+        return imagesArray.length > 0 ? imagesArray : [marketplace.imageUrl || marketplace.image || '/placeholder.jpg'];
+    }, [marketplace]);
+
+    const breadcrumbs = useMemo(() => {
+        if (!marketplace) return [];
+        return [
+            { label: 'Главная', path: '/' },
+            { label: 'Каталог', path: '/catalog' },
+            { label: marketplace.categoryName || marketplace.category, path: `/catalog?category=${marketplace.category}` },
+            { label: marketplace.name }
+        ];
+    }, [marketplace]);
+
     const schemaMarkup = useMemo(() => {
         if (!marketplace) return null;
 
@@ -94,7 +126,7 @@ export function MarketplaceDetail() {
             "@context": "https://schema.org/",
             "@type": "Product",
             "name": marketplace.name,
-            "image": activeImage || "https://autohouse.uz/logo.png",
+            "image": activeImage || (allImages && allImages[0]) || "https://autohouse.uz/logo.png",
             "description": marketplace.description || `Купить ${marketplace.name} на Autohouse.uz`,
             "brand": {
                 "@type": "Brand",
@@ -109,7 +141,7 @@ export function MarketplaceDetail() {
                 "availability": availability
             }
         };
-    }, [marketplace, activeImage, displayPrice]);
+    }, [marketplace, activeImage, displayPrice, allImages]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -211,6 +243,12 @@ export function MarketplaceDetail() {
         }
     };
 
+    const attrs = marketplace?.attributes || {};
+    const modifications = attrs.modifications || [];
+    const colors = attrs.colors || [];
+    const isAuto = marketplace?.category === 'AUTO';
+    const isRealEstate = marketplace?.category === 'REAL_ESTATE';
+
     if (loading) {
         return (
             <div className="container mx-auto px-4 py-8 max-w-7xl animate-pulse">
@@ -233,36 +271,6 @@ export function MarketplaceDetail() {
     }
 
     if (!marketplace) return <div className="text-center py-20 font-bold text-slate-500">Объявление не найдено</div>;
-
-    // Harden image array extraction
-    let imagesArray = [];
-    try {
-        if (Array.isArray(marketplace.images)) {
-            imagesArray = marketplace.images;
-        } else if (typeof marketplace.images === 'string') {
-            if (marketplace.images.startsWith('[')) {
-                imagesArray = JSON.parse(marketplace.images);
-            } else {
-                imagesArray = [marketplace.images];
-            }
-        }
-    } catch (e) {
-        console.error("Failed to parse images", e);
-    }
-
-    const allImages = imagesArray.length > 0 ? imagesArray : [marketplace.imageUrl || marketplace.image || '/placeholder.jpg'];
-    const attrs = marketplace.attributes || {};
-    const modifications = attrs.modifications || [];
-    const colors = attrs.colors || [];
-    const breadcrumbs = [
-        { label: 'Главная', path: '/' },
-        { label: 'Каталог', path: '/catalog' },
-        { label: marketplace.categoryName || marketplace.category, path: `/catalog?category=${marketplace.category}` },
-        { label: marketplace.name }
-    ];
-
-    const isAuto = marketplace?.category === 'AUTO';
-    const isRealEstate = marketplace?.category === 'REAL_ESTATE';
 
     return (
         <div className="min-h-screen bg-[#13111C]">

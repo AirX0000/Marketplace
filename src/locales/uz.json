@@ -106,5 +106,22 @@
         "no_data": "Ma'lumotlar yo'q",
         "recent_orders": "Platformadagi so'nggi buyurtmalar",
         "no_orders": "Buyurtmalar hali yo'q."
+    },
+    "ads": {
+        "step": "Bosqich",
+        "new_ad": "Yangi e'lon berish",
+        "edit_ad": "E'lonni tahrirlash",
+        "step1_desc": "Asosiy ma'lumotlarni kiriting",
+        "step2_desc": "Xususiyatlarni to'ldiring",
+        "step3_desc": "Media va Joylashuvni tanlang",
+        "step4_desc": "Ma'lumotlarni tekshiring",
+        "enter_name_first": "Siz avval nomini kiritishingiz kerak",
+        "ai_generating": "AI tavsif yaratyapti...",
+        "description_generated": "Tavsif tayyor!",
+        "ai_failed": "AI xatosi",
+        "name_required": "Nomi kiritilishi shart",
+        "price_required": "Narxi kiritilishi shart",
+        "location_required": "Xaritada joyni belgilang",
+        "upload_failed": "Yuklab bo'lmadi"
     }
 }

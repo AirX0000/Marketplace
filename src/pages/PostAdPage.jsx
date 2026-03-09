@@ -74,15 +74,10 @@ export function PostAdPage() {
     return (
         <div className="min-h-[calc(100vh-80px)] bg-slate-50 py-10 px-4 sm:px-6">
             <div className="max-w-4xl mx-auto">
-                <div className="mb-8 text-center">
-                    <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Разместить объявление</h1>
-                    <p className="text-slate-500">Заполните детали, чтобы быстро продать свой товар</p>
-                </div>
-
                 <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-2 sm:p-6 overflow-hidden">
                     <ListingModal
                         asPage={true}
-                        initialCategory="Smartphones"
+                        initialCategory="Cars"
                         onSave={handleSave}
                         onClose={() => navigate(-1)}
                     />
