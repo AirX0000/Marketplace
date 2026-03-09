@@ -65,6 +65,8 @@ export function MarketplaceDetail() {
     // Price Watch State
     const [isWatchingPrice, setIsWatchingPrice] = useState(false);
 
+    const displayPrice = selectedMod?.price || marketplace?.price || 0;
+
     // Monthly Payment Calculation
     const monthlyPayment = useMemo(() => {
         if (!marketplace) return 0;
@@ -116,7 +118,16 @@ export function MarketplaceDetail() {
             try {
                 const res = await api.getMarketplace(slug);
                 setMarketplace(res);
-                setActiveImage(res.imageUrl || res.images?.[0] || '');
+
+                // Safe image array extraction for initial state
+                let initialImages = [];
+                if (Array.isArray(res.images)) {
+                    initialImages = res.images;
+                } else if (typeof res.images === 'string' && res.images.startsWith('[')) {
+                    try { initialImages = JSON.parse(res.images); } catch (e) { }
+                }
+
+                setActiveImage(res.imageUrl || res.image || initialImages[0] || '');
 
                 if (res.attributes?.colors?.length > 0) {
                     setSelectedColor(res.attributes.colors[0]);
@@ -223,7 +234,23 @@ export function MarketplaceDetail() {
 
     if (!marketplace) return <div className="text-center py-20 font-bold text-slate-500">Объявление не найдено</div>;
 
-    const allImages = marketplace.images?.length > 0 ? marketplace.images : [marketplace.imageUrl || '/placeholder.jpg'];
+    // Harden image array extraction
+    let imagesArray = [];
+    try {
+        if (Array.isArray(marketplace.images)) {
+            imagesArray = marketplace.images;
+        } else if (typeof marketplace.images === 'string') {
+            if (marketplace.images.startsWith('[')) {
+                imagesArray = JSON.parse(marketplace.images);
+            } else {
+                imagesArray = [marketplace.images];
+            }
+        }
+    } catch (e) {
+        console.error("Failed to parse images", e);
+    }
+
+    const allImages = imagesArray.length > 0 ? imagesArray : [marketplace.imageUrl || marketplace.image || '/placeholder.jpg'];
     const attrs = marketplace.attributes || {};
     const modifications = attrs.modifications || [];
     const colors = attrs.colors || [];
@@ -234,7 +261,6 @@ export function MarketplaceDetail() {
         { label: marketplace.name }
     ];
 
-    const displayPrice = selectedMod?.price || marketplace?.price || 0;
     const isAuto = marketplace?.category === 'AUTO';
     const isRealEstate = marketplace?.category === 'REAL_ESTATE';
 
@@ -341,7 +367,7 @@ export function MarketplaceDetail() {
                                     </span>
                                 </div>
                             </div>
-                            {allImages.length > 1 && (
+                            {Array.isArray(allImages) && allImages.length > 1 && (
                                 <div className="p-8 flex gap-6 overflow-x-auto no-scrollbar relative z-10 bg-[#191624]/50 backdrop-blur-xl">
                                     {allImages.map((img, idx) => (
                                         <button
