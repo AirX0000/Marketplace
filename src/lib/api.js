@@ -102,6 +102,7 @@ export const api = {
     },
     getFeaturedMarketplaces: () => fetchAPI('/listings/featured'),
     getMarketplace: (id) => fetchAPI(`/listings/${id}`),
+    getMarketplaceDetail: (id) => fetchAPI(`/listings/${id}`), // Alias for detail
     setTrustFlags: (id, flags) => fetchAPI(`/listings/${id}/trust`, { method: 'PATCH', body: JSON.stringify(flags) }),
 
     // AI
@@ -145,6 +146,7 @@ export const api = {
 
     // Price Drop Alerts & Push Subscriptions
     watchPrice: (marketplaceId) => fetchAPI(`/users/watch-price/${marketplaceId}`, { method: 'POST' }),
+    checkWatchStatus: (marketplaceId) => fetchAPI(`/users/watch-price/${marketplaceId}`),
     subscribePush: (subscription) => fetchAPI('/users/push-subscribe', { method: 'POST', body: JSON.stringify(subscription) }),
 
     // Recommendations
@@ -277,6 +279,7 @@ export const api = {
 
     // Loans
     createLoanApplication: (data) => fetchAPI('/loans', { method: 'POST', body: JSON.stringify(data) }),
+    submitLoanApplication: (data) => fetchAPI('/loans', { method: 'POST', body: JSON.stringify(data) }), // Alias
     getMyLoanApplications: () => fetchAPI('/loans/my'),
     getAllLoanApplications: (status) => fetchAPI('/loans/admin/all', { params: status ? { status } : {} }),
     updateLoanApplicationStatus: (id, status, adminNote) => fetchAPI(`/loans/admin/${id}/status`, {

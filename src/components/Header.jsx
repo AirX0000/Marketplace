@@ -7,6 +7,7 @@ import { CategoryModal } from './CategoryModal';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useShop } from '../context/ShopContext';
 import { useTheme } from '../context/ThemeContext';
+import { NotificationBell } from './NotificationBell';
 
 export function Header() {
     const { t, i18n } = useTranslation();
@@ -111,6 +112,11 @@ export function Header() {
                                 <Sun className="h-5 w-5 text-foreground group-hover:text-primary" />
                             )}
                         </button>
+
+                        <div className="w-px h-6 bg-border mx-2 hidden md:block" />
+
+                        {/* Notification Bell */}
+                        {isAuthenticated && <NotificationBell />}
 
                         <div className="w-px h-6 bg-border mx-2 hidden md:block" />
 

@@ -15,7 +15,7 @@ exports.sendOTP = asyncHandler(async (req, res) => {
     const { phone } = req.body;
     if (!phone) return res.status(400).json({ error: 'Phone is required' });
 
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
     try {
         const { PrismaClient } = require('@prisma/client');

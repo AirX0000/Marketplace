@@ -28,7 +28,7 @@ export function CatalogPage() {
             maxPrice: searchParams.get('maxPrice') || '',
             region: searchParams.get('region') || '',
             sortBy: searchParams.get('sort') || 'newest',
-            ...initial // Spread other params like attr_color, minYear, etc.
+            ...initial
         };
     };
 
@@ -45,15 +45,9 @@ export function CatalogPage() {
     const fetchProducts = async () => {
         setLoading(true);
         try {
-            // Pass all filters directly to API which now handles attributes
             const apiParams = { ...filters };
-            if (apiParams.search) {
-                apiParams.q = apiParams.search;
-            }
-            if (apiParams.sortBy) {
-                apiParams.sort = apiParams.sortBy;
-            }
-
+            if (apiParams.search) apiParams.q = apiParams.search;
+            if (apiParams.sortBy) apiParams.sort = apiParams.sortBy;
             const data = await api.getMarketplaces(apiParams);
             setProducts(data.listings || []);
         } catch (error) {
@@ -71,190 +65,270 @@ export function CatalogPage() {
         }
 
         const newFilters = { ...filters, [key]: value };
-
-        // Remove empty keys
         if (!value) delete newFilters[key];
-
         setFilters(newFilters);
 
-        // Sync to URL
         const params = {};
-        const urlKeys = [
-            'q', 'category', 'minPrice', 'maxPrice', 'region', 'sort',
-            // Car Filters
-            'minYear', 'maxYear', 'minMileage', 'maxMileage', 'transmission', 'bodyType', 'brand', 'model',
-            // Недвижимость Filters
-            'minArea', 'maxArea', 'rooms', 'floor'
-        ];
+        const urlKeys = ['q', 'category', 'minPrice', 'maxPrice', 'region', 'sort', 'minYear', 'maxYear', 'minMileage', 'maxMileage', 'transmission', 'bodyType', 'brand', 'model', 'minArea', 'maxArea', 'rooms', 'floor'];
 
-        // Map internal keys to URL keys if identical, else handle specific mapping
-        // Our keys mostly match. 'search' -> 'q', 'sortBy' -> 'sort' mapped above.
-        // We iterate newFilters and check if they should be in URL.
         Object.keys(newFilters).forEach(k => {
             if (k === 'search') params.q = newFilters[k];
             else if (k === 'sortBy') params.sort = newFilters[k];
-            else if (k.startsWith('attr_') || urlKeys.includes(k) || k === 'q' || k === 'sort' || k === 'category' || k === 'minPrice' || k === 'maxPrice' || k === 'region') {
+            else if (k.startsWith('attr_') || urlKeys.includes(k) || k === 'category' || k === 'minPrice' || k === 'maxPrice' || k === 'region') {
                 params[k] = newFilters[k];
             }
         });
-
         setSearchParams(params);
     };
 
     return (
-        <main className="container py-8 px-4">
+        <main className="min-h-screen bg-[#13111C] text-white">
             <Helmet>
-                <title>Каталог Товаров | Autohouse.uz</title>
+                <title>Каталог Товаров | Autohouse.uz Premium</title>
                 <link rel="canonical" href="https://autohouse.uz/catalog" />
             </Helmet>
-            {/* Header */}
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold mb-2">Каталог Товаров</h1>
-                <p className="text-muted-foreground">Найдено {products.length} товаров</p>
-            </header>
 
-            <div className="flex flex-col lg:flex-row gap-8">
-                {/* Desktop Filters Sidebar */}
-                <aside className="hidden lg:block w-64 shrink-0">
-                    <SearchFilters
-                        filters={filters}
-                        onChange={handleFilterChange}
-                        onClose={() => { }}
-                    />
-                </aside>
+            {/* Decorative BG Glows */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/5 blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/5 blur-[120px]" />
+            </div>
 
-                {/* Mobile/Main Content */}
-                <section className="flex-1">
-                    {/* Top Bar for Mobile */}
-                    <div className="bg-white dark:bg-[#1a202c] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 mb-6 sticky top-20 z-10 lg:static">
-                        <div className="flex items-center gap-4">
-                            <div className="flex-1 relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                                <input
-                                    type="text"
-                                    placeholder="Поиск..."
-                                    value={filters.search || ''}
-                                    onChange={(e) => handleFilterChange('search', e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400"
-                                />
-                            </div>
+            <div className="container mx-auto py-12 px-4 relative z-10">
+                {/* Header Section */}
+                <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="h-2 w-12 bg-purple-600 rounded-full" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-400">Маркетплейс</span>
+                        </div>
+                        <h1 className="text-5xl font-black uppercase tracking-tighter">
+                            Каталог <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">Объявлений</span>
+                        </h1>
+                        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">
+                            Найдено {products.length} уникальных предложений
+                        </p>
+                    </div>
 
-                            <button
-                                onClick={() => setShowFilters(!showFilters)}
-                                className="lg:hidden flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
-                            >
-                                <SlidersHorizontal size={20} />
-                            </button>
+                    {/* View Controls & Sort */}
+                    <div className="flex flex-wrap items-center gap-4 bg-[#191624] p-3 rounded-3xl border border-white/5 shadow-2xl">
+                        <div className="flex bg-[#13111C] p-1.5 rounded-2xl border border-white/10">
+                            {[
+                                { id: 'grid', icon: Grid, label: 'Сетка' },
+                                { id: 'list', icon: List, label: 'Список' },
+                                { id: 'map', icon: MapIcon, label: 'Карта' }
+                            ].map((mode) => (
+                                <button
+                                    key={mode.id}
+                                    onClick={() => setViewMode(mode.id)}
+                                    className={cn(
+                                        "p-2.5 rounded-xl transition-all active:scale-90 flex items-center gap-2",
+                                        viewMode === mode.id
+                                            ? "bg-purple-600 text-white shadow-lg"
+                                            : "text-slate-500 hover:text-white hover:bg-white/5"
+                                    )}
+                                    title={mode.label}
+                                >
+                                    <mode.icon size={18} />
+                                    {viewMode === mode.id && <span className="text-[10px] font-black uppercase tracking-widest overflow-hidden block max-w-[100px] transition-all">{mode.label}</span>}
+                                </button>
+                            ))}
+                        </div>
 
-                            {/* Sort Dropdown */}
+                        <div className="h-8 w-[1px] bg-white/10 mx-2 hidden sm:block" />
+
+                        <div className="relative group">
                             <select
                                 value={filters.sortBy || 'newest'}
                                 onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                                className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-[#1a202c] text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary shrink-0 cursor-pointer"
+                                className="pl-4 pr-10 py-3 bg-[#13111C] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-300 focus:outline-none focus:border-purple-500/50 appearance-none cursor-pointer group-hover:bg-white/5 transition-all outline-none"
                             >
-                                <option value="newest">📅 Новые</option>
-                                <option value="price_asc">💰 Цена ↑</option>
-                                <option value="price_desc">💰 Цена ↓</option>
-                                <option value="popular">🔥 Популярные</option>
+                                <option value="newest">Новинки</option>
+                                <option value="price_asc">Дешевле</option>
+                                <option value="price_desc">Дороже</option>
+                                <option value="popular">Популярные</option>
                             </select>
+                            <SlidersHorizontal size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none group-hover:text-purple-400 transition-colors" />
+                        </div>
+                    </div>
+                </header>
 
-                            <div className="flex border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden shrink-0">
+                <div className="flex flex-col lg:flex-row gap-10">
+                    {/* Desktop Filters Sidebar */}
+                    <aside className="hidden lg:block w-72 shrink-0 space-y-8">
+                        <div className="bg-[#191624] rounded-[2.5rem] border border-white/5 p-8 shadow-2xl sticky top-28">
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="font-black text-xs uppercase tracking-[0.2em] text-slate-400">Фильтры</h3>
+                                <button onClick={() => handleFilterChange('reset', null)} className="text-[9px] font-black uppercase tracking-widest text-purple-400 hover:text-purple-300 transition-colors">Сбросить</button>
+                            </div>
+                            <SearchFilters
+                                filters={filters}
+                                onChange={handleFilterChange}
+                                onClose={() => { }}
+                            />
+                        </div>
+                    </aside>
+
+                    {/* Main Content Area */}
+                    <section className="flex-1">
+                        {/* Instant Search Bar */}
+                        <div className="bg-[#191624] rounded-[2.5rem] border border-white/5 p-4 mb-10 shadow-2xl relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-blue-600/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
+                            <div className="relative flex items-center gap-4">
+                                <Search className="ml-4 text-slate-500 group-focus-within:text-purple-400 transition-colors" size={24} />
+                                <input
+                                    type="text"
+                                    placeholder="Найти среди тысяч объявлений..."
+                                    value={filters.search || ''}
+                                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                                    className="flex-1 bg-transparent py-4 text-lg font-bold placeholder:text-slate-700 outline-none text-white uppercase tracking-tight"
+                                />
                                 <button
-                                    onClick={() => setViewMode('grid')}
-                                    className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-400'}`}
-                                    title="Сетка"
+                                    onClick={() => setShowFilters(true)}
+                                    className="lg:hidden p-4 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 text-white transition-all active:scale-90"
                                 >
-                                    <Grid size={20} />
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('list')}
-                                    className={`p-2 ${viewMode === 'list' ? 'bg-primary text-white' : 'hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-400'}`}
-                                    title="Список"
-                                >
-                                    <List size={20} />
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('map')}
-                                    className={`p-2 ${viewMode === 'map' ? 'bg-primary text-white' : 'hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-400'}`}
-                                    title="На карте"
-                                >
-                                    <MapIcon size={20} />
+                                    <SlidersHorizontal size={20} />
                                 </button>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Mobile Filters Drawer */}
-                    <AnimatePresence>
-                        {showFilters && (
-                            <>
-                                {/* Backdrop */}
+                        {/* Mobile Filters Drawer */}
+                        <AnimatePresence>
+                            {showFilters && (
+                                <>
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        onClick={() => setShowFilters(false)}
+                                        className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] lg:hidden"
+                                    />
+                                    <motion.div
+                                        initial={{ x: '100%' }}
+                                        animate={{ x: 0 }}
+                                        exit={{ x: '100%' }}
+                                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                                        className="fixed top-0 right-0 h-full w-[320px] bg-[#191624] z-[101] shadow-2xl border-l border-white/10 lg:hidden overflow-hidden flex flex-col"
+                                    >
+                                        <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                                            <h3 className="font-black text-lg uppercase tracking-tight">Фильтры</h3>
+                                            <button
+                                                onClick={() => setShowFilters(false)}
+                                                className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl hover:bg-white/10 transition-all text-slate-400 hover:text-white"
+                                            >
+                                                <X size={20} />
+                                            </button>
+                                        </div>
+                                        <div className="flex-1 overflow-y-auto p-8 scrollbar-hide">
+                                            <SearchFilters
+                                                filters={filters}
+                                                onChange={handleFilterChange}
+                                                onClose={() => setShowFilters(false)}
+                                            />
+                                        </div>
+                                    </motion.div>
+                                </>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Content States */}
+                        <AnimatePresence mode="wait">
+                            {loading ? (
                                 <motion.div
+                                    key="loading"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    onClick={() => setShowFilters(false)}
-                                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 lg:hidden"
-                                />
-                                {/* Drawer */}
-                                <motion.div
-                                    initial={{ x: '-100%' }}
-                                    animate={{ x: 0 }}
-                                    exit={{ x: '-100%' }}
-                                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="fixed top-0 left-0 h-full w-[280px] bg-white dark:bg-slate-900 z-50 shadow-2xl overflow-y-auto lg:hidden"
+                                    className="text-center py-32"
                                 >
-                                    <div className="p-4 border-b dark:border-slate-800 flex items-center justify-between">
-                                        <h3 className="font-bold text-lg">Фильтры</h3>
-                                        <button
-                                            onClick={() => setShowFilters(false)}
-                                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-                                        >
-                                            <X size={20} />
-                                        </button>
+                                    <div className="inline-block relative">
+                                        <div className="w-20 h-20 border-4 border-purple-600/20 border-t-purple-600 rounded-full animate-spin" />
+                                        <Bot size={32} className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-purple-500" />
                                     </div>
-                                    <div className="p-4">
-                                        <SearchFilters
-                                            filters={filters}
-                                            onChange={handleFilterChange}
-                                            onClose={() => setShowFilters(false)}
-                                        />
+                                    <p className="mt-8 text-slate-500 font-bold uppercase tracking-[0.3em] text-xs animate-pulse">Сканирование базы данных...</p>
+                                </motion.div>
+                            ) : products.length === 0 ? (
+                                <motion.div
+                                    key="empty"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-32 bg-[#191624] rounded-[3rem] border border-white/5 border-dashed"
+                                >
+                                    <div className="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
+                                        <Search size={40} className="text-slate-700" />
+                                    </div>
+                                    <h3 className="text-2xl font-black uppercase tracking-tight mb-4">Ничего не найдено</h3>
+                                    <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mb-8">Попробуйте изменить параметры поиска</p>
+                                    <button
+                                        onClick={() => handleFilterChange('reset', null)}
+                                        className="px-10 py-4 bg-purple-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-purple-500 transition-all shadow-[0_15px_30px_rgba(147,51,234,0.3)] active:scale-95"
+                                    >
+                                        Сбросить фильтры
+                                    </button>
+                                </motion.div>
+                            ) : viewMode === 'map' ? (
+                                <motion.div
+                                    key="map"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="h-[700px] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl relative"
+                                >
+                                    <MapSearch products={products} onBoundsChange={() => { }} />
+                                    <div className="absolute top-6 right-6 bg-[#191624]/80 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-white shadow-xl">
+                                        Интерактивная карта
                                     </div>
                                 </motion.div>
-                            </>
-                        )}
-                    </AnimatePresence>
+                            ) : (
+                                <motion.div
+                                    key={viewMode}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={cn(
+                                        "grid gap-8",
+                                        viewMode === 'grid'
+                                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+                                            : "space-y-6"
+                                    )}
+                                >
+                                    {products.map((product, idx) => (
+                                        <motion.article
+                                            key={product.id}
+                                            initial={{ opacity: 0, y: 30 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: (idx % 6) * 0.05 }}
+                                        >
+                                            <MarketplaceCard
+                                                marketplace={product}
+                                                viewMode={viewMode}
+                                            />
+                                        </motion.article>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
-                    {/* Products Grid */}
-                    {loading ? (
-                        <div className="text-center py-12">
-                            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-                        </div>
-                    ) : products.length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-xl border">
-                            <p className="text-xl font-semibold mb-2">Товары не найдены</p>
-                            <button onClick={() => handleFilterChange('reset', null)} className="text-primary hover:underline">
-                                Сбросить фильтры
-                            </button>
-                        </div>
-                    ) : viewMode === 'map' ? (
-                        <MapSearch products={products} onBoundsChange={() => { }} />
-                    ) : (
-                        <div className={viewMode === 'grid'
-                            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6'
-                            : 'space-y-4'
-                        }>
-                            {products.map(product => (
-                                <article key={product.id}>
-                                    <MarketplaceCard
-                                        marketplace={product}
-                                        viewMode={viewMode}
-                                    />
-                                </article>
-                            ))}
-                        </div>
-                    )}
-                </section>
+                        {/* Pagination Placeholder */}
+                        {!loading && products.length > 0 && (
+                            <div className="mt-20 flex justify-center">
+                                <div className="bg-[#191624] p-2 rounded-3xl border border-white/5 flex gap-2">
+                                    {[1, 2, 3, '...', 12].map((page, i) => (
+                                        <button
+                                            key={i}
+                                            className={cn(
+                                                "h-12 w-12 rounded-2xl flex items-center justify-center text-xs font-black transition-all",
+                                                page === 1
+                                                    ? "bg-purple-600 text-white shadow-lg"
+                                                    : "text-slate-500 hover:text-white hover:bg-white/5"
+                                            )}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </section>
+                </div>
             </div>
         </main>
     );

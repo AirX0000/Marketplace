@@ -148,7 +148,7 @@ class MarketplaceService {
 
         // Increment views (fire and forget)
         prisma.marketplace.update({
-            where: { id },
+            where: { id: listing.id },
             data: { views: { increment: 1 } }
         }).catch(err => console.error("Failed to increment views", err));
 
@@ -156,7 +156,7 @@ class MarketplaceService {
         const related = await prisma.marketplace.findMany({
             where: {
                 category: listing.category,
-                id: { not: id },
+                id: { not: listing.id },
                 status: 'APPROVED'
             },
             take: 4,

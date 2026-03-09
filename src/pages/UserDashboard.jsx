@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Package, Heart, Settings, User, MapPin,
     LogOut, Bell, Shield, Wallet, ChevronRight,
-    CreditCard, LayoutDashboard, Plus, Trash2, Edit2, ShieldCheck, Car
+    CreditCard, LayoutDashboard, Plus, Trash2, Edit2, ShieldCheck, Car, Truck
 } from 'lucide-react';
 import CheckoutMap from '../components/CheckoutMap';
 import { PartnerVerification } from '../components/PartnerVerification';
 import { MyGarage } from '../components/dashboard/MyGarage';
+import { MyListings } from '../components/dashboard/MyListings';
 import { PartnerOrders } from './partner/PartnerOrders';
 import { useShop } from '../context/ShopContext';
 import { api } from '../lib/api';
@@ -141,34 +143,35 @@ export function UserDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-slate-950 text-slate-900 dark:text-white">
+        <div className="min-h-screen bg-[#13111C] text-white font-sans">
             <div className="container py-8 px-4 md:px-6">
                 <div className="grid md:grid-cols-[280px_1fr] gap-8">
 
                     {/* Sidebar */}
                     <div className="space-y-6">
                         {/* Profile Summary Card */}
-                        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm text-center">
-                            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg ring-4 ring-white dark:ring-slate-800">
+                        <div className="bg-[#191624] rounded-3xl p-6 border border-white/5 shadow-sm text-center">
+                            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-[0_0_20px_rgba(147,51,234,0.3)] ring-4 ring-[#13111C]">
                                 {user?.name?.[0]?.toUpperCase() || <User size={40} />}
                             </div>
-                            <h2 className="font-bold text-xl truncate">{user?.name}</h2>
-                            <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
-                            <div className="mt-4 inline-flex px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
-                                {user?.role === 'PARTNER' ? 'Партнер' : 'Покупатель'}
+                            <h2 className="font-bold text-xl truncate text-white">{user?.name}</h2>
+                            <p className="text-sm text-slate-400 truncate">{user?.email}</p>
+                            <div className="mt-4 inline-flex px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs font-bold">
+                                {user?.role === 'PARTNER' ? 'Партнер' : 'Premium Member'}
                             </div>
                         </div>
 
                         {/* Navigation */}
-                        <nav className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden p-2">
+                        <nav className="bg-[#191624] rounded-3xl border border-white/5 shadow-sm overflow-hidden p-3 space-y-1">
                             {[
                                 { id: 'overview', label: 'Обзор', icon: LayoutDashboard },
-                                { id: 'orders', label: 'Мои Заказы', icon: Package },
                                 { id: 'favorites', label: 'Избранное', icon: Heart },
+                                { id: 'garage', label: 'Мой Гараж', icon: Car },
+                                { id: 'listings', label: 'My Listings', icon: Package },
+                                { id: 'orders', label: 'Мои Покупки', icon: Package },
                                 { id: 'addresses', label: 'Адреса доставки', icon: MapPin },
                                 { id: 'profile', label: 'Настройки профиля', icon: Settings },
                                 { id: 'security', label: 'Безопасность', icon: Shield },
-                                { id: 'garage', label: 'Мой Гараж', icon: Car },
                                 ...(user?.role === 'PARTNER' ? [
                                     { id: 'partner_orders', label: 'Заказы Магазина', icon: Truck },
                                     { id: 'verification', label: 'Верификация (KYC)', icon: ShieldCheck }
@@ -180,9 +183,9 @@ export function UserDashboard() {
                                         setActiveTab(item.id);
                                         navigate(`/profile?tab=${item.id}`, { replace: true });
                                     }}
-                                    className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all ${activeTab === item.id
-                                        ? 'bg-blue-600 text-white shadow-md'
-                                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                                    className={`w-full flex items-center justify-between p-3 rounded-2xl text-sm font-bold transition-all ${activeTab === item.id
+                                        ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)]'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
                                     <div className="flex items-center gap-3">
@@ -193,14 +196,14 @@ export function UserDashboard() {
                                 </button>
                             ))}
 
-                            <div className="my-2 border-t border-gray-100 dark:border-slate-800 mx-2" />
+                            <div className="my-2 border-t border-white/5 mx-2" />
 
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors"
+                                className="w-full flex items-center gap-3 p-3 rounded-2xl text-sm font-bold text-red-500 hover:bg-red-500/10 hover:text-red-400 transition-colors"
                             >
                                 <LogOut size={18} />
-                                Выйти
+                                Logout
                             </button>
                         </nav>
 
@@ -215,314 +218,476 @@ export function UserDashboard() {
 
                     {/* Main Content Area */}
                     <div className="space-y-6">
-
                         {/* Header Mobile Only */}
                         <div className="md:hidden flex items-center justify-between mb-4">
                             <h1 className="text-2xl font-bold">Личный Кабинет</h1>
                         </div>
 
-                        {/* CONTENT: OVERVIEW */}
-                        {activeTab === 'overview' && (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <StatCard
-                                        label="Всего заказов"
-                                        value={orders.length}
-                                        icon={<Package className="text-blue-600" />}
-                                        bg="bg-blue-50"
-                                    />
-                                    <StatCard
-                                        label="В ожидании"
-                                        value={orders.filter(o => o.status !== 'DELIVERED' && o.status !== 'CANCELLED').length}
-                                        icon={<Bell className="text-orange-600" />}
-                                        bg="bg-orange-50"
-                                    />
-                                    <StatCard
-                                        label="Потрачено"
-                                        value={`${orders.reduce((acc, o) => acc + o.total, 0).toLocaleString()} UZS`}
-                                        icon={<Wallet className="text-emerald-600" />}
-                                        bg="bg-emerald-50"
-                                    />
-                                </div>
-
-                                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h3 className="font-bold text-lg">Последние заказы</h3>
-                                        <button onClick={() => setActiveTab('orders')} className="text-primary text-sm font-medium hover:underline">Все заказы</button>
-                                    </div>
-                                    {orders.slice(0, 3).map(order => (
-                                        <div key={order.id} className="flex items-center justify-between py-4 border-b last:border-0 hover:bg-gray-50 -mx-6 px-6 transition-colors">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
-                                                    <Package size={20} />
-                                                </div>
-                                                <div>
-                                                    <div className="font-medium">Заказ #{order.id.slice(0, 8)}</div>
-                                                    <div className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()} • {order.items.length} товаров</div>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="font-bold">{order.total.toLocaleString()} UZS</div>
-                                                <div className={`text-xs font-bold px-2 py-0.5 rounded-full inline-block mt-1 ${order.status === 'DELIVERED' ? 'bg-emerald-100 text-emerald-700' :
-                                                    order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
-                                                    }`}>
-                                                    {order.status}
-                                                </div>
-                                            </div>
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                {/* CONTENT: OVERVIEW */}
+                                {activeTab === 'overview' && (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                            <StatCard
+                                                label="Всего заказов"
+                                                value={orders.length}
+                                                icon={<Package size={24} />}
+                                                color="blue"
+                                            />
+                                            <StatCard
+                                                label="В ожидании"
+                                                value={orders.filter(o => o.status !== 'DELIVERED' && o.status !== 'CANCELLED').length}
+                                                icon={<Bell size={24} />}
+                                                color="orange"
+                                            />
+                                            <StatCard
+                                                label="Потрачено"
+                                                value={`${orders.reduce((acc, o) => acc + o.total, 0).toLocaleString()} UZS`}
+                                                icon={<Wallet size={24} />}
+                                                color="emerald"
+                                            />
                                         </div>
-                                    ))}
-                                    {orders.length === 0 && <div className="text-center py-8 text-muted-foreground">У вас пока нет заказов</div>}
-                                </div>
-                            </div>
-                        )}
 
-                        {/* CONTENT: ORDERS */}
-                        {activeTab === 'orders' && (
-                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 animate-in fade-in">
-                                <h2 className="text-xl font-bold mb-6">История Заказов</h2>
-                                <div className="space-y-4">
-                                    {orders.map(order => (
-                                        <div key={order.id} className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 hover:border-primary transition-colors">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div>
-                                                    <div className="text-sm text-muted-foreground">Заказ #{order.id.slice(0, 8)} от {new Date(order.createdAt).toLocaleDateString()}</div>
-                                                    <div className={`mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                                                        }`}>
-                                                        {order.status}
-                                                    </div>
-                                                </div>
-                                                <div className="text-right font-bold text-lg">{order.total.toLocaleString()} UZS</div>
+                                        <div className="bg-[#191624] rounded-3xl border border-white/5 shadow-xl p-8">
+                                            <div className="flex justify-between items-center mb-8">
+                                                <h3 className="font-bold text-xl">Последние заказы</h3>
+                                                <button onClick={() => setActiveTab('orders')} className="text-purple-400 text-sm font-bold hover:text-purple-300 transition-colors">Все заказы</button>
                                             </div>
-                                            <div className="space-y-2">
-                                                {order.items.map(item => (
-                                                    <div key={item.id} className="flex justify-between text-sm">
-                                                        <span className="text-gray-600 dark:text-gray-300">{item.product?.name || "Товар удален"} x {item.quantity}</span>
-                                                        <span className="font-medium">{(item.price * item.quantity).toLocaleString()} UZS</span>
+                                            <div className="space-y-4">
+                                                {orders.slice(0, 3).map(order => (
+                                                    <div key={order.id} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/[0.08] transition-all group">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                                                                <Package size={22} />
+                                                            </div>
+                                                            <div>
+                                                                <div className="font-bold text-white">Заказ #{order.id.slice(0, 8)}</div>
+                                                                <div className="text-sm text-slate-400">{new Date(order.createdAt).toLocaleDateString()} • {order.items.length} товаров</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="font-black text-white">{order.total.toLocaleString()} UZS</div>
+                                                            <div className={`text-[10px] font-black px-2.5 py-1 rounded-full inline-block mt-2 uppercase tracking-wider ${order.status === 'DELIVERED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                                                order.status === 'CANCELLED' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                                                                    'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                                                }`}>
+                                                                {order.status}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 ))}
+                                                {orders.length === 0 && (
+                                                    <div className="text-center py-12 flex flex-col items-center gap-4">
+                                                        <Package size={48} className="text-white/10" />
+                                                        <p className="text-slate-500 font-medium">У вас пока нет заказов</p>
+                                                    </div>
+                                                )}
                                             </div>
-                                            {order.shippingLocation && (
-                                                <div className="mt-4 pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground">
-                                                    <MapPin size={14} /> Доставка: {order.shippingCity}, {order.shippingAddress} (Coords: {JSON.stringify(JSON.parse(order.shippingLocation))})
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* CONTENT: ORDERS */}
+                                {activeTab === 'orders' && (
+                                    <div className="bg-[#191624] rounded-3xl border border-white/5 shadow-xl p-8">
+                                        <h2 className="text-2xl font-black mb-8">История Заказов</h2>
+                                        <div className="space-y-6">
+                                            {orders.map(order => (
+                                                <div key={order.id} className="bg-white/5 border border-white/5 rounded-3xl p-6 hover:border-purple-500/30 transition-all">
+                                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                                                        <div>
+                                                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Заказ #{order.id.slice(0, 8)}</div>
+                                                            <div className="text-sm text-slate-500">Оформлен {new Date(order.createdAt).toLocaleDateString()}</div>
+                                                        </div>
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="text-right">
+                                                                <div className="text-2xl font-black text-white">{order.total.toLocaleString()} UZS</div>
+                                                            </div>
+                                                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${order.status === 'DELIVERED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                                                'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                                                }`}>
+                                                                {order.status}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-3 bg-[#13111C] rounded-2xl p-4">
+                                                        {order.items.map(item => (
+                                                            <div key={item.id} className="flex justify-between items-center text-sm">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                                                                        <Package size={14} className="text-slate-400" />
+                                                                    </div>
+                                                                    <span className="text-slate-300 font-medium">{item.product?.name || "Товар удален"} <span className="text-slate-500 ml-1">x {item.quantity}</span></span>
+                                                                </div>
+                                                                <span className="font-bold text-white">{(item.price * item.quantity).toLocaleString()} UZS</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    {order.shippingLocation && (
+                                                        <div className="mt-6 flex items-start gap-3 text-xs text-slate-500 border-t border-white/5 pt-4">
+                                                            <MapPin size={16} className="text-purple-500 shrink-0" />
+                                                            <div>
+                                                                <span className="font-bold text-slate-400">Адрес доставки:</span> {order.shippingCity}, {order.shippingAddress}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            {orders.length === 0 && (
+                                                <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                                                    <Package size={64} className="mx-auto text-white/5 mb-4" />
+                                                    <h3 className="text-xl font-bold text-slate-400">Список заказов пуст</h3>
+                                                    <p className="text-slate-600 mt-2">Вы еще не совершали покупок</p>
                                                 </div>
                                             )}
                                         </div>
-                                    ))}
-                                    {orders.length === 0 && <div className="text-center py-12 text-muted-foreground">Список заказов пуст</div>}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* CONTENT: ADDRESSES */}
-                        {activeTab === 'addresses' && (
-                            <div className="space-y-6 animate-in fade-in">
-                                <div className="flex justify-between items-center">
-                                    <h2 className="text-xl font-bold">Мои Адреса</h2>
-                                    <button onClick={addAddress} className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-primary/90">
-                                        <Plus size={18} /> Добавить
-                                    </button>
-                                </div>
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    {profileData.addresses.map(addr => (
-                                        <div key={addr.id} className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-primary dark:hover:border-primary rounded-xl p-6 shadow-sm relative group transition-all">
-                                            <div className="absolute top-4 right-4 flex gap-2 transition-opacity">
-                                                <button onClick={() => removeAddress(addr.id)} className="p-2 bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50"><Trash2 size={16} /></button>
-                                            </div>
-                                            <div className="flex items-center gap-3 mb-4 text-primary">
-                                                <MapPin size={24} />
-                                                <input
-                                                    value={addr.title} onChange={(e) => updateAddress(addr.id, 'title', e.target.value)}
-                                                    className="font-bold bg-transparent focus:outline-none focus:border-b border-primary w-full"
-                                                />
-                                            </div>
-                                            <div className="space-y-3">
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <select
-                                                        value={addr.city} onChange={(e) => updateAddress(addr.id, 'city', e.target.value)}
-                                                        className="w-full text-sm border rounded p-2"
-                                                    >
-                                                        <option value="Tashkent">Ташкент</option>
-                                                        <option value="Samarkand">Самарканд</option>
-                                                    </select>
-                                                    <input
-                                                        value={addr.street} onChange={(e) => updateAddress(addr.id, 'street', e.target.value)}
-                                                        placeholder="Улица, дом, квартира"
-                                                        className="w-full text-sm border rounded p-2"
-                                                    />
-                                                </div>
-                                                <div className="pt-2">
-                                                    <label className="text-xs font-semibold text-muted-foreground mb-2 block">Укажите на карте:</label>
-                                                    <CheckoutMap
-                                                        onLocationSelect={(val) => updateAddress(addr.id, 'location', val)}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                {profileData.addresses.length > 0 && (
-                                    <div className="flex justify-end">
-                                        <button onClick={handleSaveProfile} className="bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
-                                            {loading ? 'Сохранение...' : 'Сохранить адреса'}
-                                        </button>
                                     </div>
                                 )}
-                            </div>
-                        )}
 
-                        {/* CONTENT: PROFILE */}
-                        {activeTab === 'profile' && (
-                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 animate-in fade-in">
-                                <h2 className="text-xl font-bold mb-6">Личные данные</h2>
-                                <div className="grid gap-6 max-w-xl">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium">Ваше Имя</label>
-                                        <div className="relative">
-                                            <User className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                                            <input
-                                                value={profileData.name}
-                                                onChange={e => setProfileData({ ...profileData, name: e.target.value })}
-                                                className="w-full pl-10 h-11 rounded-lg border bg-gray-50 focus:bg-white transition-colors"
-                                            />
+                                {/* CONTENT: ADDRESSES */}
+                                {activeTab === 'addresses' && (
+                                    <div className="space-y-8">
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <h2 className="text-3xl font-black text-white">Адреса доставки</h2>
+                                                <p className="text-slate-400 text-sm mt-1">Управление точками получения ваших заказов</p>
+                                            </div>
+                                            <button onClick={addAddress} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-full font-bold transition-all shadow-lg active:scale-95">
+                                                <Plus size={18} /> Добавить адрес
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium">Email Address</label>
-                                        <div className="relative">
-                                            <div className="absolute left-3 top-3 h-5 w-5 text-muted-foreground">@</div>
-                                            <input
-                                                value={profileData.email}
-                                                onChange={e => setProfileData({ ...profileData, email: e.target.value })}
-                                                className="w-full pl-10 h-11 rounded-lg border bg-gray-50 focus:bg-white transition-colors"
-                                            />
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            {profileData.addresses.map(addr => (
+                                                <div key={addr.id} className="bg-[#191624] border border-white/5 hover:border-purple-500/30 rounded-3xl p-8 shadow-xl relative group transition-all">
+                                                    <div className="absolute top-6 right-6 flex gap-2">
+                                                        <button onClick={() => removeAddress(addr.id)} className="p-2.5 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </div>
+                                                    <div className="flex items-center gap-4 mb-6">
+                                                        <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                                                            <MapPin size={24} />
+                                                        </div>
+                                                        <input
+                                                            value={addr.title} onChange={(e) => updateAddress(addr.id, 'title', e.target.value)}
+                                                            className="font-black text-xl bg-transparent focus:outline-none focus:ring-b border-b border-transparent focus:border-purple-500 w-full text-white placeholder-slate-600"
+                                                            placeholder="Название (напр. Дом)"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-6">
+                                                        <div className="grid grid-cols-1 gap-4">
+                                                            <div className="space-y-2">
+                                                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Город</label>
+                                                                <select
+                                                                    value={addr.city} onChange={(e) => updateAddress(addr.id, 'city', e.target.value)}
+                                                                    className="w-full bg-[#13111C] text-white border border-white/5 rounded-2xl p-4 font-bold focus:border-purple-500 transition-all outline-none"
+                                                                >
+                                                                    <option value="Tashkent">Ташкент</option>
+                                                                    <option value="Samarkand">Самарканд</option>
+                                                                    <option value="Bukhara">Бухара</option>
+                                                                </select>
+                                                            </div>
+                                                            <div className="space-y-2">
+                                                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Улица и дом</label>
+                                                                <input
+                                                                    value={addr.street} onChange={(e) => updateAddress(addr.id, 'street', e.target.value)}
+                                                                    placeholder="Улица, дом, квартира"
+                                                                    className="w-full bg-[#13111C] text-white border border-white/5 rounded-2xl p-4 font-bold focus:border-purple-500 transition-all outline-none placeholder-slate-700"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="rounded-3xl overflow-hidden border border-white/5 bg-[#13111C]">
+                                                            <div className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-white/5">Локация на карте</div>
+                                                            <div className="h-48">
+                                                                <CheckoutMap
+                                                                    onLocationSelect={(val) => updateAddress(addr.id, 'location', val)}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
-                                    </div>
-                                    <div className="pt-4">
-                                        <button
-                                            onClick={handleSaveProfile}
-                                            disabled={loading}
-                                            className="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all disabled:opacity-50"
-                                        >
-                                            {loading ? 'Сохранение...' : 'Обновить профиль'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* CONTENT: FAVORITES */}
-                        {activeTab === 'favorites' && (
-                            <div className="space-y-6 animate-in fade-in">
-                                <h2 className="text-xl font-bold">Избранное</h2>
-                                {favorites.length > 0 ? (
-                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {favorites.map(fav => (
-                                            <div key={fav.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative group">
-                                                <button
-                                                    onClick={() => removeFavorite(fav.marketplaceId)}
-                                                    className="absolute top-2 right-2 p-2 bg-red-50 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900 transition-colors"
-                                                    title="Удалить из избранного"
-                                                >
-                                                    <Trash2 size={16} />
+                                        {profileData.addresses.length > 0 && (
+                                            <div className="flex justify-end pt-4">
+                                                <button onClick={handleSaveProfile} className="bg-emerald-600 hover:bg-emerald-500 text-white px-10 py-4 rounded-full font-black shadow-[0_0_25px_rgba(16,185,129,0.3)] hover:-translate-y-1 transition-all active:scale-95">
+                                                    {loading ? 'СОХРАНЕНИЕ...' : 'СОХРАНИТЬ ВСЕ АДРЕСА'}
                                                 </button>
-                                                <img
-                                                    src={fav.marketplace?.image || 'https://via.placeholder.com/300'}
-                                                    alt={fav.marketplace?.name}
-                                                    className="w-full h-40 object-cover rounded-lg mb-3"
-                                                />
-                                                <h3 className="font-bold text-lg mb-1">{fav.marketplace?.name}</h3>
-                                                <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{fav.marketplace?.description}</p>
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-lg font-bold text-primary">
-                                                        {fav.marketplace?.price?.toLocaleString()} сум
-                                                    </span>
-                                                    <Link
-                                                        to={`/marketplace/${fav.marketplaceId}`}
-                                                        className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
-                                                    >
-                                                        Смотреть
-                                                    </Link>
-                                                </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-12 text-center">
-                                        <Heart size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-                                        <h3 className="text-lg font-bold mb-2">Нет избранных товаров</h3>
-                                        <p className="text-muted-foreground mb-4">Добавьте товары в избранное, чтобы быстро находить их позже</p>
-                                        <Link to="/catalog" className="inline-block px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90">
-                                            Перейти в каталог
-                                        </Link>
+                                        )}
                                     </div>
                                 )}
-                            </div>
-                        )}
 
-                        {/* CONTENT: SECURITY */}
-                        {activeTab === 'security' && (
-                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 animate-in fade-in">
-                                <h2 className="text-xl font-bold mb-6">Безопасность</h2>
-                                <div className="space-y-6 max-w-md">
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2">Текущий пароль</label>
-                                        <input
-                                            type="password"
-                                            value={passwordData.current}
-                                            onChange={e => setPasswordData({ ...passwordData, current: e.target.value })}
-                                            className="w-full h-10 rounded-md border bg-background px-3 text-sm"
-                                            placeholder="Введите текущий пароль"
-                                        />
+                                {/* CONTENT: PROFILE */}
+                                {activeTab === 'profile' && (
+                                    <div className="bg-[#191624] rounded-3xl border border-white/5 shadow-xl p-10">
+                                        <div className="mb-10">
+                                            <h2 className="text-3xl font-black text-white">Личные данные</h2>
+                                            <p className="text-slate-400 text-sm mt-1">Отредактируйте информацию вашего профиля</p>
+                                        </div>
+                                        <div className="grid gap-8 max-w-2xl">
+                                            <div className="grid md:grid-cols-2 gap-8">
+                                                <div className="space-y-3">
+                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Ваше Имя</label>
+                                                    <div className="relative group">
+                                                        <User className="absolute left-4 top-4 h-5 w-5 text-slate-500 group-focus-within:text-purple-500 transition-colors" />
+                                                        <input
+                                                            value={profileData.name}
+                                                            onChange={e => setProfileData({ ...profileData, name: e.target.value })}
+                                                            className="w-full pl-12 p-4 bg-[#13111C] rounded-2xl border border-white/5 focus:border-purple-500 transition-all outline-none font-bold text-white"
+                                                            placeholder="Dmitriy Smirnov"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Email</label>
+                                                    <div className="relative group">
+                                                        <div className="absolute left-4 top-4 h-5 w-5 flex items-center justify-center text-slate-500 font-bold group-focus-within:text-purple-500 transition-colors">@</div>
+                                                        <input
+                                                            value={profileData.email}
+                                                            onChange={e => setProfileData({ ...profileData, email: e.target.value })}
+                                                            className="w-full pl-12 p-4 bg-[#13111C] rounded-2xl border border-white/5 focus:border-purple-500 transition-all outline-none font-bold text-white disabled:opacity-50"
+                                                            placeholder="example@mail.com"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-6 border-t border-white/5">
+                                                <button
+                                                    onClick={handleSaveProfile}
+                                                    disabled={loading}
+                                                    className="w-full md:w-auto bg-purple-600 hover:bg-purple-500 text-white px-12 py-4 rounded-full font-black shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:-translate-y-1 transition-all disabled:opacity-50 active:scale-95"
+                                                >
+                                                    {loading ? 'ОБРАБОТКА...' : 'ОБНОВИТЬ ПРОФИЛЬ'}
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2">Новый пароль</label>
-                                        <input
-                                            type="password"
-                                            value={passwordData.new}
-                                            onChange={e => setPasswordData({ ...passwordData, new: e.target.value })}
-                                            className="w-full h-10 rounded-md border bg-background px-3 text-sm"
-                                            placeholder="Минимум 6 символов"
-                                        />
+                                )}
+
+                                {/* CONTENT: FAVORITES */}
+                                {activeTab === 'favorites' && (
+                                    <div className="space-y-8 animate-in fade-in">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <div>
+                                                <h2 className="text-3xl font-black text-white flex items-center gap-2">
+                                                    My Favorites <span className="w-2 h-2 rounded-full bg-purple-500 mb-1"></span>
+                                                </h2>
+                                                <p className="text-slate-400 text-sm mt-1">Manage your saved luxury vehicles and curated real estate portfolio.</p>
+                                            </div>
+                                            <div className="hidden lg:flex bg-[#191624] p-1 rounded-full border border-white/5 shadow-sm">
+                                                {['All Items', 'Cars', 'Real Estate'].map((tab, i) => (
+                                                    <button key={tab} className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${i === 0 ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'}`}>
+                                                        {tab}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {favorites.length > 0 ? (
+                                            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                                {favorites.map(fav => (
+                                                    <div key={fav.id} className="bg-[#191624] border border-white/5 rounded-3xl overflow-hidden shadow-xl hover:shadow-purple-900/20 hover:border-purple-500/30 transition-all relative group flex flex-col">
+
+                                                        {/* Image Area */}
+                                                        <div className="aspect-[4/3] bg-white relative">
+                                                            <img
+                                                                src={fav.marketplace?.image || 'https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?q=80&w=1000'}
+                                                                alt={fav.marketplace?.name}
+                                                                className="w-full h-full object-cover"
+                                                            />
+
+                                                            {/* Badges Overlay */}
+                                                            <div className="absolute bottom-4 left-4 flex gap-2">
+                                                                <span className="bg-blue-600 text-white text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider">
+                                                                    {fav.marketplace?.category?.name === 'Auto' ? 'OFFICIAL DEALER' : 'LUXURY LISTING'}
+                                                                </span>
+                                                                <span className="bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider">
+                                                                    VERIFIED
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Heart Button */}
+                                                            <button
+                                                                onClick={() => removeFavorite(fav.marketplaceId)}
+                                                                className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-md rounded-full text-red-500 hover:scale-110 hover:bg-white text-xl transition-all shadow-sm"
+                                                                title="Remove"
+                                                            >
+                                                                ♥
+                                                            </button>
+                                                        </div>
+
+                                                        {/* Details Area */}
+                                                        <div className="p-6 flex flex-col flex-grow">
+                                                            <div className="flex justify-between items-start mb-1">
+                                                                <h3 className="font-bold text-xl text-white leading-tight w-2/3">{fav.marketplace?.name || 'Luxury Asset'}</h3>
+                                                                <span className="text-xl font-black text-white">
+                                                                    ${fav.marketplace?.price?.toLocaleString() || '195,000'}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-sm text-slate-400 mb-6 truncate">{fav.marketplace?.description || 'Exclusive premium edition'}</p>
+
+                                                            {/* Specs Grid */}
+                                                            <div className="flex justify-between mb-8 opacity-70">
+                                                                {fav.marketplace?.category?.name === 'Real Estate' ? (
+                                                                    <>
+                                                                        <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Beds</span>
+                                                                            <span className="text-sm font-bold text-white">6</span>
+                                                                        </div>
+                                                                        <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Area</span>
+                                                                            <span className="text-sm font-bold text-white">8,500</span>
+                                                                        </div>
+                                                                        <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Type</span>
+                                                                            <span className="text-sm font-bold text-white">Villa</span>
+                                                                        </div>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">0-60</span>
+                                                                            <span className="text-sm font-bold text-white">3.0s</span>
+                                                                        </div>
+                                                                        <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Speed</span>
+                                                                            <span className="text-sm font-bold text-white text-center leading-none">184<br /><span className="text-[8px] font-normal">mph</span></span>
+                                                                        </div>
+                                                                        <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Year</span>
+                                                                            <span className="text-sm font-bold text-white">2024</span>
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+
+                                                            <Link
+                                                                to={`/marketplace/${fav.marketplaceId}`}
+                                                                className="mt-auto w-full flex items-center justify-center gap-2 py-4 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-bold transition-all"
+                                                            >
+                                                                {fav.marketplace?.category?.name === 'Real Estate' ? 'Contact Agent' : 'Add to Cart'}
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+                                                {/* Discover New Asset Placeholder */}
+                                                <Link
+                                                    to="/catalog"
+                                                    className="bg-[#191624]/50 border-2 border-dashed border-slate-700/50 hover:border-purple-500/50 hover:bg-[#191624] rounded-3xl p-8 flex flex-col items-center justify-center min-h-[400px] transition-all group active:scale-[0.98]"
+                                                >
+                                                    <div className="w-16 h-16 rounded-full bg-[#252236] group-hover:bg-purple-600/20 text-purple-500 flex items-center justify-center mb-4 transition-colors">
+                                                        <Plus size={24} strokeWidth={3} />
+                                                    </div>
+                                                    <h3 className="text-xl font-bold text-white mb-2">Discover New List</h3>
+                                                    <p className="text-slate-500 text-sm text-center">Find the best assets and save them here</p>
+                                                </Link>
+
+                                            </div>
+                                        ) : (
+                                            <div className="bg-[#191624] rounded-3xl border border-white/5 shadow-sm p-16 text-center">
+                                                <Heart size={48} className="mx-auto text-purple-500/50 mb-6" />
+                                                <h3 className="text-2xl font-bold text-white mb-2">Your wishlist is empty</h3>
+                                                <p className="text-slate-400 mb-8 max-w-sm mx-auto">Discover extraordinary vehicles and premium real estate to add to your collection.</p>
+                                                <Link to="/catalog" className="inline-block px-8 py-4 bg-purple-600 text-white rounded-full font-bold hover:bg-purple-500 shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all active:scale-95">
+                                                    Explore Marketplace
+                                                </Link>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2">Подтвердите новый пароль</label>
-                                        <input
-                                            type="password"
-                                            value={passwordData.confirm}
-                                            onChange={e => setPasswordData({ ...passwordData, confirm: e.target.value })}
-                                            className="w-full h-10 rounded-md border bg-background px-3 text-sm"
-                                            placeholder="Повторите новый пароль"
-                                        />
+                                )}
+
+                                {/* CONTENT: SECURITY */}
+                                {activeTab === 'security' && (
+                                    <div className="bg-[#191624] rounded-3xl border border-white/5 shadow-xl p-10">
+                                        <div className="mb-10">
+                                            <h2 className="text-3xl font-black text-white">Безопасность</h2>
+                                            <p className="text-slate-400 text-sm mt-1">Обеспечьте защиту вашей учетной записи</p>
+                                        </div>
+                                        <div className="space-y-8 max-w-md">
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Текущий пароль</label>
+                                                <div className="relative group">
+                                                    <Shield className="absolute left-4 top-4 h-5 w-5 text-slate-500 group-focus-within:text-purple-500 transition-colors" />
+                                                    <input
+                                                        type="password"
+                                                        value={passwordData.current}
+                                                        onChange={e => setPasswordData({ ...passwordData, current: e.target.value })}
+                                                        className="w-full pl-12 p-4 bg-[#13111C] rounded-2xl border border-white/5 focus:border-purple-500 transition-all outline-none font-bold text-white"
+                                                        placeholder="••••••••"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-6">
+                                                <div className="space-y-3">
+                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Новый пароль</label>
+                                                    <input
+                                                        type="password"
+                                                        value={passwordData.new}
+                                                        onChange={e => setPasswordData({ ...passwordData, new: e.target.value })}
+                                                        className="w-full p-4 bg-[#13111C] rounded-2xl border border-white/5 focus:border-purple-500 transition-all outline-none font-bold text-white"
+                                                        placeholder="Минимум 6 символов"
+                                                    />
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Подтверждение</label>
+                                                    <input
+                                                        type="password"
+                                                        value={passwordData.confirm}
+                                                        onChange={e => setPasswordData({ ...passwordData, confirm: e.target.value })}
+                                                        className="w-full p-4 bg-[#13111C] rounded-2xl border border-white/5 focus:border-purple-500 transition-all outline-none font-bold text-white"
+                                                        placeholder="Повторите новый пароль"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={handleChangePassword}
+                                                disabled={loading || !passwordData.current || !passwordData.new || !passwordData.confirm}
+                                                className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-full font-black shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all disabled:opacity-50 active:scale-95 flex items-center justify-center gap-3"
+                                            >
+                                                <Shield size={20} />
+                                                {loading ? 'ОБРАБОТКА...' : 'ИЗМЕНИТЬ ПАРОЛЬ'}
+                                            </button>
+                                        </div>
                                     </div>
-                                    <button
-                                        onClick={handleChangePassword}
-                                        disabled={loading || !passwordData.current || !passwordData.new || !passwordData.confirm}
-                                        className="w-full h-10 rounded-md bg-primary text-white font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                    >
-                                        <Shield size={18} />
-                                        {loading ? 'Изменение...' : 'Изменить пароль'}
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+                                )}
 
-                        {/* CONTENT: MY GARAGE */}
-                        {activeTab === 'garage' && (
-                            <MyGarage />
-                        )}
+                                {/* CONTENT: MY GARAGE */}
+                                {activeTab === 'garage' && (
+                                    <MyGarage />
+                                )}
 
-                        {/* CONTENT: PARTNER ORDERS */}
-                        {activeTab === 'partner_orders' && user?.role === 'PARTNER' && (
-                            <PartnerOrders />
-                        )}
+                                {/* CONTENT: MY LISTINGS */}
+                                {activeTab === 'listings' && (
+                                    <MyListings />
+                                )}
 
-                        {/* CONTENT: PARTNER VERIFICATION */}
-                        {activeTab === 'verification' && user?.role === 'PARTNER' && (
-                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 animate-in fade-in">
-                                <PartnerVerification user={user} onRefreshProfile={() => window.location.reload()} />
-                            </div>
-                        )}
+                                {/* CONTENT: PARTNER ORDERS */}
+                                {activeTab === 'partner_orders' && user?.role === 'PARTNER' && (
+                                    <PartnerOrders />
+                                )}
 
+                                {/* CONTENT: PARTNER VERIFICATION */}
+                                {activeTab === 'verification' && user?.role === 'PARTNER' && (
+                                    <div className="bg-[#191624] rounded-3xl border border-white/5 shadow-xl p-10">
+                                        <PartnerVerification user={user} onRefreshProfile={() => window.location.reload()} />
+                                    </div>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
                     </div>
                 </div>
             </div>
@@ -530,15 +695,35 @@ export function UserDashboard() {
     );
 }
 
-function StatCard({ label, value, icon, bg }) {
+function StatCard({ label, value, icon, color }) {
+    const colors = {
+        blue: {
+            bg: 'bg-blue-500/10',
+            icon: 'text-blue-400',
+            border: 'border-blue-500/20'
+        },
+        orange: {
+            bg: 'bg-orange-500/10',
+            icon: 'text-orange-400',
+            border: 'border-orange-500/20'
+        },
+        emerald: {
+            bg: 'bg-emerald-500/10',
+            icon: 'text-emerald-400',
+            border: 'border-emerald-500/20'
+        }
+    };
+
+    const theme = colors[color] || colors.blue;
+
     return (
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div className={`w-12 h-12 ${bg} dark:bg-opacity-20 rounded-xl flex items-center justify-center`}>
+        <div className={`bg-[#191624] p-8 rounded-[2rem] border ${theme.border} shadow-xl flex items-center gap-6 hover:border-purple-500/30 transition-all hover:-translate-y-1 group`}>
+            <div className={`w-16 h-16 ${theme.bg} rounded-2xl flex items-center justify-center ${theme.icon} group-hover:scale-110 transition-transform`}>
                 {icon}
             </div>
             <div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">{label}</div>
-                <div className="text-xl font-bold">{value}</div>
+                <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{label}</div>
+                <div className="text-2xl font-black text-white">{value}</div>
             </div>
         </div>
     );

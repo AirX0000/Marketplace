@@ -2,14 +2,13 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { api } from '../lib/api';
-import useAuthStore from '../store/authStore';
-import { useCartStore } from '../store/cartStore';
+import { useShop } from '../context/ShopContext';
 import toast from 'react-hot-toast';
 import {
     MapPin, Check, AlertCircle, Phone, MessageSquare, ChevronRight, Share2,
     ShieldCheck, Zap, Heart, Search, Image as ImageIcon, Video, Flag,
-    FileText, Calendar, Compass, Shield, Printer, Info, Truck, Tool, Info as InfoIcon, Zap as ZapIcon, InfoCircle,
-    Calculator, ExternalLink, ShoppingCart, Bell
+    FileText, Calendar, Compass, Shield, Printer, Info, Truck, Wrench, Info as InfoIcon,
+    Calculator, ExternalLink, ShoppingCart, Bell, ArrowLeft
 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { ReviewSection } from '../components/ReviewSection';
@@ -21,6 +20,7 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { MakeOfferModal } from '../components/MakeOfferModal';
 import { MarketplaceCard } from '../components/MarketplaceCard';
+import { Lightbox } from '../components/Lightbox';
 
 // Fix Leaflet icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -40,10 +40,9 @@ const bankOffers = [
 ];
 
 export function MarketplaceDetail() {
-    const { id } = useParams();
+    const { slug } = useParams();
     const navigate = useNavigate();
-    const { user, isAuthenticated } = useAuthStore();
-    const { addToCart } = useCartStore();
+    const { user, isAuthenticated, addToCart } = useShop();
 
     const [marketplace, setMarketplace] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
@@ -51,6 +50,8 @@ export function MarketplaceDetail() {
     const [activeImage, setActiveImage] = useState('');
     const [isFav, setIsFav] = useState(false);
     const [offerModalOpen, setOfferModalOpen] = useState(false);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
 
     // Dynamic attributes based on category
     const [selectedColor, setSelectedColor] = useState(null);
@@ -63,50 +64,6 @@ export function MarketplaceDetail() {
 
     // Price Watch State
     const [isWatchingPrice, setIsWatchingPrice] = useState(false);
-
-    useEffect(() => {
-        window.scrollTo(0, 0);
-        async function fetchDetail() {
-            setLoading(true);
-            try {
-                const res = await api.getMarketplaceDetail(id);
-                setMarketplace(res);
-                setActiveImage(res.imageUrl || res.images?.[0] || '');
-
-                if (res.attributes?.colors?.length > 0) {
-                    setSelectedColor(res.attributes.colors[0]);
-                }
-                if (res.attributes?.modifications?.length > 0) {
-                    setSelectedMod(res.attributes.modifications[0]);
-                }
-
-                // Check favorites
-                const savedFavs = JSON.parse(localStorage.getItem('favs') || '[]');
-                setIsFav(savedFavs.some(f => f.id === res.id));
-
-                // Fetch related
-                const catalog = await api.getMarketplace(res.category);
-                setRelatedProducts(catalog.filter(p => p.id !== res.id).slice(0, 4));
-
-                // If authenticated, check if watching price
-                if (isAuthenticated) {
-                    const status = await api.checkWatchStatus(id);
-                    setIsWatchingPrice(status.isWatching);
-                }
-
-            } catch (error) {
-                console.error("Failed to load details", error);
-                toast.error("Не удалось загрузить данные");
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchDetail();
-    }, [id, isAuthenticated]);
-
-    const displayPrice = selectedMod?.price || marketplace?.price || 0;
-    const isAuto = marketplace?.category === 'AUTO';
-    const isRealEstate = marketplace?.category === 'REAL_ESTATE';
 
     // Monthly Payment Calculation
     const monthlyPayment = useMemo(() => {
@@ -125,6 +82,74 @@ export function MarketplaceDetail() {
         return loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
     }, [displayPrice, downPayment, term, selectedBank, marketplace]);
 
+    const schemaMarkup = useMemo(() => {
+        if (!marketplace) return null;
+
+        const availability = "https://schema.org/InStock";
+        const condition = marketplace.isOfficial ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition";
+
+        return {
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": marketplace.name,
+            "image": activeImage || "https://autohouse.uz/logo.png",
+            "description": marketplace.description || `Купить ${marketplace.name} на Autohouse.uz`,
+            "brand": {
+                "@type": "Brand",
+                "name": typeof marketplace.attributes === 'object' ? marketplace.attributes?.brand : "Autohouse"
+            },
+            "offers": {
+                "@type": "Offer",
+                "url": typeof window !== 'undefined' ? window.location.href : "",
+                "priceCurrency": "UZS",
+                "price": displayPrice,
+                "itemCondition": condition,
+                "availability": availability
+            }
+        };
+    }, [marketplace, activeImage, displayPrice]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        async function fetchDetail() {
+            setLoading(true);
+            try {
+                const res = await api.getMarketplace(slug);
+                setMarketplace(res);
+                setActiveImage(res.imageUrl || res.images?.[0] || '');
+
+                if (res.attributes?.colors?.length > 0) {
+                    setSelectedColor(res.attributes.colors[0]);
+                }
+                if (res.attributes?.modifications?.length > 0) {
+                    setSelectedMod(res.attributes.modifications[0]);
+                }
+
+                // Check favorites
+                const savedFavs = JSON.parse(localStorage.getItem('favs') || '[]');
+                setIsFav(savedFavs.some(f => f.id === res.id));
+
+                // Fetch related - FIX: use getMarketplaces with category filter
+                const relatedRes = await api.getMarketplaces({ category: res.category });
+                const relatedList = Array.isArray(relatedRes) ? relatedRes : relatedRes.listings || [];
+                setRelatedProducts(relatedList.filter(p => p.id !== res.id).slice(0, 4));
+
+                // If authenticated, check if watching price
+                if (isAuthenticated && api.checkWatchStatus && res.id) {
+                    const status = await api.checkWatchStatus(res.id);
+                    setIsWatchingPrice(status.isWatching);
+                }
+
+            } catch (error) {
+                console.error("Failed to load details", error);
+                toast.error("Не удалось загрузить данные");
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchDetail();
+    }, [slug, isAuthenticated]);
+
     const toggleFavorite = (product) => {
         let savedFavs = JSON.parse(localStorage.getItem('favs') || '[]');
         const exists = savedFavs.some(f => f.id === product.id);
@@ -135,7 +160,7 @@ export function MarketplaceDetail() {
             savedFavs.push(product);
             toast.success("Добавлено в избранное");
             // Also notify backend if authenticated
-            if (isAuthenticated) api.addToFavorites(product.id).catch(console.error);
+            if (isAuthenticated && api.addFavorite) api.addFavorite(product.id).catch(console.error);
         }
         localStorage.setItem('favs', JSON.stringify(savedFavs));
         setIsFav(!exists);
@@ -209,35 +234,12 @@ export function MarketplaceDetail() {
         { label: marketplace.name }
     ];
 
-    const schemaMarkup = useMemo(() => {
-        if (!marketplace) return null;
-
-        const availability = "https://schema.org/InStock";
-        const condition = marketplace.isOfficial ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition";
-
-        return {
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "name": marketplace.name,
-            "image": activeImage || "https://autohouse.uz/logo.png",
-            "description": marketplace.description || `Купить ${marketplace.name} на Autohouse.uz`,
-            "brand": {
-                "@type": "Brand",
-                "name": typeof attrs === 'object' ? attrs?.brand : "Autohouse"
-            },
-            "offers": {
-                "@type": "Offer",
-                "url": typeof window !== 'undefined' ? window.location.href : "",
-                "priceCurrency": "UZS",
-                "price": displayPrice,
-                "itemCondition": condition,
-                "availability": availability
-            }
-        };
-    }, [marketplace, activeImage, displayPrice, attrs]);
+    const displayPrice = selectedMod?.price || marketplace?.price || 0;
+    const isAuto = marketplace?.category === 'AUTO';
+    const isRealEstate = marketplace?.category === 'REAL_ESTATE';
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+        <div className="min-h-screen bg-[#13111C]">
             <Helmet>
                 <title>{`${marketplace.name} - Купить в Ташкенте и Узбекистане | Autohouse`}</title>
                 <meta name="description" content={marketplace.description?.substring(0, 150) || `Купите ${marketplace.name} выгодно на Autohouse.uz`} />
@@ -249,30 +251,42 @@ export function MarketplaceDetail() {
                 )}
             </Helmet>
 
+            {/* Top Navigation */}
+            <div className="absolute top-8 left-0 right-0 z-30 pointer-events-none">
+                <div className="container mx-auto px-4 flex justify-between items-center pointer-events-auto">
+                    <Link to="/marketplaces" className="h-12 w-12 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white rounded-2xl backdrop-blur-xl border border-white/10 transition-all active:scale-90 group">
+                        <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+                    </Link>
+                    <button onClick={shareListing} className="h-12 w-12 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white rounded-2xl backdrop-blur-xl border border-white/10 transition-all active:scale-90">
+                        <Share2 className="h-5 w-5" />
+                    </button>
+                </div>
+            </div>
+
             {/* FLOATING TOP BAR (Visible on Scroll) */}
-            <div className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 hidden md:block supports-[backdrop-filter]:bg-white/60">
+            <div className="sticky top-0 z-50 bg-[#13111C]/80 backdrop-blur-2xl border-b border-white/5 hidden md:block">
                 <div className="container mx-auto px-4 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="h-12 w-16 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden shrink-0">
+                        <div className="h-12 w-16 bg-[#191624] rounded-lg overflow-hidden shrink-0 border border-white/5">
                             <img src={activeImage} alt={marketplace.name || 'Товар'} className="w-full h-full object-cover" />
                         </div>
                         <div>
-                            <div className="font-black text-slate-900 dark:text-white leading-tight truncate max-w-[300px] lg:max-w-[500px]">{marketplace.name}</div>
-                            <div className="text-xs font-bold text-slate-500">{marketplace.region}</div>
+                            <div className="font-black text-white leading-tight truncate max-w-[300px] lg:max-w-[500px] uppercase tracking-tighter italic">{marketplace.name}</div>
+                            <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{marketplace.region}</div>
                         </div>
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="text-right hidden lg:block">
-                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">{selectedMod?.name || 'Цена'}</div>
-                            <div className="text-xl font-black text-blue-600">
+                            <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">{selectedMod?.name || 'Цена'}</div>
+                            <div className="text-xl font-black text-purple-400 italic">
                                 {displayPrice.toLocaleString()} Sum
                             </div>
                         </div>
                         <button
                             onClick={() => document.getElementById('contact-sidebar')?.scrollIntoView({ behavior: 'smooth' })}
-                            className="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                            className="bg-purple-600 text-white px-8 py-2.5 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-purple-500 transition-all shadow-lg shadow-purple-600/20 active:scale-95 italic"
                         >
-                            Купить авто
+                            Связаться
                         </button>
                     </div>
                 </div>
@@ -286,55 +300,61 @@ export function MarketplaceDetail() {
                     <div className="lg:col-span-8 space-y-8">
 
                         {/* GALLERY & INTRO */}
-                        <div className="bg-white dark:bg-slate-900 rounded-[32px] overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
-                            <div className="relative h-[450px] md:h-[550px] lg:h-[600px] bg-slate-100 dark:bg-slate-800 group">
+                        <div className="bg-[#191624] rounded-[32px] overflow-hidden shadow-2xl border border-white/5 relative group">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/10 via-transparent to-blue-600/10 pointer-events-none" />
+                            <div className="relative h-[450px] md:h-[550px] lg:h-[600px] bg-[#13111C]/50">
                                 <img
                                     src={activeImage}
                                     alt={marketplace.name}
-                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in"
+                                    onClick={() => { setLightboxIndex(allImages.indexOf(activeImage)); setLightboxOpen(true); }}
                                 />
 
-                                {/* UrbanDrive-style Bottom Gradient Overlay for Auto */}
+                                {/* Premium Bottom Gradient Overlay for Auto */}
                                 {isAuto && (
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-10">
-                                        <h2 className="text-4xl md:text-5xl font-black text-white leading-tight mb-2 drop-shadow-lg">
-                                            {marketplace.name}
-                                        </h2>
-                                        <div className="flex items-center gap-4 text-white/90">
-                                            <div className="flex items-center gap-2 bg-blue-600 px-3 py-1 rounded-lg text-sm font-bold">
-                                                <ShieldCheck className="w-4 h-4" /> Official Dealer
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#13111C] via-transparent to-transparent flex flex-col justify-end p-10 pb-12">
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest italic animate-pulse">
+                                                    Official Dealer
+                                                </div>
+                                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                                    {selectedMod?.name || 'Standard'} • {selectedColor?.name || attrs.specs?.color || 'Original'}
+                                                </div>
                                             </div>
-                                            <div className="text-lg font-medium">
-                                                {selectedMod?.name || 'Standard'} • {selectedColor?.name || attrs.specs?.color || 'Original'}
-                                            </div>
+                                            <h2 className="text-4xl md:text-5xl font-black text-white leading-tight uppercase tracking-tighter italic drop-shadow-2xl">
+                                                {marketplace.name}
+                                            </h2>
                                         </div>
                                     </div>
                                 )}
 
                                 {isAuto && attrs.brandLogo && (
-                                    <div className="absolute top-6 left-6 w-16 h-16 bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-2xl border border-white/20">
-                                        <img src={attrs.brandLogo} alt="Brand" className="w-full h-full object-contain" />
+                                    <div className="absolute top-6 left-6 w-16 h-16 bg-white/5 backdrop-blur-2xl rounded-2xl p-3 shadow-2xl border border-white/10 group-hover:scale-110 transition-transform">
+                                        <img src={attrs.brandLogo} alt="Brand" className="w-full h-full object-contain brightness-0 invert opacity-80" />
                                     </div>
                                 )}
 
                                 <div className="absolute top-6 right-6 flex flex-col gap-2">
-                                    <span className="bg-white/10 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-white/20">
+                                    <span className="bg-white/5 backdrop-blur-2xl text-slate-300 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-white/10 italic">
                                         {marketplace.category}
                                     </span>
                                 </div>
                             </div>
                             {allImages.length > 1 && (
-                                <div className="p-6 flex gap-4 overflow-x-auto no-scrollbar">
+                                <div className="p-8 flex gap-6 overflow-x-auto no-scrollbar relative z-10 bg-[#191624]/50 backdrop-blur-xl">
                                     {allImages.map((img, idx) => (
                                         <button
                                             key={idx}
-                                            onClick={() => setActiveImage(img)}
+                                            onClick={() => { setActiveImage(img); setLightboxIndex(idx); }}
+                                            onDoubleClick={() => { setLightboxIndex(idx); setLightboxOpen(true); }}
                                             className={cn(
-                                                "relative flex-shrink-0 w-28 h-20 rounded-2xl overflow-hidden border-2 transition-all duration-300",
-                                                activeImage === img ? "border-blue-600 ring-4 ring-blue-600/10 scale-95" : "border-transparent opacity-60 hover:opacity-100"
+                                                "relative flex-shrink-0 w-32 h-20 rounded-2xl overflow-hidden border-2 transition-all duration-500",
+                                                activeImage === img ? "border-purple-600 ring-8 ring-purple-600/10 scale-95" : "border-white/5 opacity-40 hover:opacity-100 hover:scale-105"
                                             )}
                                         >
                                             <img src={img} alt={`Вид ${idx}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                                            {activeImage === img && <div className="absolute inset-0 bg-purple-600/20" />}
                                         </button>
                                     ))}
                                 </div>
@@ -345,57 +365,66 @@ export function MarketplaceDetail() {
                         {isAuto && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Trim Selector */}
-                                <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800">
-                                    <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">Модификации</h3>
-                                    <div className="space-y-3">
+                                <div className="bg-[#191624] rounded-[32px] p-8 shadow-2xl border border-white/5 relative overflow-hidden group">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent pointer-events-none" />
+                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-8 italic">Модификации</h3>
+                                    <div className="space-y-4">
                                         {modifications.map((mod, i) => (
                                             <button
                                                 key={i}
                                                 onClick={() => setSelectedMod(mod)}
                                                 className={cn(
-                                                    "w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center justify-between group",
+                                                    "w-full text-left p-6 rounded-2xl border transition-all flex items-center justify-between group/mod relative overflow-hidden",
                                                     selectedMod?.name === mod.name
-                                                        ? "border-blue-600 bg-blue-50/50 dark:bg-blue-900/20"
-                                                        : "border-slate-50 dark:border-slate-800 hover:border-slate-200"
+                                                        ? "border-purple-600/50 bg-purple-600/10 shadow-[0_0_20px_rgba(147,51,234,0.1)]"
+                                                        : "border-white/5 bg-white/5 hover:border-white/10"
                                                 )}
                                             >
-                                                <div>
-                                                    <div className="font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">{mod.name}</div>
-                                                    <div className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-1">
+                                                <div className="relative z-10">
+                                                    <div className="font-black text-white group-hover/mod:text-purple-400 transition-colors uppercase tracking-tighter italic">{mod.name}</div>
+                                                    <div className="text-[9px] text-slate-500 font-black uppercase tracking-widest mt-2 italic">
                                                         {mod.features?.join(' • ') || 'Standard options'}
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <div className="font-black text-blue-600">{(mod.price || (marketplace?.price || 0)).toLocaleString()}</div>
-                                                    <div className="text-[10px] font-bold text-slate-400">SUM</div>
+                                                <div className="text-right relative z-10">
+                                                    <div className="font-black text-purple-400 italic">{(mod.price || (marketplace?.price || 0)).toLocaleString()}</div>
+                                                    <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-1">SUM</div>
                                                 </div>
+                                                {selectedMod?.name === mod.name && (
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 to-transparent pointer-events-none" />
+                                                )}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
 
                                 {/* Color Picker */}
-                                <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800">
-                                    <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">Цвет кузова</h3>
-                                    <div className="flex flex-wrap gap-4">
+                                <div className="bg-[#191624] rounded-[32px] p-8 shadow-2xl border border-white/5 relative overflow-hidden group">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent pointer-events-none" />
+                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-8 italic">Цвет кузова</h3>
+                                    <div className="flex flex-wrap gap-6">
                                         {colors.map((color, i) => (
                                             <button
                                                 key={i}
                                                 onClick={() => setSelectedColor(color)}
-                                                className="flex flex-col items-center gap-3 group"
+                                                className="flex flex-col items-center gap-4 group/color"
                                             >
                                                 <div
                                                     className={cn(
-                                                        "w-12 h-12 rounded-full border-4 shadow-sm transition-all transform",
+                                                        "w-14 h-14 rounded-full border-4 shadow-2xl transition-all transform duration-500 relative",
                                                         selectedColor?.name === color.name
-                                                            ? "border-blue-600 scale-110 shadow-blue-600/20"
-                                                            : "border-white dark:border-slate-800 hover:scale-105"
+                                                            ? "border-purple-600 scale-110 shadow-purple-600/40"
+                                                            : "border-white/10 hover:scale-110 hover:border-white/20"
                                                     )}
                                                     style={{ backgroundColor: color.hex }}
-                                                />
+                                                >
+                                                    {selectedColor?.name === color.name && (
+                                                        <div className="absolute inset-0 rounded-full animate-ping bg-purple-600/20" />
+                                                    )}
+                                                </div>
                                                 <span className={cn(
-                                                    "text-[10px] font-black uppercase tracking-tight transition-colors",
-                                                    selectedColor?.name === color.name ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600"
+                                                    "text-[9px] font-black uppercase tracking-widest transition-colors italic",
+                                                    selectedColor?.name === color.name ? "text-purple-400" : "text-slate-500 group-hover/color:text-slate-300"
                                                 )}>
                                                     {color.name}
                                                 </span>
@@ -408,22 +437,23 @@ export function MarketplaceDetail() {
 
                         {/* SPECIFICATIONS */}
                         {isAuto ? (
-                            <section className="bg-white dark:bg-slate-900 rounded-[32px] p-8 md:p-10 shadow-sm border border-slate-100 dark:border-slate-800">
-                                <div className="flex items-center justify-between mb-8">
-                                    <h2 className="text-2xl font-black text-slate-900 dark:text-white">Технические характеристики</h2>
-                                    <div className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest">
+                            <section className="bg-[#191624] rounded-[32px] p-8 md:p-12 shadow-2xl border border-white/5 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/5 via-transparent to-transparent pointer-events-none" />
+                                <div className="flex items-center justify-between mb-12 relative z-10">
+                                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Технические характеристики</h2>
+                                    <div className="text-[9px] font-black text-purple-400 bg-purple-400/10 px-4 py-1.5 rounded-full uppercase tracking-[0.2em] italic border border-purple-400/20">
                                         {attrs.specs?.transmission || 'АКПП'}
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                    <SpecIconItem icon={<div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-700 text-2xl">⚡</div>} label="Мощность" value={attrs.specs?.power || '245 л.с.'} />
-                                    <SpecIconItem icon={<div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-700 text-2xl">⏱️</div>} label="0-100 км/ч" value={attrs.specs?.acceleration || '6.5 сек'} />
-                                    <SpecIconItem icon={<div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-700 text-2xl">🔋</div>} label="Запас хода" value={attrs.specs?.range || '550 км'} />
-                                    <SpecIconItem icon={<div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-700 text-2xl">🛣️</div>} label="Расход" value={attrs.specs?.fuelConsumption || '9.4 л'} />
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+                                    <SpecIconItem icon={<div className="p-4 rounded-2xl bg-white/5 text-2xl group-hover:scale-110 transition-transform shadow-lg">⚡</div>} label="Мощность" value={attrs.specs?.power || '245 л.с.'} />
+                                    <SpecIconItem icon={<div className="p-4 rounded-2xl bg-white/5 text-2xl group-hover:scale-110 transition-transform shadow-lg">⏱️</div>} label="0-100 км/ч" value={attrs.specs?.acceleration || '6.5 сек'} />
+                                    <SpecIconItem icon={<div className="p-4 rounded-2xl bg-white/5 text-2xl group-hover:scale-110 transition-transform shadow-lg">🔋</div>} label="Запас хода" value={attrs.specs?.range || '550 км'} />
+                                    <SpecIconItem icon={<div className="p-4 rounded-2xl bg-white/5 text-2xl group-hover:scale-110 transition-transform shadow-lg">🛣️</div>} label="Расход" value={attrs.specs?.fuelConsumption || '9.4 л'} />
                                 </div>
 
-                                <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                                <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-2 relative z-10">
                                     <DetailRow label="Двигатель" value={attrs.specs?.engine || 'Электро'} />
                                     <DetailRow label="Коробка" value={attrs.specs?.transmission || 'Автомат'} />
                                     <DetailRow label="Привод" value={attrs.specs?.drive || 'Полный'} />
@@ -432,21 +462,22 @@ export function MarketplaceDetail() {
                                     <DetailRow label="Год выпуска" value={attrs.specs?.year} />
                                 </div>
 
-                                <div className="mt-10 pt-10 border-t border-slate-100 dark:border-slate-800">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6">Способы оплаты</h3>
-                                    <div className="flex flex-wrap items-center gap-6 opacity-60">
-                                        <img src="https://logobank.uz:8005/static/logos_png/uzcard-logo-uz-600.png" loading="lazy" decoding="async" alt="Uzcard" className="h-6 object-contain" />
-                                        <img src="https://logobank.uz:8005/static/logos_png/visa-0-logo-uz-600.png" loading="lazy" decoding="async" alt="Visa" className="h-4 object-contain opacity-80" />
-                                        <img src="https://logobank.uz:8005/static/logos_png/mastercard-0-logo-uz-600.png" loading="lazy" decoding="async" alt="Mastercard" className="h-6 object-contain" />
-                                        <div className="h-6 w-px bg-slate-200" />
-                                        <span className="font-bold text-slate-400 text-xs">Direct Bank Transfer</span>
+                                <div className="mt-12 pt-12 border-t border-white/5 relative z-10">
+                                    <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-8 italic">Принимаем к оплате</h3>
+                                    <div className="flex flex-wrap items-center gap-10 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                                        <img src="https://logobank.uz:8005/static/logos_png/uzcard-logo-uz-600.png" loading="lazy" decoding="async" alt="Uzcard" className="h-6 object-contain brightness-0 invert" />
+                                        <img src="https://logobank.uz:8005/static/logos_png/visa-0-logo-uz-600.png" loading="lazy" decoding="async" alt="Visa" className="h-4 object-contain brightness-0 invert" />
+                                        <img src="https://logobank.uz:8005/static/logos_png/mastercard-0-logo-uz-600.png" loading="lazy" decoding="async" alt="Mastercard" className="h-6 object-contain brightness-0 invert" />
+                                        <div className="h-6 w-px bg-white/10" />
+                                        <span className="font-black text-slate-500 text-[10px] uppercase tracking-widest italic">Direct Bank Transfer</span>
                                     </div>
                                 </div>
                             </section>
                         ) : attrs.specs && (
-                            <section className="bg-white dark:bg-slate-900 rounded-[32px] p-8 md:p-10 shadow-sm border border-slate-100 dark:border-slate-800">
-                                <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-8">Характеристики</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                            <section className="bg-[#191624] rounded-[32px] p-8 md:p-12 shadow-2xl border border-white/5 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/5 via-transparent to-transparent pointer-events-none" />
+                                <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic mb-12 relative z-10">Характеристики</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-2 relative z-10">
                                     {Object.entries(attrs.specs).filter(([, v]) => typeof v !== 'object').map(([key, val]) => (
                                         <DetailRow key={key} label={key} value={val} />
                                     ))}
@@ -455,18 +486,19 @@ export function MarketplaceDetail() {
                         )}
 
                         {/* DESCRIPTION */}
-                        <section className="bg-white dark:bg-slate-900 rounded-[32px] p-8 md:p-10 shadow-sm border border-slate-100 dark:border-slate-800">
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">Описание</h2>
-                            <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-400 text-lg leading-relaxed pt-2 border-t border-slate-100 dark:border-slate-800">
-                                <p>{marketplace.description}</p>
+                        <section className="bg-[#191624] rounded-[32px] p-8 md:p-12 shadow-2xl border border-white/5 relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent pointer-events-none" />
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic mb-8 relative z-10">Описание</h2>
+                            <div className="prose prose-invert max-w-none text-slate-400 text-lg leading-relaxed pt-8 border-t border-white/5 relative z-10">
+                                <p className="leading-relaxed whitespace-pre-line">{marketplace.description}</p>
                             </div>
                         </section>
 
                         {/* VIDEO */}
                         {marketplace.videoUrl && (
-                            <section className="bg-white dark:bg-slate-900 rounded-[32px] p-8 md:p-10 shadow-sm border border-slate-100 dark:border-slate-800">
-                                <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">Видеообзор</h2>
-                                <div className="aspect-video rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 relative z-0 border border-slate-100 dark:border-slate-700">
+                            <section className="bg-[#191624] rounded-[32px] p-8 md:p-12 shadow-2xl border border-white/5 relative overflow-hidden group">
+                                <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic mb-8 relative z-10">Видеообзор</h2>
+                                <div className="aspect-video rounded-3xl overflow-hidden bg-[#13111C] relative z-0 border border-white/5 shadow-2xl group-hover:scale-[1.02] transition-transform duration-700">
                                     {marketplace.videoUrl.includes('youtube.com') || marketplace.videoUrl.includes('youtu.be') ? (
                                         <iframe
                                             src={marketplace.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')}
@@ -487,11 +519,11 @@ export function MarketplaceDetail() {
                         )}
 
                         {/* MAP */}
-                        <section className="bg-white dark:bg-slate-900 rounded-[32px] p-8 md:p-10 shadow-sm border border-slate-100 dark:border-slate-800">
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
-                                <MapPin className="text-blue-600 h-6 w-6" /> Расположение
+                        <section className="bg-[#191624] rounded-[32px] p-8 md:p-12 shadow-2xl border border-white/5 relative overflow-hidden group">
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic mb-8 relative z-10 flex items-center gap-4">
+                                <MapPin className="text-purple-600 h-6 w-6" /> Расположение
                             </h2>
-                            <div className="aspect-[21/9] rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 relative z-0 border border-slate-100 dark:border-slate-700">
+                            <div className="aspect-[21/9] rounded-3xl overflow-hidden bg-[#13111C] relative z-0 border border-white/5 shadow-2xl grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-1000">
                                 <MapContainer
                                     center={[marketplace.lat || 41.2995, marketplace.lng || 69.2401]}
                                     zoom={14}
@@ -513,40 +545,41 @@ export function MarketplaceDetail() {
 
                         {/* CALCULATOR */}
                         {(isRealEstate || isAuto) && (
-                            <section className="bg-white dark:bg-slate-900 rounded-[32px] p-8 md:p-10 shadow-sm border border-slate-100 dark:border-slate-800">
-                                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                                    <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                                        <Calculator className="text-blue-600 h-6 w-6" />
-                                        {isAuto ? "Автокредит / Калькулятор банков" : "Ипотечный калькулятор"}
+                            <section className="bg-[#191624] rounded-[32px] p-8 md:p-12 shadow-2xl border border-white/5 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/5 via-transparent to-transparent pointer-events-none" />
+                                <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 relative z-10">
+                                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic flex items-center gap-4">
+                                        <Calculator className="text-purple-600 h-7 w-7" />
+                                        {isAuto ? "Автокредит / Калькулятор" : "Ипотечный калькулятор"}
                                     </h2>
                                     {isAuto && (
-                                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-xl">
-                                            <Info className="h-4 w-4 text-blue-500" />
-                                            Актуально на {new Date().toLocaleDateString()}
+                                        <div className="flex items-center gap-3 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] bg-white/5 px-5 py-2.5 rounded-full border border-white/5 italic">
+                                            <Info className="h-4 w-4 text-purple-600" />
+                                            Актуально: {new Date().toLocaleDateString()}
                                         </div>
                                     )}
                                 </div>
 
                                 {isAuto && (
-                                    <div className="mb-10">
-                                        <label className="block text-sm font-black text-slate-700 dark:text-slate-300 mb-4 uppercase tracking-wider">Выберите банк</label>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                    <div className="mb-12 relative z-10">
+                                        <label className="block text-[10px] font-black text-slate-500 mb-6 uppercase tracking-[0.2em] italic">Выберите банк</label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                             {bankOffers.map((offer) => (
                                                 <button
                                                     key={offer.id}
                                                     onClick={() => setSelectedBank(offer)}
                                                     className={cn(
-                                                        "p-4 rounded-[20px] text-left transition-all border-2",
+                                                        "p-5 rounded-[24px] text-left transition-all border relative overflow-hidden group/bank",
                                                         selectedBank?.id === offer.id
-                                                            ? "border-blue-600 bg-blue-50/50 dark:bg-blue-900/20"
-                                                            : "border-slate-100 dark:border-slate-800 hover:border-slate-200"
+                                                            ? "border-purple-600/50 bg-purple-600/10 shadow-[0_0_30px_rgba(147,51,234,0.1)]"
+                                                            : "border-white/5 bg-white/5 hover:border-white/10"
                                                     )}
                                                 >
-                                                    <div className="font-black text-slate-900 dark:text-white text-sm mb-1">{offer.bank}</div>
-                                                    <div className="text-[10px] text-slate-500 font-bold uppercase truncate">{offer.product}</div>
-                                                    <div className="mt-2 flex items-center justify-between">
-                                                        <span className="text-blue-600 font-black text-xs">{offer.rate}</span>
-                                                        <span className="text-slate-400 text-[10px]">от {offer.downPayment}%</span>
+                                                    <div className="font-black text-white text-sm mb-1 uppercase tracking-tighter italic">{offer.bank}</div>
+                                                    <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest truncate italic">{offer.product}</div>
+                                                    <div className="mt-4 flex items-center justify-between">
+                                                        <span className="text-purple-400 font-black text-xs italic">{offer.rate}</span>
+                                                        <span className="text-slate-500 font-black text-[9px] uppercase tracking-widest">от {offer.downPayment}%</span>
                                                     </div>
                                                 </button>
                                             ))}
@@ -554,12 +587,12 @@ export function MarketplaceDetail() {
                                     </div>
                                 )}
 
-                                <div className="grid md:grid-cols-2 gap-10 items-center">
-                                    <div className="space-y-8">
+                                <div className="grid md:grid-cols-2 gap-12 items-center relative z-10">
+                                    <div className="space-y-10">
                                         <div>
-                                            <div className="flex justify-between text-sm font-bold mb-3 text-slate-700 dark:text-slate-300">
+                                            <div className="flex justify-between text-[10px] font-black mb-4 text-slate-400 uppercase tracking-[0.2em] italic">
                                                 <span>Первоначальный взнос ({downPayment}%)</span>
-                                                <span className="font-black">{(displayPrice * downPayment / 100).toLocaleString()} Sum</span>
+                                                <span className="text-white">{(displayPrice * downPayment / 100).toLocaleString()} Sum</span>
                                             </div>
                                             <input
                                                 type="range"
@@ -568,44 +601,40 @@ export function MarketplaceDetail() {
                                                 step="1"
                                                 value={downPayment}
                                                 onChange={(e) => setDownPayment(parseInt(e.target.value))}
-                                                className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                                className="w-full h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-purple-600"
                                             />
-                                            {isAuto && selectedBank && (
-                                                <div className="mt-2 text-[10px] text-slate-400 font-bold">
-                                                    МИНИМУМ ДЛЯ {selectedBank.bank.toUpperCase()}: {selectedBank.downPayment}%
-                                                </div>
-                                            )}
                                         </div>
                                         <div>
-                                            <div className="flex justify-between text-sm font-bold mb-3 text-slate-700 dark:text-slate-300">
-                                                <span>Срок {isAuto ? "(лет)" : "(лет)"}</span>
-                                                <span className="font-black">{term}</span>
+                                            <div className="flex justify-between text-[10px] font-black mb-4 text-slate-400 uppercase tracking-[0.2em] italic">
+                                                <span>Срок (лет)</span>
+                                                <span className="text-white">{term}</span>
                                             </div>
-                                            <input type="range" min="1" max={isAuto ? 5 : 20} step="1" value={term} onChange={(e) => setTerm(parseInt(e.target.value))} className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600" />
+                                            <input type="range" min="1" max={isAuto ? 5 : 20} step="1" value={term} onChange={(e) => setTerm(parseInt(e.target.value))} className="w-full h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-purple-600" />
                                         </div>
                                     </div>
-                                    <div className="bg-blue-50 dark:bg-blue-900/10 rounded-[24px] p-8 text-center border border-blue-100 dark:border-blue-900/30">
-                                        <div className="text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-widest mb-3">Примерный платёж</div>
-                                        <div className="text-4xl font-black text-slate-900 dark:text-white mb-2">
+                                    <div className="bg-[#13111C]/50 backdrop-blur-3xl rounded-[32px] p-10 text-center border border-white/5 shadow-2xl relative overflow-hidden group/total">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent pointer-events-none" />
+                                        <div className="text-purple-400 font-black text-[9px] uppercase tracking-[0.3em] mb-4 italic relative z-10">Ежемесячный платёж</div>
+                                        <div className="text-4xl font-black text-white mb-2 italic tracking-tighter relative z-10">
                                             {Math.round(monthlyPayment).toLocaleString()}
-                                            <span className="text-xl font-medium text-slate-500 ml-1.5">Sum</span>
+                                            <span className="text-lg font-medium text-slate-500 ml-2 italic">Sum</span>
                                         </div>
-                                        <div className="text-[10px] text-slate-400 font-bold uppercase mt-2">Ставка: {selectedBank?.rate || '24%'}</div>
-                                        <button onClick={() => submitLoanApplication(isAuto ? 'AUTO_LOAN' : 'MORTGAGE')} className="mt-6 w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl transition-all shadow-lg shadow-blue-600/20 text-sm">
-                                            Оставить заявку в банке
+                                        <div className="text-[8px] text-slate-500 font-black uppercase tracking-[0.2em] mt-4 italic relative z-10">Ставка: {selectedBank?.rate || '24%'}</div>
+                                        <button onClick={() => submitLoanApplication(isAuto ? 'AUTO_LOAN' : 'MORTGAGE')} className="mt-8 w-full py-4 bg-purple-600 hover:bg-purple-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-purple-600/20 text-[10px] uppercase tracking-[0.2em] italic relative z-10 active:scale-95">
+                                            Оставить заявку
                                         </button>
                                     </div>
                                 </div>
 
                                 {isAuto && (
-                                    <div className="mt-10 pt-6 border-t border-slate-50 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                        <div className="text-xs font-bold text-slate-400 flex items-center gap-2">
-                                            <ExternalLink className="h-3.5 w-3.5" />
-                                            Больше предложений на <a href="https://depozit.uz/credits/avtokredit" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Depozit.uz</a> и <a href="https://bank.uz/credits/avto-kredity" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Bank.uz</a>
+                                    <div className="mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
+                                        <div className="text-[10px] font-black text-slate-500 flex items-center gap-3 uppercase tracking-widest italic group-hover:text-slate-400 transition-colors">
+                                            <ExternalLink className="h-4 w-4 text-purple-600" />
+                                            Больше предложений на <a href="https://depozit.uz/credits/avtokredit" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300">Depozit.uz</a>
                                         </div>
                                         {selectedBank?.phone && (
-                                            <a href={`tel:${selectedBank.phone.replace(/\s/g, '')} `} className="flex items-center gap-2 text-blue-600 font-black text-sm hover:scale-105 transition-transform">
-                                                <Phone className="h-4 w-4" /> {selectedBank.phone}
+                                            <a href={`tel:${selectedBank.phone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-white font-black text-[10px] hover:text-purple-400 transition-all uppercase tracking-widest italic bg-white/5 px-6 py-2.5 rounded-xl border border-white/5">
+                                                <Phone className="h-4 w-4 text-purple-600" /> {selectedBank.phone}
                                             </a>
                                         )}
                                     </div>
@@ -613,235 +642,216 @@ export function MarketplaceDetail() {
                             </section>
                         )}
 
-                        <ReviewSection marketplaceId={id} isAuthenticated={isAuthenticated} currentUser={user} />
+                        <ReviewSection marketplaceId={marketplace?.id || slug} isAuthenticated={isAuthenticated} currentUser={user} />
                     </div>
 
                     {/* RIGHT COLUMN: Sidebar */}
                     <aside className="lg:col-span-4 relative">
-                        <div className="sticky top-24 space-y-6" id="contact-sidebar">
+                        <div className="sticky top-28 space-y-8 h-fit" id="contact-sidebar">
 
-                            {/* MAIN ACTIONS */}
-                            <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-xl border border-slate-100 dark:border-slate-800">
-                                <div className="mb-8">
-                                    <h1 className="text-2xl font-black text-slate-900 dark:text-white leading-tight mb-3">
-                                        {marketplace.name}
-                                    </h1>
-                                    <div className="flex items-center gap-3 text-sm font-bold text-slate-500 mb-6">
-                                        <MapPin className="h-4 w-4 text-blue-600" /> {marketplace.region}
-                                        <span className="text-slate-300">•</span>
-                                        {marketplace.stock > 0 || marketplace.isAvailable ? (
-                                            <span className="flex items-center gap-1 text-emerald-500"><Check className="h-4 w-4" /> В наличии</span>
-                                        ) : (
-                                            <span className="flex items-center gap-1 text-amber-500"><AlertCircle className="h-4 w-4" /> Нет в наличии</span>
+                            {/* MAIN ACTIONS / PRICE CARD */}
+                            <div className="bg-[#191624] rounded-[32px] p-8 shadow-2xl border border-white/5 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent pointer-events-none" />
+                                <div className="relative z-10">
+                                    <div className="mb-10 pt-2 pb-6 border-b border-white/5">
+                                        <h1 className="text-3xl font-black text-white leading-tight mb-4 uppercase tracking-tighter italic">
+                                            {marketplace.name}
+                                        </h1>
+                                        <div className="flex flex-wrap items-center gap-4 text-[10px] font-black text-slate-500 mb-8 uppercase tracking-widest italic">
+                                            <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+                                                <MapPin className="h-3.5 w-3.5 text-purple-600" /> {marketplace.region}
+                                            </div>
+                                            <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+                                                {marketplace.stock > 0 || marketplace.isAvailable ? (
+                                                    <span className="flex items-center gap-1.5 text-emerald-500"><Check className="h-3.5 w-3.5" /> В наличии</span>
+                                                ) : (
+                                                    <span className="flex items-center gap-1.5 text-amber-500"><AlertCircle className="h-3.5 w-3.5" /> Нет в наличии</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex items-baseline gap-3">
+                                            <div className="text-5xl font-black text-white tracking-tighter italic">
+                                                {displayPrice.toLocaleString()}
+                                            </div>
+                                            <div className="text-xl font-black text-purple-400 italic">Sum</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <button
+                                            onClick={() => {
+                                                if (marketplace.owner?.phone) window.location.href = `tel:${marketplace.owner.phone}`;
+                                                else toast.error("Телефон не указан");
+                                            }}
+                                            className="w-full h-16 flex items-center justify-center rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-xl shadow-purple-600/20 active:scale-95 italic group/btn"
+                                        >
+                                            <Phone className="h-4 w-4 mr-3 group-hover:rotate-12 transition-transform" />
+                                            {marketplace.owner?.phone || "Связаться"}
+                                        </button>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <button
+                                                onClick={() => {
+                                                    addToCart(marketplace);
+                                                    toast.success("Добавлено в корзину");
+                                                }}
+                                                className="w-full h-16 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 text-white font-black text-[9px] uppercase tracking-widest transition-all border border-white/5 active:scale-95 italic"
+                                            >
+                                                <ShoppingCart className="h-4 w-4 mr-2 text-purple-600" /> В корзину
+                                            </button>
+
+                                            <button
+                                                onClick={() => {
+                                                    addToCart(marketplace);
+                                                    navigate('/checkout');
+                                                }}
+                                                className="w-full h-16 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 text-white font-black text-[9px] uppercase tracking-widest transition-all border border-white/5 active:scale-95 italic group/zap"
+                                            >
+                                                <Zap className="h-4 w-4 mr-2 text-purple-600 group-hover:scale-125 transition-transform" fill="currentColor" /> 1 Клик
+                                            </button>
+                                        </div>
+
+                                        <button
+                                            onClick={async () => {
+                                                if (!isAuthenticated) return toast.error("Войдите");
+                                                try {
+                                                    await api.initiateChat(marketplace.owner.id);
+                                                    window.location.href = '/profile/chat';
+                                                } catch (err) { toast.error("Ошибка чата"); }
+                                            }}
+                                            className="w-full h-16 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all italic"
+                                        >
+                                            <MessageSquare className="h-4 w-4 mr-3 text-purple-600" /> Написать
+                                        </button>
+
+                                        {(isRealEstate || isAuto) && (
+                                            <button onClick={() => setOfferModalOpen(true)} className="w-full h-14 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 text-purple-400 font-black text-[10px] uppercase tracking-widest italic border border-purple-600/20">
+                                                Предложить цену
+                                            </button>
                                         )}
-                                    </div>
-                                    <div className="text-4xl font-black text-blue-600 tracking-tight">
-                                        {displayPrice.toLocaleString()} <span className="text-xl text-slate-400 font-bold ml-1">Sum</span>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <button
-                                        onClick={() => {
-                                            if (marketplace.owner?.phone) window.location.href = `tel:${marketplace.owner.phone} `;
-                                            else toast.error("Телефон не указан");
-                                        }}
-                                        className="w-full h-14 flex items-center justify-center rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-black text-lg transition-all"
-                                    >
-                                        <Phone className="h-5 w-5 mr-3" />
-                                        {marketplace.owner?.phone || "Связаться с продавцом"}
-                                    </button>
-
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <button
-                                            onClick={() => {
-                                                addToCart(marketplace);
-                                                toast.success("Добавлено в корзину");
-                                            }}
-                                            className="w-full h-14 flex items-center justify-center rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm md:text-base transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-                                        >
-                                            <ShoppingCart className="h-5 w-5 mr-2 hidden sm:block" /> В корзину
-                                        </button>
 
                                         <button
-                                            onClick={() => {
-                                                addToCart(marketplace);
-                                                navigate('/checkout');
-                                            }}
-                                            className="w-full h-14 flex items-center justify-center rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm md:text-base transition-all shadow-lg shadow-emerald-500/20 active:scale-95 outline outline-2 outline-offset-2 outline-transparent hover:outline-emerald-500/30"
-                                        >
-                                            <Zap className="h-5 w-5 mr-2" fill="currentColor" /> 1 Клик
-                                        </button>
-                                    </div>
-
-                                    <button
-                                        onClick={async () => {
-                                            if (!isAuthenticated) return toast.error("Войдите");
-                                            try {
-                                                await api.initiateChat(marketplace.owner.id);
-                                                window.location.href = '/profile/chat';
-                                            } catch (err) { toast.error("Ошибка чата"); }
-                                        }}
-                                        className="w-full h-14 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-blue-600 text-slate-900 dark:text-white font-black text-lg transition-all"
-                                    >
-                                        <MessageSquare className="h-5 w-5 mr-2" /> Написать
-                                    </button>
-
-                                    {/* WhatsApp */}
-                                    {marketplace.owner?.phone && (
-                                        <a
-                                            href={`https://wa.me/${marketplace.owner.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Здравствуйте! Интересует ваше объявление "${marketplace.name}" на Autohouse.uz`)}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="w-full h-12 flex items-center justify-center rounded-2xl bg-[#25D366] hover:bg-[#1ebe5d] text-white font-black text-sm transition-all shadow-lg shadow-green-500/20 active:scale-95"
-                                        >
-                                            <svg className="h-5 w-5 mr-2 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-                                            WhatsApp
-                                        </a>
-                                    )}
-
-                                    {(isRealEstate || isAuto) && (
-                                        <button onClick={() => setOfferModalOpen(true)} className="w-full h-14 flex items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-black">
-                                            Предложить свою цену
-                                        </button>
-                                    )}
-
-                                    <button
-                                        onClick={async () => {
-                                            if (!isAuthenticated) {
-                                                toast.error("Авторизуйтесь для подписки на снижение цены");
-                                                return;
-                                            }
-                                            try {
-                                                // Toggle on backend
-                                                const res = await api.watchPrice(marketplace.id);
-                                                setIsWatchingPrice(res.isWatching);
-                                                toast.success(res.isWatching ? "Вы подписаны на уведомления о снижении цены!" : "Подписка на снижение цены отменена");
-
-                                                // Ask for push if subscribing
-                                                if (res.isWatching && 'Notification' in window && 'serviceWorker' in navigator) {
-                                                    const perm = await Notification.requestPermission();
-                                                    if (perm === 'granted') {
-                                                        const reg = await navigator.serviceWorker.ready;
-                                                        // Convert VAPID public key if available, or just mock subscription logic
-                                                        let sub = await reg.pushManager.getSubscription();
-                                                        if (!sub) {
-                                                            // For MVP we just save an empty endpoint to signify they enabled it locally
-                                                            // A real VAPID key would be passed to .subscribe({ applicationServerKey: ... })
-                                                            await api.subscribePush({ endpoint: "mock-endpoint-" + Date.now(), keys: {} });
-                                                        }
-                                                    } else {
-                                                        toast.error("Разрешите уведомления в браузере для работы подписки");
-                                                    }
+                                            onClick={async () => {
+                                                if (!isAuthenticated) {
+                                                    toast.error("Авторизуйтесь для подписки");
+                                                    return;
                                                 }
-                                            } catch (err) {
-                                                toast.error("Ошибка подписки");
-                                            }
-                                        }}
-                                        className={`w-full h-14 flex items-center justify-center rounded-2xl font-black text-sm transition-all shadow-sm border-2 ${isWatchingPrice ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 border-amber-200 dark:border-amber-800" : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600"}`}
-                                    >
-                                        <Bell className={`h-5 w-5 mr-2 ${isWatchingPrice ? "fill-current" : ""}`} />
-                                        {isWatchingPrice ? "Вы следите за ценой" : "Следить за снижением цены"}
-                                    </button>
-                                </div>
+                                                try {
+                                                    const res = await api.watchPrice(marketplace.id);
+                                                    setIsWatchingPrice(res.isWatching);
+                                                    toast.success(res.isWatching ? "Вы следите за ценой!" : "Подписка отменена");
+                                                } catch (err) { toast.error("Ошибка подписки"); }
+                                            }}
+                                            className={cn(
+                                                "w-full h-16 flex items-center justify-center rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all border italic shadow-2xl",
+                                                isWatchingPrice
+                                                    ? "bg-purple-600/20 text-purple-400 border-purple-600/50"
+                                                    : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10"
+                                            )}
+                                        >
+                                            <Bell className={cn("h-4 w-4 mr-2", isWatchingPrice ? "fill-current" : "text-purple-600")} />
+                                            {isWatchingPrice ? "В списке наблюдения" : "Следить за ценой"}
+                                        </button>
+                                    </div>
 
-                                <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                                    <button onClick={() => toggleFavorite(marketplace)} className={cn("flex items-center gap-2 text-sm font-bold transition-colors", isFav ? "text-red-500" : "text-slate-500 hover:text-red-500")}>
-                                        <Heart className={cn("h-5 w-5", isFav && "fill-current")} />
-                                        {isFav ? "Удалить" : "В избранное"}
-                                    </button>
-                                    <button className="text-sm font-bold text-slate-500 flex items-center gap-2"><Flag className="h-4 w-4" />Жалоба</button>
+                                    <div className="mt-10 pt-8 border-t border-white/5 flex items-center justify-between">
+                                        <button onClick={() => toggleFavorite(marketplace)} className={cn("flex items-center gap-3 text-[10px] font-black transition-all uppercase tracking-widest italic", isFav ? "text-red-500 scale-110" : "text-slate-500 hover:text-red-500 active:scale-90")}>
+                                            <Heart className={cn("h-4 w-4", isFav && "fill-current")} />
+                                            {isFav ? "В избранном" : "Сохранить"}
+                                        </button>
+                                        <button className="text-[10px] font-black text-slate-500 hover:text-slate-300 flex items-center gap-3 uppercase tracking-widest italic"><Flag className="h-4 w-4" />Жалоба</button>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* SELLER */}
-                            <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800">
-                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 mb-6">Продавец</h3>
-                                <div className="flex items-center gap-5 mb-6">
-                                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-2xl shadow-xl">
+                            <div className="bg-[#191624] rounded-[32px] p-8 shadow-2xl border border-white/5 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent pointer-events-none" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-8 italic relative z-10">Продавец</h3>
+                                <div className="flex items-center gap-5 mb-8 relative z-10">
+                                    <div className="h-16 w-16 rounded-[24px] bg-gradient-to-br from-purple-600 to-blue-700 text-white flex items-center justify-center font-black text-2xl shadow-2xl border border-white/10 group-hover:scale-110 transition-transform">
                                         {marketplace.owner?.name?.[0] || "M"}
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <div className="font-black text-xl text-slate-900 dark:text-white">{marketplace.owner?.name || "Дилер"}</div>
+                                            <div className="font-black text-xl text-white uppercase tracking-tighter italic">{marketplace.owner?.name || "Дилер"}</div>
                                             {marketplace.isOfficial && (
-                                                <span className="bg-blue-600 text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full">Official</span>
+                                                <span className="bg-purple-600 text-white text-[8px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full animate-pulse shadow-lg shadow-purple-600/20">Official</span>
                                             )}
                                         </div>
-                                        <div className="text-sm font-bold text-emerald-500 flex items-center gap-1 mt-0.5">
+                                        <div className="text-[10px] font-black text-emerald-500 flex items-center gap-2 mt-1.5 uppercase tracking-widest italic">
                                             <Check className="w-3.5 h-3.5" />
-                                            {marketplace.isVerified ? "Проверенный продавец" : "Продавец"}
+                                            {marketplace.isVerified ? "Верифицирован" : "Дилер"}
                                         </div>
                                     </div>
                                 </div>
-                                <Link to={`/store/${marketplace.owner?.id}`} className="block text-center text-blue-600 font-black text-sm">Смотреть все объявления →</Link>
+                                <Link to={`/store/${marketplace.owner?.id}`} className="block text-center text-purple-400 font-black text-[10px] uppercase tracking-widest italic hover:text-purple-300 transition-colors relative z-10 pt-6 border-t border-white/5">
+                                    Смотреть профиль →
+                                </Link>
                             </div>
 
                             {/* TRUST BADGES */}
-                            <div className="bg-white dark:bg-slate-900 rounded-[32px] p-6 shadow-sm border border-slate-100 dark:border-slate-800">
-                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 mb-4">Гарантии</h3>
-                                <div className="space-y-3">
+                            <div className="bg-[#191624] rounded-[32px] p-8 shadow-2xl border border-white/5 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent pointer-events-none" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-8 italic relative z-10">Преимущества</h3>
+                                <div className="space-y-4 relative z-10">
                                     {marketplace.isVerified && (
-                                        <div className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/20">
-                                            <div className="h-9 w-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 flex-shrink-0">
-                                                <ShieldCheck className="h-4 w-4" />
+                                        <div className="flex items-center gap-4 p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-all">
+                                            <div className="h-10 w-10 rounded-xl bg-emerald-600/10 flex items-center justify-center text-emerald-600 flex-shrink-0 shadow-inner">
+                                                <ShieldCheck className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <div className="text-sm font-black text-slate-900 dark:text-white">Проверенный продавец</div>
-                                                <div className="text-xs text-slate-400">Личность и документы подтверждены</div>
+                                                <div className="text-[11px] font-black text-white uppercase tracking-widest italic">Проверен</div>
+                                                <div className="text-[8px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">Документы подтверждены</div>
                                             </div>
                                         </div>
                                     )}
                                     {marketplace.isOfficial && (
-                                        <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/20">
-                                            <div className="h-9 w-9 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 flex-shrink-0">
-                                                <Check className="h-4 w-4" />
+                                        <div className="flex items-center gap-4 p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-all">
+                                            <div className="h-10 w-10 rounded-xl bg-purple-600/10 flex items-center justify-center text-purple-600 flex-shrink-0 shadow-inner">
+                                                <Check className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <div className="text-sm font-black text-slate-900 dark:text-white">Официальный дилер</div>
-                                                <div className="text-xs text-slate-400">Авторизованный представитель бренда</div>
+                                                <div className="text-[11px] font-black text-white uppercase tracking-widest italic">Официальный дилер</div>
+                                                <div className="text-[8px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">Авторизованный представитель</div>
                                             </div>
                                         </div>
                                     )}
-                                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl">
-                                        <div className="h-9 w-9 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center text-slate-500 flex-shrink-0 shadow-sm">
-                                            <span className="text-base">🔒</span>
+                                    <div className="flex items-center gap-4 p-5 bg-white/5 rounded-2xl border border-white/5">
+                                        <div className="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-600 flex-shrink-0 shadow-inner">
+                                            <Shield className="h-5 w-5" />
                                         </div>
                                         <div>
-                                            <div className="text-sm font-black text-slate-900 dark:text-white">Безопасная сделка</div>
-                                            <div className="text-xs text-slate-400">Платёж защищён платформой</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl">
-                                        <div className="h-9 w-9 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center flex-shrink-0 shadow-sm">
-                                            <span className="text-base">↩️</span>
-                                        </div>
-                                        <div>
-                                            <div className="text-sm font-black text-slate-900 dark:text-white">Возврат 14 дней</div>
-                                            <div className="text-xs text-slate-400">Полный возврат при несоответствии</div>
+                                            <div className="text-[11px] font-black text-white uppercase tracking-widest italic">Безопасная сделка</div>
+                                            <div className="text-[8px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">Защита покупателя</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </aside>
-
                 </article>
             </main>
 
             {/* RELATED PRODUCTS */}
             {
                 relatedProducts.length > 0 && (
-                    <section className="container mx-auto px-4 pb-16">
-                        <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-3xl font-black text-slate-900 dark:text-white">Похожие предложения</h2>
-                            <Link to={`/catalog?category=${marketplace.category}`} className="text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1">
-                                Больше <ChevronRight className="h-4 w-4" />
+                    <section className="container mx-auto px-6 pb-24 relative">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-white/5" />
+                        <div className="flex flex-col md:flex-row md:items-end justify-between pt-16 mb-12 gap-6">
+                            <div>
+                                <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic mb-4">Похожие предложения</h2>
+                                <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] italic">Рекомендовано специально для вас</p>
+                            </div>
+                            <Link to={`/catalog?category=${marketplace.category}`} className="flex items-center gap-3 px-8 py-4 bg-white/5 hover:bg-white/10 rounded-2xl text-purple-400 font-black text-[10px] uppercase tracking-widest italic border border-white/5 transition-all">
+                                Весь каталог <ChevronRight className="h-4 w-4" />
                             </Link>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {relatedProducts.map(product => (
-                                <MarketplaceCard key={product.id} marketplace={product} viewMode="grid" />
+                                <div key={product.id} className="hover:-translate-y-2 transition-transform duration-500">
+                                    <MarketplaceCard marketplace={product} viewMode="grid" />
+                                </div>
                             ))}
                         </div>
                     </section>
@@ -849,6 +859,15 @@ export function MarketplaceDetail() {
             }
 
             {offerModalOpen && <MakeOfferModal marketplace={marketplace} onClose={() => setOfferModalOpen(false)} />}
+            {
+                lightboxOpen && (
+                    <Lightbox
+                        images={allImages}
+                        startIndex={lightboxIndex >= 0 ? lightboxIndex : 0}
+                        onClose={() => setLightboxOpen(false)}
+                    />
+                )
+            }
         </div >
     );
 }
@@ -856,10 +875,13 @@ export function MarketplaceDetail() {
 function SpecIconItem({ icon, label, value }) {
     if (!value) return null;
     return (
-        <div className="flex flex-col items-center p-6 bg-slate-50 dark:bg-slate-800 rounded-[28px] border border-slate-100 dark:border-slate-700/50 hover:bg-white dark:hover:bg-slate-700 hover:shadow-xl transition-all duration-300 group">
-            <div className="mb-3 transform group-hover:scale-110 transition-transform duration-300">{icon}</div>
-            <div className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-[0.2em] mb-1">{label}</div>
-            <div className="text-slate-900 dark:text-white font-black text-base md:text-lg leading-tight text-center">{value}</div>
+        <div className="flex flex-col items-center p-8 bg-[#191624] rounded-[32px] border border-white/5 hover:border-purple-600/30 hover:bg-white/[0.02] hover:shadow-[0_0_40px_rgba(147,51,234,0.05)] transition-all duration-500 group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="mb-4 transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 relative z-10">
+                {icon}
+            </div>
+            <div className="text-[9px] text-slate-500 uppercase font-black tracking-[0.3em] mb-2 italic relative z-10">{label}</div>
+            <div className="text-white font-black text-lg md:text-xl leading-tight text-center italic tracking-tighter relative z-10">{value}</div>
         </div>
     );
 }
@@ -867,9 +889,9 @@ function SpecIconItem({ icon, label, value }) {
 function DetailRow({ label, value }) {
     if (!value) return null;
     return (
-        <div className="flex items-center justify-between py-3 border-b border-slate-50 dark:border-slate-800 last:border-0">
-            <span className="text-slate-500 dark:text-slate-400 font-bold text-sm uppercase tracking-wider">{label}</span>
-            <span className="text-slate-900 dark:text-white font-black text-base">{value}</span>
+        <div className="flex items-center justify-between py-5 border-b border-white/5 last:border-0 group">
+            <span className="text-slate-500 font-black text-[10px] uppercase tracking-widest italic group-hover:text-slate-400 transition-colors">{label}</span>
+            <span className="text-white font-black text-sm italic tracking-tight">{value}</span>
         </div>
     );
 }
@@ -877,9 +899,9 @@ function DetailRow({ label, value }) {
 function SpecItem({ label, value }) {
     if (!value) return null;
     return (
-        <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-[24px] border border-slate-100 dark:border-slate-700/50">
-            <div className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-black tracking-widest mb-1">{label}</div>
-            <div className="text-slate-900 dark:text-white font-black text-base leading-tight">{value}</div>
+        <div className="p-5 bg-white/5 rounded-[24px] border border-white/5 hover:border-white/10 transition-all group">
+            <div className="text-[8px] text-slate-500 uppercase font-black tracking-[0.2em] mb-2 italic group-hover:text-purple-400 transition-colors">{label}</div>
+            <div className="text-white font-black text-sm leading-tight italic tracking-tight">{value}</div>
         </div>
     );
 }
