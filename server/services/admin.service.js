@@ -50,6 +50,16 @@ class AdminService {
         });
     }
 
+    async toggleUserVerification(userId, isVerified) {
+        return await prisma.user.update({
+            where: { id: userId },
+            data: {
+                isPhoneVerified: isVerified,
+                isForcedVerified: isVerified
+            }
+        });
+    }
+
     async getAllUsers() {
         return prisma.user.findMany({
             select: {
@@ -60,6 +70,7 @@ class AdminService {
                 role: true,
                 isBlocked: true,
                 isPhoneVerified: true,
+                isForcedVerified: true,
                 createdAt: true,
                 orders: {
                     select: { id: true, total: true, createdAt: true }

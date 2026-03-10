@@ -21,6 +21,11 @@ exports.toggleBlockUser = asyncHandler(async (req, res) => {
     res.json(user);
 });
 
+exports.toggleUserVerification = asyncHandler(async (req, res) => {
+    const user = await adminService.toggleUserVerification(req.params.id, req.body.isVerified);
+    res.json(user);
+});
+
 exports.deleteUser = asyncHandler(async (req, res) => {
     await adminService.deleteUser(req.user.userId, req.params.id);
     res.json({ success: true });

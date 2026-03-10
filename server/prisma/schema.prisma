@@ -17,6 +17,7 @@ model User {
   isBlocked Boolean  @default(false)
   addresses String   @default("[]") // JSON string for user addresses
   isPhoneVerified Boolean  @default(false)
+  isForcedVerified Boolean @default(false)
   isWishlistPublic Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

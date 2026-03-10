@@ -37,6 +37,7 @@ adminRouter.use(authenticateToken, authorizeRole(['ADMIN', 'SUPER_ADMIN']));
 adminRouter.get('/users', adminController.getAllUsers);
 adminRouter.post('/users', requireSuperAdmin, adminController.createUser);
 adminRouter.put('/users/:id/role', adminController.updateUserRole);
+adminRouter.put('/users/:id/verify', requireSuperAdmin, adminController.toggleUserVerification);
 adminRouter.put('/users/:id/block', adminController.toggleBlockUser);
 adminRouter.delete('/users/:id', adminController.deleteUser);
 adminRouter.get('/marketplaces', adminController.getMarketplaces);

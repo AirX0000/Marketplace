@@ -20,7 +20,9 @@ const safeUserSelect = {
     businessDescription: true,
     businessCategory: true,
     businessAddress: true,
-    watchedListings: true
+    watchedListings: true,
+    isPhoneVerified: true,
+    isForcedVerified: true
 };
 
 module.exports = { safeUserSelect };

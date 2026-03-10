@@ -23,7 +23,8 @@ export function SuperAdminUsers() {
         phone: '',
         password: '',
         role: 'USER',
-        isPhoneVerified: true
+        isPhoneVerified: true,
+        isForcedVerified: true
     });
 
     useEffect(() => {
@@ -87,7 +88,8 @@ export function SuperAdminUsers() {
                 phone: '',
                 password: '',
                 role: 'USER',
-                isPhoneVerified: true
+                isPhoneVerified: true,
+                isForcedVerified: true
             });
             loadUsers();
         } catch (error) {
@@ -117,6 +119,18 @@ export function SuperAdminUsers() {
             toast.success(`Пользователь ${isBlocked ? 'заблокирован' : 'разблокирован'}`, { id: loadingToast });
         } catch (error) {
             toast.error(`Ошибка: ${action} не удалась`, { id: loadingToast });
+        }
+    };
+
+    const handleVerificationToggle = async (user) => {
+        const isVerified = !user.isPhoneVerified;
+        const loadingToast = toast.loading(isVerified ? "Верификация пользователя..." : "Снятие верификации...");
+        try {
+            await api.updateUserVerification(user.id, isVerified);
+            setUsers(users.map(u => u.id === user.id ? { ...u, isPhoneVerified: isVerified, isForcedVerified: isVerified } : u));
+            toast.success(isVerified ? "Пользователь верифицирован" : "Верификация снята", { id: loadingToast });
+        } catch (error) {
+            toast.error("Ошибка смены статуса верификации", { id: loadingToast });
         }
     };
 
@@ -272,15 +286,19 @@ export function SuperAdminUsers() {
                                             </div>
                                         </td>
                                         <td className="p-4">
-                                            {user.isPhoneVerified ? (
-                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-xs font-medium text-emerald-500 w-fit">
-                                                    <Check size={12} /> Подтвержден
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-muted border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground w-fit">
-                                                    Не подтвержден
-                                                </span>
-                                            )}
+                                            <button
+                                                onClick={() => handleVerificationToggle(user)}
+                                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium transition-all ${user.isPhoneVerified
+                                                    ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/20'
+                                                    : 'bg-muted border border-border text-muted-foreground hover:bg-background hover:text-foreground'
+                                                    }`}
+                                            >
+                                                {user.isPhoneVerified ? (
+                                                    <><Check size={12} /> {user.isForcedVerified ? 'Принудительно' : 'Подтвержден'}</>
+                                                ) : (
+                                                    'Не подтвержден'
+                                                )}
+                                            </button>
                                         </td>
                                         <td className="p-4">
                                             <div className="flex flex-col gap-1">
@@ -420,17 +438,31 @@ export function SuperAdminUsers() {
                                     <option value="SUPER_ADMIN">Super Admin</option>
                                 </select>
                             </div>
-                            <div className="flex items-center gap-3 pt-2">
-                                <input
-                                    type="checkbox"
-                                    id="isVerified"
-                                    checked={newUser.isPhoneVerified}
-                                    onChange={(e) => setNewUser({ ...newUser, isPhoneVerified: e.target.checked })}
-                                    className="w-5 h-5 rounded border-border text-primary focus:ring-primary cursor-pointer transition-all"
-                                />
-                                <label htmlFor="isVerified" className="text-sm font-medium text-foreground cursor-pointer select-none">
-                                    Автоматически верифицировать телефон
-                                </label>
+                            <div className="space-y-3 pt-2">
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="isVerified"
+                                        checked={newUser.isPhoneVerified}
+                                        onChange={(e) => setNewUser({ ...newUser, isPhoneVerified: e.target.checked })}
+                                        className="w-5 h-5 rounded border-border text-primary focus:ring-primary cursor-pointer transition-all"
+                                    />
+                                    <label htmlFor="isVerified" className="text-sm font-medium text-foreground cursor-pointer select-none">
+                                        Подтвердить телефон
+                                    </label>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="isForced"
+                                        checked={newUser.isForcedVerified}
+                                        onChange={(e) => setNewUser({ ...newUser, isForcedVerified: e.target.checked })}
+                                        className="w-5 h-5 rounded border-border text-primary focus:ring-primary cursor-pointer transition-all"
+                                    />
+                                    <label htmlFor="isForced" className="text-sm font-medium text-foreground cursor-pointer select-none text-emerald-600">
+                                        Принудительная верификация (Bypass)
+                                    </label>
+                                </div>
                             </div>
                             <div className="pt-6 flex gap-3">
                                 <button

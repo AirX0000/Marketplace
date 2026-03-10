@@ -111,14 +111,26 @@ class AuthService {
             { expiresIn: '24h' }
         );
 
+        // Required by user: regular users must verify every time they login
+        // If not forced verified, reset phone verification status on login
+        let finalUser = user;
+        if (!user.isForcedVerified && user.isPhoneVerified) {
+            finalUser = await prisma.user.update({
+                where: { id: user.id },
+                data: { isPhoneVerified: false }
+            });
+        }
+
         return {
             message: "Login successful",
             user: {
-                id: user.id,
-                email: user.email,
-                role: user.role,
-                name: user.name,
-                hasMarketplace: user.role === 'PARTNER' // basic check, refined later if needed
+                id: finalUser.id,
+                email: finalUser.email,
+                role: finalUser.role,
+                name: finalUser.name,
+                isPhoneVerified: finalUser.isPhoneVerified,
+                isForcedVerified: finalUser.isForcedVerified,
+                hasMarketplace: finalUser.role === 'PARTNER'
             },
             token
         };
