@@ -112,9 +112,9 @@ class AuthService {
         );
 
         // Required by user: regular users must verify every time they login
-        // If not forced verified, reset phone verification status on login
+        // If not forced verified AND NOT an admin/super_admin, reset phone verification status on login
         let finalUser = user;
-        if (!user.isForcedVerified && user.isPhoneVerified) {
+        if (!user.isForcedVerified && user.isPhoneVerified && user.role !== 'SUPER_ADMIN' && user.role !== 'ADMIN') {
             finalUser = await prisma.user.update({
                 where: { id: user.id },
                 data: { isPhoneVerified: false }

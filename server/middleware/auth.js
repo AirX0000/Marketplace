@@ -34,6 +34,7 @@ const requireAdmin = (req, res, next) => {
 
 const requireSuperAdmin = (req, res, next) => {
     if (!req.user) return res.sendStatus(401);
+    console.log(`[DEBUG_AUTH] User: ${req.user.userId}, Role: ${req.user.role}, Target: SUPER_ADMIN`);
     if (req.user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ error: 'Super Admin access required' });
     }

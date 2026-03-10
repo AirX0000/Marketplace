@@ -198,7 +198,7 @@ export function ShopProvider({ children }) {
     const getUserRole = () => user?.role || null;
     const isBuyer = () => getUserRole() === 'USER';
     const isPartner = () => getUserRole() === 'PARTNER';
-    const isAdmin = () => getUserRole() === 'ADMIN';
+    const isAdmin = () => getUserRole() === 'ADMIN' || getUserRole() === 'SUPER_ADMIN';
 
     const getDefaultRoute = () => {
         if (!isAuthenticated || !user) return '/';
@@ -206,6 +206,7 @@ export function ShopProvider({ children }) {
             case 'PARTNER':
                 return '/partner';
             case 'ADMIN':
+            case 'SUPER_ADMIN':
                 return '/admin';
             case 'USER':
             default:
