@@ -15,7 +15,7 @@ export function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
-    const { cartCount, checkAuth, user, isAuthenticated, isBuyer, isPartner, isAdmin, logout } = useShop();
+    const { cartCount, checkAuth, user, isAuthenticated, isBuyer, isPartner, isAdmin, getUserRole, logout } = useShop();
     const { theme, toggleTheme } = useTheme();
 
     // Re-check auth on mount and handle scroll

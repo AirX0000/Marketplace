@@ -16,7 +16,7 @@ import { api } from '../lib/api';
 import { notify } from '../lib/notify';
 
 export function UserDashboard() {
-    const { user, logout } = useShop();
+    const { user, logout, isAdmin } = useShop();
     const navigate = useNavigate();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState(() => {
