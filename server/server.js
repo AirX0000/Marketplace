@@ -13,10 +13,11 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "'unsafe-inline'", "https://api-maps.yandex.ru", "https://yandex.st"],
-            "img-src": ["'self'", "data:", "https:", "https://*.maps.yandex.net", "https://yandex.ru", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
-            "connect-src": ["'self'", "https:", "https://api-maps.yandex.ru", "https://*.maps.yandex.net", "https://yandex.ru", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
-            "frame-src": ["'self'", "https://api-maps.yandex.ru"],
+            "script-src": ["'self'", "'unsafe-inline'"],
+            "script-src-elem": ["'self'", "'unsafe-inline'"],
+            "img-src": ["'self'", "data:", "https:", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
+            "connect-src": ["'self'", "https:", "ws:", "wss:", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
+            "frame-src": ["'self'"],
         },
     },
 }));
@@ -70,7 +71,7 @@ apiRouter.use('/settings', settingsRoutes);
 apiRouter.use('/support', supportRoutes);
 apiRouter.use('/centers', centersRoutes);
 apiRouter.use('/newsletter', newsletterRoutes);
-apiRouter.use('/content', contentRoutes);
+apiRouter.use('/', contentRoutes); // Mount at root so /careers and /blog work as expected by the frontend
 // Auth routes (login/register/otp)
 try {
     const authRoutes = require('./routes/auth.routes');
@@ -82,6 +83,12 @@ try {
 apiRouter.use('/auth', passwordResetRoutes); // Password reset routes (e.g. /auth/reset)
 apiRouter.use('/upload', uploadRoutes);
 apiRouter.use('/seo', seoRoutes);
+
+// Catch-all for API 404s before it hits the SPA index.html fallback
+apiRouter.use((req, res) => {
+    console.warn(`[API 404] ${req.method} ${req.originalUrl}`);
+    res.status(404).json({ error: 'API Route Not Found', path: req.originalUrl });
+});
 
 app.use('/api', apiRouter);
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
 const adminController = require('../controllers/admin.controller');
-const { authenticateToken, authorizeRole } = require('../middleware/auth');
+const { authenticateToken, authorizeRole, requireSuperAdmin } = require('../middleware/auth');
 
 // User Profile
 router.get('/profile', authenticateToken, userController.getProfile);
@@ -32,9 +32,10 @@ router.get('/recommendations', authenticateToken, userController.getRecommendati
 // Admin Routes (mounted at /api/admin)
 const adminRouter = express.Router();
 
-adminRouter.use(authenticateToken, authorizeRole(['ADMIN']));
+adminRouter.use(authenticateToken, authorizeRole(['ADMIN', 'SUPER_ADMIN']));
 
 adminRouter.get('/users', adminController.getAllUsers);
+adminRouter.post('/users', requireSuperAdmin, adminController.createUser);
 adminRouter.put('/users/:id/role', adminController.updateUserRole);
 adminRouter.put('/users/:id/block', adminController.toggleBlockUser);
 adminRouter.delete('/users/:id', adminController.deleteUser);

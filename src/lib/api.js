@@ -202,6 +202,7 @@ export const api = {
     updateUserRole: (id, role) => fetchAPI(`/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
     updateUserBlock: (id, isBlocked) => fetchAPI(`/admin/users/${id}/block`, { method: 'PUT', body: JSON.stringify({ isBlocked }) }),
     deleteUser: (id) => fetchAPI(`/admin/users/${id}`, { method: 'DELETE' }),
+    createUser: (data) => fetchAPI('/admin/users', { method: 'POST', body: JSON.stringify(data) }),
 
     // Careers API
     getCareers: () => fetchAPI('/careers'),

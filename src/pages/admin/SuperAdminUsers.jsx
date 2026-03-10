@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
-import { Shield, User, Search, Store, Lock, Unlock, Mail, Calendar, Check, Trash2 } from 'lucide-react';
+import { Shield, User, Search, Store, Lock, Unlock, Mail, Calendar, Check, Trash2, UserPlus, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export function SuperAdminUsers() {
@@ -13,7 +13,18 @@ export function SuperAdminUsers() {
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
-    const [roleFilter, setRoleFilter] = useState(urlRole || 'ALL'); // ALL, ADMIN, PARTNER, USER
+    const [roleFilter, setRoleFilter] = useState(urlRole || 'ALL'); // ALL, ADMIN, SUPER_ADMIN, PARTNER, USER
+
+    // Add User Modal State
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [newUser, setNewUser] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        role: 'USER',
+        isPhoneVerified: true
+    });
 
     useEffect(() => {
         if (urlRole) {
@@ -61,6 +72,27 @@ export function SuperAdminUsers() {
             })
             .catch(e => toast.error("Ошибка загрузки пользователей"))
             .finally(() => setLoading(false));
+    };
+
+    const handleCreateUser = async (e) => {
+        e.preventDefault();
+        const loadingToast = toast.loading("Создание пользователя...");
+        try {
+            await api.createUser(newUser);
+            toast.success("Пользователь успешно создан", { id: loadingToast });
+            setIsAddModalOpen(false);
+            setNewUser({
+                name: '',
+                email: '',
+                phone: '',
+                password: '',
+                role: 'USER',
+                isPhoneVerified: true
+            });
+            loadUsers();
+        } catch (error) {
+            toast.error(error.message || "Ошибка создания пользователя", { id: loadingToast });
+        }
     };
 
     const handleRoleChange = async (id, newRole) => {
@@ -112,20 +144,32 @@ export function SuperAdminUsers() {
 
     return (
         <div className="space-y-6 pb-10 animate-in fade-in">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">
-                    {urlCategory ? `Управление Партнерами: ${urlCategory}` : 'Управление Пользователями'}
-                </h1>
-                <p className="text-slate-700">
-                    {urlCategory ? `Список зарегистрированных пользователей в категории ${urlCategory}` : 'Просмотр и управление всеми пользователями платформы'}
-                </p>
+            <div className="flex justify-between items-end">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">
+                        {urlCategory ? `Управление Партнерами: ${urlCategory}` : 'Управление Пользователями'}
+                    </h1>
+                    <p className="text-slate-700">
+                        {urlCategory ? `Список зарегистрированных пользователей в категории ${urlCategory}` : 'Просмотр и управление всеми пользователями платформы'}
+                    </p>
+                </div>
+                {!urlCategory && (
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm font-medium"
+                    >
+                        <UserPlus size={18} />
+                        Добавить пользователя
+                    </button>
+                )}
             </div>
 
             {/* Filters and Search */}
             <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-1 rounded-xl border shadow-sm">
                 <div className="flex gap-1 p-1 bg-slate-100/80 rounded-lg overflow-x-auto max-w-full">
                     {[
-                        { id: 'ALL', label: 'Все', icon: Users },
+                        { id: 'ALL', label: 'Все', icon: UsersIcon },
+                        { id: 'SUPER_ADMIN', label: 'Super Admin', icon: Shield },
                         { id: 'ADMIN', label: 'Админы', icon: Shield },
                         { id: 'PARTNER', label: 'Партнеры', icon: Store },
                         { id: 'USER', label: 'Пользователи', icon: User }
@@ -137,12 +181,12 @@ export function SuperAdminUsers() {
                             <button
                                 key={tab.id}
                                 onClick={() => setRoleFilter(tab.id)}
-                                className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${roleFilter === tab.id
+                                className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${roleFilter === tab.id
                                     ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200'
                                     : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
                                     }`}
                             >
-                                {tab.id === 'ALL' ? <User size={14} /> : <tab.icon size={14} />}
+                                {tab.id === 'ALL' ? <UsersIcon size={14} /> : <tab.icon size={14} />}
                                 {tab.label}
                             </button>
                         );
@@ -191,16 +235,18 @@ export function SuperAdminUsers() {
                                     <tr key={user.id} className="hover:bg-slate-50/80 transition-colors group">
                                         <td className="p-4">
                                             <div className="flex items-center gap-3">
-                                                <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-lg shrink-0 ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-600' :
-                                                    user.role === 'PARTNER' ? 'bg-blue-100 text-blue-600' :
-                                                        'bg-slate-100 text-slate-600'
+                                                <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-lg shrink-0 ${user.role === 'SUPER_ADMIN' ? 'bg-red-100 text-red-600' :
+                                                        user.role === 'ADMIN' ? 'bg-purple-100 text-purple-600' :
+                                                            user.role === 'PARTNER' ? 'bg-blue-100 text-blue-600' :
+                                                                'bg-slate-100 text-slate-600'
                                                     }`}>
                                                     {user.name?.[0]?.toUpperCase() || 'U'}
                                                 </div>
                                                 <div>
                                                     <div className="font-semibold text-slate-900">{user.name || "Без имени"}</div>
-                                                    <div className="text-xs text-slate-500 flex items-center gap-1">
-                                                        {user.email}
+                                                    <div className="text-xs text-slate-500 flex flex-col">
+                                                        <span>{user.email}</span>
+                                                        <span>{user.phone}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -210,28 +256,37 @@ export function SuperAdminUsers() {
                                                 <select
                                                     value={user.role}
                                                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                                    className={`h-8 rounded-lg border text-xs font-semibold px-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all appearance-none pl-3 pr-8 bg-no-repeat bg-[right_0.5rem_center] ${user.role === 'ADMIN' ? 'bg-purple-50 text-purple-700 border-purple-200 focus:ring-purple-200' :
-                                                        user.role === 'PARTNER' ? 'bg-blue-50 text-blue-700 border-blue-200 focus:ring-blue-200' :
-                                                            'bg-slate-50 text-slate-700 border-slate-200 focus:ring-slate-200'
+                                                    className={`h-8 rounded-lg border text-xs font-semibold px-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all appearance-none pl-3 pr-8 bg-no-repeat bg-[right_0.5rem_center] ${user.role === 'SUPER_ADMIN' ? 'bg-red-50 text-red-700 border-red-200 focus:ring-red-200' :
+                                                            user.role === 'ADMIN' ? 'bg-purple-50 text-purple-700 border-purple-200 focus:ring-purple-200' :
+                                                                user.role === 'PARTNER' ? 'bg-blue-50 text-blue-700 border-blue-200 focus:ring-blue-200' :
+                                                                    'bg-slate-50 text-slate-700 border-slate-200 focus:ring-slate-200'
                                                         }`}
                                                     style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundSize: '1.5em 1.5em' }}
                                                 >
                                                     <option value="USER">User</option>
                                                     <option value="PARTNER">Partner</option>
                                                     <option value="ADMIN">Admin</option>
+                                                    <option value="SUPER_ADMIN">Super Admin</option>
                                                 </select>
                                             </div>
                                         </td>
                                         <td className="p-4">
-                                            {user.isBlocked ? (
-                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 border border-red-100 px-2.5 py-0.5 text-xs font-medium text-red-600">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div> Заблокирован
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-600">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Активен
-                                                </span>
-                                            )}
+                                            <div className="flex flex-col gap-1">
+                                                {user.isBlocked ? (
+                                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 border border-red-100 px-2.5 py-0.5 text-xs font-medium text-red-600 w-fit">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div> Заблокирован
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-600 w-fit">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Активен
+                                                    </span>
+                                                )}
+                                                {user.isPhoneVerified && (
+                                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-600 w-fit">
+                                                        <Check size={10} /> Верифицирован
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="p-4 text-slate-500 font-medium">
                                             <div className="flex items-center gap-2 text-xs">
@@ -283,11 +338,116 @@ export function SuperAdminUsers() {
                     )}
                 </div>
             </div>
+
+            {/* Add User Modal */}
+            {isAddModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
+                            <h2 className="text-xl font-bold text-slate-800">Добавить пользователя</h2>
+                            <button
+                                onClick={() => setIsAddModalOpen(false)}
+                                className="p-1.5 hover:bg-slate-200 rounded-full transition-colors text-slate-400"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-slate-700">Имя</label>
+                                <input
+                                    required
+                                    type="text"
+                                    value={newUser.name}
+                                    onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                                    className="w-full h-10 px-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                    placeholder="Иван Иванов"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-slate-700">Email</label>
+                                    <input
+                                        required
+                                        type="email"
+                                        value={newUser.email}
+                                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                                        className="w-full h-10 px-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                        placeholder="user@example.com"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-slate-700">Телефон</label>
+                                    <input
+                                        required
+                                        type="tel"
+                                        value={newUser.phone}
+                                        onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+                                        className="w-full h-10 px-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                        placeholder="+998901234567"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-slate-700">Пароль</label>
+                                <input
+                                    required
+                                    type="password"
+                                    value={newUser.password}
+                                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                                    className="w-full h-10 px-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-slate-700">Роль</label>
+                                <select
+                                    value={newUser.role}
+                                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                                    className="w-full h-10 px-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm bg-white"
+                                >
+                                    <option value="USER">User</option>
+                                    <option value="PARTNER">Partner (Seller)</option>
+                                    <option value="ADMIN">Admin</option>
+                                    <option value="SUPER_ADMIN">Super Admin</option>
+                                </select>
+                            </div>
+                            <div className="flex items-center gap-2 pt-2">
+                                <input
+                                    type="checkbox"
+                                    id="isVerified"
+                                    checked={newUser.isPhoneVerified}
+                                    onChange={(e) => setNewUser({ ...newUser, isPhoneVerified: e.target.checked })}
+                                    className="w-4 h-4 rounded text-primary border-slate-300 focus:ring-primary cursor-pointer"
+                                />
+                                <label htmlFor="isVerified" className="text-sm font-medium text-slate-700 cursor-pointer select-none">
+                                    Автоматически верифицировать телефон
+                                </label>
+                            </div>
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsAddModalOpen(false)}
+                                    className="flex-1 h-11 px-4 rounded-xl border border-slate-200 font-semibold text-slate-600 hover:bg-slate-50 transition-all"
+                                >
+                                    Отмена
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 h-11 px-4 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition-all shadow-md shadow-primary/20"
+                                >
+                                    Создать
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-function Users({ size }) {
+function UsersIcon({ size }) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -11,8 +11,9 @@ export function AdminLayout() {
     const { user } = useShop();
     const { t, i18n } = useTranslation();
     const isActive = (path) => location.pathname === path;
-    const isAdmin = user?.role === 'ADMIN';
-    const isPartner = user?.role === 'PARTNER' || user?.role === 'ADMIN';
+    const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
+    const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+    const isPartner = user?.role === 'PARTNER' || user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
     const businessCategory = user?.businessCategory || '';
 
     const isRealtor = businessCategory === 'Риелтор';
@@ -34,7 +35,7 @@ export function AdminLayout() {
             <aside className="w-64 border-r border-slate-800 bg-slate-900 hidden md:flex flex-col">
                 <div className="h-16 flex items-center px-6 border-b border-slate-800">
                     <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-                        {isAdmin ? 'Admin Panel' : 'Partner Hub'}
+                        {isSuperAdmin ? 'Super Admin' : isAdmin ? 'Admin Panel' : 'Partner Hub'}
                     </span>
                 </div>
                 <nav className="flex-1 p-4 space-y-1 overflow-y-auto">

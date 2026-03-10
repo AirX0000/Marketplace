@@ -6,6 +6,11 @@ exports.getAllUsers = asyncHandler(async (req, res) => {
     res.json(users);
 });
 
+exports.createUser = asyncHandler(async (req, res) => {
+    const user = await adminService.createUser(req.body);
+    res.status(201).json(user);
+});
+
 exports.updateUserRole = asyncHandler(async (req, res) => {
     const user = await adminService.updateUserRole(req.params.id, req.body.role);
     res.json(user);

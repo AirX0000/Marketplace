@@ -1,13 +1,57 @@
-const prisma = require('../config/database');
-const { safeUserSelect } = require('../utils/constants');
+const bcrypt = require('bcryptjs');
 
 class AdminService {
+    async createUser(userData) {
+        const { email, phone, name, password, role, isPhoneVerified } = userData;
+
+        // Check if user already exists
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    email ? { email } : undefined,
+                    phone ? { phone } : undefined
+                ].filter(Boolean)
+            }
+        });
+
+        if (existingUser) {
+            throw new Error("User with this email or phone already exists");
+        }
+
+        // Generate accountId
+        const lastUser = await prisma.user.findFirst({
+            orderBy: { accountId: 'desc' },
+            where: { accountId: { not: null } }
+        });
+
+        let nextAccountId = "1";
+        if (lastUser && lastUser.accountId) {
+            nextAccountId = (parseInt(lastUser.accountId) + 1).toString();
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        return prisma.user.create({
+            data: {
+                email,
+                phone,
+                name,
+                password: hashedPassword,
+                role: role || 'USER',
+                isPhoneVerified: !!isPhoneVerified,
+                accountId: nextAccountId
+            },
+            select: safeUserSelect
+        });
+    }
+
     async getAllUsers() {
         return prisma.user.findMany({
             select: {
                 id: true,
                 name: true,
                 email: true,
+                phone: true,
                 role: true,
                 isBlocked: true,
                 createdAt: true,

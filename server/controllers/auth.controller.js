@@ -28,7 +28,16 @@ exports.sendOTP = asyncHandler(async (req, res) => {
         });
 
         const smsService = require('../services/sms.service');
-        await smsService.sendSms(phone, `Код подтверждения Autohouse: ${code}`);
+        const smsResult = await smsService.sendSms(phone, `Код подтверждения Autohouse: ${code}`);
+
+        if (!smsResult.success) {
+            console.error('SMS Send Failed:', smsResult.error);
+            return res.status(400).json({
+                error: 'Не удалось отправить СМС. Проверьте номер телефона или попробуйте позже.',
+                details: smsResult.error
+            });
+        }
+
         res.json({ message: 'OTP sent' });
     } catch (e) {
         console.error('sendOTP Error:', e);
@@ -52,7 +61,7 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
         data: { isPhoneVerified: true }
     });
 
-    await prisma.otp.delete({ where: { phone } });
+    await prisma.oTP.delete({ where: { phone } });
     res.json({ message: 'Phone verified' });
 });
 
