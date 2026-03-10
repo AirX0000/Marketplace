@@ -136,7 +136,7 @@ export function Header() {
                                             {user?.name || t('common.profile')}
                                         </span>
                                         <span className="text-[10px] text-muted-foreground font-medium mt-0.5">
-                                            {isPartner() ? t('common.partner') : isAdmin() ? t('common.admin') : t('common.profile')}
+                                            {getUserRole() === 'SUPER_ADMIN' ? 'Super Admin' : isPartner() ? t('common.partner') : isAdmin() ? t('common.admin') : t('common.profile')}
                                         </span>
                                     </div>
                                 </button>

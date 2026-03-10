@@ -172,6 +172,9 @@ export function UserDashboard() {
                                 { id: 'addresses', label: 'Адреса доставки', icon: MapPin },
                                 { id: 'profile', label: 'Настройки профиля', icon: Settings },
                                 { id: 'security', label: 'Безопасность', icon: Shield },
+                                ...(isAdmin() ? [
+                                    { id: 'admin_panel', label: 'Панель Управления', icon: Settings, href: '/admin' }
+                                ] : []),
                                 ...(user?.role === 'PARTNER' ? [
                                     { id: 'partner_orders', label: 'Заказы Магазина', icon: Truck },
                                     { id: 'verification', label: 'Верификация (KYC)', icon: ShieldCheck }
@@ -180,8 +183,12 @@ export function UserDashboard() {
                                 <button
                                     key={item.id}
                                     onClick={() => {
-                                        setActiveTab(item.id);
-                                        navigate(`/profile?tab=${item.id}`, { replace: true });
+                                        if (item.href) {
+                                            navigate(item.href);
+                                        } else {
+                                            setActiveTab(item.id);
+                                            navigate(`/profile?tab=${item.id}`, { replace: true });
+                                        }
                                     }}
                                     className={`w-full flex items-center justify-between p-3 rounded-2xl text-sm font-bold transition-all ${activeTab === item.id
                                         ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)]'
