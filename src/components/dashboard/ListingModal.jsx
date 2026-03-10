@@ -11,8 +11,29 @@ const formatPrice = (price) => {
 };
 
 const CATEGORIES = [
-    { id: 1, name: "Транспорт", sub: ["Бозор (Авто с пробегом)", "Автосалон (Новые авто)", "Мотоциклы", "Спецтехника"] },
-    { id: 2, name: "Недвижимость", sub: ["Вторичное жильё", "Новостройки", "Аренда", "Участки", "Коммерческая недвижимость"] }
+    {
+        id: 1,
+        name: "Транспорт",
+        key: "ads.cat_transport",
+        sub: [
+            { id: "sub_used_cars", label: "ads.sub_used_cars", value: "Бозор (Авто с пробегом)" },
+            { id: "sub_new_cars", label: "ads.sub_new_cars", value: "Автосалон (Новые авто)" },
+            { id: "sub_moto", label: "ads.sub_moto", value: "Мотоциклы" },
+            { id: "sub_special", label: "ads.sub_special", value: "Спецтехника" }
+        ]
+    },
+    {
+        id: 2,
+        name: "Недвижимость",
+        key: "ads.cat_real_estate",
+        sub: [
+            { id: "sub_resale", label: "ads.sub_resale", value: "Вторичное жильё" },
+            { id: "sub_new_build", label: "ads.sub_new_build", value: "Новостройки" },
+            { id: "sub_rent", label: "ads.sub_rent", value: "Аренда" },
+            { id: "sub_land", label: "ads.sub_land", value: "Участки" },
+            { id: "sub_commercial", label: "ads.sub_commercial", value: "Коммерческая недвижимость" }
+        ]
+    }
 ];
 
 const BRANDS_MODELS = {
@@ -98,7 +119,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
     const [langTab, setLangTab] = useState('ru'); // 'ru' | 'uz'
 
     // Find initial main category based on subcategory
-    const initialMainCat = CATEGORIES.find(c => c.sub.includes(formData.category)) || CATEGORIES[0];
+    const initialMainCat = CATEGORIES.find(c => c.sub.some(s => s.value === formData.category)) || CATEGORIES[0];
     const [mainCategory, setMainCategory] = useState(initialMainCat);
 
     const [displayPrice, setDisplayPrice] = useState(formatPrice(listing?.price || 0));
@@ -309,7 +330,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                                 setFormData({ ...formData, category: cat.sub[0] });
                                             }}
                                         >
-                                            {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                            {CATEGORIES.map(c => <option key={c.id} value={c.id}>{t(c.key)}</option>)}
                                         </select>
                                     </div>
                                     <div>
@@ -319,7 +340,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                         >
-                                            {mainCategory.sub.map(sub => <option key={sub} value={sub}>{sub}</option>)}
+                                            {mainCategory.sub.map(sub => <option key={sub.id} value={sub.value}>{t(sub.label)}</option>)}
                                         </select>
                                     </div>
                                 </div>
