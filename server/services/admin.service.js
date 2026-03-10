@@ -59,6 +59,7 @@ class AdminService {
                 phone: true,
                 role: true,
                 isBlocked: true,
+                isPhoneVerified: true,
                 createdAt: true,
                 orders: {
                     select: { id: true, total: true, createdAt: true }

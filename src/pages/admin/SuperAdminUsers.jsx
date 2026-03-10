@@ -213,6 +213,7 @@ export function SuperAdminUsers() {
                             <tr className="bg-muted/50 border-b border-border">
                                 <th className="p-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Пользователь</th>
                                 <th className="p-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Роль</th>
+                                <th className="p-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Верификация</th>
                                 <th className="p-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Статус</th>
                                 <th className="p-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Дата Регистрации</th>
                                 <th className="p-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider text-right">Действия</th>
@@ -221,7 +222,7 @@ export function SuperAdminUsers() {
                         <tbody className="divide-y divide-border">
                             {filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" className="p-12 text-center text-muted-foreground">
+                                    <td colSpan="6" className="p-12 text-center text-muted-foreground">
                                         <div className="flex flex-col items-center justify-center">
                                             <div className="bg-muted p-4 rounded-full mb-3">
                                                 <Search className="h-6 w-6 text-muted-foreground/50" />
@@ -271,6 +272,17 @@ export function SuperAdminUsers() {
                                             </div>
                                         </td>
                                         <td className="p-4">
+                                            {user.isPhoneVerified ? (
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-xs font-medium text-emerald-500 w-fit">
+                                                    <Check size={12} /> Подтвержден
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-muted border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground w-fit">
+                                                    Не подтвержден
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="p-4">
                                             <div className="flex flex-col gap-1">
                                                 {user.isBlocked ? (
                                                     <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 border border-red-500/20 px-2.5 py-0.5 text-xs font-medium text-red-500 w-fit">
@@ -279,11 +291,6 @@ export function SuperAdminUsers() {
                                                 ) : (
                                                     <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-xs font-medium text-emerald-500 w-fit">
                                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Активен
-                                                    </span>
-                                                )}
-                                                {user.isPhoneVerified && (
-                                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs font-medium text-blue-500 w-fit">
-                                                        <Check size={10} /> Верифицирован
                                                     </span>
                                                 )}
                                             </div>
