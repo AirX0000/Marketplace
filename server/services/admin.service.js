@@ -6,12 +6,15 @@ class AdminService {
     async createUser(userData) {
         const { email, phone, name, password, role, isPhoneVerified } = userData;
 
+        const normalizedEmail = email ? email.toLowerCase().trim() : undefined;
+        const normalizedPhone = phone ? phone.replace(/\D/g, '') : undefined;
+
         // Check if user already exists
         const existingUser = await prisma.user.findFirst({
             where: {
                 OR: [
-                    email ? { email } : undefined,
-                    phone ? { phone } : undefined
+                    normalizedEmail ? { email: { equals: normalizedEmail, mode: 'insensitive' } } : undefined,
+                    normalizedPhone ? { phone: normalizedPhone } : undefined
                 ].filter(Boolean)
             }
         });
@@ -35,8 +38,8 @@ class AdminService {
 
         return prisma.user.create({
             data: {
-                email,
-                phone,
+                email: normalizedEmail,
+                phone: normalizedPhone,
                 name,
                 password: hashedPassword,
                 role: role || 'USER',

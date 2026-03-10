@@ -95,7 +95,7 @@ exports.loginByOTP = asyncHandler(async (req, res) => {
     // Issue JWT
     const token = jwt.sign(
         { userId: user.id, role: user.role },
-        env.JWT_SECRET,
+        env.jwtSecret,
         { expiresIn: '7d' }
     );
 

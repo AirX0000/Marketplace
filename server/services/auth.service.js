@@ -8,7 +8,10 @@ class AuthService {
     async register(userData) {
         const { email, password, name, role, companyName, taxId, phone, businessCategory, businessAddress, businessDescription } = userData;
 
-        if (!phone) {
+        const normalizedEmail = email ? email.toLowerCase().trim() : undefined;
+        const normalizedPhone = phone ? phone.replace(/\D/g, '') : undefined;
+
+        if (!normalizedPhone) {
             throw new ValidationError('Phone number is required');
         }
 
@@ -16,17 +19,17 @@ class AuthService {
         const existingUser = await prisma.user.findFirst({
             where: {
                 OR: [
-                    email ? { email } : undefined,
-                    { phone }
+                    normalizedEmail ? { email: { equals: normalizedEmail, mode: 'insensitive' } } : undefined,
+                    { phone: normalizedPhone }
                 ].filter(Boolean)
             }
         });
 
         if (existingUser) {
-            if (email && existingUser.email === email) {
+            if (normalizedEmail && existingUser.email?.toLowerCase() === normalizedEmail) {
                 throw new ValidationError('Email already registered');
             }
-            if (existingUser.phone === phone) {
+            if (existingUser.phone === normalizedPhone) {
                 throw new ValidationError('Phone number already registered');
             }
         }
@@ -36,11 +39,11 @@ class AuthService {
 
         // Prepare User Data
         const data = {
-            email: email || null,
+            email: normalizedEmail || null,
             password: hashedPassword,
             name,
             role: role || 'USER',
-            phone,
+            phone: normalizedPhone,
 
             // Partner Fields
             companyName: role === 'PARTNER' ? companyName : undefined,
@@ -79,12 +82,16 @@ class AuthService {
     }
 
     async login({ identifier, password }) {
+        // Normalize input identifier
+        const isEmail = identifier.includes('@');
+        const normalizedIdentifier = isEmail ? identifier.toLowerCase().trim() : identifier.replace(/\D/g, '');
+
         // Try finding user by email or phone
         const user = await prisma.user.findFirst({
             where: {
                 OR: [
-                    { email: identifier },
-                    { phone: identifier }
+                    { email: { equals: normalizedIdentifier, mode: 'insensitive' } },
+                    { phone: normalizedIdentifier }
                 ]
             }
         });
