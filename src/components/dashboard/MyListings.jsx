@@ -160,12 +160,12 @@ export function MyListings() {
                 </div>
 
                 {/* Table Header */}
-                <div className="hidden lg:grid grid-cols-12 gap-8 px-10 py-6 border-b border-white/5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                    <div className="col-span-5">Информация о лоте</div>
+                <div className="hidden lg:grid grid-cols-12 gap-6 px-10 py-6 border-b border-white/5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                    <div className="col-span-4">Информация о лоте</div>
                     <div className="col-span-2">Цена</div>
                     <div className="col-span-2">Статус</div>
                     <div className="col-span-2">Аналитика</div>
-                    <div className="col-span-1 text-right">Опции</div>
+                    <div className="col-span-2 text-right">Опции</div>
                 </div>
 
                 {/* Listings Rows */}
@@ -179,26 +179,26 @@ export function MyListings() {
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="grid grid-cols-12 gap-6 px-10 py-8 items-center hover:bg-white/[0.02] transition-all group"
+                                className="grid grid-cols-12 gap-4 lg:gap-6 px-6 lg:px-10 py-8 items-center hover:bg-white/[0.02] transition-all group"
                             >
                                 {/* Product Info */}
-                                <div className="col-span-12 lg:col-span-5 flex items-center gap-6">
-                                    <div className="min-w-[70px] w-[70px] h-[70px] rounded-[1.5rem] overflow-hidden bg-[#13111C] p-1 border border-white/10 group-hover:border-purple-500/50 transition-all shadow-xl">
-                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover rounded-[1.2rem] opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
+                                <div className="col-span-12 lg:col-span-4 flex items-center gap-4 lg:gap-6">
+                                    <div className="min-w-[64px] w-[64px] h-[64px] lg:min-w-[70px] lg:w-[70px] lg:h-[70px] rounded-[1.2rem] lg:rounded-[1.5rem] overflow-hidden bg-[#13111C] p-1 border border-white/10 group-hover:border-purple-500/50 transition-all shadow-xl">
+                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover rounded-[1rem] lg:rounded-[1.2rem] opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
                                     </div>
                                     <div className="min-w-0">
-                                        <h4 className="font-black text-white truncate text-lg group-hover:text-purple-400 transition-colors uppercase tracking-tight">{item.title}</h4>
+                                        <h4 className="font-black text-white truncate text-base lg:text-lg group-hover:text-purple-400 transition-colors uppercase tracking-tight">{item.title}</h4>
                                         <div className="text-[10px] font-black text-slate-500 mt-2 uppercase tracking-widest flex items-center gap-2">
                                             <span className="text-purple-500">{item.category}</span>
-                                            <span className="w-1 h-1 bg-slate-700 rounded-full" />
-                                            <span>{item.postedDate}</span>
+                                            <span className="hidden sm:inline w-1 h-1 bg-slate-700 rounded-full" />
+                                            <span className="truncate">{item.postedDate}</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Price */}
                                 <div className="col-span-6 lg:col-span-2 flex items-center">
-                                    <div className="text-xl font-black text-white tracking-tighter">
+                                    <div className="text-lg lg:text-xl font-black text-white tracking-tighter">
                                         ${item.price.toLocaleString()}
                                     </div>
                                 </div>
@@ -209,24 +209,26 @@ export function MyListings() {
                                 </div>
 
                                 {/* Performance */}
-                                <div className="col-span-12 lg:col-span-2 flex items-center gap-6 text-xs text-slate-400 font-black uppercase tracking-widest">
+                                <div className="col-span-12 lg:col-span-2 flex items-center lg:justify-start gap-5 lg:gap-6 text-[10px] lg:text-xs text-slate-400 font-black uppercase tracking-widest py-4 lg:py-0 border-y lg:border-none border-white/5 lg:border-transparent mt-4 lg:mt-0">
                                     <div className="flex items-center gap-2 group/stat" title="Views">
-                                        <Eye size={16} className="text-slate-600 group-hover/stat:text-blue-400 transition-colors" /> {item.views}
+                                        <Eye size={16} className="text-slate-600 group-hover/stat:text-blue-400 transition-colors" />
+                                        <span>{item.views}</span>
                                     </div>
                                     <div className="flex items-center gap-2 group/stat" title="Favorites">
-                                        <HeartIcon size={16} className="text-slate-600 group-hover/stat:text-pink-400 transition-colors" /> {item.favorites}
+                                        <HeartIcon size={16} className="text-slate-600 group-hover/stat:text-pink-400 transition-colors" />
+                                        <span>{item.favorites}</span>
                                     </div>
                                 </div>
 
                                 {/* Actions */}
-                                <div className="col-span-12 lg:col-span-1 flex items-center justify-end gap-3 mt-4 lg:mt-0">
+                                <div className="col-span-12 lg:col-span-2 flex items-center justify-end gap-2 lg:gap-3 mt-6 lg:mt-0">
                                     {item.status === 'Sold' ? (
-                                        <button className="px-6 py-3 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest">
+                                        <button className="flex-1 lg:flex-none px-6 py-3 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest">
                                             Детали
                                         </button>
                                     ) : item.status === 'Expired' ? (
-                                        <div className="flex gap-2">
-                                            <button className="px-5 py-3 rounded-xl bg-purple-600 text-white text-[10px] font-black hover:bg-purple-500 transition-all uppercase tracking-widest shadow-lg shadow-purple-600/20">
+                                        <div className="flex gap-2 w-full lg:w-auto">
+                                            <button className="flex-1 lg:flex-none px-5 py-3 rounded-xl bg-purple-600 text-white text-[10px] font-black hover:bg-purple-500 transition-all uppercase tracking-widest shadow-lg shadow-purple-600/20">
                                                 Переподать
                                             </button>
                                             <button className="p-3 rounded-xl border border-white/5 bg-white/5 text-slate-400 hover:text-white transition-all">
@@ -234,8 +236,8 @@ export function MyListings() {
                                             </button>
                                         </div>
                                     ) : (
-                                        <div className="flex gap-2">
-                                            <button className="px-5 py-3 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest">
+                                        <div className="flex gap-2 w-full lg:w-auto">
+                                            <button className="flex-1 lg:flex-none px-5 py-3 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest">
                                                 Изменить
                                             </button>
                                             <button className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all shadow-lg shadow-emerald-500/10">
