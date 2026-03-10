@@ -11,10 +11,35 @@ const formatPrice = (price) => {
 };
 
 const CATEGORIES = [
-    { id: 1, name: "Transport", sub: ["Avtosalon", "Vtorichka", "Pervichka", "Cars", "Motorcycles", "Trucks"] },
-    { id: 2, name: "Недвижимость", sub: ["Vtorichnye", "Novostroyki", "Nejiloe", "Arenda", "Apartments", "Houses", "Commercial", "Land"] },
-    { id: 3, name: "Услуги", sub: ["Strahovanie", "Otsenka", "Notarius", "Rieltor", "Services"] },
-    { id: 4, name: "Электроника", sub: ["Smartphones", "Laptops", "Tablets", "Accessories"] }
+    { id: 1, name: "Транспорт", sub: ["Бозор (Авто с пробегом)", "Автосалон (Новые авто)", "Мотоциклы", "Спецтехника"] },
+    { id: 2, name: "Недвижимость", sub: ["Вторичное жильё", "Новостройки", "Аренда", "Участки", "Коммерческая недвижимость"] }
+];
+
+const BRANDS_MODELS = {
+    'Chevrolet': ['Cobalt', 'Gentra', 'Malibu', 'Tracker', 'Equinox', 'Lacetti', 'Nexia 3', 'Damas', 'Tahoe', 'Traverse'],
+    'BYD': ['Song Plus', 'Chazor', 'Han', 'Atto 3', 'Seal', 'Destroyer 05', 'Tang'],
+    'Kia': ['Rio', 'K5', 'Sorento', 'Sportage', 'Stinger', 'Carnival', 'EV6', 'Telluride'],
+    'Hyundai': ['Accent', 'Elantra', 'Tucson', 'Santa Fe', 'Sonata', 'Palisade', 'Kona', 'Staria'],
+    'Toyota': ['Camry', 'Corolla', 'RAV4', 'Land Cruiser', 'Prado', 'Highlander', 'Avalon', 'Hilux'],
+    'Lexus': ['LX 570', 'LX 600', 'RX 350', 'ES 350', 'GX 460', 'NX 300', 'IS 300'],
+    'BMW': ['3 Series', '5 Series', '7 Series', 'X5', 'X6', 'X3', 'X7', 'M5'],
+    'Mercedes-Benz': ['E-Class', 'C-Class', 'S-Class', 'GLE', 'GLC', 'GLS', 'G-Class', 'AMG GT'],
+    'Chery': ['Tiggo 7 Pro', 'Tiggo 8 Pro', 'Arrizo 6 Pro'],
+    'Jetour': ['Dashing', 'X70', 'X90 Plus'],
+    'Other': ['Другое']
+};
+
+const REAL_ESTATE_TYPES = [
+    '1-комнатная квартира',
+    '2-комнатная квартира',
+    '3-комнатная квартира',
+    '4-комнатная квартира',
+    '5+ комнатная квартира',
+    'Частный дом / Коттедж',
+    'Участок',
+    'Дача',
+    'Коммерческое помещение',
+    'Другое'
 ];
 
 export function ListingModal({ listing, onClose, onSave, initialCategory, asPage = false }) {
@@ -59,7 +84,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             price: listing?.price || 0,
             discount: listing?.discount || 0,
             region: listing?.region || "Global",
-            category: listing?.category || initialCategory || "Smartphones",
+            category: listing?.category || initialCategory || "Бозор (Авто с пробегом)",
             images: listing?.images ? JSON.parse(listing.images) : (listing?.image ? [listing.image] : []),
             attributes: initialAttrs,
             lat: listing?.lat || null,
@@ -274,7 +299,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">Kategoriya</label>
+                                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">{t('ads.category') || 'Kategoriya'}</label>
                                         <select
                                             className="flex h-12 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
                                             value={mainCategory.id}
@@ -288,7 +313,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">Ost-kategoriya</label>
+                                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">{t('ads.subcategory') || 'Ost-kategoriya'}</label>
                                         <select
                                             className="flex h-12 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
                                             value={formData.category}
@@ -301,15 +326,51 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
 
                                 <div>
                                     <label className="text-sm font-semibold text-slate-700 mb-1.5 block">
-                                        {langTab === 'ru' ? 'Название (RU)' : 'Nomi (UZ)'}
+                                        {langTab === 'ru' ? 'Название (Выберите из списка)' : 'Nomi (Ro\'yxatdan tanlang)'}
                                     </label>
-                                    <input
-                                        required
-                                        value={langTab === 'ru' ? formData.name : formData.name_uz}
-                                        onChange={e => setFormData({ ...formData, [langTab === 'ru' ? 'name' : 'name_uz']: e.target.value })}
-                                        className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
-                                        placeholder={langTab === 'ru' ? "Название..." : "Nomi..."}
-                                    />
+                                    {mainCategory.name === 'Транспорт' ? (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <select
+                                                required
+                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+                                                value={formData.attributes.specs?.make || ""}
+                                                onChange={e => {
+                                                    const make = e.target.value;
+                                                    handleSpecChange('make', make);
+                                                    handleSpecChange('model', "");
+                                                    setFormData(prev => ({ ...prev, name: make, name_uz: make }));
+                                                }}
+                                            >
+                                                <option value="">Марка</option>
+                                                {Object.keys(BRANDS_MODELS).sort().map(b => <option key={b} value={b}>{b}</option>)}
+                                            </select>
+                                            <select
+                                                required
+                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+                                                disabled={!formData.attributes.specs?.make}
+                                                value={formData.attributes.specs?.model || ""}
+                                                onChange={e => {
+                                                    const model = e.target.value;
+                                                    handleSpecChange('model', model);
+                                                    const fullName = `${formData.attributes.specs.make} ${model}`;
+                                                    setFormData(prev => ({ ...prev, name: fullName, name_uz: fullName }));
+                                                }}
+                                            >
+                                                <option value="">Модель</option>
+                                                {(BRANDS_MODELS[formData.attributes.specs?.make] || []).sort().map(m => <option key={m} value={m}>{m}</option>)}
+                                            </select>
+                                        </div>
+                                    ) : (
+                                        <select
+                                            required
+                                            className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+                                            value={formData.name}
+                                            onChange={e => setFormData({ ...formData, name: e.target.value, name_uz: e.target.value })}
+                                        >
+                                            <option value="">Выберите тип</option>
+                                            {REAL_ESTATE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                                        </select>
+                                    )}
                                 </div>
 
                                 <div>
@@ -370,7 +431,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 )}
 
                                 {/* Transport Specific Fields */}
-                                {["Transport", "Cars", "Motorcycles", "Trucks"].includes(mainCategory.name) && (
+                                {["Транспорт", "Transport", "Cars", "Motorcycles", "Trucks"].includes(mainCategory.name) && (
                                     <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
                                         <h3 className="font-black text-xs uppercase tracking-widest text-slate-400 flex items-center gap-2">
                                             <Car className="h-4 w-4 text-blue-600" /> Transport xususiyatlari

@@ -77,7 +77,7 @@ export function PostAdPage() {
                 <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-2 sm:p-6 overflow-hidden">
                     <ListingModal
                         asPage={true}
-                        initialCategory="Cars"
+                        initialCategory="Бозор (Авто с пробегом)"
                         onSave={handleSave}
                         onClose={() => navigate(-1)}
                     />
