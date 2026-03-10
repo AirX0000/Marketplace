@@ -1,4 +1,6 @@
 const bcrypt = require('bcryptjs');
+const prisma = require('../config/database');
+const { safeUserSelect } = require('../utils/constants');
 
 class AdminService {
     async createUser(userData) {
