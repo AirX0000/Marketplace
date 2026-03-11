@@ -17,6 +17,10 @@ function getDatabaseUrlWithLimits() {
     if (!url.includes('pool_timeout=')) {
         url += '&pool_timeout=10';
     }
+    // Add pgbouncer=true for DigitalOcean managed databases
+    if (!url.includes('pgbouncer=')) {
+        url += '&pgbouncer=true';
+    }
     return url;
 }
 
