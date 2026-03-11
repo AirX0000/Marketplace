@@ -52,7 +52,7 @@ class SmsService {
     }
 
     async sendOTP(phone, code) {
-        return this.sendSms(phone, `Ваш код подтверждения Autohouse: ${code}`);
+        return this.sendSms(phone, `Код верификации для входа к мобильному приложению autohouse.uz: ${code}`);
     }
 }
 

@@ -270,30 +270,45 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
     );
 
     const content = (
-        <div className={`bg-white rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col ${asPage ? 'max-h-none' : 'max-h-[85vh]'}`}>
+        <div className={`bg-card text-card-foreground rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col border border-border ${asPage ? 'max-h-none' : 'max-h-[85vh]'}`}>
 
             {/* Header - Hidden on page to avoid redundant headers */}
             {!asPage && (
-                <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-white z-10 shrink-0">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-card z-10 shrink-0">
                     <div>
-                        <h2 className="text-xl font-bold text-slate-900">{listing ? t('ads.edit_ad') : t('ads.new_ad')}</h2>
-                        <p className="text-sm text-slate-500">
+                        <h2 className="text-xl font-bold text-foreground">{listing ? t('ads.edit_ad') : t('ads.new_ad')}</h2>
+                        <p className="text-sm text-muted-foreground">
                             {currentStep === 1 && t('ads.step1_desc')}
                             {currentStep === 2 && t('ads.step2_desc')}
                             {currentStep === 3 && t('ads.step3_desc')}
                             {currentStep === 4 && t('ads.step4_desc')}
                         </p>
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
                         <X className="h-6 w-6" />
                     </button>
                 </div>
             )}
 
-            {renderStepIndicators()}
+            {/* Step Indicators */}
+            <div className="px-6 py-4 bg-muted/30 border-b border-border flex items-center justify-between shrink-0">
+                <div className="flex gap-2">
+                    {[1, 2, 3, 4].map(step => (
+                        <div
+                            key={step}
+                            className={`h-1.5 rounded-full transition-all duration-500 ${step === currentStep ? 'bg-primary w-12' :
+                                step < currentStep ? 'bg-emerald-500 w-8' : 'bg-muted w-8'
+                                }`}
+                        />
+                    ))}
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                    {t('ads.step') || 'Bosqich'} {currentStep} / {totalSteps}
+                </span>
+            </div>
 
             {/* Scrollable Content */}
-            <div className="overflow-y-auto flex-1 h-full">
+            <div className="overflow-y-auto flex-1 h-full bg-card">
                 <form id="listing-form" onSubmit={handleSubmit} className="p-6">
                     <AnimatePresence mode="wait">
                         {currentStep === 1 && (
@@ -305,38 +320,38 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 className="space-y-6"
                             >
                                 {/* Language Tabs */}
-                                <div className="flex gap-1 bg-slate-100 rounded-xl p-1 w-fit">
+                                <div className="flex gap-1 bg-muted rounded-xl p-1 w-fit">
                                     <button
                                         type="button"
                                         onClick={() => setLangTab('ru')}
-                                        className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${langTab === 'ru' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                                        className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${langTab === 'ru' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                     >🇷🇺 RU</button>
                                     <button
                                         type="button"
                                         onClick={() => setLangTab('uz')}
-                                        className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${langTab === 'uz' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                                        className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${langTab === 'uz' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                     >🇺🇿 UZ</button>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">{t('ads.category') || 'Kategoriya'}</label>
+                                        <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">{t('ads.category') || 'Kategoriya'}</label>
                                         <select
-                                            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+                                            className="flex h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                             value={mainCategory.id}
                                             onChange={(e) => {
                                                 const cat = CATEGORIES.find(c => c.id === parseInt(e.target.value));
                                                 setMainCategory(cat);
-                                                setFormData({ ...formData, category: cat.sub[0] });
+                                                setFormData({ ...formData, category: cat.sub[0].value });
                                             }}
                                         >
                                             {CATEGORIES.map(c => <option key={c.id} value={c.id}>{t(c.key)}</option>)}
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">{t('ads.subcategory')}</label>
+                                        <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">{t('ads.subcategory')}</label>
                                         <select
-                                            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+                                            className="flex h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                         >
@@ -346,14 +361,14 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 </div>
 
                                 <div>
-                                    <label className="text-sm font-semibold text-slate-700 mb-1.5 block">
+                                    <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">
                                         {t('ads.name_select')}
                                     </label>
                                     {mainCategory.name === 'Транспорт' ? (
                                         <div className="grid grid-cols-2 gap-4">
                                             <select
                                                 required
-                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+                                                className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                                 value={formData.attributes.specs?.make || ""}
                                                 onChange={e => {
                                                     const make = e.target.value;
@@ -362,12 +377,12 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                                     setFormData(prev => ({ ...prev, name: make, name_uz: make }));
                                                 }}
                                             >
-                                                <option value="" className="text-slate-400">{t('ads.brand')}</option>
+                                                <option value="" className="text-muted-foreground">{t('ads.brand')}</option>
                                                 {Object.keys(BRANDS_MODELS).sort().map(b => <option key={b} value={b}>{b}</option>)}
                                             </select>
                                             <select
                                                 required
-                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+                                                className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50"
                                                 disabled={!formData.attributes.specs?.make}
                                                 value={formData.attributes.specs?.model || ""}
                                                 onChange={e => {
@@ -377,18 +392,18 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                                     setFormData(prev => ({ ...prev, name: fullName, name_uz: fullName }));
                                                 }}
                                             >
-                                                <option value="" className="text-slate-400">{t('ads.model')}</option>
+                                                <option value="" className="text-muted-foreground">{t('ads.model')}</option>
                                                 {(BRANDS_MODELS[formData.attributes.specs?.make] || []).sort().map(m => <option key={m} value={m}>{m}</option>)}
                                             </select>
                                         </div>
                                     ) : (
                                         <select
                                             required
-                                            className="h-12 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+                                            className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                             value={formData.name}
                                             onChange={e => setFormData({ ...formData, name: e.target.value, name_uz: e.target.value })}
                                         >
-                                            <option value="" className="text-slate-400">{t('ads.select_type')}</option>
+                                            <option value="" className="text-muted-foreground">{t('ads.select_type')}</option>
                                             {REAL_ESTATE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                                         </select>
                                     )}
@@ -396,9 +411,9 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
 
                                 <div>
                                     <div className="flex justify-between items-center mb-1.5">
-                                        <label className="text-sm font-semibold text-slate-700">{t('ads.description')}</label>
+                                        <label className="text-sm font-semibold text-foreground/80">{t('ads.description')}</label>
                                         {langTab === 'ru' && (
-                                            <button type="button" onClick={handleGenerateDescription} disabled={generatingAI} className="text-xs text-blue-600 font-bold flex items-center gap-1">
+                                            <button type="button" onClick={handleGenerateDescription} disabled={generatingAI} className="text-xs text-primary font-bold flex items-center gap-1 hover:opacity-80 transition-opacity">
                                                 {generatingAI ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />} AI
                                             </button>
                                         )}
@@ -407,18 +422,18 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                         required
                                         value={langTab === 'ru' ? formData.description : formData.description_uz}
                                         onChange={e => setFormData({ ...formData, [langTab === 'ru' ? 'description' : 'description_uz']: e.target.value })}
-                                        className="w-full rounded-xl border border-slate-200 text-slate-900 px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none min-h-[100px]"
+                                        className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none min-h-[100px] transition-all"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">{t('ads.price')}</label>
-                                        <input type="text" required value={displayPrice} onChange={handlePriceChange} className="h-12 w-full rounded-xl border border-slate-200 text-slate-900 px-4 text-sm font-bold outline-none" />
+                                        <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">{t('ads.price')}</label>
+                                        <input type="text" required value={displayPrice} onChange={handlePriceChange} className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                                     </div>
                                     <div>
-                                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">{t('ads.region')}</label>
-                                        <select required value={formData.region} onChange={e => setFormData({ ...formData, region: e.target.value })} className="h-12 w-full rounded-xl border border-slate-200 text-slate-900 px-4 text-sm outline-none">
+                                        <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">{t('ads.region')}</label>
+                                        <select required value={formData.region} onChange={e => setFormData({ ...formData, region: e.target.value })} className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                                             <option value="">{t('ads.select_region')}</option>
                                             <option value="Global">Global</option>
                                             {regions.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
@@ -438,45 +453,45 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                             >
                                 {/* Real Estate Specific Fields */}
                                 {["Недвижимость", "Apartments", "Houses", "Commercial", "Land"].includes(mainCategory.name) && (
-                                    <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
-                                        <h3 className="font-black text-xs uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                            <Building className="h-4 w-4 text-blue-600" /> {t('ads.property_specs')}
+                                    <div className="p-5 bg-muted/30 rounded-2xl border border-border space-y-4">
+                                        <h3 className="font-black text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                            <Building className="h-4 w-4 text-primary" /> {t('ads.property_specs')}
                                         </h3>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <input placeholder={t('ads.district')} value={formData.attributes.district || ""} onChange={e => handleAttributeChange('district', e.target.value)} className="h-10 border border-slate-200 text-slate-900 rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-semibold" />
-                                            <input placeholder={t('ads.street')} value={formData.attributes.street || ""} onChange={e => handleAttributeChange('street', e.target.value)} className="h-10 border border-slate-200 text-slate-900 rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-semibold" />
-                                            <input type="number" placeholder={t('ads.area')} value={formData.attributes.specs?.area || ""} onChange={e => handleSpecChange('area', e.target.value)} className="h-10 border border-slate-200 text-slate-900 rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-semibold" />
-                                            <input type="number" placeholder={t('ads.rooms')} value={formData.attributes.specs?.rooms || ""} onChange={e => handleSpecChange('rooms', e.target.value)} className="h-10 border border-slate-200 text-slate-900 rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-semibold" />
+                                            <input placeholder={t('ads.district')} value={formData.attributes.district || ""} onChange={e => handleAttributeChange('district', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input placeholder={t('ads.street')} value={formData.attributes.street || ""} onChange={e => handleAttributeChange('street', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input type="number" placeholder={t('ads.area')} value={formData.attributes.specs?.area || ""} onChange={e => handleSpecChange('area', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input type="number" placeholder={t('ads.rooms')} value={formData.attributes.specs?.rooms || ""} onChange={e => handleSpecChange('rooms', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
                                         </div>
                                     </div>
                                 )}
 
                                 {/* Transport Specific Fields */}
                                 {["Транспорт", "Transport", "Cars", "Motorcycles", "Trucks"].includes(mainCategory.name) && (
-                                    <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
-                                        <h3 className="font-black text-xs uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                            <Car className="h-4 w-4 text-blue-600" /> {t('ads.car_specs')}
+                                    <div className="p-5 bg-muted/30 rounded-2xl border border-border space-y-4">
+                                        <h3 className="font-black text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                            <Car className="h-4 w-4 text-primary" /> {t('ads.car_specs')}
                                         </h3>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <input placeholder={t('ads.brand')} value={formData.attributes.specs?.make || ""} onChange={e => handleSpecChange('make', e.target.value)} className="h-10 border border-slate-200 text-slate-900 rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-semibold" />
-                                            <input placeholder={t('ads.model')} value={formData.attributes.specs?.model || ""} onChange={e => handleSpecChange('model', e.target.value)} className="h-10 border border-slate-200 text-slate-900 rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-semibold" />
-                                            <input type="number" placeholder={t('ads.year')} value={formData.attributes.specs?.year || ""} onChange={e => handleSpecChange('year', e.target.value)} className="h-10 border border-slate-200 text-slate-900 rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-semibold" />
-                                            <input type="number" placeholder={t('ads.mileage')} value={formData.attributes.specs?.mileage || ""} onChange={e => handleSpecChange('mileage', e.target.value)} className="h-10 border border-slate-200 text-slate-900 rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-semibold" />
+                                            <input placeholder={t('ads.brand')} value={formData.attributes.specs?.make || ""} onChange={e => handleSpecChange('make', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input placeholder={t('ads.model')} value={formData.attributes.specs?.model || ""} onChange={e => handleSpecChange('model', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input type="number" placeholder={t('ads.year')} value={formData.attributes.specs?.year || ""} onChange={e => handleSpecChange('year', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input type="number" placeholder={t('ads.mileage')} value={formData.attributes.specs?.mileage || ""} onChange={e => handleSpecChange('mileage', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
                                         </div>
                                     </div>
                                 )}
 
-                                {/* Documents Section (reused from Step 1's old attributes) */}
+                                {/* Documents Section */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <label className="text-sm font-semibold text-slate-700">{t('ads.documents')}</label>
-                                        <button type="button" onClick={handleDocumentAdd} className="text-xs text-blue-600 font-bold hover:underline">{t('ads.add')}</button>
+                                        <label className="text-sm font-semibold text-foreground/80">{t('ads.documents')}</label>
+                                        <button type="button" onClick={handleDocumentAdd} className="text-xs text-primary font-bold hover:underline">{t('ads.add')}</button>
                                     </div>
                                     <div className="space-y-2">
                                         {(formData.attributes.documents || []).map((doc, idx) => (
                                             <div key={idx} className="flex gap-2">
-                                                <input placeholder={t('ads.doc_name')} value={doc.title} onChange={e => handleDocumentChange(idx, 'title', e.target.value)} className="flex-1 h-10 border border-slate-200 text-slate-900 rounded-xl px-4 text-sm outline-none" />
-                                                <button type="button" onClick={() => handleDocumentRemove(idx)} className="text-red-500 p-2"><Trash2 size={18} /></button>
+                                                <input placeholder={t('ads.doc_name')} value={doc.title} onChange={e => handleDocumentChange(idx, 'title', e.target.value)} className="flex-1 h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:border-primary transition-all" />
+                                                <button type="button" onClick={() => handleDocumentRemove(idx)} className="text-red-500 p-2 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 size={18} /></button>
                                             </div>
                                         ))}
                                     </div>
@@ -493,29 +508,29 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 className="space-y-6"
                             >
                                 {/* Photos Section */}
-                                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <div className="p-5 bg-muted/30 rounded-2xl border border-border">
                                     <div className="flex items-center justify-between mb-4">
-                                        <label className="text-xs font-black uppercase text-slate-400 tracking-widest leading-none">{t('ads.product_photos')}</label>
-                                        <span className="text-[10px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-100">{formData.images.length} / 10</span>
+                                        <label className="text-xs font-black uppercase text-muted-foreground tracking-widest leading-none">{t('ads.product_photos')}</label>
+                                        <span className="text-[10px] font-bold text-muted-foreground bg-card px-2 py-0.5 rounded-full border border-border">{formData.images.length} / 10</span>
                                     </div>
                                     <div className="grid grid-cols-4 gap-3">
                                         {formData.images.map((img, idx) => (
-                                            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 group shadow-sm bg-white">
+                                            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-border group shadow-sm bg-muted/50">
                                                 <img src={img} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))} className="p-2 bg-white/90 text-red-600 rounded-full hover:bg-red-50 transition-colors">
+                                                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))} className="p-2 bg-white/90 text-red-600 rounded-full hover:bg-white transition-colors">
                                                         <Trash2 size={16} />
                                                     </button>
                                                 </div>
-                                                {idx === 0 && <div className="absolute bottom-0 inset-x-0 bg-blue-600/90 backdrop-blur text-white text-[9px] font-black text-center py-1 uppercase tracking-widest">{t('ads.main')}</div>}
+                                                {idx === 0 && <div className="absolute bottom-0 inset-x-0 bg-primary/90 backdrop-blur text-white text-[9px] font-black text-center py-1 uppercase tracking-widest">{t('ads.main')}</div>}
                                             </div>
                                         ))}
                                         {formData.images.length < 10 && (
-                                            <label className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 hover:border-blue-300 hover:scale-[0.98] transition-all bg-white group">
-                                                <div className="h-8 w-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-blue-600 group-hover:bg-white transition-all shadow-sm">
+                                            <label className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 hover:scale-[0.98] transition-all bg-muted/30 group">
+                                                <div className="h-8 w-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-card transition-all shadow-sm">
                                                     {uploading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                                                 </div>
-                                                <span className="text-[9px] font-black uppercase text-slate-400 mt-2 tracking-widest group-hover:text-blue-600">{t('ads.photo')}</span>
+                                                <span className="text-[9px] font-black uppercase text-muted-foreground mt-2 tracking-widest group-hover:text-primary transition-colors">{t('ads.photo')}</span>
                                                 <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} disabled={uploading} />
                                             </label>
                                         )}
@@ -525,16 +540,16 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 {/* Location Picker */}
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2 px-1">
-                                        <MapIcon className="h-4 w-4 text-blue-600" />
-                                        <span className="text-xs font-black uppercase text-slate-700 tracking-widest">{t('ads.selling_location')}</span>
+                                        <MapIcon className="h-4 w-4 text-primary" />
+                                        <span className="text-xs font-black uppercase text-foreground/80 tracking-widest">{t('ads.selling_location')}</span>
                                     </div>
-                                    <div className="p-1.5 bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-xl shadow-slate-200/50">
+                                    <div className="p-1.5 bg-card border border-border rounded-[2rem] overflow-hidden shadow-xl shadow-black/20">
                                         <LocationPicker
                                             value={{ lat: formData.lat, lng: formData.lng }}
                                             onChange={(pos) => setFormData(prev => ({ ...prev, lat: pos.lat, lng: pos.lng }))}
                                         />
                                     </div>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase text-center tracking-wider italic">{t('ads.map_help')}</p>
+                                    <p className="text-[10px] text-muted-foreground font-bold uppercase text-center tracking-wider italic">{t('ads.map_help')}</p>
                                 </div>
                             </motion.div>
                         )}
@@ -547,41 +562,41 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-6"
                             >
-                                <div className="p-6 bg-slate-50 rounded-[2.5rem] border border-slate-100 space-y-6 relative overflow-hidden">
+                                <div className="p-6 bg-muted/30 rounded-[2.5rem] border border-border space-y-6 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-8 opacity-5">
-                                        <Sparkles size={120} className="text-blue-600" />
+                                        <Sparkles size={120} className="text-primary" />
                                     </div>
 
-                                    <h3 className="text-xl font-black text-slate-900 flex items-center gap-3">
-                                        <div className="h-6 w-1.5 bg-blue-600 rounded-full" />
+                                    <h3 className="text-xl font-black text-foreground flex items-center gap-3">
+                                        <div className="h-6 w-1.5 bg-primary rounded-full" />
                                         {t('ads.check_ad')}
                                     </h3>
 
                                     <div className="flex gap-6 relative z-10">
                                         <div className="relative shrink-0">
-                                            <img src={formData.images[0]} className="h-32 w-32 rounded-[2.5rem] object-cover border-4 border-white shadow-2xl rotate-[-3deg]" />
-                                            <div className="absolute -top-2 -right-2 h-10 w-10 bg-blue-600 rounded-full border-4 border-white flex items-center justify-center text-white shadow-lg">
+                                            <img src={formData.images[0]} className="h-32 w-32 rounded-[2.5rem] object-cover border-4 border-card shadow-2xl rotate-[-3deg]" />
+                                            <div className="absolute -top-2 -right-2 h-10 w-10 bg-primary rounded-full border-4 border-card flex items-center justify-center text-white shadow-lg">
                                                 <ImageIcon size={16} />
                                             </div>
                                         </div>
                                         <div className="flex-1 flex flex-col justify-center">
-                                            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                                            <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1 flex items-center gap-1.5 font-sans">
                                                 <Building size={10} /> {formData.category}
                                             </p>
-                                            <h4 className="text-xl font-black text-slate-900 leading-tight mb-2 line-clamp-2">{formData.name || formData.name_uz}</h4>
-                                            <p className="text-3xl font-black text-blue-600 tabular-nums flex items-baseline gap-1">
+                                            <h4 className="text-xl font-black text-foreground leading-tight mb-2 line-clamp-2">{formData.name || formData.name_uz}</h4>
+                                            <p className="text-3xl font-black text-primary tabular-nums flex items-baseline gap-1">
                                                 {displayPrice}
-                                                <span className="text-xs uppercase tracking-tighter text-slate-400 font-black">UZS</span>
+                                                <span className="text-xs uppercase tracking-tighter text-muted-foreground font-black">UZS</span>
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="space-y-3 relative z-10">
-                                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 bg-white shadow-sm border border-slate-100 w-fit px-4 py-2 rounded-xl uppercase tracking-widest">
-                                            <MapIcon size={12} className="text-blue-500" /> {formData.region}
+                                        <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground bg-card shadow-sm border border-border w-fit px-4 py-2 rounded-xl uppercase tracking-widest">
+                                            <MapIcon size={12} className="text-primary" /> {formData.region}
                                         </div>
-                                        <div className="p-5 bg-white border border-slate-100 rounded-3xl shadow-sm">
-                                            <p className="text-xs text-slate-500 leading-relaxed font-semibold italic">
+                                        <div className="p-5 bg-card/50 border border-border rounded-3xl shadow-sm backdrop-blur-sm">
+                                            <p className="text-xs text-muted-foreground leading-relaxed font-semibold italic">
                                                 "{formData.description || formData.description_uz}"
                                             </p>
                                         </div>
@@ -592,8 +607,8 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             <Sparkles size={24} />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-black uppercase text-emerald-700 tracking-[0.2em] mb-0.5">{t('ads.ready')}</p>
-                                            <p className="text-[10px] font-bold text-emerald-600/70 leading-tight uppercase tracking-wide">
+                                            <p className="text-xs font-black uppercase text-emerald-500 tracking-[0.2em] mb-0.5 underline-offset-4">{t('ads.ready')}</p>
+                                            <p className="text-[10px] font-bold text-emerald-500/70 leading-tight uppercase tracking-wide">
                                                 {t('ads.data_saved_desc')}
                                             </p>
                                         </div>
@@ -606,13 +621,13 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             </div>
 
             {/* Footer */}
-            <div className="p-8 border-t border-slate-100 bg-white flex justify-between gap-4 z-20 shrink-0">
+            <div className="p-8 border-t border-border bg-card flex justify-between gap-4 z-20 shrink-0">
                 <div className="flex gap-3">
                     {currentStep > 1 && (
                         <button
                             type="button"
                             onClick={handleBack}
-                            className="px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-slate-500 hover:bg-slate-50 hover:text-slate-900 border border-slate-100 transition-all active:scale-95"
+                            className="px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted hover:text-foreground border border-border transition-all active:scale-95"
                         >
                             {t('ads.back')}
                         </button>
@@ -625,10 +640,10 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                     disabled={saving || uploading}
                     className={`px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center shadow-2xl active:scale-95 disabled:opacity-50 ${currentStep === totalSteps
                         ? 'bg-emerald-600 text-white shadow-emerald-500/30 hover:bg-emerald-700'
-                        : 'bg-slate-900 text-white shadow-slate-900/20 hover:bg-black'
+                        : 'bg-primary text-primary-foreground shadow-primary/20 hover:bg-primary/90'
                         }`}
                 >
-                    {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin text-emerald-200" />}
+                    {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin text-white" />}
                     {currentStep === totalSteps ? (listing ? t('ads.save') : t('ads.publish')) : (
                         <span className="flex items-center gap-3">
                             {t('ads.next')} <Plus size={14} />

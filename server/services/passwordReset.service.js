@@ -5,9 +5,9 @@ const smsService = require('./sms.service');
 class PasswordResetService {
     async sendOTP(phone) {
         const formattedPhone = String(phone || '').replace(/\D/g, '');
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otp = Math.floor(1000 + Math.random() * 9000).toString();
         const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
+        
         try {
             await prisma.oTP.delete({ where: { phone: formattedPhone } }).catch(() => { });
             await prisma.oTP.create({
@@ -20,7 +20,7 @@ class PasswordResetService {
 
             // Send via SMS
             try {
-                await smsService.sendSms(formattedPhone, `Код для сброса пароля: ${otp}. Действителен 10 минут.`);
+                await smsService.sendSms(formattedPhone, `Код верификации для входа к мобильному приложению autohouse.uz: ${otp}`);
                 return { success: true, message: 'OTP sent successfully' };
             } catch (error) {
                 console.error('SMS Service Error:', error);

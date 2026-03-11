@@ -72,9 +72,9 @@ export function PostAdPage() {
     };
 
     return (
-        <div className="min-h-[calc(100vh-80px)] bg-slate-50 py-10 px-4 sm:px-6">
+        <div className="min-h-[calc(100vh-80px)] bg-background py-10 px-4 sm:px-6">
             <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-2 sm:p-6 overflow-hidden">
+                <div className="bg-card rounded-3xl shadow-xl border border-border p-2 sm:p-6 overflow-hidden">
                     <ListingModal
                         asPage={true}
                         initialCategory="Бозор (Авто с пробегом)"
@@ -86,18 +86,18 @@ export function PostAdPage() {
 
             {/* Auth Modal for Guests */}
             {showAuthModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 p-6">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/60 backdrop-blur-sm p-4">
+                    <div className="bg-card text-card-foreground border border-border rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 p-6">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-slate-900">
+                            <h2 className="text-xl font-bold text-foreground">
                                 {authMode === 'register' ? 'Финал: Регистрация' : 'Вход в аккаунт'}
                             </h2>
-                            <button onClick={() => setShowAuthModal(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+                            <button onClick={() => setShowAuthModal(false)} className="p-2 hover:bg-muted rounded-full text-muted-foreground transition-colors">
                                 <X size={20} />
                             </button>
                         </div>
 
-                        <p className="text-sm text-slate-500 mb-6 leading-relaxed">
+                        <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                             {authMode === 'register'
                                 ? 'Ваше объявление готово! Завершите регистрацию по номеру телефона, чтобы мы могли опубликовать его от вашего имени.'
                                 : 'Ваше объявление готово! Войдите в свой аккаунт для его публикации.'}
@@ -106,14 +106,14 @@ export function PostAdPage() {
                         <form onSubmit={handleAuthSubmit} className="space-y-4">
                             {authMode === 'register' && (
                                 <div>
-                                    <label className="block text-sm font-semibold mb-1.5 text-slate-700">Ваше Имя</label>
+                                    <label className="block text-sm font-semibold mb-1.5 text-foreground/80">Ваше Имя</label>
                                     <div className="relative">
-                                        <User className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
+                                        <User className="absolute left-3.5 top-3.5 h-5 w-5 text-muted-foreground" />
                                         <input
                                             required
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
-                                            className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-slate-900 font-medium"
+                                            className="w-full h-12 pl-11 pr-4 rounded-xl border border-border bg-muted/50 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-foreground font-medium"
                                             placeholder="Иван Иванов"
                                         />
                                     </div>
@@ -121,30 +121,30 @@ export function PostAdPage() {
                             )}
 
                             <div>
-                                <label className="block text-sm font-semibold mb-1.5 text-slate-700">Номер телефона</label>
+                                <label className="block text-sm font-semibold mb-1.5 text-foreground/80">Номер телефона</label>
                                 <div className="relative">
-                                    <Phone className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
+                                    <Phone className="absolute left-3.5 top-3.5 h-5 w-5 text-muted-foreground" />
                                     <input
                                         required
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
-                                        className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-slate-900 font-medium"
+                                        className="w-full h-12 pl-11 pr-4 rounded-xl border border-border bg-muted/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-foreground font-medium"
                                         placeholder="+998 90 123 45 67"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold mb-1.5 text-slate-700">Пароль (мин. 6 символов)</label>
+                                <label className="block text-sm font-semibold mb-1.5 text-foreground/80">Пароль (мин. 6 символов)</label>
                                 <div className="relative">
-                                    <Lock className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
+                                    <Lock className="absolute left-3.5 top-3.5 h-5 w-5 text-muted-foreground" />
                                     <input
                                         required
                                         type="password"
                                         minLength={6}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-slate-900 font-medium"
+                                        className="w-full h-12 pl-11 pr-4 rounded-xl border border-border bg-muted/50 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-foreground font-medium"
                                         placeholder="••••••••"
                                     />
                                 </div>
@@ -159,11 +159,11 @@ export function PostAdPage() {
                             </button>
                         </form>
 
-                        <div className="mt-6 pt-6 border-t border-slate-100 text-center text-sm font-medium text-slate-500">
+                        <div className="mt-6 pt-6 border-t border-border text-center text-sm font-medium text-muted-foreground">
                             {authMode === 'register' ? (
-                                <>Уже есть аккаунт? <button type="button" onClick={() => setAuthMode('login')} className="text-blue-600 font-bold hover:underline">Войти</button></>
+                                <>Уже есть аккаунт? <button type="button" onClick={() => setAuthMode('login')} className="text-primary font-bold hover:underline">Войти</button></>
                             ) : (
-                                <>Нет аккаунта? <button type="button" onClick={() => setAuthMode('register')} className="text-blue-600 font-bold hover:underline">Зарегистрироваться</button></>
+                                <>Нет аккаунта? <button type="button" onClick={() => setAuthMode('register')} className="text-primary font-bold hover:underline">Зарегистрироваться</button></>
                             )}
                         </div>
                     </div>

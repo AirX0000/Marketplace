@@ -37,7 +37,7 @@ async function testEskiz() {
         console.log('2. Attempting to send test SMS to +998935179146...');
         const smsRes = await axios.post('https://notify.eskiz.uz/api/message/sms/send', {
             mobile_phone: '998935179146',
-            message: 'Код для сброса пароля: 123456. Действителен 10 минут.',
+            message: 'Код верификации для входа к мобильному приложению autohouse.uz: 1234',
             from: '4546'
         }, {
             headers: { 'Authorization': `Bearer ${token}` }
