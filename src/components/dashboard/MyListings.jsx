@@ -183,65 +183,74 @@ export function MyListings() {
                             >
                                 {/* Product Info */}
                                 <div className="col-span-12 lg:col-span-4 flex items-center gap-4 lg:gap-6">
-                                    <div className="min-w-[64px] w-[64px] h-[64px] lg:min-w-[70px] lg:w-[70px] lg:h-[70px] rounded-[1.2rem] lg:rounded-[1.5rem] overflow-hidden bg-[#13111C] p-1 border border-white/10 group-hover:border-purple-500/50 transition-all shadow-xl">
-                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover rounded-[1rem] lg:rounded-[1.2rem] opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
+                                    <div className="min-w-[64px] w-[64px] h-[64px] lg:min-w-[80px] lg:w-[80px] lg:h-[80px] rounded-[1.2rem] lg:rounded-[1.8rem] overflow-hidden bg-[#13111C] p-1 border border-white/5 group-hover:border-purple-500/50 transition-all shadow-2xl relative">
+                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover rounded-[1rem] lg:rounded-[1.5rem] opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
                                     </div>
-                                    <div className="min-w-0">
-                                        <h4 className="font-black text-white truncate text-base lg:text-lg group-hover:text-purple-400 transition-colors uppercase tracking-tight">{item.title}</h4>
-                                        <div className="text-[10px] font-black text-slate-500 mt-2 uppercase tracking-widest flex items-center gap-2">
-                                            <span className="text-purple-500">{item.category}</span>
-                                            <span className="hidden sm:inline w-1 h-1 bg-slate-700 rounded-full" />
-                                            <span className="truncate">{item.postedDate}</span>
+                                    <div className="min-w-0 flex-1">
+                                        <h4 className="font-black text-white truncate text-base lg:text-lg group-hover:text-purple-400 transition-colors uppercase tracking-tight leading-tight">{item.title}</h4>
+                                        <div className="text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-[0.15em] flex items-center flex-wrap gap-2">
+                                            <span className="text-purple-500/80">{item.category}</span>
+                                            <span className="w-1 h-1 bg-slate-800 rounded-full" />
+                                            <span className="opacity-60">{item.postedDate}</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Price */}
-                                <div className="col-span-6 lg:col-span-2 flex items-center">
-                                    <div className="text-lg lg:text-xl font-black text-white tracking-tighter">
+                                <div className="col-span-6 lg:col-span-2 flex flex-col justify-center">
+                                    <div className="text-[9px] lg:hidden font-black text-slate-600 uppercase tracking-widest mb-1">Цена</div>
+                                    <div className="text-xl lg:text-2xl font-black text-white tracking-tighter bg-clip-text">
                                         ${item.price.toLocaleString()}
                                     </div>
                                 </div>
 
                                 {/* Status */}
-                                <div className="col-span-6 lg:col-span-2 flex items-center">
-                                    <StatusBadge status={item.status} />
+                                <div className="col-span-6 lg:col-span-2 flex flex-col justify-center">
+                                    <div className="text-[9px] lg:hidden font-black text-slate-600 uppercase tracking-widest mb-1">Статус</div>
+                                    <div>
+                                        <StatusBadge status={item.status} />
+                                    </div>
                                 </div>
 
                                 {/* Performance */}
-                                <div className="col-span-12 lg:col-span-2 flex items-center lg:justify-start gap-5 lg:gap-6 text-[10px] lg:text-xs text-slate-400 font-black uppercase tracking-widest py-4 lg:py-0 border-y lg:border-none border-white/5 lg:border-transparent mt-4 lg:mt-0">
-                                    <div className="flex items-center gap-2 group/stat" title="Views">
-                                        <Eye size={16} className="text-slate-600 group-hover/stat:text-blue-400 transition-colors" />
-                                        <span>{item.views}</span>
+                                <div className="col-span-12 lg:col-span-2 flex items-center lg:justify-start gap-8 text-[11px] text-slate-400 font-black uppercase tracking-widest py-5 lg:py-0 border-y lg:border-none border-white/5 lg:border-transparent mt-4 lg:mt-0">
+                                    <div className="flex items-center gap-3 group/stat cursor-help" title="Views">
+                                        <div className="w-8 h-8 rounded-xl bg-blue-500/5 flex items-center justify-center group-hover/stat:bg-blue-500/10 transition-colors">
+                                            <Eye size={16} className="text-slate-600 group-hover/stat:text-blue-400 transition-colors" />
+                                        </div>
+                                        <span className="group-hover/stat:text-blue-100 transition-colors">{item.views}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 group/stat" title="Favorites">
-                                        <HeartIcon size={16} className="text-slate-600 group-hover/stat:text-pink-400 transition-colors" />
-                                        <span>{item.favorites}</span>
+                                    <div className="flex items-center gap-3 group/stat cursor-help" title="Favorites">
+                                        <div className="w-8 h-8 rounded-xl bg-pink-500/5 flex items-center justify-center group-hover/stat:bg-pink-500/10 transition-colors">
+                                            <HeartIcon size={16} className="text-slate-600 group-hover/stat:text-pink-400 transition-colors" />
+                                        </div>
+                                        <span className="group-hover/stat:text-pink-100 transition-colors">{item.favorites}</span>
                                     </div>
                                 </div>
 
                                 {/* Actions */}
-                                <div className="col-span-12 lg:col-span-2 flex items-center justify-end gap-2 lg:gap-3 mt-6 lg:mt-0">
+                                <div className="col-span-12 lg:col-span-2 flex items-center justify-end gap-3 mt-6 lg:mt-0">
                                     {item.status === 'Sold' ? (
-                                        <button className="flex-1 lg:flex-none px-6 py-3 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest">
+                                        <button className="flex-1 lg:flex-none px-8 py-4 rounded-2xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest active:scale-95">
                                             Детали
                                         </button>
                                     ) : item.status === 'Expired' ? (
-                                        <div className="flex gap-2 w-full lg:w-auto">
-                                            <button className="flex-1 lg:flex-none px-5 py-3 rounded-xl bg-purple-600 text-white text-[10px] font-black hover:bg-purple-500 transition-all uppercase tracking-widest shadow-lg shadow-purple-600/20">
+                                        <div className="flex gap-3 w-full lg:w-auto">
+                                            <button className="flex-1 lg:flex-none px-6 py-4 rounded-2xl bg-purple-600 text-white text-[10px] font-black hover:bg-purple-500 transition-all uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95">
                                                 Переподать
                                             </button>
-                                            <button className="p-3 rounded-xl border border-white/5 bg-white/5 text-slate-400 hover:text-white transition-all">
-                                                <MoreVertical size={16} />
+                                            <button className="p-4 rounded-2xl border border-white/5 bg-white/5 text-slate-400 hover:text-white transition-all active:scale-90">
+                                                <MoreVertical size={18} />
                                             </button>
                                         </div>
                                     ) : (
-                                        <div className="flex gap-2 w-full lg:w-auto">
-                                            <button className="flex-1 lg:flex-none px-5 py-3 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest">
+                                        <div className="flex gap-3 w-full lg:w-auto">
+                                            <button className="flex-1 lg:flex-none px-6 py-4 rounded-2xl border border-white/10 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest active:scale-95">
                                                 Изменить
                                             </button>
-                                            <button className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all shadow-lg shadow-emerald-500/10">
-                                                <TrendingUp size={16} />
+                                            <button className="w-12 h-12 flex items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all shadow-xl shadow-emerald-500/10 active:scale-90">
+                                                <TrendingUp size={20} />
                                             </button>
                                         </div>
                                     )}
