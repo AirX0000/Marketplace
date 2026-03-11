@@ -1,78 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { api } from '../../lib/api';
-import { Megaphone, Eye, Users, MoreVertical, Plus, TrendingUp, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Megaphone, Eye, Users, MoreVertical, Plus, TrendingUp, Search, Trash2, Edit2, ExternalLink, Heart, Package } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { ListingModal } from './ListingModal';
+import { useShop } from '../../context/ShopContext';
 
 export function MyListings() {
+    const navigate = useNavigate();
+    const { user } = useShop();
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('All Ads');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [editingListing, setEditingListing] = useState(null);
 
     useEffect(() => {
-        // Simulated or real fetch
         fetchListings();
     }, []);
 
     const fetchListings = async () => {
         try {
             setLoading(true);
-            // Replace with actual API call if available
-            // const data = await api.getMyListings(); 
-            // setListings(data);
-
-            // Dummy data based on the mockup for visual completion
-            setListings([
-                {
-                    id: '1',
-                    title: '2023 Porsche 911 Turbo S',
-                    category: 'Luxury Cars',
-                    postedDate: 'Posted 2 days ago',
-                    price: 216500,
-                    status: 'Active',
-                    views: '1.2K',
-                    favorites: 84,
-                    image: 'https://images.unsplash.com/photo-1503376712351-409fc2208ebd?q=80&w=200&auto=format&fit=crop'
-                },
-                {
-                    id: '2',
-                    title: 'Skyline Penthouse Apartment',
-                    category: 'Real Estate',
-                    postedDate: 'Posted 1 week ago',
-                    price: 1250000,
-                    status: 'Pending',
-                    views: '3.4K',
-                    favorites: 212,
-                    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=200&auto=format&fit=crop'
-                },
-                {
-                    id: '3',
-                    title: '2022 Tesla Model 3 Long Range',
-                    category: 'Electric Cars',
-                    postedDate: 'Posted 3 weeks ago',
-                    price: 42000,
-                    status: 'Expired',
-                    views: 850,
-                    favorites: 32,
-                    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=200&auto=format&fit=crop'
-                },
-                {
-                    id: '4',
-                    title: '2021 BMW M4 Coupe',
-                    category: 'Luxury Cars',
-                    postedDate: 'Sold last month',
-                    price: 78900,
-                    status: 'Sold',
-                    views: '2.1K',
-                    favorites: 145,
-                    image: 'https://images.unsplash.com/photo-1618151313451-ea28a55ed2e4?q=80&w=200&auto=format&fit=crop'
-                }
-            ]);
+            const data = await api.getMyListings();
+            // Data mapping to match our visual item structure
+            setListings(data.map(item => ({
+                id: item.id,
+                title: item.name,
+                category: item.category?.name || 'General',
+                postedDate: `Posted ${new Date(item.createdAt).toLocaleDateString()}`,
+                price: item.price,
+                status: item.status === 'APPROVED' ? 'Active' :
+                    item.status === 'PENDING' ? 'Pending' :
+                        item.status === 'EXPIRED' ? 'Expired' : 'Rejected',
+                views: item.viewsCount || 0,
+                favorites: item.favoriteCount || 0,
+                image: item.images ? JSON.parse(item.images)[0] : (item.image || 'https://images.unsplash.com/photo-1503376712351-409fc2208ebd?q=80&w=200&auto=format&fit=crop'),
+                originalData: item
+            })));
         } catch (error) {
-            console.error(error);
+            console.error('Failed to fetch listings:', error);
+            toast.error('Не удалось загрузить объявления');
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDelete = async (id) => {
+        if (!confirm('Вы уверены, что хотите удалить это объявление?')) return;
+        try {
+            await api.deleteListing(id);
+            setListings(prev => prev.filter(l => l.id !== id));
+            toast.success('Объявление удалено');
+        } catch (error) {
+            toast.error('Ошибка при удалении');
+        }
+    };
+
+    const handleRelist = async (listing) => {
+        try {
+            await api.updateListing(listing.id, { status: 'PENDING' });
+            toast.success('Отправлено на перепроверку');
+            fetchListings();
+        } catch (error) {
+            toast.error('Ошибка обновления');
+        }
+    };
+
+    const filteredListings = listings.filter(item => {
+        const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const statusMap = {
+            'Active (8)': 'Active',
+            'Pending (2)': 'Pending',
+            'Sold (2)': 'Sold' // Our dummy status
+        };
+        const tabStatus = activeTab.split(' ')[0];
+        const matchesTab = tabStatus === 'All' || item.status.includes(tabStatus);
+        return matchesSearch && matchesTab;
+    });
+
+    const stats = {
+        active: listings.filter(l => l.status === 'Active').length,
+        views: listings.reduce((acc, l) => acc + (parseInt(l.views) || 0), 0),
+        favorites: listings.reduce((acc, l) => acc + (parseInt(l.favorites) || 0), 0)
     };
 
     return (
@@ -96,6 +104,8 @@ export function MyListings() {
                         <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-purple-500 transition-colors" />
                         <input
                             type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Поиск лотов..."
                             className="w-full bg-[#191624] border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-purple-500/50 transition-all placeholder-slate-600 font-bold"
                         />
@@ -111,22 +121,22 @@ export function MyListings() {
                 <StatCard
                     icon={<Megaphone size={24} className="text-purple-400" />}
                     title="Активные"
-                    value="12"
-                    trend="+5.2%"
+                    value={stats.active}
+                    trend="+1"
                     color="purple"
                 />
                 <StatCard
                     icon={<Eye size={24} className="text-blue-400" />}
                     title="Просмотры"
-                    value="4.8K"
-                    trend="+12.4%"
+                    value={stats.views}
+                    trend="+5%"
                     color="blue"
                 />
                 <StatCard
                     icon={<Users size={24} className="text-emerald-400" />}
-                    title="Лиды"
-                    value="156"
-                    trend="+8.1%"
+                    title="Избранное"
+                    value={stats.favorites}
+                    trend="+2"
                     color="emerald"
                 />
             </div>
@@ -142,14 +152,14 @@ export function MyListings() {
 
                 {/* Tabs */}
                 <div className="flex gap-10 px-10 pt-8 border-b border-white/5 overflow-x-auto no-scrollbar">
-                    {['All Ads', 'Active (8)', 'Pending (2)', 'Sold (2)'].map(tab => (
+                    {['All Ads', 'Active', 'Pending', 'Sold'].map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`pb-5 text-sm font-black transition-all relative uppercase tracking-widest ${activeTab === tab ? 'text-purple-400' : 'text-slate-500 hover:text-slate-300'}`}
+                            className={`pb-5 text-sm font-black transition-all relative uppercase tracking-widest ${activeTab === tab || (tab === 'All Ads' && activeTab === 'All') ? 'text-purple-400' : 'text-slate-500 hover:text-slate-300'}`}
                         >
                             {tab}
-                            {activeTab === tab && (
+                            {(activeTab === tab || (tab === 'All Ads' && activeTab === 'All')) && (
                                 <motion.div
                                     layoutId="activeTabListings"
                                     className="absolute bottom-0 left-0 w-full h-[3px] bg-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.6)] rounded-t-full"
@@ -169,9 +179,9 @@ export function MyListings() {
                 </div>
 
                 {/* Listings Rows */}
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-white/5 min-h-[400px]">
                     <AnimatePresence mode='popLayout'>
-                        {listings.map((item, index) => (
+                        {filteredListings.length > 0 ? filteredListings.map((item, index) => (
                             <motion.div
                                 key={item.id}
                                 layout
@@ -223,7 +233,7 @@ export function MyListings() {
                                     </div>
                                     <div className="flex items-center gap-3 group/stat cursor-help" title="Favorites">
                                         <div className="w-8 h-8 rounded-xl bg-pink-500/5 flex items-center justify-center group-hover/stat:bg-pink-500/10 transition-colors">
-                                            <HeartIcon size={16} className="text-slate-600 group-hover/stat:text-pink-400 transition-colors" />
+                                            <Heart size={16} className="text-slate-600 group-hover/stat:text-pink-400 transition-colors" />
                                         </div>
                                         <span className="group-hover/stat:text-pink-100 transition-colors">{item.favorites}</span>
                                     </div>
@@ -232,33 +242,60 @@ export function MyListings() {
                                 {/* Actions */}
                                 <div className="col-span-12 lg:col-span-2 flex items-center justify-end gap-3 mt-6 lg:mt-0">
                                     {item.status === 'Sold' ? (
-                                        <button className="flex-1 lg:flex-none px-8 py-4 rounded-2xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest active:scale-95">
+                                        <button
+                                            onClick={() => navigate(`/marketplace/${item.id}`)}
+                                            className="flex-1 lg:flex-none px-8 py-4 rounded-2xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest active:scale-95">
                                             Детали
                                         </button>
                                     ) : item.status === 'Expired' ? (
                                         <div className="flex gap-3 w-full lg:w-auto">
-                                            <button className="flex-1 lg:flex-none px-6 py-4 rounded-2xl bg-purple-600 text-white text-[10px] font-black hover:bg-purple-500 transition-all uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95">
+                                            <button
+                                                onClick={() => handleRelist(item)}
+                                                className="flex-1 lg:flex-none px-6 py-4 rounded-2xl bg-purple-600 text-white text-[10px] font-black hover:bg-purple-500 transition-all uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95">
                                                 Переподать
                                             </button>
-                                            <button className="p-4 rounded-2xl border border-white/5 bg-white/5 text-slate-400 hover:text-white transition-all active:scale-90">
-                                                <MoreVertical size={18} />
+                                            <button
+                                                onClick={() => handleDelete(item.id)}
+                                                className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 shadow-xl shadow-red-500/10">
+                                                <Trash2 size={18} />
                                             </button>
                                         </div>
                                     ) : (
                                         <div className="flex gap-3 w-full lg:w-auto">
-                                            <button className="flex-1 lg:flex-none px-6 py-4 rounded-2xl border border-white/10 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest active:scale-95">
+                                            <button
+                                                onClick={() => setEditingListing(item.originalData)}
+                                                className="flex-1 lg:flex-none px-6 py-4 rounded-2xl border border-white/10 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest active:scale-95">
                                                 Изменить
                                             </button>
-                                            <button className="w-12 h-12 flex items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all shadow-xl shadow-emerald-500/10 active:scale-90">
-                                                <TrendingUp size={20} />
+                                            <button
+                                                onClick={() => navigate(`/marketplace/${item.id}`)}
+                                                className="w-12 h-12 flex items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all shadow-xl shadow-emerald-500/10 active:scale-90">
+                                                <ExternalLink size={20} />
                                             </button>
                                         </div>
                                     )}
                                 </div>
                             </motion.div>
-                        ))}
+                        )) : (
+                            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+                                <Package className="w-12 h-12 mb-4 opacity-20" />
+                                <p className="font-bold uppercase tracking-widest text-xs opacity-50">Объявления не найдены</p>
+                            </div>
+                        )}
                     </AnimatePresence>
                 </div>
+
+                {/* Edit Modal */}
+                {editingListing && (
+                    <ListingModal
+                        listing={editingListing}
+                        onClose={() => setEditingListing(null)}
+                        onSave={() => {
+                            setEditingListing(null);
+                            fetchListings();
+                        }}
+                    />
+                )}
 
                 {/* Pagination Footer */}
                 <div className="px-10 py-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-6">
