@@ -37,7 +37,12 @@ export function UserDashboard() {
             setProfileData({
                 name: user.name || '',
                 email: user.email || '',
-                addresses: user.addresses ? JSON.parse(user.addresses) : []
+                addresses: (() => {
+                    try {
+                        const parsed = user.addresses ? JSON.parse(user.addresses) : [];
+                        return Array.isArray(parsed) ? parsed : [];
+                    } catch (e) { return []; }
+                })()
             });
             fetchOrders();
             fetchFavorites();
@@ -152,7 +157,7 @@ export function UserDashboard() {
                         {/* Profile Summary Card */}
                         <div className="bg-[#191624] rounded-3xl p-6 border border-white/5 shadow-sm text-center">
                             <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-[0_0_20px_rgba(147,51,234,0.3)] ring-4 ring-[#13111C]">
-                                {user?.name?.[0]?.toUpperCase() || <User size={40} />}
+                                {user?.name?.charAt(0)?.toUpperCase() || <User size={40} />}
                             </div>
                             <h2 className="font-bold text-xl truncate text-white">{user?.name}</h2>
                             <p className="text-sm text-slate-400 truncate">{user?.email}</p>

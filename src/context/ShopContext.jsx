@@ -12,7 +12,8 @@ export function ShopProvider({ children }) {
     const [cartItems, setCartItems] = useState(() => {
         try {
             const saved = localStorage.getItem('cart');
-            return saved ? JSON.parse(saved) : [];
+            const parsed = saved ? JSON.parse(saved) : [];
+            return Array.isArray(parsed) ? parsed : [];
         } catch (error) {
             console.error("Cart recovery failed", error);
             return [];

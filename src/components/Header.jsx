@@ -128,7 +128,7 @@ export function Header() {
                                         <img src={user.avatar} alt={`Avatar of ${user.name || 'user'}`} className="h-8 w-8 rounded-full object-cover border border-border" />
                                     ) : (
                                         <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
-                                            {user?.name ? user.name[0].toUpperCase() : <User size={16} />}
+                                            {user?.name?.charAt(0)?.toUpperCase() || <User size={16} />}
                                         </div>
                                     )}
                                     <div className="flex flex-col items-start hidden lg:flex text-foreground">
@@ -148,7 +148,7 @@ export function Header() {
                                             <img src={user.avatar} alt={`Avatar of ${user?.name || 'user'}`} className="h-10 w-10 rounded-full object-cover border-2 border-background shadow" />
                                         ) : (
                                             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow">
-                                                {user?.name ? user.name[0].toUpperCase() : '?'}
+                                                {user?.name?.charAt(0)?.toUpperCase() || '?'}
                                             </div>
                                         )}
                                         <div className="overflow-hidden">
