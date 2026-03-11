@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../config/database');
 const { authenticateToken } = require('../middleware/auth');
 
 const CLICK_SERVICE_ID = process.env.CLICK_SERVICE_ID;

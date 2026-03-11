@@ -1,5 +1,6 @@
 const authService = require('../services/auth.service');
 const { asyncHandler } = require('../middleware/errorHandler');
+const prisma = require('../config/database');
 
 exports.register = asyncHandler(async (req, res) => {
     const result = await authService.register(req.body);
@@ -18,9 +19,6 @@ exports.sendOTP = asyncHandler(async (req, res) => {
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
     try {
-        const { PrismaClient } = require('@prisma/client');
-        const prisma = new PrismaClient();
-
         await prisma.oTP.upsert({
             where: { phone },
             update: { code, expiresAt },
@@ -47,8 +45,6 @@ exports.sendOTP = asyncHandler(async (req, res) => {
 
 exports.verifyOTP = asyncHandler(async (req, res) => {
     const { phone, code } = req.body;
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
 
     const otp = await prisma.oTP.findUnique({ where: { phone } });
     if (!otp || otp.code !== code || otp.expiresAt < new Date()) {
@@ -69,8 +65,6 @@ exports.loginByOTP = asyncHandler(async (req, res) => {
     const { phone, code } = req.body;
     if (!phone || !code) return res.status(400).json({ error: 'Phone and code are required' });
 
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
     const jwt = require('jsonwebtoken');
     const env = require('../config/env');
 

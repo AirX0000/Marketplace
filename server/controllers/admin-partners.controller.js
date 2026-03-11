@@ -1,8 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../config/database');
 const bcrypt = require('bcryptjs');
 const { asyncHandler } = require('../middleware/errorHandler');
-
-const prisma = new PrismaClient();
 
 // Get all partner accounts (admin only)
 exports.getAllPartnerAccounts = asyncHandler(async (req, res) => {
