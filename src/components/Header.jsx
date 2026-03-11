@@ -172,14 +172,14 @@ export function Header() {
 
                                     {isBuyer() && (
                                         <>
-                                            <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
+                                            <Link to="/profile?tab=overview" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
                                                 Личный Кабинет
                                             </Link>
                                             <Link to="/profile?tab=garage" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground font-bold flex items-center justify-between">
                                                 Мой Гараж
                                                 <span className="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded uppercase">New</span>
                                             </Link>
-                                            <Link to="/admin/listings" className="block px-4 py-2 text-sm hover:bg-muted font-bold transition-colors text-primary">
+                                            <Link to="/profile?tab=listings" className="block px-4 py-2 text-sm hover:bg-muted font-bold transition-colors text-primary">
                                                 Мои объявления
                                             </Link>
                                             <Link to="/orders" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
@@ -197,7 +197,7 @@ export function Header() {
                                         </>
                                     )}
 
-                                    <Link to="/settings" className="block px-4 py-2 text-sm hover:bg-muted transition-colors border-t border-border text-foreground">
+                                    <Link to="/profile?tab=profile" className="block px-4 py-2 text-sm hover:bg-muted transition-colors border-t border-border text-foreground">
                                         Настройки
                                     </Link>
                                     <button

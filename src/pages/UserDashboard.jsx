@@ -84,7 +84,7 @@ export function UserDashboard() {
             const updated = await api.updateProfile({
                 name: profileData.name,
                 email: profileData.email,
-                addresses: profileData.addresses
+                addresses: JSON.stringify(profileData.addresses)
             });
             // Update local user state
             localStorage.setItem('user', JSON.stringify({ ...user, name: profileData.name, email: profileData.email }));

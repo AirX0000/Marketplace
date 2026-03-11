@@ -98,7 +98,11 @@ export function ProfileSettingsPage() {
         setSaving(true);
         setMessage(null);
         try {
-            await api.updateProfile(profile);
+            const dataToSave = {
+                ...profile,
+                addresses: JSON.stringify(addresses)
+            };
+            await api.updateProfile(dataToSave);
             setMessage({ type: 'success', text: 'Профиль успешно обновлен!' });
         } catch (error) {
             setMessage({ type: 'error', text: 'Ошибка обновления профиля.' });
