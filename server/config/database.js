@@ -29,6 +29,13 @@ function getDatabaseUrlWithLimits() {
 const safeUrl = getDatabaseUrlWithLimits();
 if (safeUrl) {
     process.env.DATABASE_URL = safeUrl;
+    
+    // Prisma now requires DIRECT_URL for validation if it's in the schema,
+    // even during normal runtime. We derive it safely here.
+    if (!process.env.DIRECT_URL) {
+        let baseDirect = safeUrl.split('?')[0]; // Strip regular query params
+        process.env.DIRECT_URL = baseDirect.replace(':25060', ':25061');
+    }
 }
 
 const prisma = new PrismaClient({

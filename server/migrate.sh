@@ -2,7 +2,10 @@
 # DO App Platform provides a PgBouncer (pooled) connection URL on port 25060.
 # Prisma migrations/db push require a DIRECT connection (port 25060 -> 25061 in DO).
 
-echo "Parsing DATABASE_URL for Prisma Schema Push..."
+echo "Parsing DATABASE_URL for Prisma Schema..."
+
+# Default direct URL to the existing URL
+DIRECT_URL="$DATABASE_URL"
 
 # Check if we are running on DO (port 25060 usually indicates their PgBouncer)
 if [[ "$DATABASE_URL" == *":25060"* ]]; then
@@ -22,16 +25,17 @@ if [[ "$DATABASE_URL" == *":25060"* ]]; then
   
   # Convert port for direct connection
   export DIRECT_URL="${BASE_URL/:25060/:25061}"
-else
-  # Local or non-pooled DO connection
-  export DIRECT_URL="${DATABASE_URL}"
 fi
+
+# Ensure DIRECT_URL is available for Prisma during 'next' commands
+echo "DATABASE_URL=$DATABASE_URL" > .env.prisma
+echo "DIRECT_URL=$DIRECT_URL" >> .env.prisma
 
 echo "DATABASE_URL configured for pooling."
 echo "DIRECT_URL configured for migrations: ${DIRECT_URL//:*@/:***@}" # Mask password in logs
 
 echo "Running prisma db push..."
-# Prisma 5+ will automatically pick up DIRECT_URL from environment
-npx prisma db push --accept-data-loss
+# Prisma 5+ will pick up DIRECT_URL from environment using dotenvx
+npx dotenvx run -f .env.prisma -- npx prisma db push --accept-data-loss
 
 echo "Migration script completed."
