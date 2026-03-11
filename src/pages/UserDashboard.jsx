@@ -172,7 +172,7 @@ export function UserDashboard() {
                                 { id: 'addresses', label: 'Адреса доставки', icon: MapPin },
                                 { id: 'profile', label: 'Настройки профиля', icon: Settings },
                                 { id: 'security', label: 'Безопасность', icon: Shield },
-                                ...(isAdmin() ? [
+                                ...(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' ? [
                                     { id: 'admin_panel', label: 'Панель Управления', icon: Settings, href: '/admin' }
                                 ] : []),
                                 ...(user?.role === 'PARTNER' ? [

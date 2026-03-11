@@ -10,8 +10,13 @@ export function useShop() {
 
 export function ShopProvider({ children }) {
     const [cartItems, setCartItems] = useState(() => {
-        const saved = localStorage.getItem('cart');
-        return saved ? JSON.parse(saved) : [];
+        try {
+            const saved = localStorage.getItem('cart');
+            return saved ? JSON.parse(saved) : [];
+        } catch (error) {
+            console.error("Cart recovery failed", error);
+            return [];
+        }
     });
 
     const [favorites, setFavorites] = useState([]); // Array of IDs
