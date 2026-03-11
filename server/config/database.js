@@ -24,8 +24,14 @@ function getDatabaseUrlWithLimits() {
     return url;
 }
 
+// Crucial fix: Prisma sometimes ignores datasourceUrl, so we MUST mutate the env var
+// before instantiating the client so that the rust engine picks it up.
+const safeUrl = getDatabaseUrlWithLimits();
+if (safeUrl) {
+    process.env.DATABASE_URL = safeUrl;
+}
+
 const prisma = new PrismaClient({
-    datasourceUrl: getDatabaseUrlWithLimits(),
     log: ['query', 'info', 'warn', 'error'],
 });
 
