@@ -1,3 +1,6 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '../../lib/api';
 import { Megaphone, Eye, Users, MoreVertical, Plus, TrendingUp, Search, Trash2, Edit2, ExternalLink, Heart, Package } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
