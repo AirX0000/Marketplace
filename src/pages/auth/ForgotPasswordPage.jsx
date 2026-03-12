@@ -88,7 +88,7 @@ export function ForgotPasswordPage() {
 
     const stepTitles = {
         [STEPS.PHONE]: { title: 'Восстановление пароля', subtitle: 'Введите номер телефона для получения кода' },
-        [STEPS.OTP]: { title: 'Введите код', subtitle: `Мы отправили 6-значный код на +${phone}` },
+        [STEPS.OTP]: { title: 'Введите код', subtitle: `Мы отправили 4-значный код на +${phone}` },
         [STEPS.NEW_PASSWORD]: { title: 'Новый пароль', subtitle: 'Придумайте надёжный пароль для вашего аккаунта' },
         [STEPS.SUCCESS]: { title: 'Пароль изменён!', subtitle: '' },
     };
@@ -174,10 +174,10 @@ export function ForgotPasswordPage() {
                                 <input
                                     type="text"
                                     value={otp}
-                                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                    placeholder="• • • • • •"
+                                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                    placeholder="• • • •"
                                     className="w-full h-12 px-4 rounded-xl bg-white/10 border border-white/20 text-white text-center text-2xl tracking-[0.4em] placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:bg-white/15 transition-all"
-                                    maxLength={6}
+                                    maxLength={4}
                                     required
                                 />
                             </div>

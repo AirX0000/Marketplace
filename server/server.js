@@ -5,6 +5,16 @@ const morgan = require('morgan');
 const path = require('path');
 require('dotenv').config();
 
+// Fix connection exhaustion by forcing connection limits in the URL if not present
+if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('connection_limit')) {
+    const separator = process.env.DATABASE_URL.includes('?') ? '&' : '?';
+    process.env.DATABASE_URL += `${separator}connection_limit=3`;
+}
+if (process.env.DIRECT_URL && !process.env.DIRECT_URL.includes('connection_limit')) {
+    const separator = process.env.DIRECT_URL.includes('?') ? '&' : '?';
+    process.env.DIRECT_URL += `${separator}connection_limit=3`;
+}
+
 const app = express();
 const PORT = 3000; // Force 3000 to match DigitalOcean component config, bypassing Heroku buildpack's PORT=8080 injection
 
@@ -13,10 +23,10 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "'unsafe-inline'"],
-            "script-src-elem": ["'self'", "'unsafe-inline'"],
+            "script-src": ["'self'", "'unsafe-inline'", "https://api-maps.yandex.ru", "https://yastatic.net"],
+            "script-src-elem": ["'self'", "'unsafe-inline'", "https://api-maps.yandex.ru", "https://yastatic.net"],
             "img-src": ["'self'", "data:", "https:", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
-            "connect-src": ["'self'", "https:", "ws:", "wss:", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
+            "connect-src": ["'self'", "https:", "ws:", "wss:", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz", "https://api-maps.yandex.ru"],
             "frame-src": ["'self'"],
         },
     },

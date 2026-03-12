@@ -13,8 +13,10 @@ exports.login = asyncHandler(async (req, res) => {
 });
 
 exports.sendOTP = asyncHandler(async (req, res) => {
-    const { phone } = req.body;
-    if (!phone) return res.status(400).json({ error: 'Phone is required' });
+    const { phone: rawPhone } = req.body;
+    if (!rawPhone) return res.status(400).json({ error: 'Phone is required' });
+
+    const phone = rawPhone.replace(/\D/g, '');
 
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
@@ -44,7 +46,8 @@ exports.sendOTP = asyncHandler(async (req, res) => {
 });
 
 exports.verifyOTP = asyncHandler(async (req, res) => {
-    const { phone, code } = req.body;
+    const { phone: rawPhone, code } = req.body;
+    const phone = rawPhone?.replace(/\D/g, '');
 
     const otp = await prisma.oTP.findUnique({ where: { phone } });
     if (!otp || otp.code !== code || otp.expiresAt < new Date()) {
@@ -62,8 +65,10 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
 });
 
 exports.loginByOTP = asyncHandler(async (req, res) => {
-    const { phone, code } = req.body;
-    if (!phone || !code) return res.status(400).json({ error: 'Phone and code are required' });
+    const { phone: rawPhone, code } = req.body;
+    if (!rawPhone || !code) return res.status(400).json({ error: 'Phone and code are required' });
+
+    const phone = rawPhone.replace(/\D/g, '');
 
     const jwt = require('jsonwebtoken');
     const env = require('../config/env');

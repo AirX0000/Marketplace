@@ -65,8 +65,8 @@ export function RegisterPage() {
     };
 
     const handleVerifyOTP = async () => {
-        if (!otpCode || otpCode.length < 6) {
-            notify.error("Введите 6-значный код");
+        if (!otpCode || otpCode.length < 4) {
+            notify.error("Введите 4-значный код");
             return;
         }
 
@@ -237,16 +237,16 @@ export function RegisterPage() {
                                             <div className="flex gap-2">
                                                 <input
                                                     type="text"
-                                                    maxLength="6"
+                                                    maxLength="4"
                                                     value={otpCode}
                                                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                                                     className="flex-1 h-11 px-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:border-transparent transition-all tracking-[0.5em] text-center font-bold"
-                                                    placeholder="000000"
+                                                    placeholder="0000"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={handleVerifyOTP}
-                                                    disabled={loading || otpCode.length !== 6}
+                                                    disabled={loading || otpCode.length !== 4}
                                                     className="h-11 px-6 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 whitespace-nowrap"
                                                 >
                                                     Подтвердить
