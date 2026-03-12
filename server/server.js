@@ -11,10 +11,22 @@ if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('connection_l
     process.env.DATABASE_URL += `${separator}connection_limit=3`;
 }
 
-// Ensure DIRECT_URL exists for Prisma schema validation (required by @prisma/client initialization)
-if (process.env.DATABASE_URL && !process.env.DIRECT_URL) {
-    let baseDirect = process.env.DATABASE_URL.split('?')[0]; // Strip query params
-    process.env.DIRECT_URL = baseDirect.replace(':25060', ':25061');
+// Ensure DIRECT_URL exists with proper SSL keys for Prisma schema validation (required by @prisma/client initialization)
+if (process.env.DATABASE_URL && (!process.env.DIRECT_URL || !process.env.DIRECT_URL.includes('sslmode'))) {
+    try {
+        const { URL } = require('url');
+        const dbUrl = new URL(process.env.DATABASE_URL);
+        if (dbUrl.port === '25060') {
+            dbUrl.port = '25061';
+            dbUrl.searchParams.delete('pgbouncer');
+        }
+        if (!dbUrl.searchParams.has('sslmode')) {
+            dbUrl.searchParams.set('sslmode', 'require');
+        }
+        process.env.DIRECT_URL = dbUrl.toString();
+    } catch (e) {
+        if (!process.env.DIRECT_URL) process.env.DIRECT_URL = process.env.DATABASE_URL;
+    }
 }
 
 if (process.env.DIRECT_URL && !process.env.DIRECT_URL.includes('connection_limit')) {
