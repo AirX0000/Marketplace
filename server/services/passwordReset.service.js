@@ -19,8 +19,7 @@ class PasswordResetService {
 
             // Send via SMS
             try {
-                const message = `Код верификации для входа к мобильному приложению autohouse.uz: ${otp}`;
-                await smsService.sendSms(formattedPhone, message);
+                await smsService.sendOTP(formattedPhone, otp); // Updated to pass code instead of the full template
                 return { success: true, message: 'OTP sent successfully' };
             } catch (error) {
                 console.error('SMS Service Error:', error);

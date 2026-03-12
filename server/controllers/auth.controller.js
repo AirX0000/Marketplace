@@ -28,7 +28,7 @@ exports.sendOTP = asyncHandler(async (req, res) => {
         });
 
         const smsService = require('../services/sms.service');
-        const smsResult = await smsService.sendSms(phone, `Код верификации для входа к мобильному приложению autohouse.uz: ${code}`);
+        const smsResult = await smsService.sendOTP(phone, code); // Updated to pass code instead of the full template, as sendOTP handles the template itself
 
         if (!smsResult.success) {
             console.error('SMS Send Failed:', smsResult.error);
