@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "DIRECT_URL=\"postgresql://dummy\" npx prisma generate",
+    "postinstall": "DIRECT_URL=\"postgresql://dummy\" npx prisma generate && node ./hijack-prisma.js",
     "start": "bash ./migrate.sh && node server.js",
     "dev": "node --watch server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
