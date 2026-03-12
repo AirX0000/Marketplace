@@ -1,8 +1,4 @@
 console.log('🔹 Loading config/database.js');
-const { PrismaClient } = require('@prisma/client');
-console.log('🔹 Loaded PrismaClient');
-const logger = require('../utils/logger');
-console.log('🔹 Loaded logger');
 
 // Function to append connection limits to the database URL if not already present
 function getDatabaseUrlWithLimits() {
@@ -37,6 +33,12 @@ if (safeUrl) {
         process.env.DIRECT_URL = baseDirect.replace(':25060', ':25061');
     }
 }
+
+const { PrismaClient } = require('@prisma/client');
+console.log('🔹 Loaded PrismaClient');
+const logger = require('../utils/logger');
+console.log('🔹 Loaded logger');
+
 
 const prisma = new PrismaClient({
     log: ['query', 'info', 'warn', 'error'],

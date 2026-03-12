@@ -10,6 +10,13 @@ if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('connection_l
     const separator = process.env.DATABASE_URL.includes('?') ? '&' : '?';
     process.env.DATABASE_URL += `${separator}connection_limit=3`;
 }
+
+// Ensure DIRECT_URL exists for Prisma schema validation (required by @prisma/client initialization)
+if (process.env.DATABASE_URL && !process.env.DIRECT_URL) {
+    let baseDirect = process.env.DATABASE_URL.split('?')[0]; // Strip query params
+    process.env.DIRECT_URL = baseDirect.replace(':25060', ':25061');
+}
+
 if (process.env.DIRECT_URL && !process.env.DIRECT_URL.includes('connection_limit')) {
     const separator = process.env.DIRECT_URL.includes('?') ? '&' : '?';
     process.env.DIRECT_URL += `${separator}connection_limit=3`;

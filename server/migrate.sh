@@ -27,15 +27,18 @@ if [[ "$DATABASE_URL" == *":25060"* ]]; then
   export DIRECT_URL="${BASE_URL/:25060/:25061}"
 fi
 
-# Ensure DIRECT_URL is available for Prisma during 'next' commands
-echo "DATABASE_URL=$DATABASE_URL" > .env.prisma
-echo "DIRECT_URL=$DIRECT_URL" >> .env.prisma
+# Ensure DIRECT_URL is exported for Prisma
+export DATABASE_URL="$DATABASE_URL"
+export DIRECT_URL="$DIRECT_URL"
 
 echo "DATABASE_URL configured for pooling."
-echo "DIRECT_URL configured for migrations: ${DIRECT_URL//:*@/:***@}" # Mask password in logs
+if [ -n "$DIRECT_URL" ]; then
+    echo "DIRECT_URL configured for migrations: ${DIRECT_URL//:*@/:***@}" # Mask password in logs
+else
+    echo "Warning: DIRECT_URL is empty!"
+fi
 
 echo "Running prisma db push..."
-# Prisma 5+ will pick up DIRECT_URL from environment using dotenvx
-npx dotenvx run -f .env.prisma -- npx prisma db push --accept-data-loss
+npx prisma db push --accept-data-loss
 
 echo "Migration script completed."
