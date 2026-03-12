@@ -5,33 +5,43 @@ const morgan = require('morgan');
 const path = require('path');
 require('dotenv').config();
 
-// Fix connection exhaustion by forcing connection limits in the URL if not present
-if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('connection_limit')) {
-    const separator = process.env.DATABASE_URL.includes('?') ? '&' : '?';
-    process.env.DATABASE_URL += `${separator}connection_limit=3`;
-}
-
 // Ensure DIRECT_URL exists with proper SSL keys for Prisma schema validation (required by @prisma/client initialization)
-if (process.env.DATABASE_URL && (!process.env.DIRECT_URL || !process.env.DIRECT_URL.includes('sslmode'))) {
+if (process.env.DATABASE_URL && !process.env.DIRECT_URL) {
     try {
         const { URL } = require('url');
-        const dbUrl = new URL(process.env.DATABASE_URL);
-        if (dbUrl.port === '25060') {
-            dbUrl.port = '25061';
-            dbUrl.searchParams.delete('pgbouncer');
+        // DO provides DATABASE_URL on port 25060, which is the DIRECT native connection.
+        const directUrlObj = new URL(process.env.DATABASE_URL);
+        if (!directUrlObj.searchParams.has('sslmode')) {
+            directUrlObj.searchParams.set('sslmode', 'require');
         }
-        if (!dbUrl.searchParams.has('sslmode')) {
-            dbUrl.searchParams.set('sslmode', 'require');
-        }
-        process.env.DIRECT_URL = dbUrl.toString();
+        process.env.DIRECT_URL = directUrlObj.toString();
     } catch (e) {
-        if (!process.env.DIRECT_URL) process.env.DIRECT_URL = process.env.DATABASE_URL;
+        process.env.DIRECT_URL = process.env.DATABASE_URL;
     }
 }
 
-if (process.env.DIRECT_URL && !process.env.DIRECT_URL.includes('connection_limit')) {
-    const separator = process.env.DIRECT_URL.includes('?') ? '&' : '?';
-    process.env.DIRECT_URL += `${separator}connection_limit=3`;
+// Ensure DATABASE_URL uses connection_limit=3 and sslmode=require for PgBouncer,
+// unless it's explicitly connecting to the direct port 25060.
+if (process.env.DATABASE_URL) {
+    try {
+        const { URL } = require('url');
+        const dbUrl = new URL(process.env.DATABASE_URL);
+        if (dbUrl.port !== '25060') {
+            if (dbUrl.port === '25060') dbUrl.port = '25061';
+            else if (!dbUrl.port) dbUrl.port = '25061';
+            
+            if (!dbUrl.searchParams.has('connection_limit')) {
+                dbUrl.searchParams.set('connection_limit', '3');
+            }
+            if (!dbUrl.searchParams.has('sslmode')) {
+                dbUrl.searchParams.set('sslmode', 'require');
+            }
+            dbUrl.searchParams.delete('pgbouncer');
+            process.env.DATABASE_URL = dbUrl.toString();
+        }
+    } catch (e) {
+        console.error('Error configuring DATABASE_URL:', e.message);
+    }
 }
 
 const app = express();

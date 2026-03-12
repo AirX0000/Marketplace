@@ -22,19 +22,26 @@ if (fs.existsSync(prismaIndex)) {
     const injection = `
 ${startMarker}
 // Ensure DIRECT_URL exists with proper SSL keys for Prisma schema validation on DigitalOcean
-if (process.env.DATABASE_URL && (!process.env.DIRECT_URL || !process.env.DIRECT_URL.includes('sslmode'))) {
+if (process.env.DATABASE_URL) {
     try {
         const { URL } = require('url');
-        const dbUrl = new URL(process.env.DATABASE_URL);
-        if (dbUrl.port === '25060') {
-            dbUrl.port = '25061'; // Use direct port instead of PgBouncer pool
-            dbUrl.searchParams.delete('pgbouncer');
-        }
-        if (!dbUrl.searchParams.has('sslmode')) {
-            dbUrl.searchParams.set('sslmode', 'require');
-        }
-        process.env.DIRECT_URL = dbUrl.toString();
-        console.warn('[Prisma Wrapper] Injected SSL-enabled DIRECT_URL.');
+        
+        // 1. DIRECT_URL: Native DO Postgres connection is on port 25060.
+        // We use the original DATABASE_URL (which DO defaults to 25060) and just enforce SSL.
+        const directUrlObj = new URL(process.env.DATABASE_URL);
+        if (directUrlObj.port === '25061') directUrlObj.port = '25060'; // Force 25060 for direct
+        directUrlObj.searchParams.delete('pgbouncer');
+        directUrlObj.searchParams.set('sslmode', 'require');
+        process.env.DIRECT_URL = directUrlObj.toString();
+        
+        // 2. DATABASE_URL: For the actual app, we want to use DO's PgBouncer pool on 25061.
+        const poolUrlObj = new URL(process.env.DATABASE_URL);
+        if (poolUrlObj.port === '25060') poolUrlObj.port = '25061'; // Force 25061 for pooling
+        poolUrlObj.searchParams.set('pgbouncer', 'true');
+        poolUrlObj.searchParams.set('sslmode', 'require');
+        process.env.DATABASE_URL = poolUrlObj.toString();
+        
+        console.warn('[Prisma Wrapper] Configured DIRECT_URL (25060) and DATABASE_URL (25061) for DigitalOcean.');
     } catch (e) {
         if (!process.env.DIRECT_URL) process.env.DIRECT_URL = process.env.DATABASE_URL;
     }
@@ -54,7 +61,7 @@ ${endMarker}
     }
 
     fs.writeFileSync(prismaIndex, modified, 'utf8');
-    console.log('✅ [Prisma Hijack] Successfully injected DIRECT_URL workaround with SSL support into Prisma CLI.');
+    console.log('✅ [Prisma Hijack] Successfully injected connection routing into Prisma CLI.');
 } else {
     console.warn('⚠️ [Prisma Hijack] Could not find Prisma CLI at ' + prismaIndex);
 }
