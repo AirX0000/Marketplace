@@ -25,23 +25,30 @@ ${startMarker}
 if (process.env.DATABASE_URL) {
     try {
         const { URL } = require('url');
-        
-        // 1. DIRECT_URL: Native DO Postgres connection is on port 25060.
-        // We use the original DATABASE_URL (which DO defaults to 25060) and just enforce SSL.
-        const directUrlObj = new URL(process.env.DATABASE_URL);
-        if (directUrlObj.port === '25061') directUrlObj.port = '25060'; // Force 25060 for direct
-        directUrlObj.searchParams.delete('pgbouncer');
-        directUrlObj.searchParams.set('sslmode', 'require');
-        process.env.DIRECT_URL = directUrlObj.toString();
-        
-        // 2. DATABASE_URL: For the actual app, we want to use DO's PgBouncer pool on 25061.
-        const poolUrlObj = new URL(process.env.DATABASE_URL);
-        if (poolUrlObj.port === '25060') poolUrlObj.port = '25061'; // Force 25061 for pooling
-        poolUrlObj.searchParams.set('pgbouncer', 'true');
-        poolUrlObj.searchParams.set('sslmode', 'require');
-        process.env.DATABASE_URL = poolUrlObj.toString();
-        
-        console.warn('[Prisma Wrapper] Configured DIRECT_URL (25060) and DATABASE_URL (25061) for DigitalOcean.');
+        let dbUrlStr = process.env.DATABASE_URL;
+        const dbUrl = new URL(dbUrlStr);
+
+        // Apply only if it's a DigitalOcean managed database (by hostname or known ports)
+        if (dbUrl.hostname.includes('ondigitalocean.com') || dbUrl.port === '25060' || dbUrl.port === '25061') {
+            // Map DIRECT_URL to native DO connection (Port 25060)
+            const directUrl = new URL(dbUrlStr);
+            directUrl.port = '25060';
+            directUrl.searchParams.set('sslmode', 'require');
+            directUrl.searchParams.delete('pgbouncer');
+            directUrl.searchParams.delete('connection_limit');
+            process.env.DIRECT_URL = directUrl.toString();
+
+            // Map DATABASE_URL to PgBouncer pool (Port 25061) for regular app queries
+            const poolUrl = new URL(dbUrlStr);
+            poolUrl.port = '25061';
+            poolUrl.searchParams.set('sslmode', 'require');
+            poolUrl.searchParams.set('pgbouncer', 'true');
+            poolUrl.searchParams.set('connection_limit', '3'); // Strict limit
+            poolUrl.searchParams.set('pool_timeout', '10');
+            process.env.DATABASE_URL = poolUrl.toString();
+            
+            console.warn('[Prisma Wrapper] Routed DO connections: DIRECT_URL (25060), DATABASE_URL (25061 pool)');
+        }
     } catch (e) {
         if (!process.env.DIRECT_URL) process.env.DIRECT_URL = process.env.DATABASE_URL;
     }

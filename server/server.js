@@ -5,42 +5,37 @@ const morgan = require('morgan');
 const path = require('path');
 require('dotenv').config();
 
-// Ensure DIRECT_URL exists with proper SSL keys for Prisma schema validation (required by @prisma/client initialization)
-if (process.env.DATABASE_URL && !process.env.DIRECT_URL) {
-    try {
-        const { URL } = require('url');
-        // DO provides DATABASE_URL on port 25060, which is the DIRECT native connection.
-        const directUrlObj = new URL(process.env.DATABASE_URL);
-        if (!directUrlObj.searchParams.has('sslmode')) {
-            directUrlObj.searchParams.set('sslmode', 'require');
-        }
-        process.env.DIRECT_URL = directUrlObj.toString();
-    } catch (e) {
-        process.env.DIRECT_URL = process.env.DATABASE_URL;
-    }
-}
-
-// Ensure DATABASE_URL uses connection_limit=3 and sslmode=require for PgBouncer,
-// unless it's explicitly connecting to the direct port 25060.
+// --- DIGITALOCEAN PRISMA CONNECTION ROUTING ---
+// Ensures the application uses PgBouncer (25061) to prevent connection exhaustion,
+// while generating a DIRECT_URL (25060) for Prisma schema validation.
 if (process.env.DATABASE_URL) {
     try {
         const { URL } = require('url');
-        const dbUrl = new URL(process.env.DATABASE_URL);
-        if (dbUrl.port !== '25060') {
-            if (dbUrl.port === '25060') dbUrl.port = '25061';
-            else if (!dbUrl.port) dbUrl.port = '25061';
-            
-            if (!dbUrl.searchParams.has('connection_limit')) {
-                dbUrl.searchParams.set('connection_limit', '3');
-            }
-            if (!dbUrl.searchParams.has('sslmode')) {
-                dbUrl.searchParams.set('sslmode', 'require');
-            }
-            dbUrl.searchParams.delete('pgbouncer');
+        let dbUrlStr = process.env.DATABASE_URL;
+        const dbUrl = new URL(dbUrlStr);
+
+        // Apply only if it's a DigitalOcean managed database (by hostname or known ports)
+        if (dbUrl.hostname.includes('ondigitalocean.com') || dbUrl.port === '25060' || dbUrl.port === '25061') {
+            // Map DIRECT_URL to native DO connection (Port 25060)
+            const directUrl = new URL(dbUrlStr);
+            directUrl.port = '25060';
+            directUrl.searchParams.set('sslmode', 'require');
+            directUrl.searchParams.delete('pgbouncer');
+            directUrl.searchParams.delete('connection_limit');
+            process.env.DIRECT_URL = directUrl.toString();
+
+            // Map DATABASE_URL to PgBouncer pool (Port 25061) for regular app queries
+            dbUrl.port = '25061';
+            dbUrl.searchParams.set('sslmode', 'require');
+            dbUrl.searchParams.set('pgbouncer', 'true');
+            dbUrl.searchParams.set('connection_limit', '3'); // Strict limit to prevent pool exhaustion
+            dbUrl.searchParams.set('pool_timeout', '10');
             process.env.DATABASE_URL = dbUrl.toString();
+            
+            console.log('[Server Config] Routed DO connections: DIRECT_URL (25060), DATABASE_URL (25061 pool)');
         }
     } catch (e) {
-        console.error('Error configuring DATABASE_URL:', e.message);
+        console.error('[Server Config] Error parsing database URLs:', e.message);
     }
 }
 
