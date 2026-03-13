@@ -11,6 +11,54 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../lib/api';
 import { useShop } from '../context/ShopContext';
 
+const MOCK_LISTINGS = [
+    {
+        id: 'mock-1',
+        name: 'Современная Вилла в Ташкенте',
+        name_uz: 'Toshkentdagi zamonaviy villa',
+        description: 'Роскошная вилла с панорамным видом, бассейном и современным дизайном.',
+        price: 1500000000,
+        category: 'Недвижимость',
+        region: 'Ташкент',
+        image: '/images/house_mock.png',
+        images: '[]',
+        rating: 4.9,
+        views: 1250,
+        status: 'APPROVED',
+        isFeatured: true
+    },
+    {
+        id: 'mock-2',
+        name: 'Premium SUV Black Edition',
+        name_uz: 'SUV Black Edition Premum',
+        description: 'Стильный и мощный внедорожник для тех, кто ценит комфорт и статус.',
+        price: 450000000,
+        category: 'Transport',
+        region: 'Ташкент',
+        image: '/images/car_mock.png',
+        images: '[]',
+        rating: 5.0,
+        views: 840,
+        status: 'APPROVED',
+        isFeatured: true
+    },
+    {
+        id: 'mock-3',
+        name: 'Квартира в ЖК "Infinity"',
+        name_uz: '"Infinity" turar-joy majmuasidagi kvartira',
+        description: 'Уютная квартира с дизайнерским ремонтом в центре города.',
+        price: 850000000,
+        category: 'Недвижимость',
+        region: 'Ташкент',
+        image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=800',
+        images: '[]',
+        rating: 4.8,
+        views: 2100,
+        status: 'APPROVED',
+        isFeatured: true
+    }
+];
+
 export function HomePage() {
     const { t } = useTranslation();
     const { isAuthenticated } = useShop();
@@ -193,8 +241,12 @@ export function HomePage() {
                             </button>
                         </div>
                     ) : featured.length === 0 ? (
-                        <div className="text-center py-12 bg-white/50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 mx-4 md:mx-0">
-                            <p className="text-muted-foreground">{t('home.no_products', 'Нет товаров')}</p>
+                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0 md:mx-0 md:px-0 no-scrollbar">
+                            {MOCK_LISTINGS.map((item) => (
+                                <div key={item.id} className="snap-center shrink-0 w-[280px] md:w-auto">
+                                    <MarketplaceCard marketplace={item} />
+                                </div>
+                            ))}
                         </div>
                     ) : (
                         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0 md:mx-0 md:px-0 no-scrollbar">
