@@ -35,7 +35,7 @@ export function PostAdPage() {
             toast.success('Объявление опубликовано!', { id: toastId });
             navigate('/admin/listings');
         } catch (error) {
-            toast.error('Ошибка публикации', { id: toastId });
+            toast.error(error.message || 'Ошибка публикации', { id: toastId });
         }
     };
 

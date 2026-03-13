@@ -65,7 +65,7 @@ export function RegisterPage() {
     };
 
     const handleVerifyOTP = async () => {
-        if (!otpCode || otpCode.length < 4) {
+        if (!otpCode || otpCode.length !== 4) {
             notify.error("Введите 4-значный код");
             return;
         }
@@ -240,8 +240,8 @@ export function RegisterPage() {
                                                     maxLength="4"
                                                     value={otpCode}
                                                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                                                    className="flex-1 h-11 px-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:border-transparent transition-all tracking-[0.5em] text-center font-bold"
-                                                    placeholder="0000"
+                                                    className="flex-1 h-11 px-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:border-transparent transition-all tracking-[1em] text-center font-bold"
+                                                    placeholder="XXXX"
                                                 />
                                                 <button
                                                     type="button"

@@ -92,7 +92,7 @@ export function AdminListings() {
             handleCloseModal();
             toast.success("Товар сохранен");
         } catch (error) {
-            toast.error("Ошибка сохранения");
+            toast.error(error.message || "Ошибка сохранения");
             console.error(error);
         }
     };
