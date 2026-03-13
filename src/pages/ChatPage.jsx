@@ -46,7 +46,15 @@ export function ChatPage() {
             return;
         }
 
-        const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || window.location.origin;
+        const getSocketUrl = () => {
+            const apiUrl = import.meta.env.VITE_API_URL;
+            if (window.location.hostname === 'localhost' && apiUrl) {
+                return apiUrl.replace('/api', '');
+            }
+            return window.location.origin;
+        };
+
+        const socketUrl = getSocketUrl();
         socketRef.current = io(socketUrl, {
             auth: { token: localStorage.getItem('token') }
         });
