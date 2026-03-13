@@ -3,7 +3,7 @@ const prisma = require('../config/database');
 const kycCheck = async (req, res, next) => {
     try {
         const user = await prisma.user.findUnique({
-            where: { id: req.user.id }
+            where: { id: req.user.userId }
         });
 
         if (!user) {

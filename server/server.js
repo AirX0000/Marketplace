@@ -3,6 +3,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const http = require('http');
+const { Server } = require('socket.io');
 require('dotenv').config();
 
 // --- DIGITALOCEAN PRISMA CONNECTION ROUTING ---
@@ -141,12 +143,46 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
 });
 
+// Socket.io Setup
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
+
+io.on('connection', (socket) => {
+    console.log('[Socket] New connection:', socket.id);
+
+    socket.on('join_room', (roomId) => {
+        socket.join(roomId);
+        console.log(`[Socket] Socket ${socket.id} joined room ${roomId}`);
+    });
+
+    socket.on('send_message', async (data) => {
+        const { roomId, content } = data;
+        // Broadcast to room
+        io.to(roomId).emit('receive_message', {
+            id: Date.now().toString(),
+            chatRoomId: roomId,
+            content,
+            senderId: socket.handshake.auth.token ? 'decoded_user_id' : 'anonymous', // Minimalist for now
+            createdAt: new Date().toISOString()
+        });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('[Socket] Disconnected:', socket.id);
+    });
+});
+
 // Error handling
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'Internal Server Error', message: err.message });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server is ready! Visit http://localhost:${PORT}`);
 });
