@@ -132,6 +132,9 @@ app.use('/api', apiRouter);
 const distPath = path.join(__dirname, '../dist');
 console.log('🔹 Static assets directory:', distPath);
 
+const jwt = require('jsonwebtoken'); // Added for Socket.io auth
+const env = require('./config/env');
+
 app.use(express.static(distPath));
 
 app.get('*', (req, res) => {
@@ -152,12 +155,25 @@ const io = new Server(server, {
     }
 });
 
+// Socket.io Authentication Middleware
+io.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+    if (!token) {
+        return next(new Error('Authentication error: Token missing'));
+    }
+    jwt.verify(token, env.jwtSecret, (err, decoded) => {
+        if (err) return next(new Error('Authentication error: Invalid token'));
+        socket.user = decoded;
+        next();
+    });
+});
+
 io.on('connection', (socket) => {
-    console.log('[Socket] New connection:', socket.id);
+    console.log(`[Socket] Connected: ${socket.id} (User: ${socket.user?.userId})`);
 
     socket.on('join_room', (roomId) => {
         socket.join(roomId);
-        console.log(`[Socket] Socket ${socket.id} joined room ${roomId}`);
+        console.log(`[Socket] User ${socket.user?.userId} joined room ${roomId}`);
     });
 
     socket.on('send_message', async (data) => {
@@ -167,7 +183,7 @@ io.on('connection', (socket) => {
             id: Date.now().toString(),
             chatRoomId: roomId,
             content,
-            senderId: socket.handshake.auth.token ? 'decoded_user_id' : 'anonymous', // Minimalist for now
+            senderId: socket.user?.userId,
             createdAt: new Date().toISOString()
         });
     });

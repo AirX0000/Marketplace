@@ -5,10 +5,18 @@ const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) return res.sendStatus(401);
+    console.log(`[AUTH_DEBUG] Path: ${req.path}, Header: ${authHeader ? 'Present' : 'Missing'}`);
+
+    if (!token) {
+        console.warn(`[AUTH_DEBUG] No token provided for ${req.path}`);
+        return res.sendStatus(401);
+    }
 
     jwt.verify(token, env.jwtSecret, (err, user) => {
-        if (err) return res.sendStatus(403);
+        if (err) {
+            console.error(`[AUTH_DEBUG] Token verification failed for ${req.path}:`, err.message);
+            return res.sendStatus(403);
+        }
         req.user = user;
         next();
     });
