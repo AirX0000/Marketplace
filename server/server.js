@@ -6,34 +6,34 @@ const path = require('path');
 require('dotenv').config();
 
 // --- DIGITALOCEAN PRISMA CONNECTION ROUTING ---
-// Ensures the application uses PgBouncer (25061) to prevent connection exhaustion,
-// while generating a DIRECT_URL (25060) for Prisma schema validation.
+// Ensures the application uses Prisma's local connection pooling to prevent DO database exhaustion.
 if (process.env.DATABASE_URL) {
     try {
         const { URL } = require('url');
         let dbUrlStr = process.env.DATABASE_URL;
         const dbUrl = new URL(dbUrlStr);
 
-        // Apply only if it's a DigitalOcean managed database (by hostname or known ports)
-        if (dbUrl.hostname.includes('ondigitalocean.com') || dbUrl.port === '25060' || dbUrl.port === '25061') {
-            // Map DIRECT_URL to native DO connection (Port 25060)
-            const directUrl = new URL(dbUrlStr);
-            directUrl.port = '25060';
-            directUrl.searchParams.set('sslmode', 'require');
-            directUrl.searchParams.delete('pgbouncer');
-            directUrl.searchParams.delete('connection_limit');
-            process.env.DIRECT_URL = directUrl.toString();
+        // Map DIRECT_URL (must not have pgbouncer=true)
+        const directUrl = new URL(dbUrlStr);
+        directUrl.searchParams.set('sslmode', 'require');
+        directUrl.searchParams.delete('pgbouncer');
+        directUrl.searchParams.delete('connection_limit');
+        process.env.DIRECT_URL = directUrl.toString();
 
-            // Map DATABASE_URL to PgBouncer pool (Port 25061) for regular app queries
-            dbUrl.port = '25061';
-            dbUrl.searchParams.set('sslmode', 'require');
-            dbUrl.searchParams.set('pgbouncer', 'true');
-            dbUrl.searchParams.set('connection_limit', '3'); // Strict limit to prevent pool exhaustion
-            dbUrl.searchParams.set('pool_timeout', '10');
-            process.env.DATABASE_URL = dbUrl.toString();
-            
-            console.log('[Server Config] Routed DO connections: DIRECT_URL (25060), DATABASE_URL (25061 pool)');
+        // Map DATABASE_URL for regular app queries. We use local Prisma pooling (connection_limit=3)
+        // to avoid exhausting DO's native 15-connection limit.
+        const poolUrl = new URL(dbUrlStr);
+        poolUrl.searchParams.set('sslmode', 'require');
+        if (poolUrl.port === '25061') {
+             poolUrl.searchParams.set('pgbouncer', 'true');
+        } else {
+             poolUrl.searchParams.delete('pgbouncer');
         }
+        poolUrl.searchParams.set('connection_limit', '3'); // Strict local limit
+        poolUrl.searchParams.set('pool_timeout', '10');
+        process.env.DATABASE_URL = poolUrl.toString();
+        
+        console.log('[Server Config] Routed connections with safe limits applied.');
     } catch (e) {
         console.error('[Server Config] Error parsing database URLs:', e.message);
     }

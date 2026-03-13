@@ -28,35 +28,27 @@ if (process.env.DATABASE_URL) {
         let dbUrlStr = process.env.DATABASE_URL;
         const dbUrl = new URL(dbUrlStr);
 
-        // Apply only if it's a DigitalOcean managed database (by hostname or known ports)
-        if (dbUrl.hostname.includes('ondigitalocean.com') || dbUrl.port === '25060' || dbUrl.port === '25061') {
-            // Map DIRECT_URL to native DO connection (Port 25060)
-            const directUrl = new URL(dbUrlStr);
-            directUrl.port = '25060';
-            directUrl.searchParams.set('sslmode', 'require');
-            directUrl.searchParams.delete('pgbouncer');
-            directUrl.searchParams.delete('connection_limit');
-            process.env.DIRECT_URL = directUrl.toString();
+        // Map DIRECT_URL (must not have pgbouncer=true)
+        const directUrl = new URL(dbUrlStr);
+        directUrl.searchParams.set('sslmode', 'require');
+        directUrl.searchParams.delete('pgbouncer');
+        directUrl.searchParams.delete('connection_limit');
+        process.env.DIRECT_URL = directUrl.toString();
 
-            // Map DATABASE_URL to PgBouncer pool (Port 25061) for regular app queries
-            const poolUrl = new URL(dbUrlStr);
-            poolUrl.port = '25061';
-            poolUrl.searchParams.set('sslmode', 'require');
-            poolUrl.searchParams.set('pgbouncer', 'true');
-            poolUrl.searchParams.set('connection_limit', '3'); // Strict limit
-            poolUrl.searchParams.set('pool_timeout', '10');
-            process.env.DATABASE_URL = poolUrl.toString();
-            
-            console.warn('[Prisma Wrapper] Routed DO connections: DIRECT_URL (25060), DATABASE_URL (25061 pool)');
-
-            // --- ONE-TIME DEADLOCK BREAKER ---
-            // The old DO container is hoarding 25060 connections due to an architecture bug.
-            // This prevents db push from succeeding, crashing the new container before replacement.
-            if (process.argv.includes('push')) {
-                console.warn('[Prisma Wrapper] 🚨 EMERGENCY BYPASS: Skipping db push to break rolling deploy connection deadlock.');
-                console.warn('Exiting 0 to allow Node.js to boot, pass DO health checks, and kill the old container.');
-                process.exit(0);
-            }
+        // Map DATABASE_URL for regular app queries. We use local Prisma pooling (connection_limit=3)
+        // to avoid exhausting DO's native 15-connection limit.
+        const poolUrl = new URL(dbUrlStr);
+        poolUrl.searchParams.set('sslmode', 'require');
+        if (poolUrl.port === '25061') {
+             poolUrl.searchParams.set('pgbouncer', 'true');
+        } else {
+             poolUrl.searchParams.delete('pgbouncer');
+        }
+        poolUrl.searchParams.set('connection_limit', '3'); // Strict local limit
+        poolUrl.searchParams.set('pool_timeout', '10');
+        process.env.DATABASE_URL = poolUrl.toString();
+        
+        console.warn('[Prisma Wrapper] Routed connections with safe limits applied.');
         }
     } catch (e) {
         if (!process.env.DIRECT_URL) process.env.DIRECT_URL = process.env.DATABASE_URL;
