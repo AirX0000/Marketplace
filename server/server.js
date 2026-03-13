@@ -40,7 +40,7 @@ if (process.env.DATABASE_URL) {
 }
 
 const app = express();
-const PORT = 3000; // Force 3000 to match DigitalOcean component config, bypassing Heroku buildpack's PORT=8080 injection
+const PORT = process.env.PORT || 3000; // Use DO provided port, fallback to 3000
 
 // Middleware
 app.use(helmet({
