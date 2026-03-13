@@ -81,7 +81,7 @@ export function LoginPage() {
 
     // --- OTP Login ---
     const handleOTPLogin = async () => {
-        if (!otpCode || otpCode.length < 4) {
+        if (!otpCode || otpCode.length !== 4) {
             notify.error('Введите 4-значный код');
             return;
         }
