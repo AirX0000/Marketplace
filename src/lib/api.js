@@ -10,6 +10,10 @@ export const fetchAPI = async (endpoint, options = {}) => {
         ...options.headers
     };
 
+    if (headers['Content-Type'] === undefined) {
+        delete headers['Content-Type'];
+    }
+
     let url = `${API_URL}${endpoint}`;
     if (options.params) {
         const queryString = new URLSearchParams(options.params).toString();
@@ -251,12 +255,14 @@ export const api = {
     uploadImage: async (file) => {
         const formData = new FormData();
         formData.append('image', file);
-        const response = await fetch(`${API_URL}/upload`, {
+        // Use fetchAPI to get auth headers but don't set Content-Type manually for FormData
+        return fetchAPI('/upload', {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+                'Content-Type': undefined // Let browser set Content-Type with boundary
+            }
         });
-        if (!response.ok) throw new Error("Upload failed");
-        return response.json();
     },
 
     // autohouse Pay Wallet

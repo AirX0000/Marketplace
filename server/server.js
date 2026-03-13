@@ -47,8 +47,8 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "'unsafe-inline'", "https://api-maps.yandex.ru", "https://yastatic.net"],
-            "script-src-elem": ["'self'", "'unsafe-inline'", "https://api-maps.yandex.ru", "https://yastatic.net"],
+            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://api-maps.yandex.ru", "https://yastatic.net"],
+            "script-src-elem": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://api-maps.yandex.ru", "https://yastatic.net"],
             "img-src": ["'self'", "data:", "https:", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz"],
             "connect-src": ["'self'", "https:", "ws:", "wss:", "cdn.payme.uz", "cdn.click.uz", "checkout.paycom.uz", "my.click.uz", "https://api-maps.yandex.ru"],
             "frame-src": ["'self'"],
