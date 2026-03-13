@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { io } from 'socket.io-client';
 import { useShop } from './ShopContext';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const SOCKET_URL = import.meta.env.VITE_API_URL || undefined;
 
 const NotificationContext = createContext(null);
 

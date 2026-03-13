@@ -149,25 +149,25 @@ export function UserDashboard() {
 
     return (
         <div className="min-h-screen bg-[#13111C] text-white font-sans">
-            <div className="container py-8 px-4 md:px-6">
-                <div className="grid md:grid-cols-[280px_1fr] gap-8">
+            <div className="container py-4 md:py-8 px-4 md:px-6">
+                <div className="grid md:grid-cols-[280px_1fr] gap-4 md:gap-8">
 
                     {/* Sidebar */}
                     <div className="space-y-6">
                         {/* Profile Summary Card */}
                         <div className="bg-[#191624] rounded-3xl p-6 border border-white/5 shadow-sm text-center">
-                            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-[0_0_20px_rgba(147,51,234,0.3)] ring-4 ring-[#13111C]">
-                                {user?.name?.charAt(0)?.toUpperCase() || <User size={40} />}
+                            <div className="w-16 h-16 md:w-24 md:h-24 mx-auto bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-4 shadow-[0_0_20px_rgba(147,51,234,0.3)] ring-4 ring-[#13111C]">
+                                {user?.name?.charAt(0)?.toUpperCase() || <User size={40} className="w-8 h-8 md:w-10 md:h-10" />}
                             </div>
-                            <h2 className="font-bold text-xl truncate text-white">{user?.name}</h2>
-                            <p className="text-sm text-slate-400 truncate">{user?.email}</p>
-                            <div className="mt-4 inline-flex px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs font-bold">
+                            <h2 className="font-bold text-lg md:text-xl truncate text-white">{user?.name}</h2>
+                            <p className="text-xs md:text-sm text-slate-400 truncate">{user?.email}</p>
+                            <div className="mt-4 inline-flex px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[10px] md:text-xs font-bold">
                                 {user?.role === 'PARTNER' ? 'Партнер' : 'Premium Member'}
                             </div>
                         </div>
 
                         {/* Navigation */}
-                        <nav className="bg-[#191624] rounded-3xl border border-white/5 shadow-sm overflow-hidden p-3 space-y-1">
+                        <nav className="bg-[#191624] md:rounded-3xl border-y md:border border-white/5 shadow-sm p-3 md:space-y-1 flex flex-row overflow-x-auto md:flex-col gap-2 md:gap-0 no-scrollbar -mx-4 md:mx-0 px-4 md:px-3">
                             {[
                                 { id: 'overview', label: 'Обзор', icon: LayoutDashboard },
                                 { id: 'favorites', label: 'Избранное', icon: Heart },
@@ -195,34 +195,34 @@ export function UserDashboard() {
                                             navigate(`/profile?tab=${item.id}`, { replace: true });
                                         }
                                     }}
-                                    className={`w-full flex items-center justify-between p-3 rounded-2xl text-sm font-bold transition-all ${activeTab === item.id
+                                    className={`flex-shrink-0 md:w-full flex items-center md:justify-between px-4 py-3 md:p-3 rounded-2xl text-sm font-bold transition-all ${activeTab === item.id
                                         ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)]'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5 bg-white/[0.02] md:bg-transparent'
                                         }`}
                                 >
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2 md:gap-3">
                                         <item.icon size={18} />
-                                        {item.label}
+                                        <span className="whitespace-nowrap">{item.label}</span>
                                     </div>
-                                    <ChevronRight size={16} className={`opacity-50 ${activeTab === item.id ? 'opacity-100' : ''}`} />
+                                    <ChevronRight size={16} className={`hidden md:block opacity-50 ${activeTab === item.id ? 'opacity-100' : ''}`} />
                                 </button>
                             ))}
 
-                            <div className="my-2 border-t border-white/5 mx-2" />
+                            <div className="hidden md:block my-2 border-t border-white/5 mx-2" />
 
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center gap-3 p-3 rounded-2xl text-sm font-bold text-red-500 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                                className="flex-shrink-0 md:w-full flex items-center justify-center gap-2 px-4 py-3 md:p-3 rounded-2xl text-sm font-bold text-red-500 hover:bg-red-500/10 hover:text-red-400 transition-colors bg-red-500/5 md:bg-transparent"
                             >
                                 <LogOut size={18} />
-                                Logout
+                                <span className="whitespace-nowrap">Выйти</span>
                             </button>
                         </nav>
 
                         {/* Add Listing Button */}
                         <Link
                             to="/post-ad"
-                            className="w-full mt-4 flex justify-center items-center gap-2 bg-emerald-600 dark:bg-emerald-500 text-white p-3 rounded-xl font-bold shadow-lg shadow-emerald-600/25 hover:-translate-y-1 transition-all"
+                            className="w-full mt-4 flex justify-center items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-3 rounded-2xl font-bold shadow-lg shadow-emerald-500/25 hover:-translate-y-1 hover:shadow-emerald-500/40 transition-all"
                         >
                             <Plus size={20} /> Разместить объявление
                         </Link>
@@ -246,29 +246,35 @@ export function UserDashboard() {
                                 {/* CONTENT: OVERVIEW */}
                                 {activeTab === 'overview' && (
                                     <div className="space-y-6">
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                            <StatCard
-                                                label="Всего заказов"
-                                                value={orders.length}
-                                                icon={<Package size={24} />}
-                                                color="blue"
-                                            />
-                                            <StatCard
-                                                label="В ожидании"
-                                                value={orders.filter(o => o.status !== 'DELIVERED' && o.status !== 'CANCELLED').length}
-                                                icon={<Bell size={24} />}
-                                                color="orange"
-                                            />
-                                            <StatCard
-                                                label="Потрачено"
-                                                value={`${orders.reduce((acc, o) => acc + o.total, 0).toLocaleString()} UZS`}
-                                                icon={<Wallet size={24} />}
-                                                color="emerald"
-                                            />
+                                        <div className="flex overflow-x-auto gap-4 sm:grid sm:grid-cols-3 no-scrollbar pb-2 snap-x -mx-4 px-4 sm:mx-0 sm:px-0">
+                                            <div className="min-w-[240px] sm:min-w-0 snap-start flex-shrink-0">
+                                                <StatCard
+                                                    label="Всего заказов"
+                                                    value={orders.length}
+                                                    icon={<Package size={24} />}
+                                                    color="blue"
+                                                />
+                                            </div>
+                                            <div className="min-w-[240px] sm:min-w-0 snap-start flex-shrink-0">
+                                                <StatCard
+                                                    label="В ожидании"
+                                                    value={orders.filter(o => o.status !== 'DELIVERED' && o.status !== 'CANCELLED').length}
+                                                    icon={<Bell size={24} />}
+                                                    color="orange"
+                                                />
+                                            </div>
+                                            <div className="min-w-[240px] sm:min-w-0 snap-start flex-shrink-0">
+                                                <StatCard
+                                                    label="Потрачено"
+                                                    value={`${orders.reduce((acc, o) => acc + o.total, 0).toLocaleString()} UZS`}
+                                                    icon={<Wallet size={24} />}
+                                                    color="emerald"
+                                                />
+                                            </div>
                                         </div>
 
-                                        <div className="bg-[#191624] rounded-3xl border border-white/5 shadow-xl p-8">
-                                            <div className="flex justify-between items-center mb-8">
+                                        <div className="bg-[#191624] rounded-3xl border border-white/5 shadow-xl p-5 md:p-8">
+                                            <div className="flex justify-between items-center mb-6 md:mb-8">
                                                 <h3 className="font-bold text-xl">Последние заказы</h3>
                                                 <button onClick={() => setActiveTab('orders')} className="text-purple-400 text-sm font-bold hover:text-purple-300 transition-colors">Все заказы</button>
                                             </div>
