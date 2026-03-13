@@ -79,8 +79,10 @@ exports.loginByOTP = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: 'Invalid or expired OTP' });
     }
 
-    // Find user with that phone
-    const user = await prisma.user.findFirst({ where: { phone } });
+    // Find user with that phone (use endsWith to handle legacy formats like +998...)
+    const user = await prisma.user.findFirst({ 
+        where: { phone: { endsWith: phone } } 
+    });
     if (!user) {
         return res.status(404).json({ error: 'No account found with this phone number. Please register first.' });
     }
