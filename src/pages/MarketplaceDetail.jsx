@@ -326,7 +326,7 @@ export function MarketplaceDetail() {
                 </div>
             </div>
 
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 py-8 pb-28 md:pb-8">
                 <Breadcrumbs items={breadcrumbs} />
                 <article className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
@@ -336,47 +336,82 @@ export function MarketplaceDetail() {
                         {/* GALLERY & INTRO */}
                         <div className="bg-[#191624] rounded-[32px] overflow-hidden shadow-2xl border border-white/5 relative group">
                             <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/10 via-transparent to-blue-600/10 pointer-events-none" />
-                            <div className="relative h-[450px] md:h-[550px] lg:h-[600px] bg-[#13111C]/50">
-                                <img
-                                    src={activeImage}
-                                    alt={marketplace.name}
-                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in"
-                                    onClick={() => { setLightboxIndex(allImages.indexOf(activeImage)); setLightboxOpen(true); }}
-                                />
-
-                                {/* Premium Bottom Gradient Overlay for Auto */}
-                                {isAuto && (
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#13111C] via-transparent to-transparent flex flex-col justify-end p-10 pb-12">
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-3">
-                                                <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest italic animate-pulse">
-                                                    Official Dealer
-                                                </div>
-                                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                                                    {selectedMod?.name || 'Standard'} • {selectedColor?.name || attrs.specs?.color || 'Original'}
-                                                </div>
+                                {/* Mobile Carousel / Desktop Main Image */}
+                                <div className="relative h-[350px] sm:h-[450px] md:h-[550px] lg:h-[600px] bg-[#13111C]/50">
+                                    <div className="md:hidden flex h-full overflow-x-auto snap-x snap-mandatory no-scrollbar"
+                                         onScroll={(e) => {
+                                             const index = Math.round(e.target.scrollLeft / e.target.offsetWidth);
+                                             if (allImages[index]) setActiveImage(allImages[index]);
+                                         }}
+                                    >
+                                        {allImages.map((img, idx) => (
+                                            <div key={idx} className="h-full w-full shrink-0 snap-center">
+                                                <img
+                                                    src={img}
+                                                    alt={`${marketplace.name} - ${idx + 1}`}
+                                                    className="w-full h-full object-cover"
+                                                    onClick={() => { setLightboxIndex(idx); setLightboxOpen(true); }}
+                                                />
                                             </div>
-                                            <h2 className="text-4xl md:text-5xl font-black text-white leading-tight uppercase tracking-tighter italic drop-shadow-2xl">
-                                                {marketplace.name}
-                                            </h2>
+                                        ))}
+                                    </div>
+                                    
+                                    {/* Desktop Static Image */}
+                                    <img
+                                        src={activeImage}
+                                        alt={marketplace.name}
+                                        className="hidden md:block w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in"
+                                        onClick={() => { setLightboxIndex(allImages.indexOf(activeImage)); setLightboxOpen(true); }}
+                                    />
+
+                                    {/* Mobile Pagination Dots */}
+                                    {allImages.length > 1 && (
+                                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 md:hidden z-30">
+                                            {allImages.map((_, idx) => (
+                                                <div 
+                                                    key={idx}
+                                                    className={cn(
+                                                        "h-1.5 rounded-full transition-all duration-300",
+                                                        allImages.indexOf(activeImage) === idx ? "w-6 bg-purple-600" : "w-1.5 bg-white/30"
+                                                    )}
+                                                />
+                                            ))}
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
-                                {isAuto && attrs.brandLogo && (
-                                    <div className="absolute top-6 left-6 w-16 h-16 bg-white/5 backdrop-blur-2xl rounded-2xl p-3 shadow-2xl border border-white/10 group-hover:scale-110 transition-transform">
-                                        <img src={attrs.brandLogo} alt="Brand" className="w-full h-full object-contain brightness-0 invert opacity-80" />
-                                    </div>
-                                )}
+                                    {/* Premium Bottom Gradient Overlay for Auto */}
+                                    {isAuto && (
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#13111C] via-transparent to-transparent flex flex-col justify-end p-6 md:p-10 pb-12 md:pb-12 pointer-events-none">
+                                            <div className="space-y-1 md:space-y-2">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="bg-purple-600 text-white px-3 py-0.5 md:py-1 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest italic">
+                                                        Official Dealer
+                                                    </div>
+                                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                                        {selectedMod?.name || 'Standard'}
+                                                    </div>
+                                                </div>
+                                                <h2 className="text-3xl md:text-5xl font-black text-white leading-tight uppercase tracking-tighter italic drop-shadow-2xl">
+                                                    {marketplace.name}
+                                                </h2>
+                                            </div>
+                                        </div>
+                                    )}
 
-                                <div className="absolute top-6 right-6 flex flex-col gap-2">
-                                    <span className="bg-white/5 backdrop-blur-2xl text-slate-300 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-white/10 italic">
-                                        {marketplace.category}
-                                    </span>
+                                    {isAuto && attrs.brandLogo && (
+                                        <div className="absolute top-6 left-6 w-12 h-12 md:w-16 md:h-16 bg-white/5 backdrop-blur-2xl rounded-2xl p-2 md:p-3 shadow-2xl border border-white/10 group-hover:scale-110 transition-transform hidden sm:block">
+                                            <img src={attrs.brandLogo} alt="Brand" className="w-full h-full object-contain brightness-0 invert opacity-80" />
+                                        </div>
+                                    )}
+
+                                    <div className="absolute top-6 right-6 flex flex-col gap-2">
+                                        <span className="bg-white/5 backdrop-blur-2xl text-slate-300 px-4 md:px-6 py-1.5 md:py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] border border-white/10 italic">
+                                            {marketplace.category}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
                             {Array.isArray(allImages) && allImages.length > 1 && (
-                                <div className="p-8 flex gap-6 overflow-x-auto no-scrollbar relative z-10 bg-[#191624]/50 backdrop-blur-xl">
+                                <div className="p-4 md:p-8 flex gap-3 md:gap-6 overflow-x-auto no-scrollbar relative z-10 bg-[#191624]/50 backdrop-blur-xl">
                                     {allImages.map((img, idx) => (
                                         <button
                                             key={idx}
@@ -902,6 +937,22 @@ export function MarketplaceDetail() {
                     />
                 )
             }
+            
+            {/* MOBILE BOTTOM ACTION BAR */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#191624] border-t border-white/5 p-4 flex gap-3 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] safe-area-pb">
+                <button
+                    onClick={() => toggleFavorite(marketplace)}
+                    className="h-12 w-12 shrink-0 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white active:scale-95 transition-transform"
+                >
+                    <Heart className={isFav ? "fill-red-500 text-red-500" : ""} size={20} />
+                </button>
+                <button
+                    onClick={() => document.getElementById('contact-sidebar')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="flex-1 h-12 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                >
+                    <Phone size={16} /> Связаться
+                </button>
+            </div>
         </div >
     );
 }

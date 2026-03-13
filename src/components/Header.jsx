@@ -12,6 +12,7 @@ import { NotificationBell } from './NotificationBell';
 export function Header() {
     const { t, i18n } = useTranslation();
     const [isCatalogOpen, setIsCatalogOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
@@ -67,9 +68,9 @@ export function Header() {
                         </button>
                     )}
 
-                    {/* Search - Only for buyers */}
+                    {/* Search - Desktop Only */}
                     {(!isAuthenticated || isBuyer()) && (
-                        <form onSubmit={handleSearch} className="flex-1 md:max-w-xl mx-2 md:mx-0">
+                        <form onSubmit={handleSearch} className="hidden md:block flex-1 max-w-xl mx-2 md:mx-4">
                             <div className="relative w-full">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                 <input
@@ -86,7 +87,7 @@ export function Header() {
                     <div className="flex-1" />
 
                     {/* Right Side Actions */}
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 md:gap-2">
                         <Link
                             to="/post-ad"
                             className="hidden md:flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 hover:-translate-y-0.5 transition-all mr-2"
@@ -95,15 +96,17 @@ export function Header() {
                             {t('common.add_listing', 'Разместить объявление')}
                         </Link>
 
-                        <LanguageSwitcher />
+                        <div className="hidden md:block">
+                            <LanguageSwitcher />
+                        </div>
 
                         <div className="w-px h-6 bg-border mx-2 hidden md:block" />
 
-                        {/* Theme Switcher */}
+                        {/* Theme Switcher - Desktop */}
                         <button
                             onClick={toggleTheme}
                             aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить темную тему'}
-                            className="p-2 rounded-full hover:bg-muted transition-colors mr-2 group"
+                            className="hidden md:block p-2 rounded-full hover:bg-muted transition-colors mr-2 group"
                             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                         >
                             {theme === 'light' ? (
@@ -223,7 +226,7 @@ export function Header() {
                         {/* Cart - Only for buyers */}
                         {(!isAuthenticated || isBuyer()) && (
                             <Link to="/cart" aria-label="Корзина" className="relative p-2 rounded-lg hover:bg-muted transition-colors group">
-                                <ShoppingCart className="h-5 w-5 text-foreground group-hover:text-primary" />
+                                <ShoppingCart className="h-6 w-6 md:h-5 md:w-5 text-foreground group-hover:text-primary" />
                                 {cartCount > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white ring-2 ring-background animate-in zoom-in">
                                         {cartCount}
@@ -231,9 +234,92 @@ export function Header() {
                                 )}
                             </Link>
                         )}
+                        
+                        {/* Mobile Menu Toggle */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="md:hidden p-2 ml-1 rounded-lg hover:bg-muted transition-colors text-foreground"
+                            aria-label="Открыть меню"
+                        >
+                            <Menu className="h-6 w-6" />
+                        </button>
                     </div>
                 </div>
             </header>
+
+            {/* Mobile Sidebar Menu */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-[200] flex md:hidden">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+                    <div className="absolute right-0 top-0 bottom-0 w-[280px] bg-background border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+                        <div className="flex items-center justify-between p-4 border-b border-border">
+                            <span className="font-bold text-lg">Меню</span>
+                            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded-lg hover:bg-muted">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                        
+                        <div className="p-4 overflow-y-auto flex-1 space-y-6">
+                            {/* Mobile Search */}
+                            <form onSubmit={(e) => { handleSearch(e); setIsMobileMenuOpen(false); }} className="w-full">
+                                <div className="relative w-full">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <input
+                                        type="text"
+                                        placeholder={t('common.search_placeholder')}
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full h-12 pl-10 pr-4 rounded-xl border border-border bg-muted/50 text-foreground text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
+                                </div>
+                            </form>
+
+                            {/* Mobile Catalog Btn */}
+                            {(!isAuthenticated || isBuyer()) && (
+                                <button
+                                    onClick={() => { setIsMobileMenuOpen(false); setIsCatalogOpen(true); }}
+                                    className="w-full flex items-center justify-center h-12 rounded-xl font-bold bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                >
+                                    <Menu className="mr-2 h-5 w-5" />
+                                    {t('common.catalog')}
+                                </button>
+                            )}
+
+                            {/* Settings */}
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Настройки</h4>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm font-medium">Язык</span>
+                                    <LanguageSwitcher />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm font-medium">Тема</span>
+                                    <button
+                                        onClick={toggleTheme}
+                                        className="p-2 rounded-lg bg-muted text-foreground flex items-center gap-2"
+                                    >
+                                        {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                                        <span className="text-sm font-medium">{theme === 'light' ? 'Темная' : 'Светлая'}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Mobile Add Listing */}
+                        <div className="p-4 border-t border-border bg-muted/20">
+                            <Link
+                                to="/post-ad"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="flex items-center justify-center gap-2 w-full bg-emerald-600 text-white px-4 py-3 rounded-xl text-base font-bold shadow-lg shadow-emerald-600/25"
+                            >
+                                <Plus size={20} />
+                                {t('common.add_listing', 'Разместить объявление')}
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <CategoryModal isOpen={isCatalogOpen} onClose={() => setIsCatalogOpen(false)} />
         </>
     );

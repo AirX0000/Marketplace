@@ -60,7 +60,7 @@ export function CategoryModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
+        <div className="fixed inset-0 z-[200] flex items-end sm:items-start justify-center sm:pt-20 p-0 sm:px-4">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
@@ -68,7 +68,7 @@ export function CategoryModal({ isOpen, onClose }) {
             />
 
             {/* Modal */}
-            <div className="relative w-full max-w-5xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl shadow-2xl border border-slate-700/50 animate-in zoom-in-95 slide-in-from-top-10 duration-300">
+            <div className="relative w-full max-w-5xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-t-3xl sm:rounded-2xl shadow-2xl border-t sm:border border-slate-700/50 animate-in slide-in-from-bottom sm:slide-in-from-top-10 duration-300">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
                     <div>

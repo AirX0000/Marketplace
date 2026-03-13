@@ -5,7 +5,7 @@ import { MarketplaceCard } from '../components/MarketplaceCard';
 import { ProductSkeleton } from '../components/ui/ProductSkeleton';
 import { MapSearch } from '../components/MapSearch';
 import { useCompare } from '../context/CompareContext';
-import { LayoutGrid, Map as MapIcon, RotateCw, Filter, ArrowUpDown, Search, SortAsc, List as ListIcon, Shield, Calculator, FileText, Building2, Briefcase, ArrowLeft } from 'lucide-react';
+import { LayoutGrid, Map as MapIcon, RotateCw, Filter, ArrowUpDown, Search, SortAsc, List as ListIcon, Shield, Calculator, FileText, Building2, Briefcase, ArrowLeft, X } from 'lucide-react';
 import { api } from '../lib/api';
 import { cn } from '../lib/utils'; // Assuming cn utility is available here
 import { Link } from 'react-router-dom'; // Assuming Link is available for the new card structure
@@ -15,6 +15,7 @@ export function MarketplaceListing() {
     const [marketplaces, setMarketplaces] = useState([]);
     const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'map'
+    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
     const { addToCompare } = useCompare();
 
     const getInitialCategory = () => {
@@ -387,16 +388,39 @@ export function MarketplaceListing() {
             <div className="container mx-auto px-4">
                 <div className="flex flex-col lg:flex-row gap-8">
 
-                    {/* Sidebar Filters */}
-                    <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
-                            <div className="flex items-center justify-between mb-4">
+                    {/* Sidebar / Mobile Filters Modal */}
+                    <aside className={cn(
+                        "flex-shrink-0 z-[200] lg:block lg:w-64 lg:static",
+                        isMobileFiltersOpen ? "fixed inset-0" : "hidden"
+                    )}>
+                        {/* Backdrop for mobile */}
+                        {isMobileFiltersOpen && (
+                            <div 
+                                className="absolute inset-0 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity" 
+                                onClick={() => setIsMobileFiltersOpen(false)} 
+                            />
+                        )}
+
+                        <div className={cn(
+                            "bg-white dark:bg-slate-800 shadow-sm border-slate-100 dark:border-slate-700 flex flex-col",
+                            isMobileFiltersOpen 
+                                ? "absolute bottom-0 w-full h-[85vh] rounded-t-3xl p-6 overflow-y-auto animate-in slide-in-from-bottom duration-300"
+                                : "rounded-xl border p-6 space-y-8"
+                        )}>
+                            <div className="flex items-center justify-between mb-4 pb-2 border-b lg:border-none border-border">
                                 <h3 className="flex items-center text-lg font-semibold text-slate-900 dark:text-white">
                                     <Filter className="mr-2 h-4 w-4" /> Фильтры
                                 </h3>
-                                <button onClick={clearFilters} className="text-xs text-muted-foreground hover:text-primary underline">
-                                    Сбросить
-                                </button>
+                                <div className="flex items-center gap-4">
+                                    <button onClick={clearFilters} className="text-xs text-muted-foreground hover:text-primary underline">
+                                        Сбросить
+                                    </button>
+                                    {isMobileFiltersOpen && (
+                                        <button onClick={() => setIsMobileFiltersOpen(false)} className="lg:hidden p-2 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white">
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Search */}
@@ -644,6 +668,18 @@ export function MarketplaceListing() {
                                     </div>
                                 </div>
                             </div>
+                            
+                            {/* Sticky Apply Button for Mobile */}
+                            {isMobileFiltersOpen && (
+                                <div className="sticky bottom-0 -mx-6 -mb-6 p-4 bg-white dark:bg-slate-800 border-t border-border mt-auto">
+                                    <button 
+                                        onClick={() => setIsMobileFiltersOpen(false)}
+                                        className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold shadow-lg shadow-primary/25"
+                                    >
+                                        Показать {marketplaces.length} результатов
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </aside>
 
@@ -665,9 +701,17 @@ export function MarketplaceListing() {
                                 </p>
                             </div>
 
-                            {/* Sorting & View Toggle */}
-                            <div className="flex items-center gap-4 flex-shrink-0">
-                                <div className="flex items-center gap-2">
+                            {/* Sorting, View Toggle & Mobile Filters */}
+                            <div className="flex items-center gap-2 md:gap-4 flex-shrink-0 flex-wrap sm:flex-nowrap w-full sm:w-auto">
+                                <button
+                                    onClick={() => setIsMobileFiltersOpen(true)}
+                                    className="lg:hidden flex-1 sm:flex-none flex items-center justify-center gap-2 h-9 px-4 rounded-md border border-input bg-background/50 text-sm font-medium focus:outline-none"
+                                >
+                                    <Filter className="h-4 w-4" />
+                                    Фильтры
+                                </button>
+                                
+                                <div className="flex items-center gap-2 flex-1 sm:flex-none">
                                     <SortAsc className="h-4 w-4 text-muted-foreground dark:text-slate-400" />
                                     <select
                                         value={filters.sort}
@@ -853,7 +897,7 @@ export function MarketplaceListing() {
                             <>
                                 {/* View Mode Logic */}
                                 {viewMode === 'map' ? (
-                                    <div className="animate-in fade-in zoom-in-95 duration-300">
+                                    <div className="animate-in fade-in zoom-in-95 duration-300 h-[60vh] lg:h-[70vh] w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700">
                                         <MapSearch
                                             products={marketplaces}
                                             onBoundsChange={(bounds) => updateFilter('bounds', bounds)}

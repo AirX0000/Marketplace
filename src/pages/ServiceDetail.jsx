@@ -237,6 +237,18 @@ export function ServiceDetail() {
                     </div>
                 </div>
             </div>
+
+            {/* MOBILE BOTTOM ACTION BAR */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 flex gap-3 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] safe-area-pb">
+                {phone && (
+                    <a href={`tel:${phone}`} className="h-12 w-12 shrink-0 flex items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 active:scale-95 transition-transform">
+                        <Phone size={20} />
+                    </a>
+                )}
+                <button onClick={handleChat} className="flex-1 h-12 bg-blue-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                    <MessageSquare size={16} /> Написать
+                </button>
+            </div>
         </div>
     );
 }

@@ -79,6 +79,15 @@
   }
 }
 
+/* Prevent iOS Zoom on Inputs */
+@media screen and (max-width: 767px) {
+  input, 
+  select, 
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 /* Custom component styles using standard CSS */
 .card-hover {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

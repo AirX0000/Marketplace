@@ -61,9 +61,11 @@ export function RecentlyViewed() {
                         {t('common.recently_viewed', 'Вы недавно смотрели')}
                     </h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 md:overflow-visible md:pb-0 md:mx-0 md:px-0 no-scrollbar">
                     {history.map((item) => (
-                        <MarketplaceCard key={item.id} marketplace={item} />
+                        <div key={item.id} className="snap-center shrink-0 w-[280px] md:w-auto">
+                            <MarketplaceCard marketplace={item} />
+                        </div>
                     ))}
                 </div>
             </div>

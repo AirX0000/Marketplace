@@ -98,12 +98,50 @@ export function HomePage() {
             <div className="flex flex-col min-h-screen">
                 {/* HERO SECTION WITH BANNER AND ICONS */}
                 {/* HERO SECTION WITH BANNER AND ICONS */}
-                <section className="container py-4 md:py-6 px-4 md:px-6">
-                    <div className="flex flex-col gap-4 md:gap-6">
+                <section className="container py-4 md:py-6 px-4 md:px-6 relative">
+                    <div className="flex flex-col gap-4 md:gap-6 relative">
                         {/* Main Banner Slider */}
-                        <div className="relative w-full aspect-[16/10] md:aspect-video md:max-h-[500px] rounded-3xl overflow-hidden shadow-lg bg-slate-100 dark:bg-slate-800/50">
+                        <div className="relative w-full aspect-[4/5] sm:aspect-square md:aspect-video md:max-h-[550px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
                             <BannerSlider />
+                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
+                            
+                            {/* Floating Search Bar */}
+                            <div className="absolute inset-x-4 bottom-8 md:bottom-12 z-20 flex flex-col items-center">
+                                <div className="text-center mb-6 hidden md:block">
+                                    <h2 className="text-white text-4xl md:text-5xl font-black italic uppercase tracking-tighter drop-shadow-2xl">
+                                        Найди свой дом или авто
+                                    </h2>
+                                    <p className="text-white/70 text-sm font-black uppercase tracking-[0.3em] mt-2">
+                                        Премиальный маркетплейс в Узбекистане
+                                    </p>
+                                </div>
+                                
+                                <form 
+                                    onSubmit={handleSearchSubmit}
+                                    className="w-full max-w-2xl bg-white/10 backdrop-blur-2xl rounded-2xl md:rounded-3xl p-2 border border-white/20 shadow-2xl hover:bg-white/[0.15] transition-all"
+                                >
+                                    <div className="flex flex-col md:flex-row gap-2">
+                                        <div className="flex-1 relative group">
+                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50 group-hover:text-white transition-colors" />
+                                            <input 
+                                                type="text"
+                                                placeholder="Поиск объявлений..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="w-full h-12 md:h-14 pl-12 pr-4 bg-transparent text-white font-bold placeholder:text-white/50 border-none focus:ring-0 outline-none"
+                                            />
+                                        </div>
+                                        <button 
+                                            type="submit"
+                                            className="h-12 md:h-14 px-8 bg-primary text-primary-foreground rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/25"
+                                        >
+                                            Найти
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
+                        
                         <RecentlyViewed />
 
                         {/* Category Icons */}
@@ -120,13 +158,15 @@ export function HomePage() {
                 {isAuthenticated && recommendations.length > 0 && (
                     <section className="container py-8 md:py-12 px-4 md:px-6">
                         <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                            <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                                 Рекомендуем для вас
                             </h2>
                         </div>
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 md:overflow-visible md:pb-0 md:mx-0 md:px-0 no-scrollbar">
                             {recommendations.slice(0, 4).map((item) => (
-                                <MarketplaceCard key={`rec-${item.id}`} marketplace={item} />
+                                <div key={`rec-${item.id}`} className="snap-center shrink-0 w-[280px] md:w-auto">
+                                    <MarketplaceCard marketplace={item} />
+                                </div>
                             ))}
                         </div>
                     </section>
@@ -135,31 +175,33 @@ export function HomePage() {
                 {/* Featured Section */}
                 <section className="container py-8 md:py-12 px-4 md:px-6">
                     <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                        <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                             {t('home.popular', 'Популярное')}
                         </h2>
                     </div>
                     {loading ? (
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-pulse">
+                        <div className="flex overflow-x-auto gap-4 md:grid sm:grid-cols-2 lg:grid-cols-3 md:gap-6 animate-pulse -mx-4 px-4 md:mx-0 md:px-0">
                             {[...Array(3)].map((_, i) => (
-                                <div key={i} className="aspect-[4/3] rounded-xl bg-muted/50"></div>
+                                <div key={i} className="aspect-[4/3] rounded-xl bg-muted/50 w-[280px] md:w-auto shrink-0"></div>
                             ))}
                         </div>
                     ) : error ? (
-                        <div className="text-center py-12 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/20">
+                        <div className="text-center py-12 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/20 mx-4 md:mx-0">
                             <p className="text-red-600 dark:text-red-400 font-medium">{error}</p>
                             <button onClick={() => window.location.reload()} className="mt-4 text-sm text-primary hover:underline">
                                 {t('home.try_again', 'Попробовать снова')}
                             </button>
                         </div>
                     ) : featured.length === 0 ? (
-                        <div className="text-center py-12 bg-white/50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                        <div className="text-center py-12 bg-white/50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 mx-4 md:mx-0">
                             <p className="text-muted-foreground">{t('home.no_products', 'Нет товаров')}</p>
                         </div>
                     ) : (
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0 md:mx-0 md:px-0 no-scrollbar">
                             {featured.map((item) => (
-                                <MarketplaceCard key={item.id} marketplace={item} />
+                                <div key={item.id} className="snap-center shrink-0 w-[280px] md:w-auto">
+                                    <MarketplaceCard marketplace={item} />
+                                </div>
                             ))}
                         </div>
                     )}
