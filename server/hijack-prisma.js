@@ -49,7 +49,6 @@ if (process.env.DATABASE_URL) {
         process.env.DATABASE_URL = poolUrl.toString();
         
         console.warn('[Prisma Wrapper] Routed connections with safe limits applied.');
-        }
     } catch (e) {
         if (!process.env.DIRECT_URL) process.env.DIRECT_URL = process.env.DATABASE_URL;
     }
