@@ -49,6 +49,7 @@ import { SharedWishlistPage } from './pages/SharedWishlistPage';
 import { MortgageInfoPage } from './pages/services/MortgageInfoPage';
 import { ServiceDetail } from './pages/ServiceDetail';
 import { LoanApplication } from './pages/services/LoanApplication';
+import { NotFound } from './pages/NotFound';
 
 // Admin Pages
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -202,7 +203,7 @@ function App() {
                         <Route path="/cars" element={<Navigate to="/catalog?category=Transport" replace />} />
 
                         {/* Catch all */}
-                        <Route path="*" element={<Navigate to="/" replace />} />
+                        <Route path="*" element={<NotFound />} />
                       </Routes>
                     </Suspense>
                     <AIChatbot />
