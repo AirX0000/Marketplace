@@ -16,13 +16,22 @@ export const fetchAPI = async (endpoint, options = {}) => {
 
     let url = `${API_URL}${endpoint}`;
     if (options.params) {
-        const queryString = new URLSearchParams(options.params).toString();
-        url += `?${queryString}`;
+        const queryParams = new URLSearchParams();
+        Object.entries(options.params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                queryParams.append(key, value);
+            }
+        });
+        const queryString = queryParams.toString();
+        if (queryString) {
+            url += (url.includes('?') ? '&' : '?') + queryString;
+        }
     }
 
-    // Add timeout to prevent infinite loading
+    // Custom timeout support, default 15s
+    const timeout = options.timeout || 15000;
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
         const response = await fetch(url, {
@@ -33,47 +42,52 @@ export const fetchAPI = async (endpoint, options = {}) => {
 
         clearTimeout(timeoutId);
 
+        // Standardize error handling based on status codes
         if (response.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
                 window.location.href = '/login';
             }
-            throw new Error("Session expired. Please login again.");
-        }
-
-        if (response.status === 403) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || errorData.message || "Access denied: you don't have permission for this action.");
+            throw new Error("Ваша сессия истекла. Пожалуйста, войдите снова.");
         }
 
         if (!response.ok) {
-            let errorMessage = "API request failed";
+            let errorMessage = "Произошла ошибка при запросе к серверу";
+            
+            // Try to parse JSON error first
             const contentType = response.headers.get("content-type");
             if (contentType && contentType.includes("application/json")) {
                 try {
                     const errorData = await response.json();
-                    errorMessage = errorData.message || errorData.error || errorMessage;
+                    errorMessage = errorData.error || errorData.message || errorMessage;
                 } catch (e) {
-                    errorMessage = "Error parsing response";
-                }
-            } else {
-                try {
-                    const errorText = await response.text();
-                    if (errorText) errorMessage = errorText;
-                } catch (e) {
-                    errorMessage = "Error reading response text";
+                    // Fallback if JSON is malformed
                 }
             }
+
+            // Status specific overrides if no message provided by server
+            if (errorMessage === "Произошла ошибка при запросе к серверу") {
+                if (response.status === 404) errorMessage = "Запрашиваемый ресурс не найден (404)";
+                else if (response.status === 403) errorMessage = "У вас недостаточно прав для этого действия (403)";
+                else if (response.status >= 500) errorMessage = "Ошибка на стороне сервера (500). Попробуйте позже.";
+            }
+
             throw new Error(errorMessage);
         }
 
         return response.json();
     } catch (error) {
         clearTimeout(timeoutId);
+        
         if (error.name === 'AbortError') {
-            throw new Error('Request timeout - server took too long to respond');
+            throw new Error('Превышено время ожидания ответа от сервера. Проверьте соединение.');
         }
+        
+        if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+            throw new Error('Не удалось связаться с сервером. Проверьте интернет-соединение.');
+        }
+        
         throw error;
     }
 };

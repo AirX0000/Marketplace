@@ -3,6 +3,7 @@ const router = express.Router();
 const crypto = require('crypto');
 const prisma = require('../config/database');
 const { authenticateToken } = require('../middleware/auth');
+const { asyncHandler } = require('../middleware/errorHandler');
 
 const CLICK_SERVICE_ID = process.env.CLICK_SERVICE_ID;
 const CLICK_MERCHANT_ID = process.env.CLICK_MERCHANT_ID;
@@ -15,7 +16,7 @@ const APP_URL = process.env.APP_URL || 'https://autohouse.uz';
 // POST /api/payment/create
 // Called by frontend to get a redirect URL
 // ─────────────────────────────────────────────
-router.post('/create', authenticateToken, async (req, res) => {
+router.post('/create', authenticateToken, asyncHandler(async (req, res) => {
     const { amount, provider } = req.body; // provider: 'click' | 'payme'
     const userId = req.user.userId;
 
@@ -62,14 +63,14 @@ router.post('/create', authenticateToken, async (req, res) => {
         console.error('Payment create error:', error);
         res.status(500).json({ error: 'Failed to create payment' });
     }
-});
+}));
 
 // ─────────────────────────────────────────────
 // Click Webhooks
 // ─────────────────────────────────────────────
 
 // PREPARE — Click verifies the order before charging the user
-router.post('/click/prepare', async (req, res) => {
+router.post('/click/prepare', asyncHandler(async (req, res) => {
     const { click_trans_id, service_id, merchant_trans_id, amount, action, sign_time, sign_string } = req.body;
 
     // Verify signature
@@ -97,10 +98,10 @@ router.post('/click/prepare', async (req, res) => {
         error: 0,
         error_note: 'Success'
     });
-});
+}));
 
 // COMPLETE — Click confirms payment, we credit the balance
-router.post('/click/complete', async (req, res) => {
+router.post('/click/complete', asyncHandler(async (req, res) => {
     const { click_trans_id, service_id, merchant_trans_id, amount, action, error: clickError, sign_time, sign_string, merchant_prepare_id } = req.body;
 
     // Verify signature
@@ -137,12 +138,12 @@ router.post('/click/complete', async (req, res) => {
 
     console.log(`✅ Click payment: User ${order.userId} credited ${order.amount} UZS`);
     res.json({ click_trans_id, merchant_trans_id, error: 0, error_note: 'Success' });
-});
+}));
 
 // ─────────────────────────────────────────────
 // Payme JSON-RPC handler
 // ─────────────────────────────────────────────
-router.post('/payme', async (req, res) => {
+router.post('/payme', asyncHandler(async (req, res) => {
     // Verify Basic Auth
     const authHeader = req.headers.authorization || '';
     const base64 = authHeader.replace('Basic ', '');
@@ -265,6 +266,6 @@ router.post('/payme', async (req, res) => {
         console.error('Payme handler error:', error);
         res.json({ error: { code: -31008, message: 'Internal server error' }, id });
     }
-});
+}));
 
 module.exports = router;

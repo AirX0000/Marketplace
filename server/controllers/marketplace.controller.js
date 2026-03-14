@@ -25,11 +25,6 @@ exports.getListingById = asyncHandler(async (req, res) => {
     res.json(listing);
 });
 
-exports.getAllListings = asyncHandler(async (req, res) => {
-    const result = await marketplaceService.getAllListings(req.query);
-    res.json(result);
-});
-
 exports.getCategories = asyncHandler(async (req, res) => {
     try {
         const categories = await marketplaceService.getCategories();

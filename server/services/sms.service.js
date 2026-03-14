@@ -13,7 +13,7 @@ class SmsService {
             const response = await axios.post('https://notify.eskiz.uz/api/auth/login', {
                 email: this.email,
                 password: this.password
-            });
+            }, { timeout: 5000 });
             this.token = response.data.data.token;
             return this.token;
         } catch (error) {
@@ -48,7 +48,8 @@ class SmsService {
                 from: '4546', // Default Eskiz nickname
                 callback_url: ''
             }, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${token}` },
+                timeout: 5000
             });
             
             console.log('[ESKIZ] Response Status:', response.status);
