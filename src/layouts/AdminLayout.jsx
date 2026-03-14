@@ -347,19 +347,24 @@ export function AdminLayout() {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col overflow-auto">
-                <header className="h-16 border-b bg-background px-4 flex items-center justify-between md:hidden">
+                <header className="h-16 border-b bg-background/80 backdrop-blur-md sticky top-0 z-50 px-4 flex items-center justify-between md:hidden">
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="p-2 -ml-2 text-slate-500 hover:text-slate-900"
+                            className="p-2 -ml-2 text-slate-500 hover:text-slate-900 active:scale-95 transition-transform"
                         >
                             <Menu size={24} />
                         </button>
-                        <span className="font-bold">
-                            {isAdmin ? 'Admin Panel' : 'Partner Hub'}
+                        <span className="font-black text-sm uppercase tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            {isSuperAdmin ? 'Super Admin' : isAdmin ? 'Admin Panel' : 'Partner Hub'}
                         </span>
                     </div>
-                    {!isAdmin && <LanguageSwitcher />}
+                    <div className="flex items-center gap-2">
+                        {!isAdmin && <LanguageSwitcher />}
+                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-[10px] shadow-lg shadow-blue-600/20">
+                            {user?.name?.charAt(0)}
+                        </div>
+                    </div>
                 </header>
                 <header className="h-16 border-b bg-background px-6 hidden md:flex items-center justify-end gap-4">
                     {!isAdmin && <LanguageSwitcher />}
@@ -373,7 +378,7 @@ export function AdminLayout() {
                         </div>
                     </div>
                 </header>
-                <div className="flex-1 p-4 md:p-8">
+                <div className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
                     <Outlet />
                 </div>
             </main>

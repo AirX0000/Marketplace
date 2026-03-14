@@ -214,7 +214,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             description_uz: finalDescUz,
             price: cleanPrice,
             image: formData.images[0] || "",
-            images: JSON.stringify(formData.images),
+            images: formData.images,
             certificates: formData.certificates
         };
         await onSave(finalData);

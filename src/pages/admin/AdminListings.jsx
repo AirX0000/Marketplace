@@ -197,7 +197,8 @@ export function AdminListings() {
                 </div>
             </div>
 
-            <div className="border rounded-xl bg-card overflow-hidden shadow-sm">
+            {/* Desktop Table */}
+            <div className="border rounded-xl bg-card overflow-hidden shadow-sm hidden md:block">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-slate-100/50 text-slate-700 border-b">
@@ -367,6 +368,93 @@ export function AdminListings() {
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            {/* Mobile Card List */}
+            <div className="grid grid-cols-1 gap-4 md:hidden">
+                {(() => {
+                    const filteredListings = listings.filter(item => {
+                        if (statusFilter !== 'ALL' && item.status !== statusFilter) return false;
+                        if (categoryFilter !== 'ALL') {
+                            if (categoryFilter === 'Недвижимость' && !['Houses', 'Apartments', 'Commercial', 'Land', 'Novostroyka', 'New Building', 'Private House'].includes(item.category)) return false;
+                            if (categoryFilter === 'Cars' && !['Cars', 'Transport', 'Moto', 'Trucks', 'Dealer', 'Private Auto'].includes(item.category)) return false;
+                            if (!['Недвижимость', 'Cars'].includes(categoryFilter) && item.category !== categoryFilter) return false;
+                        }
+                        if (searchTerm) {
+                            const term = searchTerm.toLowerCase();
+                            const nameMatch = item.name?.toLowerCase().includes(term);
+                            const ownerMatch = item.owner?.name?.toLowerCase().includes(term);
+                            if (!nameMatch && !ownerMatch) return false;
+                        }
+                        return true;
+                    });
+
+                    return filteredListings.length === 0 ? (
+                        <div className="text-center py-12 bg-white rounded-xl border border-dashed border-slate-200">
+                             <Filter className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+                             <p className="text-sm font-medium text-slate-500">Товары не найдены</p>
+                        </div>
+                    ) : (
+                        filteredListings.map((item) => (
+                            <div key={item.id} className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
+                                <div className="flex gap-4 mb-4">
+                                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
+                                        {item.image ? (
+                                            <img src={item.image} className="w-full h-full object-cover" alt="" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-slate-400">?</div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <h4 className="font-black text-slate-900 leading-tight uppercase text-sm line-clamp-2">{item.name}</h4>
+                                            <StatusBadge status={item.status || 'PENDING'} />
+                                        </div>
+                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">{item.region}</p>
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <span className="text-lg font-black text-blue-600">{(item.price || 0).toLocaleString()} <span className="text-[10px] uppercase">Sum</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-50">
+                                    <button
+                                        onClick={() => handleEdit(item)}
+                                        className="flex-1 h-10 rounded-xl bg-blue-50 text-blue-600 font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <MoreHorizontal size={14} /> Редакт.
+                                    </button>
+                                    {isAdmin && item.status !== 'APPROVED' && (
+                                        <button
+                                            onClick={() => handleStatusChange(item.id, 'APPROVED')}
+                                            className="h-10 px-4 rounded-xl bg-emerald-50 text-emerald-600 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
+                                        >
+                                            <Check size={14} />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => handleDelete(item.id)}
+                                        className="h-10 px-4 rounded-xl bg-red-50 text-red-400 font-black text-[10px] uppercase tracking-widest flex items-center justify-center"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                                
+                                {isAdmin && item.owner && (
+                                    <div className="mt-4 pt-3 flex items-center gap-2 border-t border-slate-50">
+                                        <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">
+                                            {item.owner.name?.charAt(0)}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-black text-slate-900 uppercase leading-none">{item.owner.name}</span>
+                                            <span className="text-[8px] text-slate-500 uppercase tracking-tighter mt-0.5">{item.owner.email}</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    );
+                })()}
             </div>
 
             {isModalOpen && (

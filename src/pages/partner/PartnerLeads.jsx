@@ -168,45 +168,45 @@ export function PartnerLeads() {
                                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/5 blur-[80px] group-hover:bg-blue-600/10 transition-all duration-700" />
                                 
                                 <div className="relative z-10">
-                                    <div className="flex items-start justify-between mb-6">
+                                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xl font-black text-white shadow-lg">
+                                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xl font-black text-white shadow-lg shrink-0">
                                                 {lead.name[0]}
                                             </div>
-                                            <div>
-                                                <h3 className="font-black text-white uppercase text-lg leading-tight">{lead.name}</h3>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <span className={cn("px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border", STATUS_COLORS[lead.status])}>
+                                            <div className="min-w-0">
+                                                <h3 className="font-black text-white uppercase text-lg leading-tight truncate">{lead.name}</h3>
+                                                <div className="flex items-center flex-wrap gap-2 mt-1">
+                                                    <span className={cn("px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border shrink-0", STATUS_COLORS[lead.status])}>
                                                         {STATUS_LABELS[lead.status]}
                                                     </span>
-                                                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
+                                                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest shrink-0">
                                                         {new Date(lead.createdAt).toLocaleDateString('ru-RU')}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
                                         
-                                        <div className="flex gap-2">
+                                        <div className="flex gap-2 self-end sm:self-start">
                                             <button 
                                                 onClick={() => handleStatusUpdate(lead.id, 'CONTACTED')}
-                                                className="p-2.5 rounded-xl bg-white/5 text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-all"
+                                                className="p-3 rounded-xl bg-white/5 text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-all active:scale-95"
                                                 title="В работу"
                                             >
-                                                <Clock size={18} />
+                                                <Clock size={20} />
                                             </button>
                                             <button 
                                                 onClick={() => handleStatusUpdate(lead.id, 'COMPLETED')}
-                                                className="p-2.5 rounded-xl bg-white/5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all"
+                                                className="p-3 rounded-xl bg-white/5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all active:scale-95"
                                                 title="Завершить"
                                             >
-                                                <CheckCircle size={18} />
+                                                <CheckCircle size={20} />
                                             </button>
                                             <button 
                                                 onClick={() => handleStatusUpdate(lead.id, 'CANCELLED')}
-                                                className="p-2.5 rounded-xl bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                                                className="p-3 rounded-xl bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-95"
                                                 title="Отменить"
                                             >
-                                                <XCircle size={18} />
+                                                <XCircle size={20} />
                                             </button>
                                         </div>
                                     </div>
@@ -243,17 +243,17 @@ export function PartnerLeads() {
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 mt-auto">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-auto">
                                         <a 
                                             href={`tel:${lead.phone}`}
-                                            className="h-12 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-lg shadow-emerald-500/5 group/btn"
+                                            className="h-12 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-lg shadow-emerald-500/5 group/btn active:scale-95"
                                         >
                                             <Phone size={14} className="group-hover/btn:scale-110 transition-transform" />
                                             Позвонить
                                         </a>
                                         <button 
                                             onClick={() => handleInitiateChat(lead.userId)}
-                                            className="h-12 flex items-center justify-center gap-2 bg-blue-600/10 text-blue-400 border border-blue-600/20 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-lg shadow-blue-600/5 group/btn"
+                                            className="h-12 flex items-center justify-center gap-2 bg-blue-600/10 text-blue-400 border border-blue-600/20 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-lg shadow-blue-600/5 group/btn active:scale-95"
                                         >
                                             <MessageSquare size={14} className="group-hover/btn:scale-110 transition-transform" />
                                             Написать

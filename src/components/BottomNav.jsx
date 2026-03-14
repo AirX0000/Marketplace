@@ -12,6 +12,7 @@ export function BottomNav() {
     const tabs = [
         { id: 'home', path: '/', icon: Home, label: 'Главная' },
         { id: 'catalog', path: '/catalog', icon: LayoutGrid, label: 'Каталог' },
+        { id: 'post-ad', path: '/post-ad', icon: Plus, label: 'Разместить', primary: true },
         { id: 'favorites', path: '/favorites', icon: Heart, label: 'Избранное' },
         { id: 'profile', path: isAuthenticated ? '/profile' : '/login', icon: User, label: 'Профиль' },
     ];
@@ -27,14 +28,24 @@ export function BottomNav() {
                             to={tab.path}
                             className={cn(
                                 "relative flex flex-col items-center justify-center flex-1 transition-all duration-300",
-                                active ? "text-primary scale-110" : "text-muted-foreground hover:text-foreground"
+                                active ? "text-primary scale-110" : "text-muted-foreground hover:text-foreground",
+                                tab.primary ? "scale-125 -translate-y-2" : ""
                             )}
                         >
-                            <tab.icon className={cn("h-6 w-6", active ? "fill-primary/10" : "")} />
-                            <span className="text-[10px] font-bold mt-1 uppercase tracking-tighter">
+                            {tab.primary ? (
+                                <div className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/30 active:scale-95 transition-transform">
+                                    <tab.icon className="h-6 w-6" />
+                                </div>
+                            ) : (
+                                <tab.icon className={cn("h-6 w-6", active ? "fill-primary/10" : "")} />
+                            )}
+                            <span className={cn(
+                                "text-[10px] font-bold mt-1 uppercase tracking-tighter",
+                                tab.primary ? "mt-2 text-primary" : ""
+                            )}>
                                 {tab.label}
                             </span>
-                            {active && (
+                            {active && !tab.primary && (
                                 <motion.div
                                     layoutId="bottom-nav-indicator"
                                     className="absolute -top-1 w-1 h-1 rounded-full bg-primary"

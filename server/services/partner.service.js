@@ -31,10 +31,20 @@ class PartnerService {
 
         const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl, lat, lng, certificates } = data;
 
+        // Robust Image Parsing
         let imageList = [];
-        if (Array.isArray(images) && images.length > 0) imageList = images;
-        else if (image) imageList = [image];
-        else imageList = ["https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"];
+        let inputImages = images;
+        if (typeof inputImages === 'string' && inputImages.startsWith('[')) {
+            try { inputImages = JSON.parse(inputImages); } catch (e) { console.error("Failed to parse images string", e); }
+        }
+
+        if (Array.isArray(inputImages) && inputImages.length > 0) {
+            imageList = inputImages;
+        } else if (image) {
+            imageList = [image];
+        } else {
+            imageList = ["https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"];
+        }
 
         let baseSlug = slugify(name) || 'product';
         const uniqueSuffix = Math.random().toString(36).substring(2, 8);
@@ -77,10 +87,15 @@ class PartnerService {
         const dataToUpdate = { name, description, region, category };
         if (videoUrl !== undefined) dataToUpdate.videoUrl = videoUrl;
 
-        // Handle Images
-        if (Array.isArray(images)) {
-            dataToUpdate.images = JSON.stringify(images);
-            if (images.length > 0) dataToUpdate.image = images[0];
+        // Robust Image Handling for Updates
+        let inputImages = images;
+        if (typeof inputImages === 'string' && inputImages.startsWith('[')) {
+            try { inputImages = JSON.parse(inputImages); } catch (e) { console.error("Failed to parse images string update", e); }
+        }
+
+        if (Array.isArray(inputImages)) {
+            dataToUpdate.images = JSON.stringify(inputImages);
+            if (inputImages.length > 0) dataToUpdate.image = inputImages[0];
         } else if (image) {
             dataToUpdate.image = image;
             dataToUpdate.images = JSON.stringify([image]);
