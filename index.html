@@ -35,9 +35,15 @@
     content="Купить авто, недвижимость и запчасти в Узбекистане. Тысячи объявлений на Autohouse.uz.">
   <meta name="twitter:image" content="https://autohouse.uz/og-image.jpg">
 
-  <!-- Performance: Preconnect to external resources -->
+  <!-- Performance: DNS Prefetch & Preconnect -->
+  <link rel="dns-prefetch" href="https://api.autohouse.uz">
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Critical Font Preload -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Theme Initialization Script -->
   <script src="/theme-init.js"></script>

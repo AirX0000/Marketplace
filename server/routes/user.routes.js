@@ -46,6 +46,7 @@ adminRouter.put('/marketplaces/:id/status', adminController.updateMarketplaceSta
 adminRouter.get('/stats', adminController.getStats);
 adminRouter.get('/kyc', adminController.getKYCList);
 adminRouter.put('/kyc/:id/status', adminController.updateKYCStatus);
+adminRouter.put('/marketplaces/:id/featured', adminController.toggleMarketplaceFeatured);
 
 
 

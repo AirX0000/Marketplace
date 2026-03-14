@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
-import { Camera, Trash2, X, Plus, Search, Image as ImageIcon, Loader2, Sparkles, Building, Car, Map as MapIcon } from 'lucide-react';
+import { Camera, Trash2, X, Plus, Search, Image as ImageIcon, Loader2, Sparkles, Building, Car, Map as MapIcon, Briefcase } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -149,7 +149,9 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             certificates: parseImages(listing?.certificates),
             attributes: initialAttrs,
             lat: listing?.lat || null,
-            lng: listing?.lng || null
+            lng: listing?.lng || null,
+            videoUrl: listing?.videoUrl || "",
+            panoramaUrl: listing?.panoramaUrl || ""
         };
     });
 
@@ -166,6 +168,27 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [generatingAI, setGeneratingAI] = useState(false);
+    const [analyzingListing, setAnalyzingListing] = useState(false);
+    const [listingAnalysis, setListingAnalysis] = useState(null);
+
+    const handleAnalyzeListing = async () => {
+        setAnalyzingListing(true);
+        try {
+            const analysis = await api.analyzeListing({
+                name: formData.name,
+                description: formData.description,
+                price: formData.price,
+                category: formData.category,
+                attributes: formData.attributes
+            });
+            setListingAnalysis(analysis);
+        } catch (error) {
+            console.error("Analysis failed", error);
+            toast.error("Не удалось проанализировать объявление");
+        } finally {
+            setAnalyzingListing(false);
+        }
+    };
 
     const handleGenerateDescription = async () => {
         if (!formData.name) {
@@ -650,6 +673,36 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                     </div>
                                 </div>
 
+                                {/* Video & 360 View */}
+                                <div className="p-5 bg-card rounded-2xl border border-border space-y-4 shadow-sm">
+                                    <h3 className="font-black text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                        <Sparkles className="h-4 w-4 text-primary" /> {t('ads.rich_media') || 'Rich Media'}
+                                    </h3>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-1.5 block px-1">Video URL (YouTube/Vimeo)</label>
+                                            <input 
+                                                type="url" 
+                                                placeholder="https://youtube.com/..." 
+                                                value={formData.videoUrl || ""} 
+                                                onChange={e => setFormData({...formData, videoUrl: e.target.value})}
+                                                className="h-11 w-full border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-1.5 block px-1">Panorama (360°) URL</label>
+                                            <input 
+                                                type="url" 
+                                                placeholder="https://..." 
+                                                value={formData.panoramaUrl || ""} 
+                                                onChange={e => setFormData({...formData, panoramaUrl: e.target.value})}
+                                                className="h-11 w-full border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold"
+                                            />
+                                            <p className="text-[9px] text-muted-foreground mt-1 px-1 italic">Добавьте ссылку на 360° тур или панорамное изображение</p>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Location Picker */}
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2 px-1">
@@ -714,18 +767,66 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             </p>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div className="flex items-center gap-4 p-5 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl relative z-10">
-                                        <div className="h-12 w-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/30">
-                                            <Sparkles size={24} />
+                                {/* AI Assistant Quality Check */}
+                                <div className="space-y-4">
+                                    {!listingAnalysis ? (
+                                        <button
+                                            type="button"
+                                            onClick={handleAnalyzeListing}
+                                            disabled={analyzingListing}
+                                            className="w-full py-4 rounded-3xl bg-primary/5 border border-primary/20 text-primary font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-primary/10 transition-all active:scale-95"
+                                        >
+                                            {analyzingListing ? (
+                                                <Loader2 size={16} className="animate-spin" />
+                                            ) : (
+                                                <Sparkles size={16} />
+                                            )}
+                                            Проверить качество объявления (AI)
+                                        </button>
+                                    ) : (
+                                        <div className="p-6 bg-slate-900 rounded-[2.5rem] border border-white/5 space-y-4 animate-in slide-in-from-bottom-4 duration-500">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+                                                        <Sparkles size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Качество SEO</p>
+                                                        <p className="text-xl font-black text-white italic">AI Ассистент</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-3xl font-black text-primary tracking-tighter italic">{listingAnalysis.score}%</p>
+                                                    <div className="h-1.5 w-24 bg-white/10 rounded-full overflow-hidden mt-1">
+                                                        <div 
+                                                            className="h-full bg-primary transition-all duration-1000" 
+                                                            style={{ width: `${listingAnalysis.score}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Рекомендации:</p>
+                                                <ul className="space-y-1.5">
+                                                    {listingAnalysis.tips.map((tip, i) => (
+                                                        <li key={i} className="text-xs text-white/80 flex items-start gap-2 italic">
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
+                                                            {tip}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            <button 
+                                                type="button"
+                                                onClick={() => setListingAnalysis(null)}
+                                                className="text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors"
+                                            >
+                                                Проверить снова
+                                            </button>
                                         </div>
-                                        <div>
-                                            <p className="text-xs font-black uppercase text-emerald-500 tracking-[0.2em] mb-0.5 underline-offset-4">{t('ads.ready')}</p>
-                                            <p className="text-[10px] font-bold text-emerald-500/70 leading-tight uppercase tracking-wide">
-                                                {t('ads.data_saved_desc')}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             </motion.div>
                         )}

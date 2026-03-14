@@ -29,7 +29,15 @@ class PartnerService {
             throw new Error("Ваша учетная запись партнера еще не прошла верификацию (KYC). Добавление товаров временно заблокировано.");
         }
 
-        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl, lat, lng, certificates } = data;
+        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl, panoramaUrl, lat, lng, certificates } = data;
+
+        let finalAttributes = attributes || {};
+        if (typeof finalAttributes === 'string') {
+            try { finalAttributes = JSON.parse(finalAttributes); } catch (e) { finalAttributes = {}; }
+        }
+
+        const parsedLat = (lat !== undefined && lat !== null && lat !== "") ? parseFloat(lat) : null;
+        const parsedLng = (lng !== undefined && lng !== null && lng !== "") ? parseFloat(lng) : null;
 
         // Robust Image Parsing
         let imageList = [];
@@ -50,12 +58,13 @@ class PartnerService {
         const uniqueSuffix = Math.random().toString(36).substring(2, 8);
         const slug = `${baseSlug}-${uniqueSuffix}`;
 
-        return prisma.marketplace.create({
+        const newListing = await prisma.marketplace.create({
             data: {
                 slug,
                 name,
                 description,
                 videoUrl,
+                panoramaUrl,
                 region,
                 category,
                 price: parseFloat(price) || 0,
@@ -63,15 +72,25 @@ class PartnerService {
                 ownerId: userId,
                 image: imageList[0],
                 images: JSON.stringify(imageList),
-                attributes: attributes || {}, // Prisma now handles Json directly
+                attributes: finalAttributes,
                 specs: specs || {},
                 certificates: certificates || [],
-                lat: (lat !== undefined && lat !== null) ? parseFloat(lat) : null,
-                lng: (lng !== undefined && lng !== null) ? parseFloat(lng) : null,
+                lat: isNaN(parsedLat) ? null : parsedLat,
+                lng: isNaN(parsedLng) ? null : parsedLng,
                 stock: 1,
                 status: 'PENDING'
             }
         });
+
+        // Record initial price in history
+        await prisma.priceHistory.create({
+            data: {
+                marketplaceId: newListing.id,
+                price: newListing.price
+            }
+        });
+
+        return newListing;
     }
 
     async updateListing(userId, role, listingId, data) {
@@ -82,10 +101,11 @@ class PartnerService {
             throw new Error("Unauthorized");
         }
 
-        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl, lat, lng, certificates } = data;
+        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl, panoramaUrl, lat, lng, certificates } = data;
 
         const dataToUpdate = { name, description, region, category };
         if (videoUrl !== undefined) dataToUpdate.videoUrl = videoUrl;
+        if (panoramaUrl !== undefined) dataToUpdate.panoramaUrl = panoramaUrl;
 
         // Robust Image Handling for Updates
         let inputImages = images;
@@ -124,10 +144,27 @@ class PartnerService {
             dataToUpdate.attributes = finalAttributes;
         }
 
-        return prisma.marketplace.update({
+        const updatedListing = await prisma.marketplace.update({
             where: { id: listingId },
             data: dataToUpdate
         });
+
+        // Record price history if price changed
+        if (dataToUpdate.price !== undefined && dataToUpdate.price !== listing.price) {
+            await prisma.priceHistory.create({
+                data: {
+                    marketplaceId: listingId,
+                    price: dataToUpdate.price
+                }
+            });
+
+            // Notify about price drop
+            if (dataToUpdate.price < listing.price) {
+                this.notifyPriceDrop(updatedListing, dataToUpdate.price).catch(e => console.error("[Price Drop Notify Error]:", e.message));
+            }
+        }
+
+        return updatedListing;
     }
 
     async deleteListing(userId, listingId) {
@@ -274,6 +311,38 @@ class PartnerService {
             pendingPayout: 0,
             transactions: []
         };
+    }
+
+    async notifyPriceDrop(listing, newPrice) {
+        try {
+            // Find users watching this listing
+            // watchedListings is a JSON string array of IDs
+            const users = await prisma.user.findMany({
+                where: {
+                    watchedListings: {
+                        contains: listing.id
+                    }
+                },
+                select: { id: true }
+            });
+
+            if (users.length === 0) return;
+
+            console.log(`[PriceDrop] Notifying ${users.length} users about ${listing.name} price drop to ${newPrice}`);
+
+            if (global.io) {
+                users.forEach(user => {
+                    global.io.to(user.id).emit('price_drop', {
+                        listingId: listing.id,
+                        name: listing.name,
+                        oldPrice: listing.price,
+                        newPrice: newPrice
+                    });
+                });
+            }
+        } catch (error) {
+            console.error("[notifyPriceDrop] Error:", error);
+        }
     }
 }
 

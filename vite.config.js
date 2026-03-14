@@ -8,22 +8,22 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['favicon.ico', 'logo.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Autohouse',
+        name: 'Autohouse Premium',
         short_name: 'Autohouse',
-        description: 'Лучший маркетплейс автомобилей и недвижимости в Узбекистане.',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        description: 'Elite Marketplace for Cars and Real Estate in Uzbekistan.',
+        theme_color: '#13111C',
+        background_color: '#13111C',
         display: 'standalone',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'logo.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'logo.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'

@@ -6,7 +6,7 @@ import { cn } from '../lib/utils';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { ServiceGrid } from '../components/home/ServiceGrid';
 import { BannerSlider } from '../components/home/BannerSlider';
-import { RecentlyViewed } from '../components/home/RecentlyViewed';
+import { RecentlyViewed } from '../components/RecentlyViewed';
 import { useTranslation } from 'react-i18next';
 import { api } from '../lib/api';
 import { useShop } from '../context/ShopContext';

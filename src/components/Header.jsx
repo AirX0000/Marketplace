@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, Heart, X, Package, Sun, Moon, Globe, Plus } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Search, ShoppingCart, User, Menu, Heart, X, Package, Sun, Moon, Globe, Plus, Mic, MicOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { CategoryModal } from './CategoryModal';
@@ -8,6 +9,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { useShop } from '../context/ShopContext';
 import { useTheme } from '../context/ThemeContext';
 import { NotificationBell } from './NotificationBell';
+import { CommandPalette } from './CommandPalette';
 
 export function Header() {
     const { t, i18n } = useTranslation();
@@ -15,9 +17,35 @@ export function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [showMobileSearch, setShowMobileSearch] = useState(false);
     const navigate = useNavigate();
     const { cartCount, checkAuth, user, isAuthenticated, isBuyer, isPartner, isAdmin, getUserRole, logout } = useShop();
     const { theme, toggleTheme } = useTheme();
+    const [isListening, setIsListening] = useState(false);
+
+    // NLP Query Parser
+    const parseNLPQuery = (query) => {
+        const lower = query.toLowerCase();
+        const params = {};
+        
+        // Year detection
+        const yearMatch = lower.match(/\b(20\d{2}|19\d{2})\b/);
+        if (yearMatch) params.attr_year = yearMatch[0];
+        
+        // Price detection (e.g. "до 10000", "до 10к")
+        const priceMatch = lower.match(/до\s*(\d+)(к|k)?/);
+        if (priceMatch) {
+            let p = parseInt(priceMatch[1]);
+            if (priceMatch[2]) p *= 1000;
+            params.maxPrice = p;
+        }
+
+        // Room count detection ("2 комнатная", "3 комн")
+        const roomMatch = lower.match(/(\d)\s*(комн|комнат)/);
+        if (roomMatch) params.attr_rooms = roomMatch[1];
+
+        return params;
+    };
 
     // Re-check auth on mount and handle scroll
     React.useEffect(() => {
@@ -33,9 +61,39 @@ export function Header() {
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchTerm.trim()) {
-            navigate(`/catalog?q=${encodeURIComponent(searchTerm)}`);
+            const nlpParams = parseNLPQuery(searchTerm);
+            const searchParams = new URLSearchParams();
+            searchParams.set('q', searchTerm);
+            Object.entries(nlpParams).forEach(([k, v]) => searchParams.set(k, v));
+            
+            navigate(`/catalog?${searchParams.toString()}`);
             setSearchTerm('');
         }
+    };
+
+    const startRecording = () => {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Ваш браузер не поддерживает голосовой поиск.");
+            return;
+        }
+
+        const recognition = new window.webkitSpeechRecognition();
+        recognition.lang = i18n.language === 'uz' ? 'uz-UZ' : 'ru-RU';
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setSearchTerm(transcript);
+            // Auto submit after a short delay
+            setTimeout(() => {
+                const nlpParams = parseNLPQuery(transcript);
+                const searchParams = new URLSearchParams();
+                searchParams.set('q', transcript);
+                Object.entries(nlpParams).forEach(([k, v]) => searchParams.set(k, v));
+                navigate(`/catalog?${searchParams.toString()}`);
+            }, 500);
+        };
+        recognition.start();
     };
 
     const handleLogout = () => {
@@ -45,6 +103,7 @@ export function Header() {
 
     return (
         <>
+            <CommandPalette />
             <header
                 className={cn(
                     "sticky top-0 z-[100] w-full border-b border-border bg-background/80 backdrop-blur-md transition-all duration-300",
@@ -78,8 +137,18 @@ export function Header() {
                                     placeholder={t('common.search_placeholder')}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full h-10 pl-10 pr-4 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
+                                    className="w-full h-10 pl-10 pr-12 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={startRecording}
+                                    className={cn(
+                                        "absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-all",
+                                        isListening ? "text-red-500 bg-red-500/10 animate-pulse" : "text-muted-foreground hover:text-primary hover:bg-muted"
+                                    )}
+                                >
+                                    {isListening ? <Mic size={16} /> : <Mic size={16} />}
+                                </button>
                             </div>
                         </form>
                     )}
@@ -232,16 +301,61 @@ export function Header() {
                             </Link>
                         )}
                         
-                        {/* Mobile Theme Toggle */}
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2 mr-1 rounded-lg bg-muted/50 text-foreground md:hidden"
-                            aria-label="Переключить тему"
-                        >
-                            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-                        </button>
+                        {/* Mobile Theme Toggle & Search Toggle */}
+                        <div className="flex items-center md:hidden">
+                            <button
+                                onClick={() => setShowMobileSearch(!showMobileSearch)}
+                                className="p-2 mr-1 rounded-lg bg-muted/50 text-foreground"
+                                aria-label="Поиск"
+                            >
+                                <Search size={20} />
+                            </button>
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2 mr-1 rounded-lg bg-muted/50 text-foreground"
+                                aria-label="Переключить тему"
+                            >
+                                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                {/* Mobile Search Bar Expandable */}
+                <AnimatePresence>
+                    {showMobileSearch && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="md:hidden border-t border-border overflow-hidden bg-background"
+                        >
+                            <form onSubmit={handleSearch} className="p-4">
+                                <div className="relative w-full">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <input
+                                        type="text"
+                                        placeholder={t('common.search_placeholder')}
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full h-11 pl-10 pr-12 rounded-xl border border-border bg-muted/30 text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                        autoFocus
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={startRecording}
+                                        className={cn(
+                                            "absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all",
+                                            isListening ? "text-red-500 bg-red-500/10 animate-pulse" : "text-muted-foreground hover:text-primary"
+                                        )}
+                                    >
+                                        <Mic size={18} />
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </header>
 
             <CategoryModal isOpen={isCatalogOpen} onClose={() => setIsCatalogOpen(false)} />

@@ -5,9 +5,12 @@ import { Toaster } from 'react-hot-toast';
 import { ShopProvider } from './context/ShopContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ModalProvider } from './context/ModalContext';
+import { OfflinePage } from './pages/OfflinePage';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { RouteLoader } from './components/ui/RouteLoader';
 
 // Auth Pages
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
@@ -96,9 +99,11 @@ function App() {
         <ThemeProvider>
           <ShopProvider>
             <NotificationProvider>
-              <CompareProvider>
+              <ModalProvider>
+                <CompareProvider>
                 <Toaster />
                 <Router basename="/">
+                  <RouteLoader />
                   <div className="min-h-screen bg-background font-sans antialiased text-foreground">
                     <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div></div>}>
                       <Routes>
@@ -203,6 +208,7 @@ function App() {
                         </Route>
                         <Route path="/partner" element={<Navigate to="/admin" replace />} />
                         <Route path="/cars" element={<Navigate to="/catalog?category=Transport" replace />} />
+                        <Route path="/offline" element={<OfflinePage />} />
 
                         {/* Catch all */}
                         <Route path="*" element={<NotFound />} />
@@ -211,7 +217,8 @@ function App() {
                     <AIChatbot />
                   </div>
                 </Router>
-              </CompareProvider>
+                </CompareProvider>
+              </ModalProvider>
             </NotificationProvider>
           </ShopProvider>
         </ThemeProvider>

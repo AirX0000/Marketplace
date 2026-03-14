@@ -39,7 +39,12 @@ export function BottomNav() {
                                     <tab.icon className="h-6 w-6" />
                                 </div>
                             ) : (
-                                <tab.icon className={cn("h-6 w-6", active ? "fill-primary/10" : "")} />
+                                <motion.div
+                                    whileTap={{ scale: 0.9, rotate: -5 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                >
+                                    <tab.icon className={cn("h-6 w-6", active ? "fill-primary/10" : "")} />
+                                </motion.div>
                             )}
                             <span className={cn(
                                 "text-[10px] font-bold mt-1 uppercase tracking-tighter",

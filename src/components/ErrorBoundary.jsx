@@ -19,39 +19,36 @@ export class ErrorBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                    <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
-                        <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
-                            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <div className="min-h-screen flex items-center justify-center bg-[#13111C] relative overflow-hidden">
+                    {/* Background Gradients */}
+                    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px] animate-pulse" />
+                        <div className="absolute bottom-[10%] right-[-10%] w-[30%] h-[30%] bg-indigo-600/20 rounded-full blur-[100px] animate-pulse" />
+                    </div>
+
+                    <div className="max-w-md w-full bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[32px] p-8 relative z-10 shadow-2xl">
+                        <div className="flex items-center justify-center w-20 h-20 mx-auto bg-red-500/10 rounded-3xl mb-6 transform -rotate-6 border border-red-500/20">
+                            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
-                        <h2 className="text-2xl font-bold text-center mb-2">Что-то пошло не так</h2>
-                        <p className="text-gray-600 text-center mb-6">
-                            Произошла ошибка при загрузке страницы. Пожалуйста, попробуйте обновить страницу.
+                        <h2 className="text-3xl font-black text-white text-center mb-4 uppercase italic tracking-tighter">Ой! Что-то пошло не так</h2>
+                        <p className="text-indigo-100/60 text-center mb-8 font-medium leading-relaxed">
+                            Произошла неожиданная ошибка. Наша команда уже уведомлена. Попробуйте обновить страницу или вернуться в каталог.
                         </p>
-                        {process.env.NODE_ENV !== 'production' && this.state.error && (
-                            <details className="mb-4">
-                                <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
-                                    Детали ошибки
-                                </summary>
-                                <pre className="mt-2 text-xs bg-gray-100 p-2 rounded overflow-auto max-h-40">
-                                    {this.state.error.toString()}
-                                </pre>
-                            </details>
-                        )}
-                        <div className="flex gap-4">
+                        
+                        <div className="space-y-3">
                             <button
                                 onClick={() => window.location.reload()}
-                                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                                className="w-full h-14 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/25"
                             >
                                 Обновить страницу
                             </button>
                             <button
                                 onClick={() => window.location.href = '/'}
-                                className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition"
+                                className="w-full h-14 bg-white/5 text-white border border-white/10 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-white/10 transition-all"
                             >
-                                На главную
+                                Вернуться на главную
                             </button>
                         </div>
                     </div>

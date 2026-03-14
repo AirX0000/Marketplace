@@ -1,0 +1,27 @@
+
+> marketplace-app@0.0.0 build
+> vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 2272 modules transformed.
+✗ Build failed in 4.08s
+error during build:
+[vite-plugin-pwa:build] [plugin vite-plugin-pwa:build] There was an error during the build:
+  [vite]: Rollup failed to resolve import "date-fns" from "/Users/air/Documents/Заказы/marketplace-app/src/components/marketplace/PriceChart.jsx".
+This is most likely unintended because it can break your application at runtime.
+If you do want to externalize this module explicitly add it to
+`build.rollupOptions.external`
+Additionally, handling the error in the 'buildEnd' hook caused the following error:
+  [vite]: Rollup failed to resolve import "date-fns" from "/Users/air/Documents/Заказы/marketplace-app/src/components/marketplace/PriceChart.jsx".
+This is most likely unintended because it can break your application at runtime.
+If you do want to externalize this module explicitly add it to
+`build.rollupOptions.external`
+    at getRollupError (file:///Users/air/Documents/%D0%97%D0%B0%D0%BA%D0%B0%D0%B7%D1%8B/marketplace-app/node_modules/rollup/dist/es/shared/parseAst.js:402:41)
+    at file:///Users/air/Documents/%D0%97%D0%B0%D0%BA%D0%B0%D0%B7%D1%8B/marketplace-app/node_modules/rollup/dist/es/shared/node-entry.js:23467:39
+    at async catchUnfinishedHookActions (file:///Users/air/Documents/%D0%97%D0%B0%D0%BA%D0%B0%D0%B7%D1%8B/marketplace-app/node_modules/rollup/dist/es/shared/node-entry.js:22925:16)
+    at async rollupInternal (file:///Users/air/Documents/%D0%97%D0%B0%D0%BA%D0%B0%D0%B7%D1%8B/marketplace-app/node_modules/rollup/dist/es/shared/node-entry.js:23450:5)
+    at async buildEnvironment (file:///Users/air/Documents/%D0%97%D0%B0%D0%BA%D0%B0%D0%B7%D1%8B/marketplace-app/node_modules/vite/dist/node/chunks/config.js:33541:12)
+    at async Object.build (file:///Users/air/Documents/%D0%97%D0%B0%D0%BA%D0%B0%D0%B7%D1%8B/marketplace-app/node_modules/vite/dist/node/chunks/config.js:33900:19)
+    at async Object.buildApp (file:///Users/air/Documents/%D0%97%D0%B0%D0%BA%D0%B0%D0%B7%D1%8B/marketplace-app/node_modules/vite/dist/node/chunks/config.js:33897:153)
+    at async CAC.<anonymous> (file:///Users/air/Documents/%D0%97%D0%B0%D0%BA%D0%B0%D0%B7%D1%8B/marketplace-app/node_modules/vite/dist/node/cli.js:629:3)

@@ -1,6 +1,20 @@
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-export const fetchAPI = async (endpoint, options = {}) => {
+// In-memory cache for GET request deduplication (prevents double triggers)
+const requestCache = new Map();
+const RETRY_COUNT = 2;
+const RETRY_DELAY = 1000;
+
+export const fetchAPI = async (endpoint, options = {}, retryAttempt = 0) => {
+    // Deduplication logic for GET requests
+    const cacheKey = options.method === 'GET' || !options.method 
+        ? `${endpoint}${JSON.stringify(options.params || {})}` 
+        : null;
+
+    if (cacheKey && requestCache.has(cacheKey)) {
+        return requestCache.get(cacheKey);
+    }
+
     const token = localStorage.getItem('token');
     const headers = {
         'Content-Type': 'application/json',
@@ -28,68 +42,85 @@ export const fetchAPI = async (endpoint, options = {}) => {
         }
     }
 
-    // Custom timeout support, default 15s
     const timeout = options.timeout || 15000;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    try {
-        const response = await fetch(url, {
-            ...options,
-            headers,
-            signal: controller.signal
-        });
+    const apiCall = (async () => {
+        try {
+            const response = await fetch(url, {
+                ...options,
+                headers,
+                signal: controller.signal
+            });
 
-        clearTimeout(timeoutId);
+            clearTimeout(timeoutId);
 
-        // Standardize error handling based on status codes
-        if (response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-                window.location.href = '/login';
-            }
-            throw new Error("Ваша сессия истекла. Пожалуйста, войдите снова.");
-        }
-
-        if (!response.ok) {
-            let errorMessage = "Произошла ошибка при запросе к серверу";
-            
-            // Try to parse JSON error first
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.error || errorData.message || errorMessage;
-                } catch (e) {
-                    // Fallback if JSON is malformed
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+                    window.location.href = '/login';
                 }
+                throw new Error("Ваша сессия истекла. Пожалуйста, войдите снова.");
             }
 
-            // Status specific overrides if no message provided by server
-            if (errorMessage === "Произошла ошибка при запросе к серверу") {
-                if (response.status === 404) errorMessage = "Запрашиваемый ресурс не найден (404)";
-                else if (response.status === 403) errorMessage = "У вас недостаточно прав для этого действия (403)";
-                else if (response.status >= 500) errorMessage = "Ошибка на стороне сервера (500). Попробуйте позже.";
+            // Retry logic for 5xx errors
+            if (response.status >= 500 && retryAttempt < RETRY_COUNT) {
+                console.warn(`API: Server error ${response.status}. Retrying ${retryAttempt + 1}/${RETRY_COUNT}...`);
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryAttempt + 1)));
+                return fetchAPI(endpoint, options, retryAttempt + 1);
             }
 
-            throw new Error(errorMessage);
-        }
+            if (!response.ok) {
+                let errorMessage = "Произошла ошибка при запросе к серверу";
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorData.message || errorMessage;
+                    } catch (e) {}
+                }
 
-        return response.json();
-    } catch (error) {
-        clearTimeout(timeoutId);
-        
-        if (error.name === 'AbortError') {
-            throw new Error('Превышено время ожидания ответа от сервера. Проверьте соединение.');
+                if (errorMessage === "Произошла ошибка при запросе к серверу") {
+                    if (response.status === 404) errorMessage = "Запрашиваемый ресурс не найден (404)";
+                    else if (response.status === 403) errorMessage = "У вас недостаточно прав для этого действия (403)";
+                    else if (response.status >= 500) errorMessage = "Ошибка на стороне сервера (500). Попробуйте позже.";
+                }
+
+                throw new Error(errorMessage);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            clearTimeout(timeoutId);
+            
+            if (error.name === 'AbortError') {
+                throw new Error('Превышено время ожидания ответа от сервера. Проверьте соединение.');
+            }
+            
+            if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+                if (retryAttempt < RETRY_COUNT) {
+                    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                    return fetchAPI(endpoint, options, retryAttempt + 1);
+                }
+                throw new Error('Не удалось связаться с сервером. Проверьте интернет-соединение.');
+            }
+            
+            throw error;
+        } finally {
+            if (cacheKey) {
+                setTimeout(() => requestCache.delete(cacheKey), 5000); // Clear from cache after 5s
+            }
         }
-        
-        if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
-            throw new Error('Не удалось связаться с сервером. Проверьте интернет-соединение.');
-        }
-        
-        throw error;
+    })();
+
+    if (cacheKey) {
+        requestCache.set(cacheKey, apiCall);
     }
+
+    return apiCall;
 };
 
 export const api = {
@@ -126,6 +157,8 @@ export const api = {
     getFeaturedMarketplaces: () => fetchAPI('/listings/featured'),
     getMarketplace: (id) => fetchAPI(`/listings/${id}`),
     getMarketplaceDetail: (id) => fetchAPI(`/listings/${id}`), // Alias for detail
+    getPriceHistory: (id) => fetchAPI(`/listings/${id}/price-history`),
+    analyzeListing: (listingData) => fetchAPI('/ai/analyze-listing', { method: 'POST', body: JSON.stringify({ listingData }) }),
     setTrustFlags: (id, flags) => fetchAPI(`/listings/${id}/trust`, { method: 'PATCH', body: JSON.stringify(flags) }),
 
     // AI
@@ -248,6 +281,10 @@ export const api = {
     updateMarketplaceStatus: (id, status) => fetchAPI(`/admin/marketplaces/${id}/status`, {
         method: 'PUT',
         body: JSON.stringify({ status })
+    }),
+    toggleMarketplaceFeatured: (id, isFeatured) => fetchAPI(`/admin/marketplaces/${id}/featured`, {
+        method: 'PUT',
+        body: JSON.stringify({ isFeatured })
     }),
     deleteAdminListing: (id) => fetchAPI(`/admin/marketplaces/${id}`, { method: 'DELETE' }),
     getAdminKYC: () => fetchAPI('/admin/kyc'),

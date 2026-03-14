@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -143,6 +142,7 @@ model Marketplace {
   orderItems  OrderItem[]
   
   certificates        Json?   // Uploaded certificates/portfolio for professional services
+  panoramaUrl         String? // 360° panorama image URL
   
   // PERFORMANCE INDEXES
   @@index([category])
@@ -156,6 +156,18 @@ model Marketplace {
 
   loanApplications LoanApplication[]
   serviceLeads     ServiceLead[] @relation("MarketplaceLeads")
+  priceHistory     PriceHistory[]
+}
+
+model PriceHistory {
+  id            String      @id @default(uuid())
+  marketplaceId String
+  marketplace   Marketplace @relation(fields: [marketplaceId], references: [id], onDelete: Cascade)
+  price         Float
+  createdAt     DateTime    @default(now())
+
+  @@index([marketplaceId])
+  @@index([createdAt])
 }
 
 model Favorite {

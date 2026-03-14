@@ -237,6 +237,13 @@ class MarketplaceService {
     async deleteRegion(id) {
         return prisma.region.delete({ where: { id } });
     }
+
+    async getPriceHistory(marketplaceId) {
+        return prisma.priceHistory.findMany({
+            where: { marketplaceId },
+            orderBy: { createdAt: 'asc' }
+        });
+    }
 }
 
 

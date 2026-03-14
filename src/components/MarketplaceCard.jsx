@@ -4,7 +4,7 @@ import { useShop } from '../context/ShopContext';
 import { useCompare } from '../context/CompareContext';
 import { Star, ShoppingCart, Heart, Check, Scale, Eye, Share2 } from 'lucide-react';
 import { QuickViewModal } from './QuickViewModal';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
 export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
@@ -65,6 +65,33 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
         addToCart(marketplace);
         setIsAdded(true);
         setTimeout(() => setIsAdded(false), 2000);
+    };
+
+    // Parallax logic
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const mouseXSpring = useSpring(x);
+    const mouseYSpring = useSpring(y);
+
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+
+    const handleMouseMove = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const xPct = mouseX / width - 0.5;
+        const yPct = mouseY / height - 0.5;
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
     };
 
     // List View
@@ -206,14 +233,28 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                className="group relative flex flex-col rounded-2xl border border-border bg-card transition-all duration-300 shadow-sm hover:shadow-2xl overflow-hidden"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                style={{
+                    rotateY,
+                    rotateX,
+                    transformStyle: "preserve-3d",
+                }}
+                className={`group relative flex flex-col rounded-2xl border bg-card transition-all duration-300 shadow-sm hover:shadow-2xl overflow-hidden ${marketplace.isFeatured ? 'border-indigo-500/50 ring-2 ring-indigo-500/20' : 'border-border'}`}
             >
+                {marketplace.isFeatured && (
+                    <div className="absolute top-2 left-2 z-20 bg-indigo-600 text-white text-[9px] font-black px-2 py-1 rounded-lg shadow-lg shadow-indigo-600/30 flex items-center gap-1 uppercase tracking-widest animate-pulse">
+                        <Star size={10} className="fill-current" /> ТОП
+                    </div>
+                )}
                 <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-2 md:p-6 relative">
-                    <img
+                    <motion.img
                         src={getImageUrl(marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                         alt={displayName}
-                        loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
+                        style={{
+                            translateZ: 50,
+                        }}
+                        loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-300 group-hover:scale-110"
                         onError={(e) => {
                             e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
                         }}
@@ -258,6 +299,18 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             className={`rounded-full p-2 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                         >
                             <Heart className={`h-4 w-4 ${isFav ? 'fill-current' : ''}`} />
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                isInCompare ? removeFromCompare(marketplace.id) : addToCompare(marketplace);
+                            }}
+                            aria-label="Сравнить"
+                            className={`rounded-full p-2 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
+                            title="Сравнить"
+                        >
+                            <Scale className="h-4 w-4" />
                         </button>
                     </div>
                 </div>

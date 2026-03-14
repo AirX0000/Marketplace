@@ -40,3 +40,19 @@ exports.generateDescription = asyncHandler(async (req, res) => {
         res.json({ description: fallbackDescription });
     }
 });
+
+exports.analyzeListing = asyncHandler(async (req, res) => {
+    const { listingData } = req.body;
+    if (!listingData) return res.status(400).json({ error: "Listing data is required" });
+
+    try {
+        const analysis = await aiService.analyzeListingQuality(listingData);
+        res.json(analysis);
+    } catch (error) {
+        console.error("AI Listing Analysis Error:", error.message);
+        res.json({ 
+            score: 70, 
+            tips: ["Добавьте больше характеристик", "Убедитесь, что описание содержит ключевые слова"] 
+        });
+    }
+});

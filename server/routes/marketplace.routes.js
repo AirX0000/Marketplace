@@ -25,6 +25,9 @@ router.get('/listings/:id/reviews', marketplaceController.getReviews);
 router.post('/reviews', authenticateToken, marketplaceController.addReview);
 router.get('/marketplaces/:id/reviews', marketplaceController.getReviews);
 
+// Price History
+router.get('/listings/:id/price-history', marketplaceController.getPriceHistory);
+
 // Admin Trust Badges
 router.patch('/listings/:id/trust', authenticateToken, authorizeRole(['ADMIN']), marketplaceController.setTrustFlags);
 

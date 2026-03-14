@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { useShop } from '../../context/ShopContext';
-import { Plus, MoreHorizontal, X, Loader2, Check, AlertCircle, Eye, Shield, Filter, Trash2, Search, Building, Store, Car, Sparkles } from 'lucide-react';
+import { Plus, MoreHorizontal, X, Loader2, Check, AlertCircle, Eye, Shield, Filter, Trash2, Search, Building, Store, Car, Sparkles, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ListingModal } from '../../components/dashboard/ListingModal';
 import { toast } from 'react-hot-toast';
@@ -344,6 +344,20 @@ export function AdminListings() {
                                                                 title={item.isOfficial ? 'Снять статус дилера' : 'Присвоить официального дилера'}
                                                             >
                                                                 <Sparkles size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={async () => {
+                                                                    try {
+                                                                        const next = !item.isFeatured;
+                                                                        await api.toggleMarketplaceFeatured(item.id, next);
+                                                                        setListings(listings.map(l => l.id === item.id ? { ...l, isFeatured: next } : l));
+                                                                        toast.success(next ? '⭐ Объявление в топе' : 'Снято с топа');
+                                                                    } catch { toast.error('Ошибка'); }
+                                                                }}
+                                                                className={`h-8 w-8 inline-flex items-center justify-center rounded-md border transition-all ${item.isFeatured ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20' : 'border-border text-muted-foreground hover:bg-indigo-500/10 hover:text-indigo-600'}`}
+                                                                title={item.isFeatured ? 'Убрать из топа' : 'Выделить в топ'}
+                                                            >
+                                                                <Star size={14} className={item.isFeatured ? 'fill-current' : ''} />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDelete(item.id)}

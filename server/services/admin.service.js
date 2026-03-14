@@ -158,6 +158,16 @@ class AdminService {
         });
     }
 
+    async toggleMarketplaceFeatured(id, isFeatured) {
+        return prisma.marketplace.update({
+            where: { id },
+            data: { 
+                isFeatured: !!isFeatured,
+                featuredUntil: isFeatured ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : null // 7 days by default
+            }
+        });
+    }
+
     async getKYCList() {
         return prisma.partnerKYC.findMany({
             include: {

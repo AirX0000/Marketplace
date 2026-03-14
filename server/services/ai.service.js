@@ -60,6 +60,24 @@ class AIService {
 
         return this.generateContent(prompt, systemInstruction);
     }
+
+    async analyzeListingQuality(listingData) {
+        const prompt = `Analyze this marketplace listing and provide specific tips for improvement (SEO, pricing, details) and a quality score from 0 to 100. 
+        Listing Data: ${JSON.stringify(listingData)}. 
+        Return ONLY a JSON object with this structure: { "score": number, "tips": string[] } in Russian.`;
+        
+        const systemInstruction = "You are an e-commerce expert helping sellers optimize their listings for maximum conversion.";
+
+        const response = await this.generateContent(prompt, systemInstruction);
+        try {
+            // Extract JSON if AI adds markdown formatting
+            const jsonStr = response.replace(/```json|```/g, "").trim();
+            return JSON.parse(jsonStr);
+        } catch (e) {
+            console.error("Failed to parse AI response for quality check", e);
+            return { score: 70, tips: ["Добавьте больше деталей в описание", "Проверьте конкурентность цены"] };
+        }
+    }
 }
 
 module.exports = new AIService();

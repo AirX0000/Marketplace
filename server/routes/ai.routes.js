@@ -5,5 +5,6 @@ const { authenticateToken } = require('../middleware/auth');
 
 router.post('/chat', aiController.chat);
 router.post('/generate-description', authenticateToken, aiController.generateDescription);
+router.post('/analyze-listing', authenticateToken, aiController.analyzeListing);
 
 module.exports = router;

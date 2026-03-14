@@ -63,3 +63,10 @@ exports.updateKYCStatus = asyncHandler(async (req, res) => {
     res.json(kyc);
 });
 
+exports.toggleMarketplaceFeatured = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { isFeatured } = req.body;
+    const marketplace = await adminService.toggleMarketplaceFeatured(id, isFeatured);
+    res.json(marketplace);
+});
+

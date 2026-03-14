@@ -100,3 +100,8 @@ exports.setTrustFlags = asyncHandler(async (req, res) => {
     res.json(listing);
 });
 
+exports.getPriceHistory = asyncHandler(async (req, res) => {
+    const history = await marketplaceService.getPriceHistory(req.params.id);
+    res.json(history);
+});
+

@@ -14,7 +14,9 @@
         "orders": "Buyurtmalar",
         "loading": "Yuklanmoqda...",
         "add_listing": "E'lon berish",
-        "add_listing_nav": "E'lon"
+        "add_listing_nav": "E'lon",
+        "generate_ai_desc": "AI orqali tavsif yaratish",
+        "ai_generating": "Yaratilmoqda..."
     },
     "home": {
         "hero_title": "Ideal uy yoki avtomobilni toping",
@@ -128,6 +130,8 @@
         "location_required": "Xaritada joyni belgilang",
         "upload_failed": "Yuklab bo'lmadi",
         "name_select": "Nomi (Ro'yxatdan tanlang)",
+        "rich_media": "Media va 360",
+        "panorama_help": "360° tur yoki panorama rasmi havolasini kiriting",
         "brand": "Marka",
         "model": "Model",
         "select_type": "Turini tanlang",

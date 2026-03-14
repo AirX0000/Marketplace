@@ -8,6 +8,8 @@ import { cn } from '../lib/utils';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { SearchFilters } from '../components/SearchFilters';
 import { MapSearch } from '../components/MapSearch';
+import { MarketplaceCardSkeleton } from '../components/ui/Skeleton';
+import { RecentlyViewed } from '../components/RecentlyViewed';
 
 export function CatalogPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -82,10 +84,24 @@ export function CatalogPage() {
         setSearchParams(params);
     };
 
+    const pageTitle = useMemo(() => {
+        let title = "Каталог";
+        if (filters.search) title = filters.search;
+        else if (filters.brand) title = `${filters.brand} ${filters.model || ''}`;
+        else if (filters.category) title = filters.category;
+
+        if (filters.region && filters.region !== 'Все') {
+            title += ` в ${filters.region}`;
+        }
+        
+        return `${title} | Autohouse.uz Премиум`;
+    }, [filters]);
+
     return (
         <main className="min-h-screen bg-[#13111C] text-white">
             <Helmet>
-                <title>Каталог Товаров | Autohouse.uz Premium</title>
+                <title>{pageTitle}</title>
+                <meta name="description" content={`Найти ${pageTitle} на Autohouse.uz. Большой выбор, проверенные объявления и премиальный сервис.`} />
                 <link rel="canonical" href="https://autohouse.uz/catalog" />
             </Helmet>
 
@@ -241,19 +257,18 @@ export function CatalogPage() {
                         {/* Content States */}
                         <AnimatePresence mode="wait">
                             {loading ? (
-                                <motion.div
-                                    key="loading"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    className="text-center py-32"
+                                <div
+                                    className={cn(
+                                        "grid gap-4 md:gap-8",
+                                        viewMode === 'grid'
+                                            ? "grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+                                            : "space-y-4 md:space-y-6"
+                                    )}
                                 >
-                                    <div className="inline-block relative">
-                                        <div className="w-20 h-20 border-4 border-purple-600/20 border-t-purple-600 rounded-full animate-spin" />
-                                        <Bot size={32} className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-purple-500" />
-                                    </div>
-                                    <p className="mt-8 text-slate-500 font-bold uppercase tracking-[0.3em] text-xs animate-pulse">Сканирование базы данных...</p>
-                                </motion.div>
+                                    {[...Array(6)].map((_, i) => (
+                                        <MarketplaceCardSkeleton key={i} />
+                                    ))}
+                                </div>
                             ) : products.length === 0 ? (
                                 <motion.div
                                     key="empty"
@@ -289,11 +304,13 @@ export function CatalogPage() {
                                 </motion.div>
                             ) : (
                                 <motion.div
+                                    layout
                                     key={viewMode}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.4, ease: "anticipate" }}
                                     className={cn(
-                                        "grid gap-4 md:gap-8",
+                                        "grid gap-4 md:gap-8 transition-all",
                                         viewMode === 'grid'
                                             ? "grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
                                             : "space-y-4 md:space-y-6"
@@ -301,10 +318,17 @@ export function CatalogPage() {
                                 >
                                     {products.map((product, idx) => (
                                         <motion.article
+                                            layout
                                             key={product.id}
-                                            initial={{ opacity: 0, y: 30 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: (idx % 6) * 0.05 }}
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            transition={{ 
+                                                delay: (idx % 6) * 0.05,
+                                                type: "spring",
+                                                stiffness: 100,
+                                                damping: 20
+                                            }}
                                         >
                                             <MarketplaceCard
                                                 marketplace={product}
@@ -339,6 +363,8 @@ export function CatalogPage() {
                     </section>
                 </div>
             </div>
+            
+            <RecentlyViewed className="mt-20 px-4" />
         </main>
     );
 }

@@ -157,6 +157,9 @@ const io = new Server(server, {
     }
 });
 
+// EXPOSE GLOBALLY FOR SERVICES
+global.io = io;
+
 // Socket.io Authentication Middleware
 io.use((socket, next) => {
     const token = socket.handshake.auth.token;
@@ -171,7 +174,13 @@ io.use((socket, next) => {
 });
 
 io.on('connection', (socket) => {
-    console.log(`[Socket] Connected: ${socket.id} (User: ${socket.user?.userId})`);
+    const userId = socket.user?.id || socket.user?.userId;
+    console.log(`[Socket] Connected: ${socket.id} (User: ${userId})`);
+
+    if (userId) {
+        socket.join(userId);
+        console.log(`[Socket] User ${userId} auto-joined their personal room`);
+    }
 
     socket.on('join_room', (roomId) => {
         socket.join(roomId);
