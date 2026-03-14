@@ -19,9 +19,13 @@ class PartnerService {
     }
 
     async createListing(userId, data) {
-        // KYC Check
-        const user = await prisma.user.findUnique({ where: { id: userId } });
-        if (user.kycStatus !== 'APPROVED') {
+        // KYC Check - Only for professional PARTNER role
+        const user = await prisma.user.findUnique({ 
+            where: { id: userId },
+            include: { kyc: true }
+        });
+
+        if (user.role === 'PARTNER' && (!user.kyc || user.kyc.status !== 'APPROVED')) {
             throw new Error("Ваша учетная запись партнера еще не прошла верификацию (KYC). Добавление товаров временно заблокировано.");
         }
 

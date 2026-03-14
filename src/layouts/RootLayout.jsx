@@ -55,7 +55,7 @@ export function RootLayout() {
                         exit="out"
                         variants={pageVariants}
                         transition={pageTransition}
-                        className="h-full"
+                        className="flex-1 flex flex-col"
                     >
                         <Outlet />
                     </motion.div>

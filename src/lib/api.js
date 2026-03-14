@@ -33,13 +33,18 @@ export const fetchAPI = async (endpoint, options = {}) => {
 
         clearTimeout(timeoutId);
 
-        if (response.status === 401 || response.status === 403) {
+        if (response.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
                 window.location.href = '/login';
             }
-            throw new Error("Session expired or unauthorized");
+            throw new Error("Session expired. Please login again.");
+        }
+
+        if (response.status === 403) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || errorData.message || "Access denied: you don't have permission for this action.");
         }
 
         if (!response.ok) {

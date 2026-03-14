@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 import { X, Phone, Lock, User, Loader2 } from 'lucide-react';
 
 export function PostAdPage() {
-    const { isAuthenticated, checkAuth } = useShop();
+    const { isAuthenticated, login: shopLogin } = useShop();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [pendingData, setPendingData] = useState(null);
@@ -51,18 +51,19 @@ export function PostAdPage() {
             }
 
             // Login success
-            localStorage.setItem('token', res.token);
-            localStorage.setItem('user', JSON.stringify(res.user));
-            await checkAuth();
-
+            shopLogin(res.token, res.user);
             setShowAuthModal(false);
 
             // Now submit the pending ad
             if (pendingData) {
                 const toastId = toast.loading('Публикация объявления...');
-                await api.createListing(pendingData);
-                toast.success('Объявление опубликовано!', { id: toastId });
-                navigate('/admin/listings');
+                try {
+                    await api.createListing(pendingData);
+                    toast.success('Объявление опубликовано!', { id: toastId });
+                    navigate('/admin/listings');
+                } catch (err) {
+                    toast.error(err.message || 'Ошибка публикации', { id: toastId });
+                }
             }
         } catch (error) {
             toast.error(error.message || 'Ошибка авторизации');
@@ -72,8 +73,8 @@ export function PostAdPage() {
     };
 
     return (
-        <div className="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center py-6 px-4 md:px-6 bg-background">
-            <div className="w-full max-w-2xl bg-card rounded-3xl shadow-2xl border border-border overflow-hidden dark:border-white/10">
+        <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 md:px-6 bg-background dark:bg-[#0a0f1e]">
+            <div className="w-full max-w-2xl bg-card rounded-3xl shadow-2xl border border-border overflow-hidden dark:border-white/10 dark:bg-[#1e293b]">
                 <ListingModal
                     asPage={false}
                     initialCategory="Бозор (Авто с пробегом)"
