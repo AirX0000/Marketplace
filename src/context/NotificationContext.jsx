@@ -3,10 +3,21 @@ import { io } from 'socket.io-client';
 import { useShop } from './ShopContext';
 
 const getSocketURL = () => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-    if (window.location.hostname === 'localhost' && apiUrl) {
-        return apiUrl.replace('/api', '');
+    // If we're on localhost, we might need a specific port if API is separate
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        if (apiUrl && apiUrl.includes(':')) {
+            // If VITE_API_URL is like http://localhost:3000/api, return http://localhost:3000
+            try {
+                const url = new URL(apiUrl);
+                return `${url.protocol}//${url.host}`;
+            } catch (e) {
+                return 'http://localhost:3000';
+            }
+        }
+        return 'http://localhost:3000';
     }
+    // In production, the socket is served on the same origin as the frontend
     return window.location.origin;
 };
 

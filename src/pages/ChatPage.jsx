@@ -47,9 +47,17 @@ export function ChatPage() {
         }
 
         const getSocketUrl = () => {
-            const apiUrl = import.meta.env.VITE_API_URL;
-            if (window.location.hostname === 'localhost' && apiUrl) {
-                return apiUrl.replace('/api', '');
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                const apiUrl = import.meta.env.VITE_API_URL;
+                if (apiUrl && apiUrl.includes(':')) {
+                    try {
+                        const url = new URL(apiUrl);
+                        return `${url.protocol}//${url.host}`;
+                    } catch (e) {
+                        return 'http://localhost:3000';
+                    }
+                }
+                return 'http://localhost:3000';
             }
             return window.location.origin;
         };

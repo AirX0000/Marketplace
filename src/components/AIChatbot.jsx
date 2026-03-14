@@ -57,7 +57,7 @@ export function AIChatbot() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsOpen(true)}
-                        className="h-12 w-12 sm:h-16 sm:px-8 rounded-2xl bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 text-white shadow-[0_20px_40px_rgba(147,51,234,0.4)] flex items-center justify-center gap-4 group relative overflow-hidden border border-white/20"
+                        className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-600 text-white shadow-2xl shadow-indigo-500/30 ring-1 ring-white/20 transition-all hover:scale-105 active:scale-95"
                     >
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="relative flex items-center justify-center">

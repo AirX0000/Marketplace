@@ -93,7 +93,7 @@ export function Header() {
                             className="flex items-center gap-1.5 bg-emerald-600 text-white px-2.5 py-2 rounded-xl text-[10px] md:text-sm font-black md:font-bold uppercase tracking-tight md:tracking-normal shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 active:scale-95 transition-all mr-1 md:mr-2"
                         >
                             <Plus size={16} className="shrink-0" />
-                            <span className="leading-none whitespace-nowrap">{t('common.add_listing', 'Разместить объявление')}</span>
+                            <span className="leading-none whitespace-nowrap hidden md:inline">{t('common.add_listing', 'Разместить объявление')}</span>
                         </Link>
 
                         <div className="hidden md:block">

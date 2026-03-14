@@ -168,12 +168,12 @@ export const api = {
     updateProfile: (data) => fetchAPI('/user/profile', { method: 'PUT', body: JSON.stringify(data) }),
 
     // Price Drop Alerts & Push Subscriptions
-    watchPrice: (marketplaceId) => fetchAPI(`/users/watch-price/${marketplaceId}`, { method: 'POST' }),
-    checkWatchStatus: (marketplaceId) => fetchAPI(`/users/watch-price/${marketplaceId}`),
-    subscribePush: (subscription) => fetchAPI('/users/push-subscribe', { method: 'POST', body: JSON.stringify(subscription) }),
+    watchPrice: (marketplaceId) => fetchAPI(`/user/watch-price/${marketplaceId}`, { method: 'POST' }),
+    checkWatchStatus: (marketplaceId) => fetchAPI(`/user/watch-price/${marketplaceId}`),
+    subscribePush: (subscription) => fetchAPI('/user/push-subscribe', { method: 'POST', body: JSON.stringify(subscription) }),
 
     // Recommendations
-    getRecommendations: () => fetchAPI('/users/recommendations'),
+    getRecommendations: () => fetchAPI('/user/recommendations'),
 
     // Virtual Garage
     getGarageCars: () => fetchAPI('/user/garage'),

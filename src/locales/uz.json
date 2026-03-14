@@ -13,7 +13,8 @@
         "cart": "Savat",
         "orders": "Buyurtmalar",
         "loading": "Yuklanmoqda...",
-        "add_listing": "E'lon berish"
+        "add_listing": "E'lon berish",
+        "add_listing_nav": "E'lon"
     },
     "home": {
         "hero_title": "Ideal uy yoki avtomobilni toping",
