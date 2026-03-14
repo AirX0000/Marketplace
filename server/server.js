@@ -86,6 +86,7 @@ const contentRoutes = require('./routes/content.routes');
 const passwordResetRoutes = require('./routes/password_reset.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const seoRoutes = require('./routes/seo.routes');
+const leadsRoutes = require('./routes/leads.routes');
 
 // Mount all at /api
 const apiRouter = express.Router();
@@ -119,6 +120,7 @@ try {
 apiRouter.use('/auth', passwordResetRoutes); // Password reset routes (e.g. /auth/reset)
 apiRouter.use('/upload', uploadRoutes);
 apiRouter.use('/seo', seoRoutes);
+apiRouter.use('/leads', leadsRoutes);
 
 // Catch-all for API 404s before it hits the SPA index.html fallback
 apiRouter.use((req, res) => {

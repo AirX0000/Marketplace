@@ -25,4 +25,11 @@ const safeUserSelect = {
     isForcedVerified: true
 };
 
-module.exports = { safeUserSelect };
+const PROFESSIONAL_CATEGORIES = {
+    REALTOR: 'Риелтор',
+    NOTARY: 'Нотариус',
+    APPRAISER: 'Оценка',
+    INSURANCE: 'Страхование'
+};
+
+module.exports = { safeUserSelect, PROFESSIONAL_CATEGORIES };

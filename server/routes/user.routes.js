@@ -44,6 +44,8 @@ adminRouter.get('/marketplaces', adminController.getMarketplaces);
 adminRouter.delete('/marketplaces/:id', adminController.deleteMarketplace);
 adminRouter.put('/marketplaces/:id/status', adminController.updateMarketplaceStatus);
 adminRouter.get('/stats', adminController.getStats);
+adminRouter.get('/kyc', adminController.getKYCList);
+adminRouter.put('/kyc/:id/status', adminController.updateKYCStatus);
 
 
 

@@ -250,6 +250,11 @@ export const api = {
         body: JSON.stringify({ status })
     }),
     deleteAdminListing: (id) => fetchAPI(`/admin/marketplaces/${id}`, { method: 'DELETE' }),
+    getAdminKYC: () => fetchAPI('/admin/kyc'),
+    updateAdminKYCStatus: (id, status, adminComment) => fetchAPI(`/admin/kyc/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status, adminComment })
+    }),
     sendBroadcast: (data) => fetchAPI('/admin/broadcast', { method: 'POST', body: JSON.stringify(data) }),
     getNewsletterStats: () => fetchAPI('/admin/newsletter/stats'),
     getNewsletterHistory: () => fetchAPI('/admin/newsletter/history'),
@@ -317,4 +322,9 @@ export const api = {
     // CMS (Pages)
     getPage: (slug) => fetchAPI(`/pages/${slug}`),
     updatePage: (slug, data) => fetchAPI(`/pages/${slug}`, { method: 'PUT', body: JSON.stringify(data) }),
+
+    // Leads (Professional Consultations)
+    createLead: (data) => fetchAPI('/leads', { method: 'POST', body: JSON.stringify(data) }),
+    getPartnerLeads: () => fetchAPI('/leads/partner'),
+    updateLeadStatus: (id, status) => fetchAPI(`/leads/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
 };

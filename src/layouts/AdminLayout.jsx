@@ -217,16 +217,30 @@ export function AdminLayout() {
                 )}
 
                 {isPartner && !isAdmin && (
-                    <Link
-                        to="/admin/offers"
-                        className={cn(
-                            "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                            isActive('/admin/offers') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    <>
+                        <Link
+                            to="/admin/offers"
+                            className={cn(
+                                "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                isActive('/admin/offers') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                            )}
+                        >
+                            <HandCoins className="mr-3 h-5 w-5" />
+                            {t('admin.offers', 'Предложения')}
+                        </Link>
+                        {(isRealtor || isNotary || isEvaluation || isInsurance) && (
+                            <Link
+                                to="/admin/leads"
+                                className={cn(
+                                    "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                    isActive('/admin/leads') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                )}
+                            >
+                                <CalendarDays className="mr-3 h-5 w-5" />
+                                Консультации
+                            </Link>
                         )}
-                    >
-                        <HandCoins className="mr-3 h-5 w-5" />
-                        {t('admin.offers', 'Предложения')}
-                    </Link>
+                    </>
                 )}
 
                 {isPartner && (

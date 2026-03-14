@@ -51,3 +51,15 @@ exports.getStats = asyncHandler(async (req, res) => {
     res.json(stats);
 });
 
+exports.getKYCList = asyncHandler(async (req, res) => {
+    const kyc = await adminService.getKYCList();
+    res.json(kyc);
+});
+
+exports.updateKYCStatus = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { status, adminComment } = req.body;
+    const kyc = await adminService.updateKYCStatus(id, status, adminComment);
+    res.json(kyc);
+});
+

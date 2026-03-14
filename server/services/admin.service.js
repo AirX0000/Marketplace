@@ -158,6 +158,45 @@ class AdminService {
         });
     }
 
+    async getKYCList() {
+        return prisma.partnerKYC.findMany({
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                        phone: true,
+                        companyName: true,
+                        businessCategory: true
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+    }
+
+    async updateKYCStatus(id, status, adminComment) {
+        const kyc = await prisma.partnerKYC.update({
+            where: { id },
+            data: { status, adminComment }
+        });
+
+        // If approved, update user's forced verification status
+        if (status === 'APPROVED') {
+            await prisma.user.update({
+                where: { id: kyc.userId },
+                data: { isForcedVerified: true }
+            });
+        } else if (status === 'REJECTED') {
+            await prisma.user.update({
+                where: { id: kyc.userId },
+                data: { isForcedVerified: false }
+            });
+        }
+
+        return kyc;
+    }
+
     async getStats() {
         const endDate = new Date();
         const startDate = new Date();

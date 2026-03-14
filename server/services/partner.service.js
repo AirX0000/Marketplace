@@ -29,7 +29,7 @@ class PartnerService {
             throw new Error("Ваша учетная запись партнера еще не прошла верификацию (KYC). Добавление товаров временно заблокировано.");
         }
 
-        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl, lat, lng } = data;
+        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl, lat, lng, certificates } = data;
 
         let imageList = [];
         if (Array.isArray(images) && images.length > 0) imageList = images;
@@ -55,6 +55,7 @@ class PartnerService {
                 images: JSON.stringify(imageList),
                 attributes: attributes || {}, // Prisma now handles Json directly
                 specs: specs || {},
+                certificates: certificates || [],
                 lat: (lat !== undefined && lat !== null) ? parseFloat(lat) : null,
                 lng: (lng !== undefined && lng !== null) ? parseFloat(lng) : null,
                 stock: 1,
@@ -71,7 +72,7 @@ class PartnerService {
             throw new Error("Unauthorized");
         }
 
-        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl, lat, lng } = data;
+        const { name, description, region, category, price, discount, image, images, attributes, specs, videoUrl, lat, lng, certificates } = data;
 
         const dataToUpdate = { name, description, region, category };
         if (videoUrl !== undefined) dataToUpdate.videoUrl = videoUrl;
@@ -87,6 +88,7 @@ class PartnerService {
 
         if (lat !== undefined) dataToUpdate.lat = parseFloat(lat);
         if (lng !== undefined) dataToUpdate.lng = parseFloat(lng);
+        if (certificates !== undefined) dataToUpdate.certificates = certificates;
 
         const parsedPrice = parseFloat(price);
         if (!isNaN(parsedPrice)) dataToUpdate.price = parsedPrice;

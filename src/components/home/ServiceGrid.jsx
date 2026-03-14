@@ -53,6 +53,66 @@ export function ServiceGrid() {
                 </div>
             </Link>
 
+            {/* Realtor */}
+            <Link to="/marketplaces?category=Услуги&subcategory=Риелтор" className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105 active:scale-95 snap-center shrink-0">
+                <div className="w-[100px] h-[100px] md:w-32 md:h-32 bg-card rounded-[24px] md:rounded-3xl overflow-hidden shadow-xl shadow-blue-500/10 flex items-center justify-center group-hover:shadow-blue-500/30 transition-all border border-border relative">
+                    <img
+                        src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=400"
+                        alt="Риелторы"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/40 backdrop-blur-sm rounded-full text-[10px] text-white font-medium uppercase tracking-wider">
+                        Риелторы
+                    </div>
+                </div>
+            </Link>
+
+            {/* Notary */}
+            <Link to="/marketplaces?category=Услуги&subcategory=Нотариус" className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105 active:scale-95 snap-center shrink-0">
+                <div className="w-[100px] h-[100px] md:w-32 md:h-32 bg-card rounded-[24px] md:rounded-3xl overflow-hidden shadow-xl shadow-violet-500/10 flex items-center justify-center group-hover:shadow-violet-500/30 transition-all border border-border relative">
+                    <img
+                        src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=400"
+                        alt="Нотариусы"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/40 backdrop-blur-sm rounded-full text-[10px] text-white font-medium uppercase tracking-wider">
+                        Нотариусы
+                    </div>
+                </div>
+            </Link>
+
+            {/* Appraiser (Оценка) */}
+            <Link to="/marketplaces?category=Услуги&subcategory=Оценка" className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105 active:scale-95 snap-center shrink-0">
+                <div className="w-[100px] h-[100px] md:w-32 md:h-32 bg-card rounded-[24px] md:rounded-3xl overflow-hidden shadow-xl shadow-blue-400/10 flex items-center justify-center group-hover:shadow-blue-400/30 transition-all border border-border relative">
+                    <img
+                        src="https://images.unsplash.com/photo-1454165833762-01d672e1c0d8?auto=format&fit=crop&q=80&w=400"
+                        alt="Оценка"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/40 backdrop-blur-sm rounded-full text-[10px] text-white font-medium uppercase tracking-wider">
+                        Оценка
+                    </div>
+                </div>
+            </Link>
+
+            {/* Insurance (Страхование) */}
+            <Link to="/marketplaces?category=Услуги&subcategory=Страхование" className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105 active:scale-95 snap-center shrink-0">
+                <div className="w-[100px] h-[100px] md:w-32 md:h-32 bg-card rounded-[24px] md:rounded-3xl overflow-hidden shadow-xl shadow-emerald-400/10 flex items-center justify-center group-hover:shadow-emerald-400/30 transition-all border border-border relative">
+                    <img
+                        src="https://images.unsplash.com/photo-1517639493569-5666a7b2f494?auto=format&fit=crop&q=80&w=400"
+                        alt="Страхование"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/40 backdrop-blur-sm rounded-full text-[10px] text-white font-medium uppercase tracking-wider">
+                        Страхование
+                    </div>
+                </div>
+            </Link>
+
             {/* Mortgage (Ипотека) */}
             <Link to="/mortgage" className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105 active:scale-95 snap-center shrink-0">
                 <div className="w-[100px] h-[100px] md:w-32 md:h-32 bg-card rounded-[24px] md:rounded-3xl overflow-hidden shadow-xl shadow-amber-500/10 flex items-center justify-center group-hover:shadow-amber-500/30 transition-all border border-border relative">

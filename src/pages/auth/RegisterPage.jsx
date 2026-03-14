@@ -344,6 +344,10 @@ export function RegisterPage() {
                                                 <option value="Auto">Автомобили</option>
                                                 <option value="Недвижимость">Недвижимость</option>
                                                 <option value="Услуги">Услуги</option>
+                                                <option value="Риелтор">Риелтор</option>
+                                                <option value="Нотариус">Нотариус</option>
+                                                <option value="Оценка">Оценка</option>
+                                                <option value="Страхование">Страхование</option>
                                             </select>
                                             <ArrowRight className="absolute right-4 top-3.5 h-4 w-4 text-slate-400 rotate-90 pointer-events-none" />
                                         </div>

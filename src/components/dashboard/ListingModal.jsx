@@ -33,6 +33,17 @@ const CATEGORIES = [
             { id: "sub_land", label: "ads.sub_land", value: "Участки" },
             { id: "sub_commercial", label: "ads.sub_commercial", value: "Коммерческая недвижимость" }
         ]
+    },
+    {
+        id: 3,
+        name: "Услуги",
+        key: "ads.cat_services",
+        sub: [
+            { id: "sub_realtor", label: "Риелтор", value: "Риелтор" },
+            { id: "sub_notary", label: "Нотариус", value: "Нотариус" },
+            { id: "sub_appraiser", label: "Оценка", value: "Оценка" },
+            { id: "sub_insurance", label: "Страхование", value: "Страхование" }
+        ]
     }
 ];
 
@@ -62,6 +73,23 @@ const REAL_ESTATE_TYPES = [
     'Коммерческое помещение',
     'Другое'
 ];
+
+const PROFESSIONAL_FIELDS = {
+    'Риелтор': [
+        { key: 'experience', label: 'Стаж работы (лет)', type: 'number' },
+        { key: 'deals', label: 'Успешных сделок', type: 'number' }
+    ],
+    'Нотариус': [
+        { key: 'license', label: 'Номер лицензии', type: 'text' }
+    ],
+    'Оценка': [
+        { key: 'license', label: 'Номер лицензии', type: 'text' },
+        { key: 'specialization', label: 'Специализация', type: 'text' }
+    ],
+    'Страхование': [
+        { key: 'policy_types', label: 'Виды полисов', type: 'text', placeholder: 'например, ОСАГО, КАСКО, Имущество' }
+    ]
+};
 
 export function ListingModal({ listing, onClose, onSave, initialCategory, asPage = false }) {
     const { t } = useTranslation();
@@ -107,6 +135,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             region: listing?.region || "Global",
             category: listing?.category || initialCategory || "Бозор (Авто с пробегом)",
             images: listing?.images ? JSON.parse(listing.images) : (listing?.image ? [listing.image] : []),
+            certificates: listing?.certificates || [],
             attributes: initialAttrs,
             lat: listing?.lat || null,
             lng: listing?.lng || null
@@ -185,7 +214,8 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             description_uz: finalDescUz,
             price: cleanPrice,
             image: formData.images[0] || "",
-            images: JSON.stringify(formData.images)
+            images: JSON.stringify(formData.images),
+            certificates: formData.certificates
         };
         await onSave(finalData);
         setSaving(false);
@@ -246,6 +276,21 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
         } catch (error) {
             toast.error(t('ads.upload_failed') || "Ошибка загрузки");
             console.error(error);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleCertificateUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const data = await api.uploadImage(file);
+            setFormData(prev => ({ ...prev, certificates: [...(prev.certificates || []), data.url] }));
+        } catch (error) {
+            toast.error("Ошибка загрузки сертификата");
         } finally {
             setUploading(false);
         }
@@ -396,7 +441,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                                 {(BRANDS_MODELS[formData.attributes.specs?.make] || []).sort().map(m => <option key={m} value={m}>{m}</option>)}
                                             </select>
                                         </div>
-                                    ) : (
+                                    ) : mainCategory.name === 'Недвижимость' ? (
                                         <select
                                             required
                                             className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
@@ -406,6 +451,15 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             <option value="" className="text-muted-foreground">{t('ads.select_type')}</option>
                                             {REAL_ESTATE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                                         </select>
+                                    ) : (
+                                        <input
+                                            required
+                                            type="text"
+                                            className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                                            placeholder={t('ads.enter_name', 'Введите название')}
+                                            value={formData.name}
+                                            onChange={e => setFormData({ ...formData, name: e.target.value, name_uz: e.target.value })}
+                                        />
                                     )}
                                 </div>
 
@@ -477,6 +531,56 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             <input placeholder={t('ads.model')} value={formData.attributes.specs?.model || ""} onChange={e => handleSpecChange('model', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
                                             <input type="number" placeholder={t('ads.year')} value={formData.attributes.specs?.year || ""} onChange={e => handleSpecChange('year', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
                                             <input type="number" placeholder={t('ads.mileage')} value={formData.attributes.specs?.mileage || ""} onChange={e => handleSpecChange('mileage', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Professional Specialized Fields */}
+                                {mainCategory.name === 'Услуги' && PROFESSIONAL_FIELDS[formData.name] && (
+                                    <div className="p-5 bg-primary/5 rounded-2xl border border-primary/10 space-y-4">
+                                        <h3 className="font-black text-xs uppercase tracking-widest text-primary flex items-center gap-2">
+                                            <Briefcase className="h-4 w-4" /> Профессиональные данные
+                                        </h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {PROFESSIONAL_FIELDS[formData.name].map(field => (
+                                                <div key={field.key} className={field.fullWidth ? "col-span-2" : ""}>
+                                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-1.5 block px-1">
+                                                        {field.label}
+                                                    </label>
+                                                    <input
+                                                        type={field.type}
+                                                        placeholder={field.placeholder || ""}
+                                                        className="h-10 w-full rounded-xl border border-border bg-background px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold"
+                                                        value={formData.attributes.specs?.[field.key] || ""}
+                                                        onChange={e => handleSpecChange(field.key, e.target.value)}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Certificate/Portfolio Upload */}
+                                        <div className="mt-4 pt-4 border-t border-primary/10">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-3 block px-1">
+                                                Сертификаты и портфолио
+                                            </label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {(formData.certificates || []).map((url, idx) => (
+                                                    <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border group bg-background">
+                                                        <img src={url} className="w-full h-full object-cover" />
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => setFormData(prev => ({ ...prev, certificates: prev.certificates.filter((_, i) => i !== idx) }))}
+                                                            className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity"
+                                                        >
+                                                            <Trash2 size={12} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                <label className="w-16 h-16 rounded-lg border-2 border-dashed border-primary/20 flex items-center justify-center cursor-pointer hover:bg-primary/5 transition-colors">
+                                                    {uploading ? <Loader2 size={14} className="animate-spin text-primary" /> : <Plus size={14} className="text-primary" />}
+                                                    <input type="file" className="hidden" accept="image/*" onChange={handleCertificateUpload} disabled={uploading} />
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                 )}

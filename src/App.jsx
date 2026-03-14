@@ -72,6 +72,7 @@ import { AdminPages } from './pages/admin/AdminPages';
 import { AdminPageEditor } from './pages/admin/AdminPageEditor';
 import { PostAdPage } from './pages/PostAdPage';
 import { AdminLoans } from './pages/admin/AdminLoans';
+import { PartnerLeads } from './pages/partner/PartnerLeads';
 
 
 
@@ -182,6 +183,7 @@ function App() {
                           <Route path="blog" element={<AdminBlog />} />
 
                           <Route path="logistics" element={<AdminCenters />} />
+                          <Route path="leads" element={<PartnerLeads />} />
                           <Route path="pages" element={<AdminPages />} />
                           <Route path="pages/:slug" element={<AdminPageEditor />} />
                         </Route>

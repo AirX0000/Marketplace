@@ -69,6 +69,9 @@ model User {
   // Push Notifications & Price Alerts
   pushSubscriptions Json?
   watchedListings   String @default("[]") // JSON array of Marketplace IDs
+  
+  serviceLeads      ServiceLead[] @relation("PartnerLeads")
+  sentLeads         ServiceLead[] @relation("UserLeads")
 }
 
 model UserCar {
@@ -139,6 +142,8 @@ model Marketplace {
   favorites   Favorite[]
   orderItems  OrderItem[]
   
+  certificates        Json?   // Uploaded certificates/portfolio for professional services
+  
   // PERFORMANCE INDEXES
   @@index([category])
   @@index([region])
@@ -150,6 +155,7 @@ model Marketplace {
   @@index([createdAt])
 
   loanApplications LoanApplication[]
+  serviceLeads     ServiceLead[] @relation("MarketplaceLeads")
 }
 
 model Favorite {
@@ -506,4 +512,28 @@ model OTP {
   code      String
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+model ServiceLead {
+  id            String      @id @default(uuid())
+  name          String
+  phone         String
+  message       String?
+  preferredDate DateTime?   // Requested date and time for consultation
+  status        String      @default("PENDING") // PENDING, CALLED, COMPLETED, CANCELLED
+  
+  userId        String?     // User who made the request (optional)
+  user          User?       @relation("UserLeads", fields: [userId], references: [id])
+  
+  marketplaceId String
+  marketplace   Marketplace @relation("MarketplaceLeads", fields: [marketplaceId], references: [id])
+  
+  partnerId     String      // Owner of the service
+  partner       User        @relation("PartnerLeads", fields: [partnerId], references: [id])
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([partnerId])
+  @@index([status])
 }
