@@ -72,16 +72,14 @@ export function PostAdPage() {
     };
 
     return (
-        <div className="min-h-screen bg-background md:py-10 flex flex-col md:items-center md:justify-center px-0 md:px-6">
-            <div className="max-w-4xl mx-auto h-full">
-                <div className="bg-card md:rounded-3xl md:shadow-xl md:border md:border-border h-full overflow-hidden">
-                    <ListingModal
-                        asPage={true}
-                        initialCategory="Бозор (Авто с пробегом)"
-                        onSave={handleSave}
-                        onClose={() => navigate(-1)}
-                    />
-                </div>
+        <div className="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center py-6 px-4 md:px-6 bg-background">
+            <div className="w-full max-w-2xl bg-card rounded-3xl shadow-2xl border border-border overflow-hidden dark:border-white/10">
+                <ListingModal
+                    asPage={false}
+                    initialCategory="Бозор (Авто с пробегом)"
+                    onSave={handleSave}
+                    onClose={() => navigate(-1)}
+                />
             </div>
 
             {/* Auth Modal for Guests */}

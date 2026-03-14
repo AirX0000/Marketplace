@@ -518,7 +518,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-border group shadow-sm bg-muted/50">
                                                 <img src={img} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))} className="p-2 bg-white/90 text-red-600 rounded-full hover:bg-white transition-colors">
+                                                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))} className="p-2 bg-background/90 text-red-600 rounded-full hover:bg-background transition-colors border border-border">
                                                         <Trash2 size={16} />
                                                     </button>
                                                 </div>
