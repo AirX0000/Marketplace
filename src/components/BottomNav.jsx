@@ -2,19 +2,21 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Search, Heart, User, LayoutGrid, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { useShop } from '../context/ShopContext';
 
 export function BottomNav() {
+    const { t } = useTranslation();
     const location = useLocation();
     const { isAuthenticated, isBuyer } = useShop();
 
     const tabs = [
-        { id: 'home', path: '/', icon: Home, label: 'Главная' },
-        { id: 'catalog', path: '/catalog', icon: LayoutGrid, label: 'Каталог' },
-        { id: 'post-ad', path: '/post-ad', icon: Plus, label: 'Разместить', primary: true },
-        { id: 'favorites', path: '/favorites', icon: Heart, label: 'Избранное' },
-        { id: 'profile', path: isAuthenticated ? '/profile' : '/login', icon: User, label: 'Профиль' },
+        { id: 'home', path: '/', icon: Home, label: t('common.home', 'Главная') },
+        { id: 'catalog', path: '/catalog', icon: LayoutGrid, label: t('common.catalog', 'Каталог') },
+        { id: 'post-ad', path: '/post-ad', icon: Plus, label: t('common.add_listing', 'Разместить'), primary: true },
+        { id: 'favorites', path: '/favorites', icon: Heart, label: t('common.wishlist', 'Избранное') },
+        { id: 'profile', path: isAuthenticated ? '/profile' : '/login', icon: User, label: t('common.profile', 'Профиль') },
     ];
 
     return (

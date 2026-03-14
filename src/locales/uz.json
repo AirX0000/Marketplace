@@ -12,7 +12,8 @@
         "wishlist": "Saralanganlar",
         "cart": "Savat",
         "orders": "Buyurtmalar",
-        "loading": "Yuklanmoqda..."
+        "loading": "Yuklanmoqda...",
+        "add_listing": "E'lon berish"
     },
     "home": {
         "hero_title": "Ideal uy yoki avtomobilni toping",
