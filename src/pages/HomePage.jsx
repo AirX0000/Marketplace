@@ -146,7 +146,7 @@ export function HomePage() {
             <div className="flex flex-col min-h-screen">
                 {/* HERO SECTION WITH BANNER AND ICONS */}
                 {/* HERO SECTION WITH BANNER AND ICONS */}
-                <section className="container py-4 md:py-6 px-4 md:px-6 relative">
+                <section className="container py-4 md:py-6 relative">
                     <div className="flex flex-col gap-4 md:gap-6 relative">
                         {/* Main Banner Slider */}
                         <div className="relative w-full aspect-[4/5] sm:aspect-square md:aspect-video md:max-h-[550px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
@@ -204,7 +204,7 @@ export function HomePage() {
 
                 {/* Recommendations Section */}
                 {isAuthenticated && recommendations.length > 0 && (
-                    <section className="container py-8 md:py-12 px-4 md:px-6">
+                    <section className="container py-8 md:py-12">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                                 Рекомендуем для вас
@@ -219,7 +219,7 @@ export function HomePage() {
                 )}
 
                 {/* Featured Section */}
-                <section className="container py-8 md:py-12 px-4 md:px-6">
+                <section className="container py-8 md:py-12">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                             {t('home.popular', 'Популярное')}

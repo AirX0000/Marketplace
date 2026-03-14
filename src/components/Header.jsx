@@ -51,8 +51,8 @@ export function Header() {
                     isScrolled ? "h-16 shadow-sm" : "h-20"
                 )}
             >
-                <div className="container mx-auto flex h-full items-center px-4 md:px-6 gap-4">
-                    <Link to="/" className="flex-none flex items-center mr-4 group">
+                <div className="container flex h-full items-center gap-4">
+                    <Link to="/" className="flex-none flex items-center mr-4 group -ml-2">
                         <img src="/logo-full.png" alt="Autohouse" className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
                     </Link>
 
@@ -126,7 +126,7 @@ export function Header() {
                         {/* User Profile / Login */}
                         {isAuthenticated ? (
                             <div className="relative group">
-                                <button aria-label="Профиль пользователя" className="flex items-center gap-2 p-2 rounded-xl hover:bg-muted transition-colors">
+                                <button aria-label="Профиль пользователя" className="flex items-center gap-2 p-2 rounded-xl hover:bg-muted transition-colors -mr-2">
                                     {user?.avatar ? (
                                         <img src={user.avatar} alt={`Avatar of ${user.name || 'user'}`} className="h-8 w-8 rounded-full object-cover border border-border" />
                                     ) : (
