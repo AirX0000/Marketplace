@@ -31,23 +31,25 @@
   }
 
   .dark {
-    --background: 10 15 30;
-    --foreground: 255 255 255;
-    --card: 30 41 59;
-    --card-foreground: 255 255 255;
-    --primary: 56 189 248;
+    --background: 15 17 26;
+    --foreground: 226 232 240;
+    --card: 26 29 41;
+    --card-foreground: 226 232 240;
+    --popover: 26 29 41;
+    --popover-foreground: 248 250 252;
+    --primary: 14 165 233;
     --primary-foreground: 15 23 42;
-    --secondary: 51 65 85;
+    --secondary: 30 41 59;
     --secondary-foreground: 248 250 252;
-    --muted: 51 65 85;
+    --muted: 40 46 61;
     --muted-foreground: 148 163 184;
     --accent: 34 197 94;
     --accent-foreground: 15 23 42;
-    --destructive: 239 68 68;
+    --destructive: 244 63 94;
     --destructive-foreground: 248 250 252;
-    --border: 51 65 85;
-    --input: 51 65 85;
-    --ring: 56 189 248;
+    --border: 45 53 71;
+    --input: 45 53 71;
+    --ring: 14 165 233;
   }
 
   * {

@@ -335,15 +335,13 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                 </div>
             )}
 
-            {/* Step Indicators */}
-            <div className="px-4 md:px-6 py-3 md:py-4 bg-muted/30 border-b border-border flex items-center justify-between shrink-0 dark:bg-slate-900/50 dark:border-white/5">
-                <div className="flex gap-2">
-                    {[1, 2, 3, 4].map(step => (
+            {/* Progress Bar */}
+            <div className="flex-none px-6 pt-6 pb-4 bg-background border-b border-border shadow-sm flex flex-col items-center">
+                <div className="flex gap-2 w-full max-w-xs mb-3">
+                    {[1, 2, 3, 4].map((step) => (
                         <div
                             key={step}
-                            className={`h-1 rounded-full transition-all duration-500 ${step === currentStep ? 'bg-primary w-8 md:w-12' :
-                                step < currentStep ? 'bg-emerald-500 w-6 md:w-8' : 'bg-muted w-6 md:w-8 dark:bg-slate-700'
-                                }`}
+                            className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step <= currentStep ? 'bg-primary shadow-[0_0_10px_rgba(var(--primary),0.3)]' : 'bg-muted'}`}
                         />
                     ))}
                 </div>
@@ -380,9 +378,9 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">{t('ads.category') || 'Kategoriya'}</label>
+                                        <label className="text-xs font-black uppercase text-muted-foreground/80 tracking-widest mb-1.5 block px-1">{t('ads.category') || 'Kategoriya'}</label>
                                         <select
-                                            className="flex h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                                            className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
                                             value={mainCategory.id}
                                             onChange={(e) => {
                                                 const cat = CATEGORIES.find(c => c.id === parseInt(e.target.value));
@@ -394,9 +392,9 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">{t('ads.subcategory')}</label>
+                                        <label className="text-xs font-black uppercase text-muted-foreground/80 tracking-widest mb-1.5 block px-1">{t('ads.subcategory')}</label>
                                         <select
-                                            className="flex h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                                            className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                         >
@@ -413,7 +411,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                         <div className="grid grid-cols-2 gap-4">
                                             <select
                                                 required
-                                                className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                                                className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
                                                 value={formData.attributes.specs?.make || ""}
                                                 onChange={e => {
                                                     const make = e.target.value;
@@ -427,7 +425,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             </select>
                                             <select
                                                 required
-                                                className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50"
+                                                className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50 appearance-none"
                                                 disabled={!formData.attributes.specs?.make}
                                                 value={formData.attributes.specs?.model || ""}
                                                 onChange={e => {
@@ -476,18 +474,18 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                         required
                                         value={langTab === 'ru' ? formData.description : formData.description_uz}
                                         onChange={e => setFormData({ ...formData, [langTab === 'ru' ? 'description' : 'description_uz']: e.target.value })}
-                                        className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none min-h-[100px] transition-all"
+                                        className="w-full rounded-xl border border-border bg-card text-foreground px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none min-h-[100px] transition-all"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">{t('ads.price')}</label>
-                                        <input type="text" required value={displayPrice} onChange={handlePriceChange} className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
+                                        <label className="text-xs font-black uppercase text-muted-foreground/80 tracking-widest mb-1.5 block px-1">{t('ads.price')}</label>
+                                        <input type="text" required value={displayPrice} onChange={handlePriceChange} className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                                     </div>
                                     <div>
-                                        <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">{t('ads.region')}</label>
-                                        <select required value={formData.region} onChange={e => setFormData({ ...formData, region: e.target.value })} className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                        <label className="text-xs font-black uppercase text-muted-foreground/80 tracking-widest mb-1.5 block px-1">{t('ads.region')}</label>
+                                        <select required value={formData.region} onChange={e => setFormData({ ...formData, region: e.target.value })} className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none">
                                             <option value="">{t('ads.select_region')}</option>
                                             <option value="Global">Global</option>
                                             {regions.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
@@ -507,37 +505,37 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                             >
                                 {/* Real Estate Specific Fields */}
                                 {["Недвижимость", "Apartments", "Houses", "Commercial", "Land"].includes(mainCategory.name) && (
-                                    <div className="p-5 bg-muted/30 rounded-2xl border border-border space-y-4">
+                                    <div className="p-5 bg-card rounded-2xl border border-border space-y-4">
                                         <h3 className="font-black text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                             <Building className="h-4 w-4 text-primary" /> {t('ads.property_specs')}
                                         </h3>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <input placeholder={t('ads.district')} value={formData.attributes.district || ""} onChange={e => handleAttributeChange('district', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
-                                            <input placeholder={t('ads.street')} value={formData.attributes.street || ""} onChange={e => handleAttributeChange('street', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
-                                            <input type="number" placeholder={t('ads.area')} value={formData.attributes.specs?.area || ""} onChange={e => handleSpecChange('area', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
-                                            <input type="number" placeholder={t('ads.rooms')} value={formData.attributes.specs?.rooms || ""} onChange={e => handleSpecChange('rooms', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input placeholder={t('ads.district')} value={formData.attributes.district || ""} onChange={e => handleAttributeChange('district', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input placeholder={t('ads.street')} value={formData.attributes.street || ""} onChange={e => handleAttributeChange('street', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input type="number" placeholder={t('ads.area')} value={formData.attributes.specs?.area || ""} onChange={e => handleSpecChange('area', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input type="number" placeholder={t('ads.rooms')} value={formData.attributes.specs?.rooms || ""} onChange={e => handleSpecChange('rooms', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
                                         </div>
                                     </div>
                                 )}
 
                                 {/* Transport Specific Fields */}
                                 {["Транспорт", "Transport", "Cars", "Motorcycles", "Trucks"].includes(mainCategory.name) && (
-                                    <div className="p-5 bg-muted/30 rounded-2xl border border-border space-y-4">
+                                    <div className="p-5 bg-card rounded-2xl border border-border space-y-4">
                                         <h3 className="font-black text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                             <Car className="h-4 w-4 text-primary" /> {t('ads.car_specs')}
                                         </h3>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <input placeholder={t('ads.brand')} value={formData.attributes.specs?.make || ""} onChange={e => handleSpecChange('make', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
-                                            <input placeholder={t('ads.model')} value={formData.attributes.specs?.model || ""} onChange={e => handleSpecChange('model', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
-                                            <input type="number" placeholder={t('ads.year')} value={formData.attributes.specs?.year || ""} onChange={e => handleSpecChange('year', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
-                                            <input type="number" placeholder={t('ads.mileage')} value={formData.attributes.specs?.mileage || ""} onChange={e => handleSpecChange('mileage', e.target.value)} className="h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input placeholder={t('ads.brand')} value={formData.attributes.specs?.make || ""} onChange={e => handleSpecChange('make', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input placeholder={t('ads.model')} value={formData.attributes.specs?.model || ""} onChange={e => handleSpecChange('model', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input type="number" placeholder={t('ads.year')} value={formData.attributes.specs?.year || ""} onChange={e => handleSpecChange('year', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <input type="number" placeholder={t('ads.mileage')} value={formData.attributes.specs?.mileage || ""} onChange={e => handleSpecChange('mileage', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
                                         </div>
                                     </div>
                                 )}
 
                                 {/* Professional Specialized Fields */}
                                 {mainCategory.name === 'Услуги' && PROFESSIONAL_FIELDS[formData.name] && (
-                                    <div className="p-5 bg-primary/5 rounded-2xl border border-primary/10 space-y-4">
+                                    <div className="p-5 bg-card rounded-2xl border border-border space-y-4">
                                         <h3 className="font-black text-xs uppercase tracking-widest text-primary flex items-center gap-2">
                                             <Briefcase className="h-4 w-4" /> Профессиональные данные
                                         </h3>
@@ -550,7 +548,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                                     <input
                                                         type={field.type}
                                                         placeholder={field.placeholder || ""}
-                                                        className="h-10 w-full rounded-xl border border-border bg-background px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold"
+                                                        className="h-10 w-full rounded-xl border border-border bg-background text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold"
                                                         value={formData.attributes.specs?.[field.key] || ""}
                                                         onChange={e => handleSpecChange(field.key, e.target.value)}
                                                     />
@@ -559,7 +557,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                         </div>
 
                                         {/* Certificate/Portfolio Upload */}
-                                        <div className="mt-4 pt-4 border-t border-primary/10">
+                                        <div className="mt-4 pt-4 border-t border-border">
                                             <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-3 block px-1">
                                                 Сертификаты и портфолио
                                             </label>
@@ -576,7 +574,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                                         </button>
                                                     </div>
                                                 ))}
-                                                <label className="w-16 h-16 rounded-lg border-2 border-dashed border-primary/20 flex items-center justify-center cursor-pointer hover:bg-primary/5 transition-colors">
+                                                <label className="w-16 h-16 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:bg-primary/5 transition-colors">
                                                     {uploading ? <Loader2 size={14} className="animate-spin text-primary" /> : <Plus size={14} className="text-primary" />}
                                                     <input type="file" className="hidden" accept="image/*" onChange={handleCertificateUpload} disabled={uploading} />
                                                 </label>
@@ -594,7 +592,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                     <div className="space-y-2">
                                         {(formData.attributes.documents || []).map((doc, idx) => (
                                             <div key={idx} className="flex gap-2">
-                                                <input placeholder={t('ads.doc_name')} value={doc.title} onChange={e => handleDocumentChange(idx, 'title', e.target.value)} className="flex-1 h-10 border border-border bg-muted/50 text-foreground rounded-xl px-4 text-sm outline-none focus:border-primary transition-all" />
+                                                <input placeholder={t('ads.doc_name')} value={doc.title} onChange={e => handleDocumentChange(idx, 'title', e.target.value)} className="flex-1 h-10 border border-border bg-card text-foreground rounded-xl px-4 text-sm outline-none focus:border-primary transition-all" />
                                                 <button type="button" onClick={() => handleDocumentRemove(idx)} className="text-red-500 p-2 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 size={18} /></button>
                                             </div>
                                         ))}
@@ -612,14 +610,14 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 className="space-y-6"
                             >
                                 {/* Photos Section */}
-                                <div className="p-5 bg-muted/30 rounded-2xl border border-border">
+                                <div className="p-5 bg-card rounded-2xl border border-border">
                                     <div className="flex items-center justify-between mb-4">
                                         <label className="text-xs font-black uppercase text-muted-foreground tracking-widest leading-none">{t('ads.product_photos')}</label>
-                                        <span className="text-[10px] font-bold text-muted-foreground bg-card px-2 py-0.5 rounded-full border border-border">{formData.images.length} / 10</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border">{formData.images.length} / 10</span>
                                     </div>
                                     <div className="grid grid-cols-4 gap-3">
                                         {formData.images.map((img, idx) => (
-                                            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-border group shadow-sm bg-muted/50">
+                                            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-border group shadow-sm bg-background">
                                                 <img src={img} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                     <button type="button" onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))} className="p-2 bg-background/90 text-red-600 rounded-full hover:bg-background transition-colors border border-border">
@@ -630,7 +628,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             </div>
                                         ))}
                                         {formData.images.length < 10 && (
-                                            <label className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 hover:scale-[0.98] transition-all bg-muted/30 group">
+                                            <label className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 hover:scale-[0.98] transition-all bg-background group">
                                                 <div className="h-8 w-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-card transition-all shadow-sm">
                                                     {uploading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                                                 </div>
@@ -666,7 +664,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-6"
                             >
-                                <div className="p-6 bg-muted/30 rounded-[2.5rem] border border-border space-y-6 relative overflow-hidden">
+                                <div className="p-6 bg-card rounded-[2.5rem] border border-border space-y-6 relative overflow-hidden shadow-sm">
                                     <div className="absolute top-0 right-0 p-8 opacity-5">
                                         <Sparkles size={120} className="text-primary" />
                                     </div>
@@ -678,8 +676,8 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
 
                                     <div className="flex gap-6 relative z-10">
                                         <div className="relative shrink-0">
-                                            <img src={formData.images[0]} className="h-32 w-32 rounded-[2.5rem] object-cover border-4 border-card shadow-2xl rotate-[-3deg]" />
-                                            <div className="absolute -top-2 -right-2 h-10 w-10 bg-primary rounded-full border-4 border-card flex items-center justify-center text-white shadow-lg">
+                                            <img src={formData.images[0]} className="h-32 w-32 rounded-[2.5rem] object-cover border-4 border-background shadow-2xl rotate-[-3deg]" />
+                                            <div className="absolute -top-2 -right-2 h-10 w-10 bg-primary rounded-full border-4 border-background flex items-center justify-center text-white shadow-lg">
                                                 <ImageIcon size={16} />
                                             </div>
                                         </div>
@@ -696,10 +694,10 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                     </div>
 
                                     <div className="space-y-3 relative z-10">
-                                        <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground bg-card shadow-sm border border-border w-fit px-4 py-2 rounded-xl uppercase tracking-widest">
+                                        <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground bg-background shadow-sm border border-border w-fit px-4 py-2 rounded-xl uppercase tracking-widest">
                                             <MapIcon size={12} className="text-primary" /> {formData.region}
                                         </div>
-                                        <div className="p-5 bg-card/50 border border-border rounded-3xl shadow-sm backdrop-blur-sm">
+                                        <div className="p-5 bg-background border border-border rounded-3xl shadow-sm backdrop-blur-sm">
                                             <p className="text-xs text-muted-foreground leading-relaxed font-semibold italic">
                                                 "{formData.description || formData.description_uz}"
                                             </p>
@@ -725,13 +723,13 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             </div>
 
             {/* Footer */}
-            <div className="p-4 md:p-8 border-t border-border bg-card flex justify-between gap-4 z-20 shrink-0 fixed bottom-0 left-0 right-0 md:relative dark:border-white/10 dark:bg-slate-900/40">
+            <div className="p-4 md:p-8 border-t border-border bg-background flex justify-between gap-4 z-20 shrink-0 fixed bottom-0 left-0 right-0 md:relative">
                 <div className="flex gap-2 md:gap-3">
                     {currentStep > 1 && (
                         <button
                             type="button"
                             onClick={handleBack}
-                            className="px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted hover:text-foreground border border-border transition-all active:scale-95 dark:border-white/10 dark:hover:bg-slate-800"
+                            className="px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted hover:text-foreground border border-border transition-all active:scale-95"
                         >
                             {t('ads.back')}
                         </button>

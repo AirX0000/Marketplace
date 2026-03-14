@@ -145,70 +145,67 @@ export function Header() {
                                 </button>
 
                                 {/* Dropdown */}
-                                <div className="absolute top-11 right-0 w-56 bg-card border border-border shadow-lg rounded-xl overflow-hidden hidden group-hover:block animate-in fade-in zoom-in-95 duration-200 z-50">
-                                    <div className="p-3 border-b border-border bg-muted/30 flex items-center gap-3">
+                                <div className="absolute top-full mt-2 right-0 w-64 bg-card border border-border shadow-2xl rounded-2xl overflow-hidden hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200 z-[110]">
+                                    <div className="p-4 border-b border-border bg-muted/10 flex items-center gap-4">
                                         {user?.avatar ? (
-                                            <img src={user.avatar} alt={`Avatar of ${user?.name || 'user'}`} className="h-10 w-10 rounded-full object-cover border-2 border-background shadow" />
+                                            <img src={user.avatar} alt={`Avatar of ${user?.name || 'user'}`} className="h-12 w-12 rounded-full object-cover border-2 border-primary/20 shadow-sm" />
                                         ) : (
-                                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow">
+                                            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-sm font-black shadow-lg">
                                                 {user?.name?.charAt(0)?.toUpperCase() || '?'}
                                             </div>
                                         )}
                                         <div className="overflow-hidden">
-                                            <div className="text-sm font-bold text-foreground truncate">{user?.name || 'Мой аккаунт'}</div>
-                                            <div className="text-xs text-muted-foreground truncate">{user?.phone || ''}</div>
+                                            <div className="text-base font-black text-foreground truncate">{user?.name || 'Мой аккаунт'}</div>
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">{user?.phone || ''}</div>
                                         </div>
                                     </div>
 
-                                    {/* Role-specific menu items */}
-                                    {isPartner() && (
-                                        <Link to="/partner" className="block px-4 py-3 text-sm hover:bg-muted transition-colors border-b border-border font-medium text-foreground">
-                                            📊 Мой Магазин
+                                    <div className="py-2">
+                                        {/* Role-specific menu items */}
+                                        {isPartner() && (
+                                            <Link to="/partner" className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-muted transition-colors font-bold text-foreground mx-2 rounded-xl mb-1">
+                                                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center">📊</div>
+                                                Мой Магазин
+                                            </Link>
+                                        )}
+
+                                        {isAdmin() && (
+                                            <Link to="/admin" className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-muted transition-colors font-bold text-foreground mx-2 rounded-xl mb-1">
+                                                <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center">⚙️</div>
+                                                Панель Управления
+                                            </Link>
+                                        )}
+
+                                        {isBuyer() && (
+                                            <div className="space-y-0.5 px-2">
+                                                <Link to="/profile?tab=overview" className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors text-foreground rounded-lg">
+                                                    👤 Личный Кабинет
+                                                </Link>
+                                                <Link to="/profile?tab=garage" className="flex items-center justify-between px-3 py-2 text-sm hover:bg-muted transition-colors text-foreground rounded-lg font-bold">
+                                                    <span className="flex items-center gap-3">🏎️ Мой Гараж</span>
+                                                    <span className="text-[9px] bg-blue-500 text-white px-1.5 py-0.5 rounded-full font-black uppercase">New</span>
+                                                </Link>
+                                                <Link to="/profile?tab=listings" className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted font-bold transition-colors text-primary rounded-lg">
+                                                    📌 Мои объявления
+                                                </Link>
+                                                <Link to="/chat" className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors text-foreground rounded-lg">
+                                                    💬 Сообщения
+                                                </Link>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="p-2 mt-1 border-t border-border">
+                                        <Link to="/profile?tab=profile" className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors text-foreground rounded-lg mb-1">
+                                            🛠️ Настройки
                                         </Link>
-                                    )}
-
-                                    {isAdmin() && (
-                                        <Link to="/admin" className="block px-4 py-3 text-sm hover:bg-muted transition-colors border-b border-border font-medium text-foreground">
-                                            ⚙️ Панель Управления
-                                        </Link>
-                                    )}
-
-                                    {isBuyer() && (
-                                        <>
-                                            <Link to="/profile?tab=overview" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
-                                                Личный Кабинет
-                                            </Link>
-                                            <Link to="/profile?tab=garage" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground font-bold flex items-center justify-between">
-                                                Мой Гараж
-                                                <span className="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded uppercase">New</span>
-                                            </Link>
-                                            <Link to="/profile?tab=listings" className="block px-4 py-2 text-sm hover:bg-muted font-bold transition-colors text-primary">
-                                                Мои объявления
-                                            </Link>
-                                            <Link to="/orders" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
-                                                Мои заказы
-                                            </Link>
-                                            <Link to="/chat" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
-                                                Сообщения
-                                            </Link>
-                                            <Link to="/profile/offers" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
-                                                Мои предложения
-                                            </Link>
-                                            <Link to="/favorites" className="block px-4 py-2 text-sm hover:bg-muted transition-colors text-foreground">
-                                                Список желаний
-                                            </Link>
-                                        </>
-                                    )}
-
-                                    <Link to="/profile?tab=profile" className="block px-4 py-2 text-sm hover:bg-muted transition-colors border-t border-border text-foreground">
-                                        Настройки
-                                    </Link>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="block w-full text-left px-4 py-2 text-sm text-red-600 font-medium hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/20"
-                                    >
-                                        {t('common.logout')}
-                                    </button>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-red-600 font-bold hover:bg-red-500/10 rounded-lg transition-colors"
+                                        >
+                                            🚪 {t('common.logout')}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ) : (

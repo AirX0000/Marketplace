@@ -37,8 +37,8 @@ export function AdminLayout() {
 
     const SidebarContent = () => (
         <>
-            <div className="h-16 flex items-center px-6 border-b border-slate-800 shrink-0">
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+            <div className="h-16 flex items-center px-6 border-b border-border shrink-0">
+                <span className="text-xl font-black uppercase tracking-widest bg-gradient-to-r from-primary to-indigo-600 bg-clip-text text-transparent">
                     {isSuperAdmin ? 'Super Admin' : isAdmin ? 'Admin Panel' : 'Partner Hub'}
                 </span>
             </div>
@@ -47,7 +47,7 @@ export function AdminLayout() {
                     to="/admin"
                     className={cn(
                         "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                        isActive('/admin') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                        isActive('/admin') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                 >
                     <LayoutDashboard className="mr-3 h-5 w-5" />
@@ -58,7 +58,7 @@ export function AdminLayout() {
                     to="/admin/listings"
                     className={cn(
                         "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                        isActive('/admin/listings') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                        isActive('/admin/listings') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                 >
                     {isRealtor ? <Home className="mr-3 h-5 w-5" /> :
@@ -81,7 +81,7 @@ export function AdminLayout() {
                             to="/admin/orders"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/admin/orders') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/admin/orders') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             {isNotary ? <CalendarDays className="mr-3 h-5 w-5" /> : <ClipboardList className="mr-3 h-5 w-5" />}
@@ -95,7 +95,7 @@ export function AdminLayout() {
                             to="/admin/customers"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/admin/customers') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/admin/customers') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <Users className="mr-3 h-5 w-5" />
@@ -113,7 +113,7 @@ export function AdminLayout() {
                             to="/super-admin/users?role=PARTNER&category=Риелтор"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/super-admin/users') && location.search.includes('Риелтор') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/super-admin/users') && location.search.includes('Риелтор') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <Home className="mr-3 h-5 w-5" />
@@ -123,7 +123,7 @@ export function AdminLayout() {
                             to="/super-admin/users?role=PARTNER&category=Нотариус"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/super-admin/users') && location.search.includes('Нотариус') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/super-admin/users') && location.search.includes('Нотариус') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <FileText className="mr-3 h-5 w-5" />
@@ -133,7 +133,7 @@ export function AdminLayout() {
                             to="/super-admin/users?role=PARTNER&category=Оценка"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/super-admin/users') && location.search.includes('Оценка') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/super-admin/users') && location.search.includes('Оценка') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <ClipboardList className="mr-3 h-5 w-5" />
@@ -143,7 +143,7 @@ export function AdminLayout() {
                             to="/super-admin/users?role=PARTNER&category=Страхование"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/super-admin/users') && location.search.includes('Страхование') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/super-admin/users') && location.search.includes('Страхование') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <Shield className="mr-3 h-5 w-5" />
@@ -157,7 +157,7 @@ export function AdminLayout() {
                             to="/super-admin/users"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/super-admin/users') && !location.search.includes('category=') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/super-admin/users') && !location.search.includes('category=') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <Users className="mr-3 h-5 w-5" />
@@ -167,7 +167,7 @@ export function AdminLayout() {
                             to="/super-admin/loans"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/super-admin/loans') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/super-admin/loans') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <FileText className="mr-3 h-5 w-5" />
@@ -177,7 +177,7 @@ export function AdminLayout() {
                             to="/admin/companies"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/admin/companies') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/admin/companies') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <Briefcase className="mr-3 h-5 w-5" />
@@ -187,7 +187,7 @@ export function AdminLayout() {
                             to="/admin/emails"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/admin/emails') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/admin/emails') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <Mail className="mr-3 h-5 w-5" />
@@ -197,7 +197,7 @@ export function AdminLayout() {
                             to="/admin/logistics"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/admin/logistics') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/admin/logistics') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <Truck className="mr-3 h-5 w-5" />
@@ -207,7 +207,7 @@ export function AdminLayout() {
                             to="/admin/partners"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/admin/partners') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/admin/partners') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <Store className="mr-3 h-5 w-5" />
@@ -222,7 +222,7 @@ export function AdminLayout() {
                             to="/admin/offers"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/admin/offers') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/admin/offers') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <HandCoins className="mr-3 h-5 w-5" />
@@ -233,7 +233,7 @@ export function AdminLayout() {
                                 to="/admin/leads"
                                 className={cn(
                                     "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                    isActive('/admin/leads') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                    isActive('/admin/leads') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
                                 <CalendarDays className="mr-3 h-5 w-5" />
@@ -248,7 +248,7 @@ export function AdminLayout() {
                         to="/admin/finance"
                         className={cn(
                             "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                            isActive('/admin/finance') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                            isActive('/admin/finance') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         )}
                     >
                         <BadgeDollarSign className="mr-3 h-5 w-5" />
@@ -266,7 +266,7 @@ export function AdminLayout() {
                             to="/admin/careers"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/admin/careers') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/admin/careers') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <Briefcase className="mr-3 h-5 w-5" />
@@ -276,7 +276,7 @@ export function AdminLayout() {
                             to="/admin/blog"
                             className={cn(
                                 "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                                isActive('/admin/blog') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                isActive('/admin/blog') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <FileText className="mr-3 h-5 w-5" />
@@ -289,17 +289,17 @@ export function AdminLayout() {
                     to="/admin/settings"
                     className={cn(
                         "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                        isActive('/admin/settings') ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                        isActive('/admin/settings') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                 >
                     <Settings className="mr-3 h-5 w-5" />
                     {t('admin.settings', 'Настройки')}
                 </Link>
             </nav>
-            <div className="p-4 border-t border-slate-800">
+            <div className="p-4 border-t border-border">
                 <Link
                     to="/"
-                    className="flex items-center px-4 py-3 text-sm font-medium rounded-md text-slate-300 hover:bg-red-900/20 hover:text-red-400 transition-colors"
+                    className="flex items-center px-4 py-3 text-sm font-medium rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                 >
                     <LogOut className="mr-3 h-5 w-5" />
                     {t('common.logout')}
@@ -309,9 +309,9 @@ export function AdminLayout() {
     );
 
     return (
-        <div className="flex h-screen bg-muted/20">
+        <div className="flex h-screen bg-background text-foreground">
             {/* Desktop Sidebar */}
-            <aside className="w-64 border-r border-slate-800 bg-slate-900 hidden md:flex flex-col">
+            <aside className="w-64 border-r border-border bg-card hidden md:flex flex-col">
                 <SidebarContent />
             </aside>
 
@@ -331,12 +331,12 @@ export function AdminLayout() {
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed inset-y-0 left-0 w-72 bg-slate-900 z-[101] md:hidden flex flex-col shadow-2xl border-r border-slate-800"
+                            className="fixed inset-y-0 left-0 w-72 bg-card z-[101] md:hidden flex flex-col shadow-2xl border-r border-border"
                         >
                             <SidebarContent />
                             <button
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white"
+                                className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground"
                             >
                                 <X size={20} />
                             </button>
@@ -361,19 +361,19 @@ export function AdminLayout() {
                     </div>
                     <div className="flex items-center gap-2">
                         {!isAdmin && <LanguageSwitcher />}
-                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-[10px] shadow-lg shadow-blue-600/20">
+                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-[10px] shadow-lg shadow-primary/20">
                             {user?.name?.charAt(0)}
                         </div>
                     </div>
                 </header>
-                <header className="h-16 border-b bg-background px-6 hidden md:flex items-center justify-end gap-4">
+                <header className="h-16 border-b border-border bg-card/80 backdrop-blur-md px-6 hidden md:flex items-center justify-end gap-4 shadow-sm">
                     {!isAdmin && <LanguageSwitcher />}
                     <div className="flex items-center gap-3">
                         <div className="text-right">
-                            <p className="text-sm font-bold">{user?.name}</p>
-                            <p className="text-xs text-muted-foreground uppercase">{user?.role}</p>
+                            <p className="text-sm font-black uppercase tracking-tight">{user?.name}</p>
+                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{user?.role}</p>
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs uppercase">
+                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-xs uppercase shadow-lg shadow-primary/20">
                             {user?.name?.charAt(0)}
                         </div>
                     </div>

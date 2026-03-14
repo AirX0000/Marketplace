@@ -121,7 +121,7 @@ export function AdminListings() {
                     <h1 className="text-3xl font-bold tracking-tight">
                         {isAdmin ? "Управление Товарами" : "Мои Товары"}
                     </h1>
-                    <p className="text-slate-700">
+                    <p className="text-muted-foreground">
                         {isAdmin ? "Модерация каталога и добавление товаров" : "Управление вашим ассортиментом"}
                     </p>
                 </div>
@@ -148,22 +148,22 @@ export function AdminListings() {
             </div>
 
             {/* Filters Bar */}
-            <div className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div className="flex flex-col md:flex-row gap-4 bg-card p-4 rounded-xl border border-border shadow-sm">
                 <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <input
                         type="text"
                         placeholder="Поиск по названию..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 pr-4 h-10 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        className="w-full pl-9 pr-4 h-10 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                 </div>
                 <div className="w-full md:w-64">
                     <select
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white"
+                        className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     >
                         <option value="ALL">Все категории</option>
                         <option value="Недвижимость">Недвижимость</option>
@@ -188,7 +188,7 @@ export function AdminListings() {
                             {tab.label}
                             {/* Show count badge only for PENDING tab if Admin */}
                             {isAdmin && tab.id === 'PENDING' && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${statusFilter === 'PENDING' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${statusFilter === 'PENDING' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                                     {tab.count > 0 ? tab.count : '!'}
                                 </span>
                             )}
@@ -201,14 +201,14 @@ export function AdminListings() {
             <div className="border rounded-xl bg-card overflow-hidden shadow-sm hidden md:block">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-100/50 text-slate-700 border-b">
+                        <thead className="bg-muted/50 text-muted-foreground border-b border-border">
                             <tr>
-                                <th className="p-4 font-bold w-[40%] text-slate-900">Товар</th>
-                                {isAdmin && <th className="p-4 font-bold text-slate-900">Продавец</th>}
-                                <th className="p-4 font-bold text-slate-900">Цена</th>
-                                <th className="p-4 font-bold text-slate-900">Категория</th>
-                                <th className="p-4 font-bold text-slate-900">Статус</th>
-                                <th className="p-4 font-bold text-right text-slate-900">Действия</th>
+                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Товар</th>
+                                {isAdmin && <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Продавец</th>}
+                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Цена</th>
+                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Категория</th>
+                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Статус</th>
+                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground text-right">Действия</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
@@ -240,47 +240,47 @@ export function AdminListings() {
 
                                 return filteredListings.length === 0 ? (
                                     <tr>
-                                        <td colSpan={isAdmin ? 6 : 5} className="p-12 text-center text-slate-700">
+                                        <td colSpan={isAdmin ? 6 : 5} className="p-12 text-center text-muted-foreground">
                                             <div className="flex flex-col items-center gap-2">
-                                                <div className="bg-slate-50 p-3 rounded-full mb-2">
-                                                    <Filter className="h-6 w-6 text-slate-400" />
+                                                <div className="bg-muted p-3 rounded-full mb-2">
+                                                    <Filter className="h-6 w-6 text-muted-foreground/50" />
                                                 </div>
-                                                <span className="font-medium text-slate-900">Товары не найдены</span>
-                                                <span className="text-xs text-slate-500">В этой категории пока нет товаров</span>
+                                                <span className="font-black uppercase text-xs tracking-widest text-foreground">Товары не найдены</span>
+                                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">В этой категории пока нет товаров</span>
                                             </div>
                                         </td>
                                     </tr>
                                 ) : (
                                     filteredListings.map((item) => (
-                                        <tr key={item.id} className="bg-white hover:bg-slate-50 transition-colors">
+                                        <tr key={item.id} className="bg-card hover:bg-muted/50 transition-colors">
                                             <td className="p-4 font-medium">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200">
+                                                    <div className="h-10 w-10 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border">
                                                         {item.image ? (
                                                             <img src={item.image} className="h-full w-full object-cover" alt={item.name} />
                                                         ) : (
-                                                            <div className="h-full w-full flex items-center justify-center text-slate-400 bg-slate-100">?</div>
+                                                            <div className="h-full w-full flex items-center justify-center text-muted-foreground bg-muted">?</div>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <div className="font-bold text-slate-900 line-clamp-1">{item.name}</div>
-                                                        <div className="text-xs text-slate-500 line-clamp-1">{item.region}</div>
+                                                        <div className="font-bold text-foreground line-clamp-1">{item.name}</div>
+                                                        <div className="text-xs text-muted-foreground line-clamp-1">{item.region}</div>
                                                     </div>
                                                 </div>
                                             </td>
                                             {isAdmin && (
-                                                <td className="p-4 text-slate-600">
+                                                <td className="p-4 text-muted-foreground">
                                                     {item.owner ? (
                                                         <div className="flex flex-col">
-                                                            <span className="text-slate-900 font-semibold text-xs">{item.owner.name || 'Магазин'}</span>
-                                                            <span className="text-[10px] text-slate-500">{item.owner.email}</span>
+                                                            <span className="text-foreground font-semibold text-xs">{item.owner.name || 'Магазин'}</span>
+                                                            <span className="text-[10px] text-muted-foreground">{item.owner.email}</span>
                                                         </div>
-                                                    ) : <span className="text-xs text-slate-400">Системный</span>}
+                                                    ) : <span className="text-xs text-muted-foreground/60">Системный</span>}
                                                 </td>
                                             )}
-                                            <td className="p-4 whitespace-nowrap font-medium text-slate-900">{(item.price || 0).toLocaleString()} Sum</td>
+                                            <td className="p-4 whitespace-nowrap font-medium text-foreground">{(item.price || 0).toLocaleString()} Sum</td>
                                             <td className="p-4">
-                                                <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-primary ring-1 ring-inset ring-primary/20">
                                                     {item.category}
                                                 </span>
                                             </td>
@@ -293,7 +293,7 @@ export function AdminListings() {
                                                         <>
                                                             <button
                                                                 onClick={() => handleEdit(item)}
-                                                                className="h-8 w-8 inline-flex items-center justify-center rounded-md border text-blue-600 hover:bg-blue-50 transition-colors"
+                                                                className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-border text-primary hover:bg-primary/10 transition-colors"
                                                                 title="Редактировать"
                                                             >
                                                                 <MoreHorizontal size={16} />
@@ -301,7 +301,7 @@ export function AdminListings() {
                                                             {item.status !== 'APPROVED' && (
                                                                 <button
                                                                     onClick={() => handleStatusChange(item.id, 'APPROVED')}
-                                                                    className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-green-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 transition-colors"
+                                                                    className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition-colors"
                                                                     title="Одобрить"
                                                                 >
                                                                     <Check size={16} />
@@ -310,7 +310,7 @@ export function AdminListings() {
                                                             {item.status !== 'REJECTED' && (
                                                                 <button
                                                                     onClick={() => handleStatusChange(item.id, 'REJECTED')}
-                                                                    className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 transition-colors"
+                                                                    className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
                                                                     title="Отклонить"
                                                                 >
                                                                     <X size={16} />
@@ -326,7 +326,7 @@ export function AdminListings() {
                                                                         toast.success(next ? '✅ Продавец верифицирован' : 'Верификация снята');
                                                                     } catch { toast.error('Ошибка'); }
                                                                 }}
-                                                                className={`h-8 w-8 inline-flex items-center justify-center rounded-md border transition-colors ${item.isVerified ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-200 text-slate-500 hover:bg-emerald-50 hover:text-emerald-700'}`}
+                                                                className={`h-8 w-8 inline-flex items-center justify-center rounded-md border transition-colors ${item.isVerified ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20' : 'border-border text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500'}`}
                                                                 title={item.isVerified ? 'Снять верификацию' : 'Верифицировать продавца'}
                                                             >
                                                                 <Shield size={14} />
@@ -340,14 +340,14 @@ export function AdminListings() {
                                                                         toast.success(next ? '⭐ Официальный дилер присвоен' : 'Статус дилера снят');
                                                                     } catch { toast.error('Ошибка'); }
                                                                 }}
-                                                                className={`h-8 w-8 inline-flex items-center justify-center rounded-md border transition-colors ${item.isOfficial ? 'bg-amber-500 text-white border-amber-500' : 'border-slate-200 text-slate-500 hover:bg-amber-50 hover:text-amber-700'}`}
+                                                                className={`h-8 w-8 inline-flex items-center justify-center rounded-md border transition-colors ${item.isOfficial ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20' : 'border-border text-muted-foreground hover:bg-amber-500/10 hover:text-amber-500'}`}
                                                                 title={item.isOfficial ? 'Снять статус дилера' : 'Присвоить официального дилера'}
                                                             >
                                                                 <Sparkles size={14} />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDelete(item.id)}
-                                                                className="h-8 w-8 inline-flex items-center justify-center rounded-md border text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+                                                                className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-border text-red-500 hover:bg-red-500/10 transition-colors"
                                                                 title="Удалить"
                                                             >
                                                                 <Trash2 size={16} />
@@ -355,8 +355,8 @@ export function AdminListings() {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <button onClick={() => handleEdit(item)} className="text-sm font-medium text-blue-600 hover:underline px-2">Ред.</button>
-                                                            <button onClick={() => handleDelete(item.id)} className="text-sm font-medium text-red-600 hover:underline px-2">Удал.</button>
+                                                            <button onClick={() => handleEdit(item)} className="text-sm font-bold text-primary hover:underline px-2">Ред.</button>
+                                                            <button onClick={() => handleDelete(item.id)} className="text-sm font-bold text-red-500 hover:underline px-2">Удал.</button>
                                                         </>
                                                     )}
                                                 </div>
@@ -396,58 +396,58 @@ export function AdminListings() {
                         </div>
                     ) : (
                         filteredListings.map((item) => (
-                            <div key={item.id} className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
+                            <div key={item.id} className="bg-card border border-border rounded-3xl p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
                                 <div className="flex gap-4 mb-4">
-                                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
+                                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted flex-shrink-0 border border-border">
                                         {item.image ? (
                                             <img src={item.image} className="w-full h-full object-cover" alt="" />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-400">?</div>
+                                            <div className="w-full h-full flex items-center justify-center text-muted-foreground">?</div>
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-start justify-between gap-2">
-                                            <h4 className="font-black text-slate-900 leading-tight uppercase text-sm line-clamp-2">{item.name}</h4>
+                                            <h4 className="font-black text-foreground leading-tight uppercase text-sm line-clamp-2">{item.name}</h4>
                                             <StatusBadge status={item.status || 'PENDING'} />
                                         </div>
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">{item.region}</p>
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">{item.region}</p>
                                         <div className="mt-2 flex items-center gap-2">
-                                            <span className="text-lg font-black text-blue-600">{(item.price || 0).toLocaleString()} <span className="text-[10px] uppercase">Sum</span></span>
+                                            <span className="text-lg font-black text-primary">{(item.price || 0).toLocaleString()} <span className="text-[10px] uppercase">Sum</span></span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-50">
+                                <div className="flex flex-wrap gap-2 pt-4 border-t border-border/50">
                                     <button
                                         onClick={() => handleEdit(item)}
-                                        className="flex-1 h-10 rounded-xl bg-blue-50 text-blue-600 font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center gap-2"
+                                        className="flex-1 h-10 rounded-xl bg-primary/10 text-primary font-black text-[10px] uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center gap-2"
                                     >
                                         <MoreHorizontal size={14} /> Редакт.
                                     </button>
                                     {isAdmin && item.status !== 'APPROVED' && (
                                         <button
                                             onClick={() => handleStatusChange(item.id, 'APPROVED')}
-                                            className="h-10 px-4 rounded-xl bg-emerald-50 text-emerald-600 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
+                                            className="h-10 px-4 rounded-xl bg-emerald-500/10 text-emerald-600 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
                                         >
                                             <Check size={14} />
                                         </button>
                                     )}
                                     <button
                                         onClick={() => handleDelete(item.id)}
-                                        className="h-10 px-4 rounded-xl bg-red-50 text-red-400 font-black text-[10px] uppercase tracking-widest flex items-center justify-center"
+                                        className="h-10 px-4 rounded-xl bg-red-500/10 text-red-500 font-black text-[10px] uppercase tracking-widest flex items-center justify-center"
                                     >
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
                                 
                                 {isAdmin && item.owner && (
-                                    <div className="mt-4 pt-3 flex items-center gap-2 border-t border-slate-50">
-                                        <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">
+                                    <div className="mt-4 pt-3 flex items-center gap-2 border-t border-border/50">
+                                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">
                                             {item.owner.name?.charAt(0)}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[9px] font-black text-slate-900 uppercase leading-none">{item.owner.name}</span>
-                                            <span className="text-[8px] text-slate-500 uppercase tracking-tighter mt-0.5">{item.owner.email}</span>
+                                            <span className="text-[9px] font-black text-foreground uppercase leading-none">{item.owner.name}</span>
+                                            <span className="text-[8px] text-muted-foreground uppercase tracking-tighter mt-0.5">{item.owner.email}</span>
                                         </div>
                                     </div>
                                 )}
