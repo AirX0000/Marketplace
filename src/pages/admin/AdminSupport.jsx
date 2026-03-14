@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 
 export function AdminSupport() {
     const { user } = useShop();
-    const isAdmin = user?.role === 'ADMIN';
+    const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
     const [tickets, setTickets] = useState([]);
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [newMessage, setNewMessage] = useState('');

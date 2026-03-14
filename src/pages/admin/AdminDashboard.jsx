@@ -44,7 +44,7 @@ export function AdminDashboard() {
 
             try {
                 let data;
-                if (user.role === 'ADMIN') {
+                if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
                     data = await api.getAdminStats();
                 } else {
                     data = await api.getPartnerStats();
@@ -72,8 +72,8 @@ export function AdminDashboard() {
         );
     }
 
-    const isAdmin = user?.role === 'ADMIN';
-    const isPartner = user?.role === 'PARTNER' || user?.role === 'ADMIN';
+    const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
+    const isPartner = user?.role === 'PARTNER' || user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
 
     if (error) {
         return (

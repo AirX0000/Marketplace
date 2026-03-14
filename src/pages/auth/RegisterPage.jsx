@@ -98,7 +98,7 @@ export function RegisterPage() {
 
             // Redirect based on role
             const defaultRoute = response.user.role === 'PARTNER' ? '/partner' :
-                response.user.role === 'ADMIN' ? '/admin' : '/profile';
+                (response.user.role === 'ADMIN' || response.user.role === 'SUPER_ADMIN') ? '/admin' : '/profile';
             navigate(defaultRoute);
         } catch (err) {
             setError(err.message || 'Ошибка регистрации');

@@ -30,8 +30,12 @@ export function LoginPage() {
     });
 
     const redirectAfterLogin = (user) => {
-        const route = user.role === 'PARTNER' ? '/partner'
-            : user.role === 'ADMIN' ? '/admin' : '/profile';
+        const lastPath = localStorage.getItem('lastPath');
+        localStorage.removeItem('lastPath'); // Clear it after use
+        const route = (lastPath && !['/login', '/register'].includes(lastPath))
+            ? lastPath
+            : user.role === 'PARTNER' ? '/partner'
+            : (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? '/admin' : '/profile';
         navigate(route);
     };
 

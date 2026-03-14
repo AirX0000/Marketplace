@@ -10,7 +10,7 @@ export function PartnerFinance() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (user?.role === 'ADMIN') return; // Skip API call for admin here, SuperAdminFinance component handles it
+        if (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') return; // Skip API call for admin here, SuperAdminFinance component handles it
 
         api.getPartnerFinance()
             .then(setData)
@@ -19,7 +19,7 @@ export function PartnerFinance() {
     }, [user]);
 
     // Redirect or show Admin View
-    if (user?.role === 'ADMIN') {
+    if (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') {
         return <SuperAdminFinance />;
     }
 

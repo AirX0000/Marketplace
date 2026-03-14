@@ -16,7 +16,7 @@ export function AdminListings() {
     const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, PENDING, APPROVED, REJECTED
 
     // Admin Only
-    const isAdmin = user?.role === 'ADMIN';
+    const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
 
     useEffect(() => {
         loadListings();
