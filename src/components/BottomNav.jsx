@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, Heart, User, LayoutGrid } from 'lucide-react';
+import { Home, Search, Heart, User, LayoutGrid, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { useShop } from '../context/ShopContext';

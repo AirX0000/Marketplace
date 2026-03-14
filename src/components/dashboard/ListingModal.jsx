@@ -125,6 +125,17 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             }
         }
 
+        const parseImages = (imgs) => {
+            if (!imgs) return [];
+            if (Array.isArray(imgs)) return imgs;
+            try {
+                const parsed = JSON.parse(imgs);
+                return Array.isArray(parsed) ? parsed : [parsed];
+            } catch (e) {
+                return typeof imgs === 'string' ? [imgs] : [];
+            }
+        };
+
         return {
             name: listing?.name || "",
             name_uz: listing?.name_uz || "",
@@ -134,8 +145,8 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             discount: listing?.discount || 0,
             region: listing?.region || "Global",
             category: listing?.category || initialCategory || "Бозор (Авто с пробегом)",
-            images: listing?.images ? JSON.parse(listing.images) : (listing?.image ? [listing.image] : []),
-            certificates: listing?.certificates || [],
+            images: parseImages(listing?.images || listing?.image),
+            certificates: parseImages(listing?.certificates),
             attributes: initialAttrs,
             lat: listing?.lat || null,
             lng: listing?.lng || null

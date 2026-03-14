@@ -13,6 +13,28 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
     const { i18n } = useTranslation();
     const isUz = i18n.language === 'uz';
 
+    const getImageUrl = (img) => {
+        if (!img) return null;
+        try {
+            // Handle accidental double stringification or JSON arrays in image field
+            if (typeof img === 'string' && (img.startsWith('[') || img.startsWith('"'))) {
+                const parsed = JSON.parse(img);
+                img = Array.isArray(parsed) ? parsed[0] : parsed;
+            }
+        } catch (e) {
+            // Not JSON, continue with original string
+        }
+        
+        if (typeof img !== 'string') return null;
+        if (img.startsWith('http') || img.startsWith('data:')) return img;
+        
+        const host = import.meta.env.VITE_API_URL 
+            ? import.meta.env.VITE_API_URL.split('/api')[0] 
+            : window.location.origin;
+        
+        return `${host}${img.startsWith('/') ? '' : '/'}${img}`;
+    };
+
     // Use UZ translations if available and language is UZ, otherwise fall back to RU
     const displayName = (isUz && marketplace.name_uz) ? marketplace.name_uz : marketplace.name;
     const displayDescription = (isUz && marketplace.description_uz) ? marketplace.description_uz : marketplace.description;
@@ -52,9 +74,12 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 <div className="group relative flex overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div className="w-48 h-48 flex-shrink-0 overflow-hidden bg-muted/30 p-6 relative">
                         <img
-                            src={marketplace.image || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
+                            src={getImageUrl(marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                             alt={displayName}
                             loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-500 group-hover:scale-110"
+                            onError={(e) => {
+                                e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
+                            }}
                         />
                         <button
                             onClick={(e) => {
@@ -186,9 +211,12 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
             >
                 <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-2 md:p-6 relative">
                     <img
-                        src={marketplace.image || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
+                        src={getImageUrl(marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                         alt={displayName}
                         loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                            e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
+                        }}
                     />
 
                     {/* Brand Logo Overlay for Transport */}

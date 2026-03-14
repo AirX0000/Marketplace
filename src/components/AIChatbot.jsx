@@ -46,7 +46,7 @@ export function AIChatbot() {
     };
 
     return (
-        <div className="fixed bottom-8 right-8 z-[9999]">
+        <div className="fixed bottom-24 right-6 sm:bottom-8 sm:right-8 z-[9999]">
             {/* Toggle Button */}
             <AnimatePresence>
                 {!isOpen && (
@@ -57,17 +57,17 @@ export function AIChatbot() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsOpen(true)}
-                        className="h-16 px-8 rounded-2xl bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 text-white shadow-[0_20px_40px_rgba(147,51,234,0.4)] flex items-center justify-center gap-4 group relative overflow-hidden border border-white/20"
+                        className="h-12 w-12 sm:h-16 sm:px-8 rounded-2xl bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 text-white shadow-[0_20px_40px_rgba(147,51,234,0.4)] flex items-center justify-center gap-4 group relative overflow-hidden border border-white/20"
                     >
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="relative flex items-center justify-center">
-                            <Sparkles className="h-6 w-6 absolute opacity-0 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500" />
-                            <MessageSquare className="h-6 w-6 group-hover:opacity-0 transition-all duration-500" />
+                            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 absolute opacity-0 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500" />
+                            <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 group-hover:opacity-0 transition-all duration-500" />
                         </div>
-                        <span className="font-black tracking-widest uppercase text-xs">AI Ассистент</span>
+                        <span className="font-black tracking-widest uppercase text-xs hidden sm:block">AI Ассистент</span>
 
                         {/* Status Dot */}
-                        <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)] animate-pulse" />
+                        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 h-2 w-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)] animate-pulse" />
                     </motion.button>
                 )}
             </AnimatePresence>
