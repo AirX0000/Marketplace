@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const leadsController = require('../controllers/leads.controller');
-const { protect, optionalProtect } = require('../middleware/authMiddleware');
+const { protect, optionalProtect } = require('../middleware/auth');
 
 // Public or optional protect for creating a lead
 router.post('/', optionalProtect, leadsController.createLead);

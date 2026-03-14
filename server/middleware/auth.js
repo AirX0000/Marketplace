@@ -22,6 +22,22 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
+const optionalProtect = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return next();
+    }
+
+    jwt.verify(token, env.jwtSecret, (err, user) => {
+        if (!err) {
+            req.user = user;
+        }
+        next();
+    });
+};
+
 const authorizeRole = (roles) => {
     return (req, res, next) => {
         if (!req.user) return res.sendStatus(401);
@@ -53,4 +69,11 @@ const requireSuperAdmin = (req, res, next) => {
     next();
 };
 
-module.exports = { authenticateToken, authorizeRole, requireAdmin, requireSuperAdmin };
+module.exports = { 
+    authenticateToken, 
+    protect: authenticateToken, 
+    optionalProtect,
+    authorizeRole, 
+    requireAdmin, 
+    requireSuperAdmin 
+};
