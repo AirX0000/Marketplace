@@ -155,12 +155,12 @@ export function AIChatbot() {
                         {/* Input Footer */}
                         <div className="p-8 pt-4 relative z-10 border-t border-white/5">
                             <form onSubmit={handleSend} className="relative group">
-                                <div className="absolute inset-0 bg-purple-600/5 blur-2xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
+                                <div className="absolute inset-0 bg-purple-600/5 blur-2xl opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
                                 <input
                                     value={input}
                                     onChange={e => setInput(e.target.value)}
                                     placeholder="Ваш вопрос ассистенту..."
-                                    className="w-full pl-6 pr-16 py-5 rounded-2xl border border-white/10 bg-white/5 focus:bg-white/10 focus:border-purple-500/50 focus:outline-none transition-all text-sm font-bold text-white placeholder-slate-600"
+                                    className="w-full pl-6 pr-16 py-5 rounded-2xl border border-white/10 bg-white/5 focus:bg-white/10 focus:border-purple-500/50 focus:outline-none transition-all text-sm font-bold text-white placeholder-slate-600 relative z-10"
                                 />
                                 <button
                                     type="submit"
