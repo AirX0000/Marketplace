@@ -385,7 +385,7 @@ export function MarketplaceListing() {
                 <meta property="og:type" content="website" />
                 <meta property="og:site_name" content="Autohouse.uz" />
             </Helmet>
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto">
                 <div className="flex flex-col lg:flex-row gap-8">
 
                     {/* Sidebar / Mobile Filters Modal */}

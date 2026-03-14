@@ -58,7 +58,7 @@ export function HelpFAQ() {
                 </div>
             </div>
 
-            <div className="container px-4 md:px-6 -mt-8 relative z-10">
+            <div className="container -mt-8 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm text-center border border-slate-100 dark:border-slate-700 hover:-translate-y-1 transition-transform">
                         <div className="h-12 w-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4"><MessageCircle /></div>

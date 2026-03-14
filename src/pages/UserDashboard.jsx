@@ -149,7 +149,7 @@ export function UserDashboard() {
 
     return (
         <div className="min-h-screen bg-[#13111C] text-white font-sans">
-            <div className="container py-4 md:py-8 px-4 md:px-6">
+            <div className="container py-4 md:py-8">
                 <div className="grid md:grid-cols-[280px_1fr] gap-4 md:gap-8">
 
                     {/* Sidebar */}

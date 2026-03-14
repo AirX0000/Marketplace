@@ -95,7 +95,7 @@ export function CatalogPage() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/5 blur-[120px]" />
             </div>
 
-            <div className="container mx-auto py-12 px-4 relative z-10">
+            <div className="container mx-auto py-12 relative z-10">
                 {/* Header Section - Hidden in Map Mode for immersive experience */}
                 {viewMode !== 'map' && (
                     <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">

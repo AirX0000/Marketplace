@@ -251,7 +251,7 @@ export function MarketplaceDetail() {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-8 max-w-7xl animate-pulse">
+            <div className="container mx-auto py-8 max-w-7xl animate-pulse">
                 <Skeleton height={40} width={200} className="mb-4" />
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-center text-slate-500">
                     <div className="lg:col-span-2 space-y-4">
@@ -287,7 +287,7 @@ export function MarketplaceDetail() {
 
             {/* Top Navigation */}
             <div className="absolute top-8 left-0 right-0 z-30 pointer-events-none">
-                <div className="container mx-auto px-4 flex justify-between items-center pointer-events-auto">
+                <div className="container mx-auto flex justify-between items-center pointer-events-auto">
                     <Link to="/marketplaces" className="h-12 w-12 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white rounded-2xl backdrop-blur-xl border border-white/10 transition-all active:scale-90 group">
                         <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
                     </Link>
@@ -299,7 +299,7 @@ export function MarketplaceDetail() {
 
             {/* FLOATING TOP BAR (Visible on Scroll) */}
             <div className="sticky top-0 z-50 bg-[#13111C]/80 backdrop-blur-2xl border-b border-white/5 hidden md:block">
-                <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+                <div className="container mx-auto h-20 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="h-12 w-16 bg-[#191624] rounded-lg overflow-hidden shrink-0 border border-white/5">
                             <img src={activeImage} alt={marketplace.name || 'Товар'} className="w-full h-full object-cover" />
@@ -326,7 +326,7 @@ export function MarketplaceDetail() {
                 </div>
             </div>
 
-            <main className="container mx-auto px-4 py-8 pb-28 md:pb-8">
+            <main className="container mx-auto py-8 pb-28 md:pb-8">
                 <Breadcrumbs items={breadcrumbs} />
                 <article className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 

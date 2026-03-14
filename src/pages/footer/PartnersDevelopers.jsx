@@ -8,7 +8,7 @@ export function PartnersDevelopers() {
             {/* Hero */}
             <header className="bg-slate-900 text-white pt-24 pb-32 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
-                <div className="container px-4 md:px-6 relative z-10 text-center">
+                <div className="container relative z-10 text-center">
                     <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 text-primary-foreground font-bold text-sm mb-6 border border-white/10 backdrop-blur">
                         Для бизнеса и разработчиков
                     </span>
@@ -30,7 +30,7 @@ export function PartnersDevelopers() {
             </header>
 
             {/* Features Grid */}
-            <section className="container px-4 md:px-6 -mt-20 relative z-10 pb-20">
+            <section className="container -mt-20 relative z-10 pb-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
                         { icon: Rocket, title: "Быстрый старт", desc: "Запуск магазина за 15 минут с готовыми инструментами импорта товаров." },
@@ -53,7 +53,7 @@ export function PartnersDevelopers() {
 
             {/* API Section */}
             <section id="api" className="py-20 bg-white border-y border-slate-200">
-                <div className="container px-4 md:px-6">
+                <div className="container">
                     <div className="flex flex-col lg:flex-row items-center gap-16">
                         <div className="flex-1">
                             <div className="inline-flex items-center gap-2 text-primary font-bold uppercase tracking-wider text-sm mb-4">

@@ -73,7 +73,7 @@ export function PostAdPage() {
     };
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 md:px-6 bg-background dark:bg-[#0a0f1e]">
+        <div className="flex-1 flex flex-col items-center justify-center py-12 px-[var(--container-padding,2rem)] bg-background dark:bg-[#0a0f1e]">
             <div className="w-full max-w-2xl bg-card rounded-3xl shadow-2xl border border-border overflow-hidden dark:border-white/10 dark:bg-[#1e293b]">
                 <ListingModal
                     asPage={false}

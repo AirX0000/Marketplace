@@ -46,7 +46,7 @@ export function BlogDetail() {
                     className="w-full h-full object-cover"
                 />
                 <div className="absolute bottom-0 left-0 w-full z-20 pb-12 md:pb-20">
-                    <div className="container px-4 md:px-6">
+                    <div className="container">
                         <Link to="/blog" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 text-sm font-medium transition-colors">
                             <ArrowLeft size={16} /> Назад к блогу
                         </Link>
@@ -66,7 +66,7 @@ export function BlogDetail() {
             </div>
 
             {/* Content */}
-            <div className="container px-4 md:px-6 py-12 relative">
+            <div className="container py-12 relative">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     {/* Sidebar / Author */}
                     <aside className="lg:col-span-3 lg:sticky lg:top-24 h-fit order-2 lg:order-1">

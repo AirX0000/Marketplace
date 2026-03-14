@@ -49,7 +49,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
     if (viewMode === 'list') {
         return (
             <>
-                <div className="group relative flex overflow-hidden rounded-2xl border border-border bg-card transition-all hover-scale">
+                <div className="group relative flex overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div className="w-48 h-48 flex-shrink-0 overflow-hidden bg-muted/30 p-6 relative">
                         <img
                             src={marketplace.image || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
@@ -153,7 +153,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             <button
                                 onClick={handleAddToCart}
                                 disabled={isAdded}
-                                className={`inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-medium transition-all duration-200 btn-press ${isAdded ? 'bg-accent text-white' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}
+                                className={`inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-medium transition-all duration-300 active:scale-95 ${isAdded ? 'bg-accent text-white' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}
                             >
                                 {isAdded ? (
                                     <>
@@ -182,7 +182,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                className="group relative flex flex-col rounded-2xl border border-border bg-card transition-all shadow-sm hover:shadow-xl overflow-hidden"
+                className="group relative flex flex-col rounded-2xl border border-border bg-card transition-all duration-300 shadow-sm hover:shadow-2xl overflow-hidden"
             >
                 <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-2 md:p-6 relative">
                     <img

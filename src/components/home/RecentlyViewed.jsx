@@ -54,7 +54,7 @@ export function RecentlyViewed() {
 
     return (
         <section className="py-12 bg-card border-t border-border">
-            <div className="container px-4">
+            <div className="container">
                 <div className="flex items-center gap-2 mb-8">
                     <Clock className="w-6 h-6 text-primary" />
                     <h2 className="text-2xl font-bold text-foreground">
