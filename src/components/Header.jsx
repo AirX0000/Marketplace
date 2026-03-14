@@ -112,7 +112,7 @@ export function Header() {
             >
                 <div className="container flex h-full items-center gap-4">
                     <Link to="/" className="flex-none flex items-center mr-4 group -ml-2">
-                        <img src="/logo-full.png" alt="Autohouse" className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
+                        <img src="/logo-full.png" alt="Autohouse" className="h-8 md:h-10 w-auto object-contain transition-transform group-hover:scale-105" />
                     </Link>
 
                     {/* Catalog Button - Only for buyers */}

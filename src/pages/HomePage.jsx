@@ -166,7 +166,7 @@ export function HomePage() {
                                 
                                 <form 
                                     onSubmit={handleSearchSubmit}
-                                    className="w-full max-w-2xl bg-white/10 backdrop-blur-2xl rounded-2xl md:rounded-3xl p-2 border border-white/20 shadow-2xl hover:bg-white/[0.15] transition-all"
+                                    className="w-full max-w-2xl bg-black/40 backdrop-blur-3xl rounded-2xl md:rounded-[2rem] p-2 border border-white/10 shadow-2xl hover:bg-black/50 transition-all group/form"
                                 >
                                     <div className="flex flex-col md:flex-row gap-2">
                                         <div className="flex-1 relative group">

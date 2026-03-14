@@ -57,17 +57,17 @@ export function AIChatbot() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsOpen(true)}
-                        className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-600 text-white shadow-2xl shadow-indigo-500/30 ring-1 ring-white/20 transition-all hover:scale-105 active:scale-95"
+                        className="flex flex-col h-14 w-14 sm:h-20 sm:w-20 items-center justify-center rounded-[2rem] bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-600 text-white shadow-2xl shadow-indigo-500/30 ring-1 ring-white/20 transition-all hover:scale-105 active:scale-95 group"
                     >
-                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="relative flex items-center justify-center">
-                            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 absolute opacity-0 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500" />
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-[2rem]" />
+                        <div className="relative flex items-center justify-center mb-1">
+                            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 absolute opacity-0 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500" />
                             <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 group-hover:opacity-0 transition-all duration-500" />
                         </div>
-                        <span className="font-black tracking-widest uppercase text-xs hidden sm:block">AI Ассистент</span>
+                        <span className="font-black tracking-widest uppercase text-[8px] sm:text-[10px] hidden sm:block text-center leading-tight px-2">AI Ассистент</span>
 
                         {/* Status Dot */}
-                        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 h-2 w-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)] animate-pulse" />
+                        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 h-2 w-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)] animate-pulse" />
                     </motion.button>
                 )}
             </AnimatePresence>
