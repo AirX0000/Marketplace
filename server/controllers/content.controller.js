@@ -4,7 +4,7 @@ const { asyncHandler } = require('../middleware/errorHandler');
 exports.getJobs = asyncHandler(async (req, res) => {
     // Check if admin based on route or token? usually public, admin uses generic or specific
     // We can check req.user if present
-    const isAdmin = req.user?.role === 'ADMIN';
+    const isAdmin = req.user?.role === 'ADMIN' || req.user?.role === 'SUPER_ADMIN';
     const jobs = await contentService.getJobs(isAdmin);
     res.json(jobs);
 });
@@ -25,7 +25,7 @@ exports.deleteJob = asyncHandler(async (req, res) => {
 });
 
 exports.getPosts = asyncHandler(async (req, res) => {
-    const isAdmin = req.user?.role === 'ADMIN';
+    const isAdmin = req.user?.role === 'ADMIN' || req.user?.role === 'SUPER_ADMIN';
     const posts = await contentService.getPosts(isAdmin);
     res.json(posts);
 });

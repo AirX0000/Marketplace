@@ -43,7 +43,7 @@ class SupportService {
     }
 
     async replyTicket(userId, role, ticketId, message) {
-        const isAdmin = role === 'ADMIN';
+        const isAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN';
         const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
         if (!ticket) throw new Error("Not found");
         if (!isAdmin && ticket.userId !== userId) throw new Error("Denied");

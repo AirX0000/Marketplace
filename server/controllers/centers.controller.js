@@ -3,7 +3,7 @@ const { asyncHandler } = require('../middleware/errorHandler');
 
 exports.getCenters = asyncHandler(async (req, res) => {
     // Check if user is admin to decide if we show inactive
-    const isAdmin = req.user && req.user.role === 'ADMIN';
+    const isAdmin = req.user && (req.user.role === 'ADMIN' || req.user.role === 'SUPER_ADMIN');
     const centers = await centersService.getCenters(isAdmin);
     res.json(centers);
 });

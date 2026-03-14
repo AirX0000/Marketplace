@@ -25,6 +25,10 @@ const authenticateToken = (req, res, next) => {
 const authorizeRole = (roles) => {
     return (req, res, next) => {
         if (!req.user) return res.sendStatus(401);
+        
+        // SUPER_ADMIN Bypass (God-Mode)
+        if (req.user.role === 'SUPER_ADMIN') return next();
+
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({ error: "Access denied" });
         }
