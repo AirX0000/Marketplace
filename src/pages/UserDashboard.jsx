@@ -246,28 +246,28 @@ export function UserDashboard() {
                                 {/* CONTENT: OVERVIEW */}
                                 {activeTab === 'overview' && (
                                     <div className="space-y-6">
-                                        <div className="flex overflow-x-auto gap-4 sm:grid sm:grid-cols-3 no-scrollbar pb-2 snap-x -mx-4 px-4 sm:mx-0 sm:px-0">
-                                            <div className="min-w-[240px] sm:min-w-0 snap-start flex-shrink-0">
+                                        <div className="flex overflow-x-auto gap-3 md:gap-4 no-scrollbar pb-2 snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0">
+                                            <div className="min-w-[280px] md:min-w-0 md:flex-1 snap-center">
                                                 <StatCard
                                                     label="Всего заказов"
                                                     value={orders.length}
-                                                    icon={<Package size={24} />}
+                                                    icon={<Package size={20} md:size={24} />}
                                                     color="blue"
                                                 />
                                             </div>
-                                            <div className="min-w-[240px] sm:min-w-0 snap-start flex-shrink-0">
+                                            <div className="min-w-[280px] md:min-w-0 md:flex-1 snap-center">
                                                 <StatCard
                                                     label="В ожидании"
                                                     value={orders.filter(o => o.status !== 'DELIVERED' && o.status !== 'CANCELLED').length}
-                                                    icon={<Bell size={24} />}
+                                                    icon={<Bell size={20} md:size={24} />}
                                                     color="orange"
                                                 />
                                             </div>
-                                            <div className="min-w-[240px] sm:min-w-0 snap-start flex-shrink-0">
+                                            <div className="min-w-[280px] md:min-w-0 md:flex-1 snap-center">
                                                 <StatCard
                                                     label="Потрачено"
                                                     value={`${orders.reduce((acc, o) => acc + o.total, 0).toLocaleString()} UZS`}
-                                                    icon={<Wallet size={24} />}
+                                                    icon={<Wallet size={20} md:size={24} />}
                                                     color="emerald"
                                                 />
                                             </div>
@@ -424,8 +424,11 @@ export function UserDashboard() {
                                                             </div>
                                                         </div>
                                                         <div className="rounded-3xl overflow-hidden border border-white/5 bg-[#13111C]">
-                                                            <div className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-white/5">Локация на карте</div>
-                                                            <div className="h-48">
+                                                            <div className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-white/5 flex justify-between items-center">
+                                                                Локация на карте
+                                                                <span className="md:hidden text-[9px] lowercase opacity-50">(нажмите для выбора)</span>
+                                                            </div>
+                                                            <div className="h-64 md:h-48">
                                                                 <CheckoutMap
                                                                     onLocationSelect={(val) => updateAddress(addr.id, 'location', val)}
                                                                 />
@@ -735,13 +738,13 @@ function StatCard({ label, value, icon, color }) {
     const theme = colors[color] || colors.blue;
 
     return (
-        <div className={`bg-[#191624] p-8 rounded-[2rem] border ${theme.border} shadow-xl flex items-center gap-6 hover:border-purple-500/30 transition-all hover:-translate-y-1 group`}>
-            <div className={`w-16 h-16 ${theme.bg} rounded-2xl flex items-center justify-center ${theme.icon} group-hover:scale-110 transition-transform`}>
+        <div className={`bg-[#191624] p-5 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border ${theme.border} shadow-xl flex items-center gap-4 md:gap-6 hover:border-purple-500/30 transition-all hover:-translate-y-1 group`}>
+            <div className={`w-12 h-12 md:w-16 md:h-16 ${theme.bg} rounded-xl md:rounded-2xl flex items-center justify-center ${theme.icon} group-hover:scale-110 transition-transform flex-shrink-0`}>
                 {icon}
             </div>
-            <div>
-                <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{label}</div>
-                <div className="text-2xl font-black text-white">{value}</div>
+            <div className="min-w-0 flex-1">
+                <div className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5 md:mb-1 truncate">{label}</div>
+                <div className="text-lg md:text-2xl font-black text-white truncate">{value}</div>
             </div>
         </div>
     );

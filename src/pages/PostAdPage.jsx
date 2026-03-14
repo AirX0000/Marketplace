@@ -72,9 +72,9 @@ export function PostAdPage() {
     };
 
     return (
-        <div className="min-h-[calc(100vh-80px)] bg-background py-10 px-4 sm:px-6">
-            <div className="max-w-4xl mx-auto">
-                <div className="bg-card rounded-3xl shadow-xl border border-border p-2 sm:p-6 overflow-hidden">
+        <div className="min-h-screen bg-background py-4 md:py-10 px-0 md:px-6">
+            <div className="max-w-4xl mx-auto h-full">
+                <div className="bg-card md:rounded-3xl md:shadow-xl md:border md:border-border h-full overflow-hidden">
                     <ListingModal
                         asPage={true}
                         initialCategory="Бозор (Авто с пробегом)"
@@ -86,8 +86,8 @@ export function PostAdPage() {
 
             {/* Auth Modal for Guests */}
             {showAuthModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/60 backdrop-blur-sm p-4">
-                    <div className="bg-card text-card-foreground border border-border rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 p-6">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background md:bg-background/60 md:backdrop-blur-sm p-0 md:p-4">
+                    <div className="bg-card text-card-foreground md:border md:border-border md:rounded-3xl w-full max-w-md h-full md:h-auto shadow-2xl animate-in zoom-in-95 p-6 flex flex-col justify-center">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-foreground">
                                 {authMode === 'register' ? 'Финал: Регистрация' : 'Вход в аккаунт'}

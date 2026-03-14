@@ -184,7 +184,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
                 className="group relative flex flex-col rounded-2xl border border-border bg-card transition-all shadow-sm hover:shadow-xl overflow-hidden"
             >
-                <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-6 relative">
+                <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-2 md:p-6 relative">
                     <img
                         src={marketplace.image || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                         alt={displayName}
@@ -220,47 +220,30 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         </div>
                     </button>
 
-                    <div className="absolute right-3 top-3 flex flex-col gap-2 z-10 translate-x-12 group-hover:translate-x-0 transition-transform duration-300">
+                    <div className="absolute right-2 top-2 flex flex-col gap-2 z-10 md:translate-x-12 group-hover:translate-x-0 transition-transform duration-300">
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 toggleFavorite(marketplace);
                             }}
                             aria-label="В избранное"
-                            className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
+                            className={`rounded-full p-2 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                         >
                             <Heart className={`h-4 w-4 ${isFav ? 'fill-current' : ''}`} />
-                        </button>
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                isInCompare ? removeFromCompare(marketplace.id) : addToCompare(marketplace);
-                            }}
-                            aria-label="Сравнить"
-                            className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
-                            title="Сравнить"
-                        >
-                            <Scale className="h-4 w-4" />
                         </button>
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col p-5">
-                    <div className="mb-3 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-colors border-primary/20 bg-primary/10 text-primary dark:text-white dark:border-white/20 dark:bg-white/10">
+                <div className="flex flex-1 flex-col p-3 md:p-5">
+                    <div className="mb-2 flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                            <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] md:text-xs font-semibold border-primary/20 bg-primary/10 text-primary">
                                 {marketplace.region}
                             </span>
-                            {marketplace.isFeatured && (
-                                <span className="inline-flex items-center rounded-full border border-yellow-500/20 bg-yellow-50 text-yellow-700 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm">
-                                    <Star className="w-3 h-3 mr-1 fill-yellow-500 text-yellow-500" />
-                                    VIP
-                                </span>
-                            )}
                         </div>
-                        <div className="flex items-center gap-1.5 text-yellow-500">
-                            <Star className="h-3.5 w-3.5 fill-current" />
-                            <span className="text-sm font-bold text-foreground">{marketplace.rating ? marketplace.rating.toFixed(1) : 'Новинка'}</span>
+                        <div className="flex items-center gap-1 text-yellow-500">
+                            <Star className="h-3 w-3 fill-current" />
+                            <span className="text-[10px] md:text-sm font-bold text-foreground">{marketplace.rating ? marketplace.rating.toFixed(1) : 'NEW'}</span>
                         </div>
                     </div>
 
@@ -295,7 +278,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
 
 
                     <Link to={`/marketplaces/${marketplace.slug || marketplace.id}`} className="mb-2 block">
-                        <h3 className="line-clamp-1 text-lg font-bold text-foreground group-hover:text-primary transition-colors">{displayName}</h3>
+                        <h3 className="line-clamp-1 text-sm md:text-lg font-bold text-foreground group-hover:text-primary transition-colors">{displayName}</h3>
                     </Link>
 
                     {/* Attributes Display */}
@@ -334,44 +317,23 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         })()}
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-border pt-4 mt-auto">
-                        <div className="flex flex-col gap-0.5">
-                            {marketplace.discount > 0 && (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs text-slate-400 line-through">
-                                        {(marketplace.price || 4999000).toLocaleString()} Sum
-                                    </span>
-                                </div>
-                            )}
-                            <div className="font-extrabold text-foreground text-xl tracking-tight">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between border-t border-border pt-3 mt-auto gap-2">
+                        <div className="flex flex-col">
+                            <div className="font-black text-foreground text-sm md:text-xl tracking-tighter">
                                 {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
                             </div>
-                            {["Седан", "Кроссовер", "Внедорожник", "Электромобиль", "Cars", "Transport"].includes(marketplace.category) && (
-                                <div className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded w-fit">
-                                    От {(Math.round(((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100)) / 60)).toLocaleString()} сум/мес
-                                </div>
-                            )}
                         </div>
 
-                        {["Квартиры", "Дома", "Коммерческая", "Земля", "Седан", "Кроссовер", "Внедорожник", "Apartments", "Houses", "Transport"].includes(marketplace.category) ? (
-                            <Link
-                                to={`/marketplaces/${marketplace.slug || marketplace.id}`}
-                                className="inline-flex h-10 items-center justify-center rounded-xl px-5 text-sm font-bold transition-all duration-300 shadow-sm border border-border bg-card text-foreground hover:bg-muted active:scale-95"
-                            >
-                                Подробнее
-                            </Link>
-                        ) : (
-                            <button
-                                onClick={handleAddToCart}
-                                disabled={isAdded}
-                                className={`inline-flex h-10 items-center justify-center rounded-xl px-5 text-sm font-bold transition-all duration-300 shadow-sm active:scale-95 ${isAdded
-                                    ? 'bg-emerald-500 text-white'
-                                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
-                                    }`}
-                            >
-                                {isAdded ? 'В корзине' : 'Купить'}
-                            </button>
-                        )}
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={isAdded}
+                            className={`flex h-9 md:h-10 items-center justify-center rounded-xl px-4 text-xs md:text-sm font-bold transition-all duration-300 shadow-sm active:scale-95 ${isAdded
+                                ? 'bg-emerald-500 text-white'
+                                : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                }`}
+                        >
+                            {isAdded ? 'В корзине' : 'Купить'}
+                        </button>
                     </div>
                 </div>
             </motion.div >

@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import { BottomNav } from '../components/BottomNav';
 import { CompareWidget } from '../components/CompareWidget';
 import { ChevronUp } from 'lucide-react';
 
@@ -45,7 +46,7 @@ export function RootLayout() {
             </a>
 
             <Header />
-            <main id="main-content" className="flex-1">
+            <main id="main-content" className="flex-1 pb-20 md:pb-0">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={location.pathname}
@@ -60,6 +61,7 @@ export function RootLayout() {
                     </motion.div>
                 </AnimatePresence>
             </main>
+            <BottomNav />
             <CompareWidget />
             <ScrollToTop />
             <Footer />

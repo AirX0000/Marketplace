@@ -210,11 +210,9 @@ export function HomePage() {
                                 Рекомендуем для вас
                             </h2>
                         </div>
-                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 md:overflow-visible md:pb-0 md:mx-0 md:px-0 no-scrollbar">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                             {recommendations.slice(0, 4).map((item) => (
-                                <div key={`rec-${item.id}`} className="snap-center shrink-0 w-[280px] md:w-auto">
-                                    <MarketplaceCard marketplace={item} />
-                                </div>
+                                <MarketplaceCard key={`rec-${item.id}`} marketplace={item} />
                             ))}
                         </div>
                     </section>
@@ -249,11 +247,9 @@ export function HomePage() {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0 md:mx-0 md:px-0 no-scrollbar">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 md:gap-6 gap-4">
                             {featured.map((item) => (
-                                <div key={item.id} className="snap-center shrink-0 w-[280px] md:w-auto">
-                                    <MarketplaceCard marketplace={item} />
-                                </div>
+                                <MarketplaceCard key={item.id} marketplace={item} />
                             ))}
                         </div>
                     )}

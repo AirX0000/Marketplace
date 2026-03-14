@@ -104,11 +104,11 @@ export function CatalogPage() {
                                 <div className="h-2 w-12 bg-purple-600 rounded-full" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-400">Маркетплейс</span>
                             </div>
-                            <h1 className="text-5xl font-black uppercase tracking-tighter">
+                            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">
                                 Каталог <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">Объявлений</span>
                             </h1>
-                            <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">
-                                Найдено {products.length} уникальных предложений
+                            <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] md:text-xs">
+                                Найдено {products.length} предложений
                             </p>
                         </div>
 
@@ -181,19 +181,19 @@ export function CatalogPage() {
                             <div className="bg-[#191624] rounded-[2.5rem] border border-white/5 p-4 mb-10 shadow-2xl relative overflow-hidden group">
                                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-blue-600/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
                                 <div className="relative flex items-center gap-4">
-                                    <Search className="ml-4 text-slate-500 group-focus-within:text-purple-400 transition-colors" size={24} />
+                                    <Search className="ml-2 md:ml-4 text-slate-500 group-focus-within:text-purple-400 transition-colors" size={20} />
                                     <input
                                         type="text"
-                                        placeholder="Найти среди тысяч объявлений..."
+                                        placeholder="Поиск..."
                                         value={filters.search || ''}
                                         onChange={(e) => handleFilterChange('search', e.target.value)}
-                                        className="flex-1 bg-transparent py-4 text-lg font-bold placeholder:text-slate-700 outline-none text-white uppercase tracking-tight"
+                                        className="flex-1 bg-transparent py-3 md:py-4 text-sm md:text-lg font-bold placeholder:text-slate-700 outline-none text-white uppercase tracking-tight"
                                     />
                                     <button
                                         onClick={() => setShowFilters(true)}
-                                        className="lg:hidden p-4 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 text-white transition-all active:scale-90"
+                                        className="lg:hidden p-3 md:p-4 bg-white/5 border border-white/5 rounded-2xl md:rounded-3xl hover:bg-white/10 text-white transition-all active:scale-90"
                                     >
-                                        <SlidersHorizontal size={20} />
+                                        <SlidersHorizontal size={18} />
                                     </button>
                                 </div>
                             </div>
@@ -293,10 +293,10 @@ export function CatalogPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     className={cn(
-                                        "grid gap-8",
+                                        "grid gap-4 md:gap-8",
                                         viewMode === 'grid'
-                                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
-                                            : "space-y-6"
+                                            ? "grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+                                            : "space-y-4 md:space-y-6"
                                     )}
                                 >
                                     {products.map((product, idx) => (

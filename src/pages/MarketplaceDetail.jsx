@@ -938,20 +938,40 @@ export function MarketplaceDetail() {
                 )
             }
             
-            {/* MOBILE BOTTOM ACTION BAR */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#191624] border-t border-white/5 p-4 flex gap-3 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] safe-area-pb">
-                <button
-                    onClick={() => toggleFavorite(marketplace)}
-                    className="h-12 w-12 shrink-0 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white active:scale-95 transition-transform"
-                >
-                    <Heart className={isFav ? "fill-red-500 text-red-500" : ""} size={20} />
-                </button>
-                <button
-                    onClick={() => document.getElementById('contact-sidebar')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="flex-1 h-12 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 active:scale-95 transition-transform"
-                >
-                    <Phone size={16} /> Связаться
-                </button>
+            {/* Mobile Sticky Action Bar */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#191624]/95 backdrop-blur-xl border-t border-white/10 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => {
+                            if (marketplace.owner?.phone) window.location.href = `tel:${marketplace.owner.phone}`;
+                            else toast.error("Телефон не указан");
+                        }}
+                        className="flex-1 h-14 bg-purple-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 active:scale-95 transition-transform italic shadow-lg shadow-purple-600/20"
+                    >
+                        <Phone size={18} /> Позвонить
+                    </button>
+                    <button
+                        onClick={async () => {
+                            if (!isAuthenticated) return toast.error("Войдите");
+                            try {
+                                await api.initiateChat(marketplace.owner.id);
+                                window.location.href = '/profile/chat';
+                            } catch (err) { toast.error("Ошибка чата"); }
+                        }}
+                        className="h-14 w-14 bg-white/5 border border-white/10 text-white rounded-2xl flex items-center justify-center active:scale-95 transition-all"
+                    >
+                        <MessageSquare size={20} className="text-purple-600" />
+                    </button>
+                    <button
+                        onClick={() => {
+                            addToCart(marketplace);
+                            toast.success("В корзине");
+                        }}
+                        className="h-14 w-14 bg-white/5 border border-white/10 text-white rounded-2xl flex items-center justify-center active:scale-95 transition-all"
+                    >
+                        <ShoppingCart size={20} className="text-purple-600" />
+                    </button>
+                </div>
             </div>
         </div >
     );

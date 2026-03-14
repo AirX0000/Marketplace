@@ -270,46 +270,46 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
     );
 
     const content = (
-        <div className={`bg-card text-card-foreground rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col border border-border ${asPage ? 'max-h-none' : 'max-h-[85vh]'}`}>
+        <div className={`bg-card text-card-foreground md:rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col border-border md:border ${asPage ? 'h-full md:max-h-none' : 'h-full md:h-auto md:max-h-[85vh]'}`}>
 
             {/* Header - Hidden on page to avoid redundant headers */}
             {!asPage && (
-                <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-card z-10 shrink-0">
+                <div className="flex items-center justify-between px-4 md:px-6 py-4 md:py-5 border-b border-border bg-card z-10 shrink-0">
                     <div>
-                        <h2 className="text-xl font-bold text-foreground">{listing ? t('ads.edit_ad') : t('ads.new_ad')}</h2>
-                        <p className="text-sm text-muted-foreground">
+                        <h2 className="text-lg md:text-xl font-bold text-foreground line-clamp-1">{listing ? t('ads.edit_ad') : t('ads.new_ad')}</h2>
+                        <p className="hidden md:block text-sm text-muted-foreground mr-8">
                             {currentStep === 1 && t('ads.step1_desc')}
                             {currentStep === 2 && t('ads.step2_desc')}
                             {currentStep === 3 && t('ads.step3_desc')}
                             {currentStep === 4 && t('ads.step4_desc')}
                         </p>
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+                    <button onClick={onClose} className="p-2 -mr-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
                         <X className="h-6 w-6" />
                     </button>
                 </div>
             )}
 
             {/* Step Indicators */}
-            <div className="px-6 py-4 bg-muted/30 border-b border-border flex items-center justify-between shrink-0">
+            <div className="px-4 md:px-6 py-3 md:py-4 bg-muted/30 border-b border-border flex items-center justify-between shrink-0">
                 <div className="flex gap-2">
                     {[1, 2, 3, 4].map(step => (
                         <div
                             key={step}
-                            className={`h-1.5 rounded-full transition-all duration-500 ${step === currentStep ? 'bg-primary w-12' :
-                                step < currentStep ? 'bg-emerald-500 w-8' : 'bg-muted w-8'
+                            className={`h-1 rounded-full transition-all duration-500 ${step === currentStep ? 'bg-primary w-8 md:w-12' :
+                                step < currentStep ? 'bg-emerald-500 w-6 md:w-8' : 'bg-muted w-6 md:w-8'
                                 }`}
                         />
                     ))}
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                     {t('ads.step') || 'Bosqich'} {currentStep} / {totalSteps}
                 </span>
             </div>
 
             {/* Scrollable Content */}
-            <div className="overflow-y-auto flex-1 h-full bg-card">
-                <form id="listing-form" onSubmit={handleSubmit} className="p-6">
+            <div className="overflow-y-auto flex-1 h-full bg-card pb-safe">
+                <form id="listing-form" onSubmit={handleSubmit} className="px-4 py-6 md:p-6 pb-24 md:pb-6">
                     <AnimatePresence mode="wait">
                         {currentStep === 1 && (
                             <motion.div
@@ -333,7 +333,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                     >🇺🇿 UZ</button>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">{t('ads.category') || 'Kategoriya'}</label>
                                         <select
@@ -621,13 +621,13 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             </div>
 
             {/* Footer */}
-            <div className="p-8 border-t border-border bg-card flex justify-between gap-4 z-20 shrink-0">
-                <div className="flex gap-3">
+            <div className="p-4 md:p-8 border-t border-border bg-card flex justify-between gap-4 z-20 shrink-0 fixed bottom-0 left-0 right-0 md:relative">
+                <div className="flex gap-2 md:gap-3">
                     {currentStep > 1 && (
                         <button
                             type="button"
                             onClick={handleBack}
-                            className="px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted hover:text-foreground border border-border transition-all active:scale-95"
+                            className="px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted hover:text-foreground border border-border transition-all active:scale-95"
                         >
                             {t('ads.back')}
                         </button>
@@ -638,15 +638,15 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                     type="submit"
                     form="listing-form"
                     disabled={saving || uploading}
-                    className={`px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center shadow-2xl active:scale-95 disabled:opacity-50 ${currentStep === totalSteps
+                    className={`flex-1 md:flex-none px-6 md:px-10 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center shadow-2xl active:scale-95 disabled:opacity-50 ${currentStep === totalSteps
                         ? 'bg-emerald-600 text-white shadow-emerald-500/30 hover:bg-emerald-700'
                         : 'bg-primary text-primary-foreground shadow-primary/20 hover:bg-primary/90'
                         }`}
                 >
                     {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin text-white" />}
                     {currentStep === totalSteps ? (listing ? t('ads.save') : t('ads.publish')) : (
-                        <span className="flex items-center gap-3">
-                            {t('ads.next')} <Plus size={14} />
+                        <span className="flex items-center gap-2 md:gap-3">
+                            {t('ads.next')} <Plus size={12} className="md:size-[14px]" />
                         </span>
                     )}
                 </button>
@@ -657,7 +657,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
     if (asPage) return content;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md md:p-4 animate-in fade-in duration-300">
             {content}
         </div>
     );

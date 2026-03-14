@@ -235,90 +235,17 @@ export function Header() {
                             </Link>
                         )}
                         
-                        {/* Mobile Menu Toggle */}
+                        {/* Mobile Theme Toggle */}
                         <button
-                            onClick={() => setIsMobileMenuOpen(true)}
-                            className="md:hidden p-2 ml-1 rounded-lg hover:bg-muted transition-colors text-foreground"
-                            aria-label="Открыть меню"
+                            onClick={toggleTheme}
+                            className="p-2 mr-1 rounded-lg bg-muted/50 text-foreground md:hidden"
+                            aria-label="Переключить тему"
                         >
-                            <Menu className="h-6 w-6" />
+                            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
                         </button>
                     </div>
                 </div>
             </header>
-
-            {/* Mobile Sidebar Menu */}
-            {isMobileMenuOpen && (
-                <div className="fixed inset-0 z-[200] flex md:hidden">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
-                    <div className="absolute right-0 top-0 bottom-0 w-[280px] bg-background border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-                        <div className="flex items-center justify-between p-4 border-b border-border">
-                            <span className="font-bold text-lg">Меню</span>
-                            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded-lg hover:bg-muted">
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-                        
-                        <div className="p-4 overflow-y-auto flex-1 space-y-6">
-                            {/* Mobile Search */}
-                            <form onSubmit={(e) => { handleSearch(e); setIsMobileMenuOpen(false); }} className="w-full">
-                                <div className="relative w-full">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <input
-                                        type="text"
-                                        placeholder={t('common.search_placeholder')}
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full h-12 pl-10 pr-4 rounded-xl border border-border bg-muted/50 text-foreground text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-                            </form>
-
-                            {/* Mobile Catalog Btn */}
-                            {(!isAuthenticated || isBuyer()) && (
-                                <button
-                                    onClick={() => { setIsMobileMenuOpen(false); setIsCatalogOpen(true); }}
-                                    className="w-full flex items-center justify-center h-12 rounded-xl font-bold bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                                >
-                                    <Menu className="mr-2 h-5 w-5" />
-                                    {t('common.catalog')}
-                                </button>
-                            )}
-
-                            {/* Settings */}
-                            <div className="space-y-4">
-                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Настройки</h4>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">Язык</span>
-                                    <LanguageSwitcher />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">Тема</span>
-                                    <button
-                                        onClick={toggleTheme}
-                                        className="p-2 rounded-lg bg-muted text-foreground flex items-center gap-2"
-                                    >
-                                        {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                                        <span className="text-sm font-medium">{theme === 'light' ? 'Темная' : 'Светлая'}</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Mobile Add Listing */}
-                        <div className="p-4 border-t border-border bg-muted/20">
-                            <Link
-                                to="/post-ad"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="flex items-center justify-center gap-2 w-full bg-emerald-600 text-white px-4 py-3 rounded-xl text-base font-bold shadow-lg shadow-emerald-600/25"
-                            >
-                                <Plus size={20} />
-                                {t('common.add_listing', 'Разместить объявление')}
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             <CategoryModal isOpen={isCatalogOpen} onClose={() => setIsCatalogOpen(false)} />
         </>
