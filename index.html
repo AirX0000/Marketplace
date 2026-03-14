@@ -48,6 +48,37 @@
   <!-- Theme Initialization Script -->
   <script src="/theme-init.js"></script>
 
+  <!-- Aggressive Cache & SW Purge for Sync -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister().then(() => {
+            console.log('SW unregistered');
+          });
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (let name of names) {
+          caches.delete(name).then(() => {
+            console.log('Cache cleared:', name);
+          });
+        }
+      });
+    }
+    // Force reload if we still see old hashes in some edge cases
+    window.addEventListener('error', function(e) {
+      if (e.message && e.message.includes('MIME type')) {
+        console.warn('MIME error detected. Clearing storage and reloading...');
+        localStorage.clear();
+        sessionStorage.clear();
+        location.reload(true);
+      }
+    }, true);
+  </script>
+
 </head>
 
 <body>
