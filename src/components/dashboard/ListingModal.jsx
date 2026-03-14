@@ -270,7 +270,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
     );
 
     const content = (
-        <div className={`bg-card text-card-foreground md:rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col border-border md:border ${asPage ? 'h-full md:max-h-none' : 'h-full md:h-auto md:max-h-[85vh]'}`}>
+        <div className={`bg-card text-card-foreground md:rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col border-border md:border ${asPage ? 'h-full md:max-h-none' : 'h-full md:h-auto md:max-h-[85vh]'} dark:border-white/10 dark:shadow-black/50`}>
 
             {/* Header - Hidden on page to avoid redundant headers */}
             {!asPage && (
@@ -291,13 +291,13 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             )}
 
             {/* Step Indicators */}
-            <div className="px-4 md:px-6 py-3 md:py-4 bg-muted/30 border-b border-border flex items-center justify-between shrink-0">
+            <div className="px-4 md:px-6 py-3 md:py-4 bg-muted/30 border-b border-border flex items-center justify-between shrink-0 dark:bg-slate-900/50 dark:border-white/5">
                 <div className="flex gap-2">
                     {[1, 2, 3, 4].map(step => (
                         <div
                             key={step}
                             className={`h-1 rounded-full transition-all duration-500 ${step === currentStep ? 'bg-primary w-8 md:w-12' :
-                                step < currentStep ? 'bg-emerald-500 w-6 md:w-8' : 'bg-muted w-6 md:w-8'
+                                step < currentStep ? 'bg-emerald-500 w-6 md:w-8' : 'bg-muted w-6 md:w-8 dark:bg-slate-700'
                                 }`}
                         />
                     ))}
@@ -621,13 +621,13 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             </div>
 
             {/* Footer */}
-            <div className="p-4 md:p-8 border-t border-border bg-card flex justify-between gap-4 z-20 shrink-0 fixed bottom-0 left-0 right-0 md:relative">
+            <div className="p-4 md:p-8 border-t border-border bg-card flex justify-between gap-4 z-20 shrink-0 fixed bottom-0 left-0 right-0 md:relative dark:border-white/10 dark:bg-slate-900/40">
                 <div className="flex gap-2 md:gap-3">
                     {currentStep > 1 && (
                         <button
                             type="button"
                             onClick={handleBack}
-                            className="px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted hover:text-foreground border border-border transition-all active:scale-95"
+                            className="px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted hover:text-foreground border border-border transition-all active:scale-95 dark:border-white/10 dark:hover:bg-slate-800"
                         >
                             {t('ads.back')}
                         </button>
