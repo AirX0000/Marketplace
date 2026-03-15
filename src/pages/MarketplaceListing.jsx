@@ -70,8 +70,8 @@ export function MarketplaceListing() {
                 name: "Автомобили",
                 sub: [
                     "Автосалон",
-                    "Вторичка",
-                    "Первичка"
+                    "С пробегом",
+                    "Новый без пробега"
                 ]
             },
             {
@@ -206,7 +206,7 @@ export function MarketplaceListing() {
                     params.category = "Real Estate,Недвижимость,Квартиры,Дома,Коммерческая,Земля,Apartments,Houses,New Building,Private House,Property";
                 } else if (["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category)) {
                     // Match any subcategory of Cars OR the main category itself
-                    params.category = "Transport,Cars,Автомобили,Авто,Автосалон,Вторичка,Первичка,Dealer,Private Auto,Vehicle";
+                    params.category = "Transport,Cars,Автомобили,Авто,Автосалон,С пробегом,Новый без пробега,Dealer,Private Auto,Vehicle";
                 } else if (filters.category === "Услуги") {
                     params.category = "Услуги,Services,Страхование,Оценка,Нотариус,Риелтор,Realtor";
                 }
@@ -818,7 +818,7 @@ export function MarketplaceListing() {
 
                                 {/* Pill Categories for Cars */}
                                 <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
-                                    {["Все", "Автосалон", "Вторичка", "Первичка"].map(pill => {
+                                    {["Все", "Автосалон", "С пробегом", "Новый без пробега"].map(pill => {
                                         // Map pill names if necessary to match data subcategories
                                         const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
                                         return (
