@@ -3,8 +3,9 @@ import { api } from '../../lib/api';
 import { 
     CalendarDays, User, Phone, MessageSquare, 
     Clock, CheckCircle, XCircle, Search, 
-    Filter, MoreHorizontal, ExternalLink, Sparkles, AlertTriangle, ArrowRight
+    Filter, MoreHorizontal, ExternalLink, Sparkles, AlertTriangle, ArrowRight, MessageCircle
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { cn, getImageUrl } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -388,16 +389,16 @@ export function PartnerLeads() {
 
                                     {/* Marketplace Item Reference */}
                                     {lead.marketplace && (
-                                        <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 hover:bg-white/10 transition-all cursor-pointer">
+                                        <Link to={`/catalog/${lead.marketplace.id}`} target="_blank" className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 hover:bg-white/10 transition-all cursor-pointer group/link">
                                             <div className="w-12 h-12 rounded-xl bg-black/20 overflow-hidden ring-1 ring-white/10 shrink-0">
-                                                {getImageUrl(lead.marketplace.image) && <img src={getImageUrl(lead.marketplace.image)} className="w-full h-full object-cover" alt="" />}
+                                                {getImageUrl(lead.marketplace.image) && <img src={getImageUrl(lead.marketplace.image)} className="w-full h-full object-cover group-hover/link:scale-110 transition-transform duration-500" alt="" />}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-0.5">По объявлению</div>
-                                                <div className="text-sm font-black text-white uppercase truncate">{lead.marketplace.name}</div>
+                                                <div className="text-sm font-black text-white uppercase truncate group-hover/link:text-blue-400 transition-colors">{lead.marketplace.name}</div>
                                             </div>
-                                            <ExternalLink size={14} className="text-slate-600" />
-                                        </div>
+                                            <ExternalLink size={14} className="text-slate-600 group-hover/link:text-blue-400 transition-colors" />
+                                        </Link>
                                     )}
 
                                     {/* Lead Message & Preferred Date */}
@@ -418,20 +419,27 @@ export function PartnerLeads() {
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-auto">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-auto">
                                         <MagneticButton 
-                                            href={`tel:${lead.phone}`}
+                                            onClick={() => window.open(`tel:${lead.phone}`, '_self')}
                                             className="h-12 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-lg shadow-emerald-500/5 group/btn active:scale-95"
                                         >
                                             <Phone size={14} className="group-hover/btn:scale-110 transition-transform" />
                                             Позвонить
                                         </MagneticButton>
                                         <MagneticButton 
+                                            onClick={() => window.open(`https://t.me/${lead.phone.replace(/\D/g, '')}`, '_blank')}
+                                            className="h-12 flex items-center justify-center gap-2 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-sky-500 hover:text-white transition-all shadow-lg shadow-sky-500/5 group/btn active:scale-95"
+                                        >
+                                            <MessageCircle size={14} className="group-hover/btn:scale-110 transition-transform" />
+                                            Telegram
+                                        </MagneticButton>
+                                        <MagneticButton 
                                             onClick={() => handleInitiateChat(lead.userId)}
                                             className="h-12 flex items-center justify-center gap-2 bg-blue-600/10 text-blue-400 border border-blue-600/20 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-lg shadow-blue-600/5 group/btn active:scale-95"
                                         >
                                             <MessageSquare size={14} className="group-hover/btn:scale-110 transition-transform" />
-                                            Написать
+                                            Чат
                                         </MagneticButton>
                                     </div>
                                 </div>

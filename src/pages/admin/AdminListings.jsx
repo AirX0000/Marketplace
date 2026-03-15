@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { useShop } from '../../context/ShopContext';
-import { Plus, MoreHorizontal, X, Loader2, Check, AlertCircle, Eye, Shield, Filter, Trash2, Search, Building, Store, Car, Sparkles, Star, Phone } from 'lucide-react';
+import { Plus, MoreHorizontal, X, Loader2, Check, AlertCircle, Eye, Shield, Filter, Trash2, Search, Building, Store, Car, Sparkles, Star, Phone, MessageCircle, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ListingModal } from '../../components/dashboard/ListingModal';
 import { toast } from 'react-hot-toast';
@@ -274,11 +274,15 @@ export function AdminListings() {
                                                         <div className="flex flex-col">
                                                             <span className="text-foreground font-semibold text-xs">{item.owner.name || 'Магазин'}</span>
                                                             <span className="text-[10px] text-muted-foreground">{item.owner.email}</span>
-                                                            {(item.phone || item.owner.phone) && (
-                                                                <a href={`tel:${item.phone || item.owner.phone}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1 text-[10px] font-bold text-primary hover:underline mt-1 bg-primary/5 w-fit px-2 py-0.5 rounded-full border border-primary/20">
-                                                                    <Phone size={10} />
-                                                                    {item.phone || item.owner.phone}
-                                                                </a>
+                                                            {(item.phone || item.owner?.phone) && (
+                                                                <div className="flex gap-1 mt-1">
+                                                                    <a href={`tel:${item.phone || item.owner?.phone}`} onClick={e => e.stopPropagation()} className="flex items-center justify-center gap-1 text-[10px] font-bold text-primary hover:text-white hover:bg-primary transition-colors bg-primary/5 w-fit px-2 py-0.5 rounded-full border border-primary/20">
+                                                                        <Phone size={10} />
+                                                                    </a>
+                                                                    <a href={`https://t.me/${(item.phone || item.owner?.phone).replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="flex items-center justify-center gap-1 text-[10px] font-bold text-sky-500 hover:text-white hover:bg-sky-500 transition-colors bg-sky-500/10 w-fit px-2 py-0.5 rounded-full border border-sky-500/20">
+                                                                        <MessageCircle size={10} />
+                                                                    </a>
+                                                                </div>
                                                             )}
                                                         </div>
                                                     ) : <span className="text-xs text-muted-foreground/60">Системный</span>}
@@ -297,6 +301,14 @@ export function AdminListings() {
                                                 <div className="flex items-center justify-end gap-2">
                                                     {isAdmin ? (
                                                         <>
+                                                            <Link
+                                                                to={`/catalog/${item.id}`}
+                                                                target="_blank"
+                                                                className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-border text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                                                                title="Смотреть на сайте"
+                                                            >
+                                                                <ExternalLink size={16} />
+                                                            </Link>
                                                             <button
                                                                 onClick={() => handleEdit(item)}
                                                                 className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-border text-primary hover:bg-primary/10 transition-colors"
@@ -471,13 +483,24 @@ export function AdminListings() {
                                                 <span className="text-[8px] text-muted-foreground uppercase tracking-tighter mt-0.5">{item.owner.email}</span>
                                             </div>
                                         </div>
-                                        {(item.phone || item.owner.phone) && (
-                                            <a href={`tel:${item.phone || item.owner.phone}`} onClick={e => e.stopPropagation()} className="h-8 px-3 rounded-xl bg-primary/10 text-primary flex items-center gap-1.5 ml-auto text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
-                                                <Phone size={12} /> Позвонить
-                                            </a>
+                                        {(item.phone || item.owner?.phone) && (
+                                            <div className="flex gap-1 ml-auto">
+                                                <a href={`tel:${item.phone || item.owner?.phone}`} onClick={e => e.stopPropagation()} className="h-8 px-3 rounded-xl bg-primary/10 text-primary flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
+                                                    <Phone size={12} />
+                                                </a>
+                                                <a href={`https://t.me/${(item.phone || item.owner?.phone).replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="h-8 px-3 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-widest hover:bg-sky-500 hover:text-white transition-colors">
+                                                    <MessageCircle size={12} />
+                                                </a>
+                                            </div>
                                         )}
                                     </div>
                                 )}
+                                
+                                <div className="mt-4">
+                                    <Link to={`/catalog/${item.id}`} target="_blank" className="flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-slate-100 text-slate-600 font-bold text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-colors border border-slate-200">
+                                        <ExternalLink size={14} /> Смотреть на сайте
+                                    </Link>
+                                </div>
                             </div>
                         ))
                     );
