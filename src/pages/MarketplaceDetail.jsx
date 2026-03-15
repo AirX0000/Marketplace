@@ -143,9 +143,18 @@ export function MarketplaceDetail() {
         </div>
     );
 
-    if (!marketplace) return <div className="text-center py-20 text-slate-500">Объявление не найдено</div>;
+    if (!marketplace) return (
+        <div className="min-h-screen bg-[#13111C] flex items-center justify-center p-4 text-center">
+            <div className="bg-[#191624] p-12 rounded-[3rem] border border-white/5 shadow-2xl max-w-md w-full">
+                <AlertCircle size={48} className="text-red-500 mx-auto mb-6" />
+                <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-4">Объявление не найдено</h2>
+                <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mb-8">Возможно, оно было удалено или ссылка недействительна.</p>
+                <Link to="/marketplaces" className="inline-block px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-colors">В каталог</Link>
+            </div>
+        </div>
+    );
 
-    const isAuto = marketplace.category === 'AUTO';
+    const isAuto = marketplace.category === 'AUTO' || marketplace.category === 'Transport';
     const attrs = marketplace.attributes || {};
 
     return (
