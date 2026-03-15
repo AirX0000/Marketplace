@@ -1,4 +1,12 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '../lib/api';
+import { cn } from '../lib/utils';
+import { SellerHeader } from '../components/SellerHeader';
+import { SellerTabs } from '../components/SellerTabs';
+import { MarketplaceCard } from '../components/MarketplaceCard';
 
 export function PartnerStorePage() {
     const { id } = useParams();

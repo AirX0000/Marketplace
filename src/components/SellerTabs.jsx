@@ -1,3 +1,7 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { cn } from '../lib/utils';
+
 export function SellerTabs({ activeTab, onTabChange }) {
     const tabs = [
         { id: 'products', label: 'Товары' },
