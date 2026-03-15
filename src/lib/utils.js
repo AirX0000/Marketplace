@@ -7,6 +7,12 @@ export function cn(...inputs) {
 
 export function getImageUrl(img) {
     if (!img) return null;
+    
+    if (Array.isArray(img)) {
+        if (img.length === 0) return null;
+        img = img[0];
+    }
+    
     try {
         if (typeof img === 'string' && (img.startsWith('[') || img.startsWith('"'))) {
             const parsed = JSON.parse(img);
@@ -19,6 +25,9 @@ export function getImageUrl(img) {
     if (typeof img !== 'string') return null;
     if (img.startsWith('http') || img.startsWith('data:')) return img;
     
-    // Add default backend URL if it's an uploaded path
-    return `https://autohouse.uz${img.startsWith('/') ? '' : '/'}${img}`;
+    const host = import.meta.env && import.meta.env.VITE_API_URL 
+        ? import.meta.env.VITE_API_URL.split('/api')[0] 
+        : 'https://autohouse.uz';
+        
+    return `${host}${img.startsWith('/') ? '' : '/'}${img}`;
 }

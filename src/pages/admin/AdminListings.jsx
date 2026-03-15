@@ -387,8 +387,8 @@ export function AdminListings() {
                                                     <td className="p-4 font-medium">
                                                         <div className="flex items-center gap-3">
                                                     <div className="h-10 w-10 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border">
-                                                        {getImageUrl(item.image) ? (
-                                                            <img src={getImageUrl(item.image)} className="h-full w-full object-cover" alt={item.name} />
+                                                        {getImageUrl(item.images || item.image) ? (
+                                                            <img src={getImageUrl(item.images || item.image)} className="h-full w-full object-cover" alt={item.name} />
                                                         ) : (
                                                             <div className="h-full w-full flex items-center justify-center text-muted-foreground bg-muted">?</div>
                                                         )}

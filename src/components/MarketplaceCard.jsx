@@ -4,6 +4,7 @@ import { useShop } from '../context/ShopContext';
 import { useCompare } from '../context/CompareContext';
 import { Star, ShoppingCart, Heart, Check, Scale, Eye, Share2 } from 'lucide-react';
 import { QuickViewModal } from './QuickViewModal';
+import { getImageUrl } from '../lib/utils';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
@@ -12,28 +13,6 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
     const { addToCompare, compareItems, removeFromCompare } = useCompare();
     const { i18n } = useTranslation();
     const isUz = i18n.language === 'uz';
-
-    const getImageUrl = (img) => {
-        if (!img) return null;
-        try {
-            // Handle accidental double stringification or JSON arrays in image field
-            if (typeof img === 'string' && (img.startsWith('[') || img.startsWith('"'))) {
-                const parsed = JSON.parse(img);
-                img = Array.isArray(parsed) ? parsed[0] : parsed;
-            }
-        } catch (e) {
-            // Not JSON, continue with original string
-        }
-        
-        if (typeof img !== 'string') return null;
-        if (img.startsWith('http') || img.startsWith('data:')) return img;
-        
-        const host = import.meta.env.VITE_API_URL 
-            ? import.meta.env.VITE_API_URL.split('/api')[0] 
-            : window.location.origin;
-        
-        return `${host}${img.startsWith('/') ? '' : '/'}${img}`;
-    };
 
     // Use UZ translations if available and language is UZ, otherwise fall back to RU
     const displayName = (isUz && marketplace.name_uz) ? marketplace.name_uz : marketplace.name;
@@ -101,7 +80,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 <div className="group relative flex overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div className="w-48 h-48 flex-shrink-0 overflow-hidden bg-muted/30 p-6 relative">
                         <img
-                            src={getImageUrl(marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
+                            src={getImageUrl(marketplace.images || marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                             alt={displayName}
                             loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-500 group-hover:scale-110"
                             onError={(e) => {
@@ -201,8 +180,9 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 <div className="text-2xl font-bold text-primary">
                                     {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1 font-medium bg-muted/50 w-fit px-2 py-1 rounded-md">
-                                    в кредит от {Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()} Sum/мес
+                                <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                    <span className="bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">В кредит</span>
+                                    <span>от <strong className="text-foreground">{Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()}</strong> UZS/мес</span>
                                 </div>
                             </div>
                             <button
@@ -252,7 +232,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 )}
                 <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-2 md:p-6 relative">
                     <motion.img
-                        src={getImageUrl(marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
+                        src={getImageUrl(marketplace.images || marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                         alt={displayName}
                         style={{
                             translateZ: 50,
@@ -406,8 +386,9 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             <div className="font-black text-foreground text-sm md:text-xl tracking-tighter">
                                 {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
                             </div>
-                            <div className="text-[10px] md:text-xs text-slate-500 font-medium bg-slate-100 dark:bg-slate-800 w-fit px-2 py-0.5 mt-0.5 rounded flex items-center gap-1">
-                                в кредит от <span className="text-purple-600 dark:text-purple-400 font-bold">{Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()} Sum</span>/мес
+                            <div className="mt-0.5 flex items-center gap-1 text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                                <span className="bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 px-1 py-0.5 rounded font-black uppercase tracking-wider text-[8px]">В кредит</span>
+                                <span>от <strong className="text-foreground">{Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()}</strong> <span className="text-[8px] uppercase">UZS/мес</span></span>
                             </div>
                         </div>
 
