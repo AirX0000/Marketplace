@@ -214,8 +214,8 @@ export function Header() {
                                 </button>
 
                                 {/* Dropdown */}
-                                <div className="absolute top-full mt-2 right-0 w-64 bg-card border border-border shadow-2xl rounded-2xl overflow-hidden hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200 z-[110]">
-                                    <div className="p-4 border-b border-border bg-muted/10 flex items-center gap-4">
+                                <div className="absolute top-full mt-2 right-0 w-64 bg-background border border-border/80 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,1)] rounded-2xl overflow-hidden hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200 z-[9999]">
+                                    <div className="p-4 border-b border-border/60 bg-muted/40 backdrop-blur-md flex items-center gap-4">
                                         {user?.avatar ? (
                                             <img src={user.avatar} alt={`Avatar of ${user?.name || 'user'}`} className="h-12 w-12 rounded-full object-cover border-2 border-primary/20 shadow-sm" />
                                         ) : (
