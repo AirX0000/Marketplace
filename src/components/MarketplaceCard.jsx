@@ -180,10 +180,10 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 <div className="text-2xl font-bold text-primary">
                                     {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
                                 </div>
-                                <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
-                                    <span className="bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">В кредит</span>
-                                    <span>от <strong className="text-foreground">{Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()}</strong> UZS/мес</span>
-                                </div>
+                            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                <span className="bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300 px-1.5 py-0.5 rounded flex items-center font-bold uppercase tracking-wider text-[9px] whitespace-nowrap">В кредит</span>
+                                <span className="whitespace-nowrap">от <strong className="text-foreground">{Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()}</strong> <span className="text-[10px] uppercase text-muted-foreground">UZS/мес</span></span>
+                            </div>
                             </div>
                             <button
                                 onClick={handleAddToCart}
@@ -230,7 +230,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         <Star size={10} className="fill-current" /> ТОП
                     </div>
                 )}
-                <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-2 md:p-6 relative">
+                <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-4 md:p-5 relative border-b border-border/50">
                     <motion.img
                         src={getImageUrl(marketplace.images || marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                         alt={displayName}
@@ -298,7 +298,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col p-3 md:p-5">
+                <div className="flex flex-1 flex-col p-4 md:p-5">
                     <div className="mb-2 flex items-center justify-between">
                         <div className="flex items-center gap-1">
                             <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] md:text-xs font-semibold border-primary/20 bg-primary/10 text-primary">
@@ -381,14 +381,14 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         })()}
                     </div>
 
-                    <div className="flex flex-col md:flex-row md:items-center justify-between border-t border-border pt-3 mt-auto gap-2">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between border-t border-border pt-3 mt-auto gap-3">
                         <div className="flex flex-col">
-                            <div className="font-black text-foreground text-sm md:text-xl tracking-tighter">
+                            <div className="font-black text-foreground text-base md:text-xl tracking-tighter leading-none">
                                 {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
                             </div>
-                            <div className="mt-0.5 flex items-center gap-1 text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                                <span className="bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 px-1 py-0.5 rounded font-black uppercase tracking-wider text-[8px]">В кредит</span>
-                                <span>от <strong className="text-foreground">{Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()}</strong> <span className="text-[8px] uppercase">UZS/мес</span></span>
+                            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                                <span className="bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300 px-1.5 py-0.5 rounded flex items-center font-bold uppercase tracking-wider text-[8px] whitespace-nowrap">В кредит</span>
+                                <span className="whitespace-nowrap">от <strong className="text-foreground">{Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()}</strong> <span className="text-[9px] uppercase text-muted-foreground">UZS/мес</span></span>
                             </div>
                         </div>
 
