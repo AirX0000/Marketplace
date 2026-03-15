@@ -158,7 +158,7 @@ export function HomePage() {
                 <section className="container py-4 md:py-6 relative">
                     <div className="flex flex-col gap-4 md:gap-6 relative">
                         {/* Main Banner Slider */}
-                        <div className="relative w-full aspect-[4/5] sm:aspect-square md:aspect-video md:max-h-[550px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
+                        <div className="relative w-full h-[50vh] min-h-[400px] md:h-[60vh] md:max-h-[600px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
                             <BannerSlider />
                             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
                             

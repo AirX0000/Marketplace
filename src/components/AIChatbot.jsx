@@ -57,14 +57,14 @@ export function AIChatbot() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsOpen(true)}
-                        className="flex flex-col h-14 w-14 sm:h-20 sm:w-20 items-center justify-center rounded-[2rem] bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-600 text-white shadow-2xl shadow-indigo-500/30 ring-1 ring-white/20 transition-all hover:scale-105 active:scale-95 group"
+                        className="flex flex-col h-14 w-14 sm:h-[84px] sm:w-[84px] items-center justify-center rounded-[2rem] bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-600 text-white shadow-2xl shadow-indigo-500/30 ring-1 ring-white/20 transition-all hover:scale-105 active:scale-95 group"
                     >
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-[2rem]" />
-                        <div className="relative flex items-center justify-center mb-1">
+                        <div className="relative flex items-center justify-center">
                             <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 absolute opacity-0 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500" />
                             <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 group-hover:opacity-0 transition-all duration-500" />
                         </div>
-                        <span className="font-extrabold tracking-widest uppercase text-[7px] sm:text-[9px] hidden sm:block text-center leading-tight px-1 w-full truncate">AI Ассистент</span>
+                        <span className="font-extrabold tracking-widest uppercase text-[7px] sm:text-[8px] hidden sm:block text-center leading-[1.2] mt-1">AI<br/>Ассистент</span>
 
                         {/* Status Dot */}
                         <div className="absolute top-2 right-2 sm:top-4 sm:right-4 h-2 w-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)] animate-pulse" />
