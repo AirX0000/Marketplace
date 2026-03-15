@@ -17,6 +17,10 @@ const authenticateToken = (req, res, next) => {
             console.error(`[AUTH_DEBUG] Token verification failed for ${req.path}:`, err.message);
             return res.sendStatus(403);
         }
+        // Normalize backward-compatible IDs from old JWT tokens
+        user.userId = user.userId || user.id;
+        user.id = user.id || user.userId;
+        
         req.user = user;
         next();
     });
@@ -31,7 +35,9 @@ const optionalProtect = (req, res, next) => {
     }
 
     jwt.verify(token, env.jwtSecret, (err, user) => {
-        if (!err) {
+        if (!err && user) {
+            user.userId = user.userId || user.id;
+            user.id = user.id || user.userId;
             req.user = user;
         }
         next();
