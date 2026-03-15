@@ -4,6 +4,10 @@
     "framework": "vite",
     "rewrites": [
         {
+            "source": "/(.*)\\.(css|js|png|jpg|jpeg|svg|gif|ico|webp|woff|woff2)$",
+            "destination": "/$1.$2"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

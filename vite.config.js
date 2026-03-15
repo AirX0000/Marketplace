@@ -32,6 +32,8 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
+        navigateFallbackAllowlist: [/^(?!\/__).*/],
+        navigateFallbackDenylist: [/^\/assets\//, /\.(js|css|png|jpg|jpeg|svg|gif|ico|webp|woff|woff2)$/],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         cleanupOutdatedCaches: true,
         runtimeCaching: [
@@ -39,7 +41,7 @@ export default defineConfig({
             urlPattern: /^https:\/\/api\.autohouse\.uz\/.*/i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-cache',
+              cacheName: 'api-cache-v2',
               expiration: {
                 maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24 // 24 hours
