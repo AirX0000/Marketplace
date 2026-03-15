@@ -78,8 +78,17 @@ export function HomePage() {
             try {
                 const data = await api.getFeaturedMarketplaces();
                 console.log("Featured data received:", data);
-                // Handle both { listings: [...] } and [...] formats
-                const listings = Array.isArray(data) ? data : (data?.listings || []);
+                let listings = Array.isArray(data) ? data : (data?.listings || []);
+                
+                // Filter out the persistent seeded mock items that user wants removed
+                const mockNamesToRemove = [
+                    "bmw x5", "tesla model", "li auto l9", "пентхаус в центре", "современная вилла"
+                ];
+                listings = listings.filter(item => {
+                    const itemName = (item.name || "").toLowerCase();
+                    return !mockNamesToRemove.some(mock => itemName.includes(mock));
+                });
+
                 setFeatured(listings);
 
                 if (isAuthenticated) {
