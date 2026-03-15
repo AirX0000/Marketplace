@@ -14,6 +14,7 @@ export function AdminListings() {
     const [editingListing, setEditingListing] = useState(null);
     const [initialCategory, setInitialCategory] = useState(null);
     const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, PENDING, APPROVED, REJECTED
+    const [selectedItems, setSelectedItems] = useState([]);
 
     // Admin Only
     const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
@@ -94,6 +95,49 @@ export function AdminListings() {
         } catch (error) {
             toast.error(error.message || "Ошибка сохранения");
             console.error(error);
+        }
+    };
+
+    const handleSelectAll = (e, filteredListings) => {
+        if (e.target.checked) {
+            setSelectedItems(filteredListings.map(l => l.id));
+        } else {
+            setSelectedItems([]);
+        }
+    };
+
+    const handleSelect = (id) => {
+        if (selectedItems.includes(id)) {
+            setSelectedItems(selectedItems.filter(itemId => itemId !== id));
+        } else {
+            setSelectedItems([...selectedItems, id]);
+        }
+    };
+
+    const handleBulkAction = async (action) => {
+        if (!selectedItems.length) return;
+        
+        const confirmMsg = action === 'DELETE' 
+            ? `Вы уверены, что хотите удалить ${selectedItems.length} товаров?`
+            : `Вы уверены, что хотите ${action === 'APPROVED' ? 'одобрить' : 'отклонить'} ${selectedItems.length} товаров?`;
+            
+        if (!confirm(confirmMsg)) return;
+
+        const loadingToast = toast.loading("Выполнение...");
+        
+        try {
+            if (action === 'DELETE') {
+                await Promise.all(selectedItems.map(id => api.deleteAdminListing(id)));
+                setListings(listings.filter(l => !selectedItems.includes(l.id)));
+                toast.success(`Удалено ${selectedItems.length} товаров`, { id: loadingToast });
+            } else {
+                await Promise.all(selectedItems.map(id => api.updateMarketplaceStatus(id, action)));
+                setListings(listings.map(l => selectedItems.includes(l.id) ? { ...l, status: action } : l));
+                toast.success(`Обновлено ${selectedItems.length} товаров`, { id: loadingToast });
+            }
+            setSelectedItems([]);
+        } catch (error) {
+            toast.error("Произошла ошибка при массовом действии", { id: loadingToast });
         }
     };
 
@@ -199,10 +243,43 @@ export function AdminListings() {
 
             {/* Desktop Table */}
             <div className="border rounded-xl bg-card overflow-hidden shadow-sm hidden md:block">
+                {/* Bulk Actions Toolbar */}
+                {isAdmin && selectedItems.length > 0 && (
+                    <div className="bg-muted p-3 flex items-center justify-between border-b border-border">
+                        <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                            <Check className="h-4 w-4 text-primary" /> Выбрано: {selectedItems.length}
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => handleBulkAction('APPROVED')}
+                                className="h-8 px-3 rounded-md bg-emerald-500/10 text-emerald-600 font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-colors flex items-center gap-1.5"
+                            >
+                                <Check size={14} /> Одобрить
+                            </button>
+                            <button
+                                onClick={() => handleBulkAction('REJECTED')}
+                                className="h-8 px-3 rounded-md bg-amber-500/10 text-amber-600 font-black text-[10px] uppercase tracking-widest hover:bg-amber-500 hover:text-white transition-colors flex items-center gap-1.5"
+                            >
+                                <X size={14} /> Отклонить
+                            </button>
+                            <button
+                                onClick={() => handleBulkAction('DELETE')}
+                                className="h-8 px-3 rounded-md bg-red-500/10 text-red-500 font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-colors flex items-center gap-1.5"
+                            >
+                                <Trash2 size={14} /> Удалить
+                            </button>
+                        </div>
+                    </div>
+                )}
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-muted/50 text-muted-foreground border-b border-border">
                             <tr>
+                                {isAdmin && (
+                                    <th className="p-4 w-12">
+                                        {/* Compute filtered listings inside render, this is tricky. Let's rely on standard checkbox for now, we'll populate it in the render block */}
+                                    </th>
+                                )}
                                 <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Товар</th>
                                 {isAdmin && <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Продавец</th>}
                                 <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Цена</th>
@@ -238,23 +315,52 @@ export function AdminListings() {
                                     return true;
                                 });
 
-                                return filteredListings.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={isAdmin ? 6 : 5} className="p-12 text-center text-muted-foreground">
-                                            <div className="flex flex-col items-center gap-2">
-                                                <div className="bg-muted p-3 rounded-full mb-2">
-                                                    <Filter className="h-6 w-6 text-muted-foreground/50" />
-                                                </div>
-                                                <span className="font-black uppercase text-xs tracking-widest text-foreground">Товары не найдены</span>
-                                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">В этой категории пока нет товаров</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    filteredListings.map((item) => (
-                                        <tr key={item.id} className="bg-card hover:bg-muted/50 transition-colors">
-                                            <td className="p-4 font-medium">
-                                                <div className="flex items-center gap-3">
+                                // Define headers again because we need `filteredListings` for the "Select All" checkbox
+                                return (
+                                    <>
+                                        {isAdmin && filteredListings.length > 0 && (
+                                            <tr className="bg-muted/30 border-b border-border">
+                                                <th className="px-4 py-2 w-12 text-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20 bg-background"
+                                                        checked={filteredListings.length > 0 && selectedItems.length === filteredListings.length}
+                                                        onChange={(e) => handleSelectAll(e, filteredListings)}
+                                                        title="Выбрать все"
+                                                    />
+                                                </th>
+                                                <th colSpan={6} className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">
+                                                    Выбрать все
+                                                </th>
+                                            </tr>
+                                        )}
+                                        {filteredListings.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={isAdmin ? 7 : 5} className="p-12 text-center text-muted-foreground">
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        <div className="bg-muted p-3 rounded-full mb-2">
+                                                            <Filter className="h-6 w-6 text-muted-foreground/50" />
+                                                        </div>
+                                                        <span className="font-black uppercase text-xs tracking-widest text-foreground">Товары не найдены</span>
+                                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">В этой категории пока нет товаров</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            filteredListings.map((item) => (
+                                                <tr key={item.id} className="bg-card hover:bg-muted/50 transition-colors">
+                                                    {isAdmin && (
+                                                        <td className="p-4 text-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
+                                                                checked={selectedItems.includes(item.id)}
+                                                                onChange={() => handleSelect(item.id)}
+                                                            />
+                                                        </td>
+                                                    )}
+                                                    <td className="p-4 font-medium">
+                                                        <div className="flex items-center gap-3">
                                                     <div className="h-10 w-10 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border">
                                                         {getImageUrl(item.image) ? (
                                                             <img src={getImageUrl(item.image)} className="h-full w-full object-cover" alt={item.name} />
@@ -393,10 +499,12 @@ export function AdminListings() {
                                                     )}
                                                 </div>
                                             </td>
-                                        </tr>
-                                    ))
-                                );
-                            })()}
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </>
+                                    );
+                                })()}
                         </tbody>
                     </table>
                 </div>
