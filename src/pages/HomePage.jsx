@@ -199,8 +199,6 @@ export function HomePage() {
                             </div>
                         </div>
                         
-                        <RecentlyViewed />
-
                         {/* Category Icons */}
                         <div className="max-w-4xl mx-auto w-full">
                             <ServiceGrid />
@@ -208,8 +206,7 @@ export function HomePage() {
                     </div>
                 </section>
 
-
-
+                <RecentlyViewed />
 
                 {/* Recommendations Section */}
                 {isAuthenticated && recommendations.length > 0 && (
