@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { useShop } from '../../context/ShopContext';
-import { Plus, MoreHorizontal, X, Loader2, Check, AlertCircle, Eye, Shield, Filter, Trash2, Search, Building, Store, Car, Sparkles, Star } from 'lucide-react';
+import { Plus, MoreHorizontal, X, Loader2, Check, AlertCircle, Eye, Shield, Filter, Trash2, Search, Building, Store, Car, Sparkles, Star, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ListingModal } from '../../components/dashboard/ListingModal';
 import { toast } from 'react-hot-toast';
@@ -274,6 +274,12 @@ export function AdminListings() {
                                                         <div className="flex flex-col">
                                                             <span className="text-foreground font-semibold text-xs">{item.owner.name || 'Магазин'}</span>
                                                             <span className="text-[10px] text-muted-foreground">{item.owner.email}</span>
+                                                            {(item.phone || item.owner.phone) && (
+                                                                <a href={`tel:${item.phone || item.owner.phone}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1 text-[10px] font-bold text-primary hover:underline mt-1 bg-primary/5 w-fit px-2 py-0.5 rounded-full border border-primary/20">
+                                                                    <Phone size={10} />
+                                                                    {item.phone || item.owner.phone}
+                                                                </a>
+                                                            )}
                                                         </div>
                                                     ) : <span className="text-xs text-muted-foreground/60">Системный</span>}
                                                 </td>
@@ -456,13 +462,20 @@ export function AdminListings() {
                                 
                                 {isAdmin && item.owner && (
                                     <div className="mt-4 pt-3 flex items-center gap-2 border-t border-border/50">
-                                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">
-                                            {item.owner.name?.charAt(0)}
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">
+                                                {item.owner.name?.charAt(0)}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[9px] font-black text-foreground uppercase leading-none">{item.owner.name}</span>
+                                                <span className="text-[8px] text-muted-foreground uppercase tracking-tighter mt-0.5">{item.owner.email}</span>
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-[9px] font-black text-foreground uppercase leading-none">{item.owner.name}</span>
-                                            <span className="text-[8px] text-muted-foreground uppercase tracking-tighter mt-0.5">{item.owner.email}</span>
-                                        </div>
+                                        {(item.phone || item.owner.phone) && (
+                                            <a href={`tel:${item.phone || item.owner.phone}`} onClick={e => e.stopPropagation()} className="h-8 px-3 rounded-xl bg-primary/10 text-primary flex items-center gap-1.5 ml-auto text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
+                                                <Phone size={12} /> Позвонить
+                                            </a>
+                                        )}
                                     </div>
                                 )}
                             </div>
