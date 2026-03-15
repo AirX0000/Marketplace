@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { useShop } from '../../context/ShopContext';
-import { Package, Search, Truck, CreditCard, CheckCircle, Loader2 } from 'lucide-react';
+import { Package, Search, Truck, CreditCard, CheckCircle, Loader2, Phone, MessageCircle } from 'lucide-react';
 
 export function AdminOrders() {
     const [orders, setOrders] = useState([]);
@@ -73,6 +73,16 @@ export function AdminOrders() {
                                             <div className="flex flex-col">
                                                 <span className="font-bold text-slate-900 dark:text-white">{item.order.contactName || item.order.user.name || 'Гость'}</span>
                                                 <span className="text-[11px] text-slate-500">{item.order.contactPhone || item.order.user.phone}</span>
+                                                {(item.order.contactPhone || item.order.user?.phone) && (
+                                                    <div className="flex gap-1 mt-1">
+                                                        <a href={`tel:${item.order.contactPhone || item.order.user?.phone}`} onClick={e => e.stopPropagation()} className="flex items-center justify-center gap-1 text-[10px] font-bold text-primary hover:text-white hover:bg-primary transition-colors bg-primary/5 w-fit px-2 py-0.5 rounded-full border border-primary/20">
+                                                            <Phone size={10} />
+                                                        </a>
+                                                        <a href={`https://t.me/${(item.order.contactPhone || item.order.user?.phone).replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="flex items-center justify-center gap-1 text-[10px] font-bold text-sky-500 hover:text-white hover:bg-sky-500 transition-colors bg-sky-500/10 w-fit px-2 py-0.5 rounded-full border border-sky-500/20">
+                                                            <MessageCircle size={10} />
+                                                        </a>
+                                                    </div>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="p-4">
@@ -216,7 +226,17 @@ export function AdminOrders() {
                                 <div>
                                     <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Клиент</p>
                                     <p className="text-[11px] font-black text-slate-900 dark:text-white uppercase truncate">{item.order.contactName || item.order.user.name || 'Гость'}</p>
-                                    <p className="text-[10px] text-slate-500 mt-0.5">{item.order.contactPhone || item.order.user.phone}</p>
+                                    <p className="text-[10px] text-slate-500 mt-0.5 mb-1">{item.order.contactPhone || item.order.user.phone}</p>
+                                    {(item.order.contactPhone || item.order.user?.phone) && (
+                                        <div className="flex gap-1">
+                                            <a href={`tel:${item.order.contactPhone || item.order.user?.phone}`} onClick={e => e.stopPropagation()} className="flex items-center justify-center gap-1 text-[10px] font-bold text-primary hover:text-white hover:bg-primary transition-colors bg-primary/5 w-fit px-2 py-0.5 rounded-full border border-primary/20">
+                                                <Phone size={10} />
+                                            </a>
+                                            <a href={`https://t.me/${(item.order.contactPhone || item.order.user?.phone).replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="flex items-center justify-center gap-1 text-[10px] font-bold text-sky-500 hover:text-white hover:bg-sky-500 transition-colors bg-sky-500/10 w-fit px-2 py-0.5 rounded-full border border-sky-500/20">
+                                                <MessageCircle size={10} />
+                                            </a>
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Сумма</p>
