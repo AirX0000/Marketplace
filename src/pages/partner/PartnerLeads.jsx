@@ -6,7 +6,7 @@ import {
     Filter, MoreHorizontal, ExternalLink, Sparkles, AlertTriangle, ArrowRight
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { cn } from '../../lib/utils';
+import { cn, getImageUrl } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ResponsiveContainer, AreaChart, Area, 
@@ -390,7 +390,7 @@ export function PartnerLeads() {
                                     {lead.marketplace && (
                                         <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 hover:bg-white/10 transition-all cursor-pointer">
                                             <div className="w-12 h-12 rounded-xl bg-black/20 overflow-hidden ring-1 ring-white/10 shrink-0">
-                                                {lead.marketplace.image && <img src={lead.marketplace.image} className="w-full h-full object-cover" alt="" />}
+                                                {getImageUrl(lead.marketplace.image) && <img src={getImageUrl(lead.marketplace.image)} className="w-full h-full object-cover" alt="" />}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-0.5">По объявлению</div>

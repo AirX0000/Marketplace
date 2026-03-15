@@ -5,7 +5,7 @@ import { Plus, MoreHorizontal, X, Loader2, Check, AlertCircle, Eye, Shield, Filt
 import { Link } from 'react-router-dom';
 import { ListingModal } from '../../components/dashboard/ListingModal';
 import { toast } from 'react-hot-toast';
-
+import { getImageUrl } from '../../lib/utils';
 export function AdminListings() {
     const { user } = useShop();
     const [listings, setListings] = useState([]);
@@ -256,8 +256,8 @@ export function AdminListings() {
                                             <td className="p-4 font-medium">
                                                 <div className="flex items-center gap-3">
                                                     <div className="h-10 w-10 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border">
-                                                        {item.image ? (
-                                                            <img src={item.image} className="h-full w-full object-cover" alt={item.name} />
+                                                        {getImageUrl(item.image) ? (
+                                                            <img src={getImageUrl(item.image)} className="h-full w-full object-cover" alt={item.name} />
                                                         ) : (
                                                             <div className="h-full w-full flex items-center justify-center text-muted-foreground bg-muted">?</div>
                                                         )}
@@ -413,8 +413,8 @@ export function AdminListings() {
                             <div key={item.id} className="bg-card border border-border rounded-3xl p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
                                 <div className="flex gap-4 mb-4">
                                     <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted flex-shrink-0 border border-border">
-                                        {item.image ? (
-                                            <img src={item.image} className="w-full h-full object-cover" alt="" />
+                                        {getImageUrl(item.image) ? (
+                                            <img src={getImageUrl(item.image)} className="w-full h-full object-cover" alt="" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-muted-foreground">?</div>
                                         )}

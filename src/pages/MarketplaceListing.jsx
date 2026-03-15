@@ -206,7 +206,7 @@ export function MarketplaceListing() {
                     params.category = "Real Estate,Недвижимость,Квартиры,Дома,Коммерческая,Земля,Apartments,Houses,New Building,Private House,Property";
                 } else if (["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category)) {
                     // Match any subcategory of Cars OR the main category itself
-                    params.category = "Transport,Cars,Автомобили,Авто,Автосалон,С пробегом,Новый без пробега,Dealer,Private Auto,Vehicle";
+                    params.category = "Transport,Cars,Автомобили,Авто,Автосалон,С пробегом,Новый без пробега,Dealer,Private Auto,Vehicle,Бозор (Авто с пробегом),Автосалон (Новые авто)";
                 } else if (filters.category === "Услуги") {
                     params.category = "Услуги,Services,Страхование,Оценка,Нотариус,Риелтор,Realtor";
                 }
@@ -214,6 +214,13 @@ export function MarketplaceListing() {
                 // If a subcategory is selected, override with specific subcategory
                 if (filters.subcategory) {
                     params.category = filters.subcategory;
+                    
+                    // Specific mapping for car categories that match DB values
+                    if (filters.subcategory === "Новый без пробега" || filters.subcategory === "Автосалон") {
+                        params.category = "Автосалон,Новый без пробега,Автосалон (Новые авто)";
+                    } else if (filters.subcategory === "С пробегом") {
+                        params.category = "С пробегом,Бозор (Авто с пробегом)";
+                    }
                 }
             }
 
