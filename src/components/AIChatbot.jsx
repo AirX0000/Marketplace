@@ -64,7 +64,7 @@ export function AIChatbot() {
                             <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 absolute opacity-0 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500" />
                             <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 group-hover:opacity-0 transition-all duration-500" />
                         </div>
-                        <span className="font-black tracking-widest uppercase text-[8px] sm:text-[10px] hidden sm:block text-center leading-tight px-2">AI Ассистент</span>
+                        <span className="font-extrabold tracking-widest uppercase text-[7px] sm:text-[9px] hidden sm:block text-center leading-tight px-1 w-full truncate">AI Ассистент</span>
 
                         {/* Status Dot */}
                         <div className="absolute top-2 right-2 sm:top-4 sm:right-4 h-2 w-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)] animate-pulse" />
