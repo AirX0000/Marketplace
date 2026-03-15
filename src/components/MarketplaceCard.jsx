@@ -201,6 +201,9 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 <div className="text-2xl font-bold text-primary">
                                     {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
                                 </div>
+                                <div className="text-xs text-muted-foreground mt-1 font-medium bg-muted/50 w-fit px-2 py-1 rounded-md">
+                                    в кредит от {Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()} Sum/мес
+                                </div>
                             </div>
                             <button
                                 onClick={handleAddToCart}
@@ -402,6 +405,9 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         <div className="flex flex-col">
                             <div className="font-black text-foreground text-sm md:text-xl tracking-tighter">
                                 {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
+                            </div>
+                            <div className="text-[10px] md:text-xs text-slate-500 font-medium bg-slate-100 dark:bg-slate-800 w-fit px-2 py-0.5 mt-0.5 rounded flex items-center gap-1">
+                                в кредит от <span className="text-purple-600 dark:text-purple-400 font-bold">{Math.round((marketplace.price || 4999000) * 0.035).toLocaleString()} Sum</span>/мес
                             </div>
                         </div>
 
