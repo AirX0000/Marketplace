@@ -11,8 +11,19 @@ export function RecentlyViewed({ className }) {
         try {
             const stored = localStorage.getItem('recentlyViewed');
             if (stored) {
-                // Get last 6 items
-                setHistory(JSON.parse(stored).slice(0, 6));
+                let rawHistory = JSON.parse(stored);
+                
+                // Filter out old persistent mock items
+                const mockNamesToRemove = [
+                    "bmw x5", "tesla model", "li auto", "пентхаус", "современная вилла"
+                ];
+                rawHistory = rawHistory.filter(item => {
+                    const itemName = (item.name || "").toLowerCase();
+                    return !mockNamesToRemove.some(mock => itemName.includes(mock));
+                });
+
+                // Get last 6 valid items
+                setHistory(rawHistory.slice(0, 6));
             }
         } catch (e) {
             console.error("Failed to load history", e);
