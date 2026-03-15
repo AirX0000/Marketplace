@@ -50,6 +50,21 @@ export function ServiceGrid() {
                     {t('home.services', 'Услуги')}
                 </span>
             </Link>
+
+            {/* Mortgage (Ипотека) */}
+            <Link to="/marketplaces?category=Ипотека" className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105 active:scale-95 snap-center shrink-0">
+                <div className="w-[85px] h-[85px] xs:w-[100px] xs:h-[100px] md:w-32 md:h-32 bg-card rounded-[24px] md:rounded-3xl overflow-hidden shadow-xl shadow-orange-500/10 flex items-center justify-center group-hover:shadow-orange-500/30 transition-all border border-border relative">
+                    <img
+                        src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=400"
+                        alt="Ипотека"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                </div>
+                <span className="mt-3 text-[10px] xs:text-xs md:text-sm font-bold text-foreground uppercase tracking-widest group-hover:text-primary transition-colors text-center">
+                    {t('home.mortgage', 'Ипотека')}
+                </span>
+            </Link>
         </div>
     );
 }
