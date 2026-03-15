@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { useShop } from '../../context/ShopContext';
-import { Plus, MoreHorizontal, X, Loader2, Check, AlertCircle, Eye, Shield, Filter, Trash2, Search, Building, Store, Car, Sparkles, Star, Phone, MessageCircle, ExternalLink } from 'lucide-react';
+import { Plus, MoreHorizontal, X, Loader2, Check, AlertCircle, Eye, Shield, Filter, Trash2, Search, Building, Store, Car, Sparkles, Star, Phone, MessageCircle, ExternalLink, ArrowUpDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ListingModal } from '../../components/dashboard/ListingModal';
 import { toast } from 'react-hot-toast';
@@ -15,6 +15,7 @@ export function AdminListings() {
     const [initialCategory, setInitialCategory] = useState(null);
     const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, PENDING, APPROVED, REJECTED
     const [selectedItems, setSelectedItems] = useState([]);
+    const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
 
     // Admin Only
     const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
@@ -139,6 +140,14 @@ export function AdminListings() {
         } catch (error) {
             toast.error("Произошла ошибка при массовом действии", { id: loadingToast });
         }
+    };
+
+    const handleSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
     };
 
     // Tabs configuration
@@ -276,15 +285,20 @@ export function AdminListings() {
                         <thead className="bg-muted/50 text-muted-foreground border-b border-border">
                             <tr>
                                 {isAdmin && (
-                                    <th className="p-4 w-12">
-                                        {/* Compute filtered listings inside render, this is tricky. Let's rely on standard checkbox for now, we'll populate it in the render block */}
+                                    <th className="p-4 w-12 text-center">
                                     </th>
                                 )}
-                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Товар</th>
+                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('name')}>
+                                    <div className="flex items-center gap-1">Товар <ArrowUpDown size={12} className={sortConfig.key === 'name' ? 'text-primary' : 'text-muted-foreground/30'} /></div>
+                                </th>
                                 {isAdmin && <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Продавец</th>}
-                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Цена</th>
+                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('price')}>
+                                    <div className="flex items-center gap-1">Цена <ArrowUpDown size={12} className={sortConfig.key === 'price' ? 'text-primary' : 'text-muted-foreground/30'} /></div>
+                                </th>
                                 <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Категория</th>
-                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground">Статус</th>
+                                <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('createdAt')}>
+                                    <div className="flex items-center gap-1">Статус <ArrowUpDown size={12} className={sortConfig.key === 'createdAt' ? 'text-primary' : 'text-muted-foreground/30'} /></div>
+                                </th>
                                 <th className="p-4 font-black uppercase text-[10px] tracking-widest text-foreground text-right">Действия</th>
                             </tr>
                         </thead>
@@ -315,17 +329,28 @@ export function AdminListings() {
                                     return true;
                                 });
 
+                                // Apply sorting
+                                const sortedListings = [...filteredListings].sort((a, b) => {
+                                    if (a[sortConfig.key] < b[sortConfig.key]) {
+                                        return sortConfig.direction === 'asc' ? -1 : 1;
+                                    }
+                                    if (a[sortConfig.key] > b[sortConfig.key]) {
+                                        return sortConfig.direction === 'asc' ? 1 : -1;
+                                    }
+                                    return 0;
+                                });
+
                                 // Define headers again because we need `filteredListings` for the "Select All" checkbox
                                 return (
                                     <>
-                                        {isAdmin && filteredListings.length > 0 && (
+                                        {isAdmin && sortedListings.length > 0 && (
                                             <tr className="bg-muted/30 border-b border-border">
                                                 <th className="px-4 py-2 w-12 text-center">
                                                     <input
                                                         type="checkbox"
                                                         className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20 bg-background"
-                                                        checked={filteredListings.length > 0 && selectedItems.length === filteredListings.length}
-                                                        onChange={(e) => handleSelectAll(e, filteredListings)}
+                                                        checked={sortedListings.length > 0 && selectedItems.length === sortedListings.length}
+                                                        onChange={(e) => handleSelectAll(e, sortedListings)}
                                                         title="Выбрать все"
                                                     />
                                                 </th>
@@ -334,7 +359,7 @@ export function AdminListings() {
                                                 </th>
                                             </tr>
                                         )}
-                                        {filteredListings.length === 0 ? (
+                                        {sortedListings.length === 0 ? (
                                             <tr>
                                                 <td colSpan={isAdmin ? 7 : 5} className="p-12 text-center text-muted-foreground">
                                                     <div className="flex flex-col items-center gap-2">
@@ -347,7 +372,7 @@ export function AdminListings() {
                                                 </td>
                                             </tr>
                                         ) : (
-                                            filteredListings.map((item) => (
+                                            sortedListings.map((item) => (
                                                 <tr key={item.id} className="bg-card hover:bg-muted/50 transition-colors">
                                                     {isAdmin && (
                                                         <td className="p-4 text-center">
