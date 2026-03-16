@@ -55,7 +55,7 @@ export function PriceChart({ data }) {
     };
 
     return (
-        <div className="w-full h-[240px] mt-4">
+        <div className="w-full h-[240px] mt-4 min-h-[240px] min-w-full relative">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={formattedData}>
                     <defs>

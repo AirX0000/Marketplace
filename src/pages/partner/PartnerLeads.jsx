@@ -200,7 +200,7 @@ export function PartnerLeads() {
                         </div>
                     </div>
                     
-                    <div className="h-[250px] w-full relative z-10">
+                    <div className="h-[250px] w-full min-h-[250px] min-w-full relative z-10">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={performanceData}>
                                 <defs>

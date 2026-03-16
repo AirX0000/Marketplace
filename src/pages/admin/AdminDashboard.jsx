@@ -160,7 +160,7 @@ export function AdminDashboard() {
                         <h3 className="text-lg font-semibold">{t('admin.revenue_dynamics', 'Динамика Выручки (30 дней)')}</h3>
                         <TrendingUp className="h-4 w-4 text-blue-600 500" />
                     </div>
-                    <div className="h-[300px] w-full">
+                    <div className="h-[300px] w-full min-h-[300px] min-w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={stats.chartData || stats.revenueChart || []}>
                                 <defs>
@@ -192,7 +192,7 @@ export function AdminDashboard() {
                 {/* Category Pie Chart */}
                 <div className="col-span-1 lg:col-span-3 rounded-xl border bg-card shadow-sm p-6">
                     <h3 className="text-lg font-semibold mb-4">{t('admin.product_distribution', 'Распределение Товаров')}</h3>
-                    <div className="h-[300px] w-full">
+                    <div className="h-[300px] w-full min-h-[300px] min-w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
