@@ -25,14 +25,22 @@ export function getImageUrl(img) {
     if (typeof img !== 'string') return null;
     if (img.startsWith('http') || img.startsWith('data:')) return img;
     
-    // The app runs as a unified monolithic deployment on DigitalOcean
-    // Frontend and backend share the same domain and port.
-    // Therefore, an absolute path (e.g. /uploads/...) will perfectly map to the backend.
-    
     // Fallback if the image string is just a filename rather than a full path
+    let url = img;
     if (!img.startsWith('/') && !img.startsWith('http')) {
-        return `/uploads/${img}`;
+        url = `/uploads/${img}`;
     }
     
-    return img;
+    if (typeof window !== 'undefined' && url.startsWith('/')) {
+        // If we're on localhost development server, use the localhost backend port (3000)
+        // because Vite proxy might not catch dynamic JS-generated image srcs reliably
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return `http://${window.location.hostname}:3000${url}`;
+        }
+        
+        // For ALL production environments (DO, Vercel, etc.), the backend is here:
+        return `https://api.autohouse.uz${url}`;
+    }
+    
+    return url;
 }
