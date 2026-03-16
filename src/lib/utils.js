@@ -25,12 +25,14 @@ export function getImageUrl(img) {
     if (typeof img !== 'string') return null;
     if (img.startsWith('http') || img.startsWith('data:')) return img;
     
-    let host = '';
-    if (import.meta.env && import.meta.env.VITE_API_URL) {
-        host = import.meta.env.VITE_API_URL.split('/api')[0];
-    } else if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        host = 'https://api.autohouse.uz';
+    // The app runs as a unified monolithic deployment on DigitalOcean
+    // Frontend and backend share the same domain and port.
+    // Therefore, an absolute path (e.g. /uploads/...) will perfectly map to the backend.
+    
+    // Fallback if the image string is just a filename rather than a full path
+    if (!img.startsWith('/') && !img.startsWith('http')) {
+        return `/uploads/${img}`;
     }
-        
-    return `${host}${img.startsWith('/') ? '' : '/'}${img}`;
+    
+    return img;
 }
