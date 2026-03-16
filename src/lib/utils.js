@@ -25,9 +25,12 @@ export function getImageUrl(img) {
     if (typeof img !== 'string') return null;
     if (img.startsWith('http') || img.startsWith('data:')) return img;
     
-    const host = import.meta.env && import.meta.env.VITE_API_URL 
-        ? import.meta.env.VITE_API_URL.split('/api')[0] 
-        : '';
+    let host = '';
+    if (import.meta.env && import.meta.env.VITE_API_URL) {
+        host = import.meta.env.VITE_API_URL.split('/api')[0];
+    } else if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        host = 'https://api.autohouse.uz';
+    }
         
     return `${host}${img.startsWith('/') ? '' : '/'}${img}`;
 }

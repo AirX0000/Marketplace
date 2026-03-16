@@ -3,6 +3,7 @@ import { X, Check, ShoppingCart, Heart, Scale } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { useCompare } from '../context/CompareContext';
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../lib/utils';
 
 export function QuickViewModal({ product, onClose }) {
     const { toggleFavorite, isFavorite, addToCart } = useShop();
@@ -38,9 +39,13 @@ export function QuickViewModal({ product, onClose }) {
                 <div className="w-full md:w-1/2 bg-slate-100 dark:bg-slate-900 relative flex flex-col justify-center p-4">
                     <div className="aspect-[4/3] relative rounded-lg overflow-hidden mb-4">
                         <img
-                            src={images[currentImage] || product.image}
+                            src={getImageUrl(images[currentImage]) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
                             alt={product.name}
                             className="w-full h-full object-contain"
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
+                            }}
                         />
                     </div>
                     {images.length > 1 && (
@@ -54,7 +59,15 @@ export function QuickViewModal({ product, onClose }) {
                                         : 'border-transparent opacity-70 hover:opacity-100'
                                         }`}
                                 >
-                                    <img src={img} alt="" className="w-full h-full object-cover" />
+                                    <img 
+                                        src={getImageUrl(img) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"} 
+                                        alt="" 
+                                        className="w-full h-full object-cover" 
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
+                                        }}
+                                    />
                                 </button>
                             ))}
                         </div>

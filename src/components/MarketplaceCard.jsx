@@ -84,6 +84,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             alt={displayName}
                             loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-500 group-hover:scale-110"
                             onError={(e) => {
+                                e.target.onerror = null;
                                 e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
                             }}
                         />
@@ -239,6 +240,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         }}
                         loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-300 group-hover:scale-110"
                         onError={(e) => {
+                            e.target.onerror = null;
                             e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
                         }}
                     />
