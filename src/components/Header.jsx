@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, Heart, X, Package, Sun, Moon, Globe, Plus, Mic, MicOff } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, Heart, X, Package, Sun, Moon, Globe, Plus, Mic, MicOff, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
@@ -157,6 +157,14 @@ export function Header() {
 
                     {/* Right Side Actions */}
                     <div className="flex items-center gap-1 md:gap-2">
+                        <Link
+                            to="/mortgage"
+                            className="hidden md:flex items-center gap-1.5 bg-orange-500/10 text-orange-600 px-3 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-orange-500/20 active:scale-95 transition-all mr-1 md:mr-2"
+                        >
+                            <Building2 size={16} className="shrink-0" />
+                            <span>{t('home.mortgage', 'Ипотека')}</span>
+                        </Link>
+
                         <Link
                             to="/post-ad"
                             className="flex items-center gap-1.5 bg-emerald-600 text-white px-2.5 py-2 rounded-xl text-[10px] md:text-sm font-black md:font-bold uppercase tracking-tight md:tracking-normal shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 active:scale-95 transition-all mr-1 md:mr-2"

@@ -10,7 +10,15 @@ i18n
     .use(initReactI18next)
     .init({
         resources: {
-            ru: { translation: ruTranslations },
+            ru: {
+                translation: {
+                    ...ruTranslations,
+                    ads: {
+                        ...(ruTranslations.ads || {}), // Ensure 'ads' object exists before spreading
+                        cat_services: "Услуги"
+                    }
+                }
+            },
             uz: { translation: uzTranslations }
         },
         fallbackLng: 'ru',

@@ -1,51 +1,48 @@
 const { PrismaClient } = require('@prisma/client');
-
 const prisma = new PrismaClient();
 
-async function main() {
-    console.log('🌱 Seeding categories...');
-
-    // Clear existing categories
-    await prisma.category.deleteMany({});
-
-    const categories = [
-        {
-            name: "Недвижимость", // Real Estate
-            subcategories: JSON.stringify(["Квартиры", "Дома", "Коммерческая", "Земля"]),
-        },
-        {
-            name: "Автомобили", // Cars
-            subcategories: JSON.stringify(["Седан", "Кроссовер", "Внедорожник", "Электромобиль"]),
-        },
-        {
-            name: "Электроника", // Electronics
-            subcategories: JSON.stringify(["Смартфоны", "Ноутбуки", "Планшеты", "Аксессуары"]),
-        },
-        {
-            name: "Одежда", // Clothing
-            subcategories: JSON.stringify(["Мужская", "Женская", "Детская", "Обувь"]),
-        },
-        {
-            name: "Дом и Сад", // Home & Garden
-            subcategories: JSON.stringify(["Мебель", "Декор", "Садовая техника"]),
-        }
-    ];
-
-    for (const cat of categories) {
-        await prisma.category.create({
-            data: cat
-        });
-        console.log(`✅ Created category: ${cat.name}`);
+async function seed() {
+  const categories = [
+    {
+      name: 'Транспорт',
+      subcategories: ['Легковые автомобили', 'С пробегом', 'Новые', 'Электромобили', 'Грузовые', 'Спецтехника', 'Мототехника', 'Автобусы', 'Водный транспорт']
+    },
+    {
+      name: 'Недвижимость',
+      subcategories: ['Новостройки', 'Квартиры', 'Дома и дачи', 'Коммерческая недвижимость', 'Земельные участки', 'Гаражи и парковки']
+    },
+    {
+      name: 'Услуги',
+      subcategories: ['Автосервис', 'Ремонт и строительство', 'Риэлторы', 'Нотариусы', 'Юристы', 'Уборка', 'Грузоперевозки']
+    },
+    {
+      name: 'Ипотека',
+      subcategories: ['Автокредит', 'Ипотека', 'Потребительский кредит']
+    },
+    {
+      name: 'Запчасти и аксессуары',
+      subcategories: ['Шины и диски', 'Автозапчасти', 'Аксессуары', 'Аудио и видео', 'Масла и химия']
     }
+  ];
 
-    console.log('\n🎉 Categories seeded successfully!');
+  for (const cat of categories) {
+    try {
+      await prisma.category.upsert({
+        where: { name: cat.name },
+        update: { subcategories: JSON.stringify(cat.subcategories) },
+        create: {
+          name: cat.name,
+          subcategories: JSON.stringify(cat.subcategories)
+        }
+      });
+      console.log(`Upserted category: ${cat.name}`);
+    } catch (e) {
+      console.error(`Error on ${cat.name}:`, e);
+    }
+  }
 }
 
-main()
-    .catch((e) => {
-        console.error('❌ Error seeding categories:', e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+seed().then(() => {
+  console.log('Done');
+  process.exit(0);
+});
