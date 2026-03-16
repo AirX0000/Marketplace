@@ -38,7 +38,7 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/api\.autohouse\.uz\/.*/i,
+            urlPattern: /^\/(api|uploads)\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache-v2',

@@ -33,13 +33,13 @@ export function getImageUrl(img) {
     
     if (typeof window !== 'undefined' && url.startsWith('/')) {
         // If we're on localhost development server, use the localhost backend port (3000)
-        // because Vite proxy might not catch dynamic JS-generated image srcs reliably
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             return `http://${window.location.hostname}:3000${url}`;
         }
         
-        // For ALL production environments (DO, Vercel, etc.), the backend is here:
-        return `https://api.autohouse.uz${url}`;
+        // In all other environments (DO monolith, etc), the backend and uploads
+        // share the exact same origin as the frontend. 
+        return `${window.location.origin}${url}`;
     }
     
     return url;
