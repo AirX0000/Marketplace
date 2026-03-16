@@ -63,7 +63,8 @@ export function MarketplaceListing() {
                     "Новостройки",
                     "Вторичные",
                     "Нежилое помещение",
-                    "Аренда"
+                    "Аренда",
+                    "Ипотека"
                 ]
             },
             {
@@ -779,7 +780,7 @@ export function MarketplaceListing() {
                         {/* Pill Categories for Real Estate */}
                         {isRealEstateCategory && (
                             <div className="flex gap-2 overflow-x-auto pb-6 no-scrollbar scroll-smooth">
-                                {["Все", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда"].map(pill => {
+                                {["Все", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда", "Ипотека"].map(pill => {
                                     const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
                                     return (
                                         <button
