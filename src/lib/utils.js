@@ -27,7 +27,7 @@ export function getImageUrl(img) {
     
     const host = import.meta.env && import.meta.env.VITE_API_URL 
         ? import.meta.env.VITE_API_URL.split('/api')[0] 
-        : 'https://autohouse.uz';
+        : '';
         
     return `${host}${img.startsWith('/') ? '' : '/'}${img}`;
 }
