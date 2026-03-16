@@ -387,11 +387,14 @@ export function AdminListings() {
                                                     <td className="p-4 font-medium">
                                                         <div className="flex items-center gap-3">
                                                     <div className="h-10 w-10 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border">
-                                                        {getImageUrl(item.images || item.image) ? (
-                                                            <img src={getImageUrl(item.images || item.image)} className="h-full w-full object-cover" alt={item.name} />
-                                                        ) : (
-                                                            <div className="h-full w-full flex items-center justify-center text-muted-foreground bg-muted">?</div>
-                                                        )}
+                                                        <img 
+                                                            src={getImageUrl(item.images || item.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"} 
+                                                            className="h-full w-full object-cover" 
+                                                            alt={item.name}
+                                                            onError={(e) => {
+                                                                e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
+                                                            }}
+                                                        />
                                                     </div>
                                                     <div>
                                                         <div className="font-bold text-foreground line-clamp-1">{item.name}</div>
@@ -564,11 +567,14 @@ export function AdminListings() {
                             <div key={item.id} className="bg-card border border-border rounded-3xl p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
                                 <div className="flex gap-4 mb-4">
                                     <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted flex-shrink-0 border border-border">
-                                        {getImageUrl(item.images || item.image) ? (
-                                            <img src={getImageUrl(item.images || item.image)} className="w-full h-full object-cover" alt="" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-muted-foreground">?</div>
-                                        )}
+                                        <img 
+                                            src={getImageUrl(item.images || item.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"} 
+                                            className="w-full h-full object-cover" 
+                                            alt={item.name}
+                                            onError={(e) => {
+                                                e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
+                                            }}
+                                        />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-start justify-between gap-2">

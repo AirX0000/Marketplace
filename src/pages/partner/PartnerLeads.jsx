@@ -391,7 +391,18 @@ export function PartnerLeads() {
                                     {lead.marketplace && (
                                         <Link to={`/catalog/${lead.marketplace.id}`} target="_blank" className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 hover:bg-white/10 transition-all cursor-pointer group/link">
                                             <div className="w-12 h-12 rounded-xl bg-black/20 overflow-hidden ring-1 ring-white/10 shrink-0">
-                                                {getImageUrl(lead.marketplace.image) && <img src={getImageUrl(lead.marketplace.image)} className="w-full h-full object-cover group-hover/link:scale-110 transition-transform duration-500" alt="" />}
+                                                {getImageUrl(lead.marketplace.image) ? (
+                                                <img 
+                                                    src={getImageUrl(lead.marketplace.image)} 
+                                                    className="w-full h-full object-cover group-hover/link:scale-110 transition-transform duration-500" 
+                                                    alt={lead.marketplace.name}
+                                                    onError={(e) => {
+                                                        e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-slate-50">?</div>
+                                            )}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-0.5">По объявлению</div>
