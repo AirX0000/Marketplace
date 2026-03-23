@@ -175,6 +175,7 @@ export function UserDashboard() {
                                 { id: 'listings', label: 'My Listings', icon: Package },
                                 { id: 'orders', label: 'Мои Покупки', icon: Package },
                                 { id: 'addresses', label: 'Адреса доставки', icon: MapPin },
+                                { id: 'wallet', label: 'Кошелёк', icon: Wallet, href: '/wallet' },
                                 { id: 'profile', label: 'Настройки профиля', icon: Settings },
                                 { id: 'security', label: 'Безопасность', icon: Shield },
                                 ...(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' ? [
