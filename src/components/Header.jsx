@@ -222,8 +222,8 @@ export function Header() {
                                 </button>
 
                                 {/* Dropdown */}
-                                <div className="absolute top-full mt-2 right-0 w-64 bg-background border border-border/80 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,1)] rounded-2xl overflow-hidden hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200 z-[9999]">
-                                    <div className="p-4 border-b border-border/60 bg-muted/40 backdrop-blur-md flex items-center gap-4">
+                                <div className="absolute top-full mt-2 right-0 w-64 bg-white dark:bg-slate-900 border border-border/80 shadow-2xl rounded-2xl overflow-hidden hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200 z-[9999]">
+                                    <div className="p-4 border-b border-border/60 bg-slate-50 dark:bg-slate-800/50 flex items-center gap-4">
                                         {user?.avatar ? (
                                             <img src={user.avatar} alt={`Avatar of ${user?.name || 'user'}`} className="h-12 w-12 rounded-full object-cover border-2 border-primary/20 shadow-sm" />
                                         ) : (
@@ -297,17 +297,15 @@ export function Header() {
                             </Link>
                         )}
 
-                        {/* Cart - Only for buyers */}
-                        {(!isAuthenticated || isBuyer()) && (
-                            <Link to="/cart" aria-label="Корзина" className="relative p-2 rounded-lg hover:bg-muted transition-colors group">
-                                <ShoppingCart className="h-6 w-6 md:h-5 md:w-5 text-foreground group-hover:text-primary" />
-                                {cartCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white ring-2 ring-background animate-in zoom-in">
-                                        {cartCount}
-                                    </span>
-                                )}
-                            </Link>
-                        )}
+                        {/* Cart */}
+                        <Link to="/cart" aria-label="Корзина" className="relative p-2 rounded-lg hover:bg-muted transition-colors group">
+                            <ShoppingCart className="h-6 w-6 md:h-5 md:w-5 text-foreground group-hover:text-primary" />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white ring-2 ring-background animate-in zoom-in">
+                                    {cartCount}
+                                </span>
+                            )}
+                        </Link>
                         
                         {/* Mobile Theme Toggle & Search Toggle */}
                         <div className="flex items-center md:hidden">

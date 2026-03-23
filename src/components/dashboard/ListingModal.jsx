@@ -308,7 +308,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             const data = await api.uploadImage(file);
             setFormData(prev => ({ ...prev, images: [...prev.images, data.url] }));
         } catch (error) {
-            toast.error(t('ads.upload_failed') || "Ошибка загрузки");
+            toast.error(error.message || t('ads.upload_failed') || "Ошибка загрузки");
             console.error(error);
         } finally {
             setUploading(false);
@@ -349,7 +349,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
     );
 
     const content = (
-        <div className={`bg-card text-card-foreground md:rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col border-border md:border ${asPage ? 'h-full md:max-h-none' : 'h-full md:h-auto md:max-h-[85vh]'} dark:border-white/10 dark:shadow-black/50`}>
+        <div className={`bg-white dark:bg-slate-900 text-card-foreground md:rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col border-border md:border ${asPage ? 'h-full md:max-h-none' : 'h-full md:h-auto md:max-h-[85vh]'} dark:border-white/10 dark:shadow-black/50`}>
 
             {/* Header - Hidden on page to avoid redundant headers */}
             {!asPage && (
@@ -644,7 +644,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 className="space-y-6"
                             >
                                 {/* Photos Section */}
-                                <div className="p-5 bg-card rounded-2xl border border-border">
+                                <div className="p-5 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-border">
                                     <div className="flex items-center justify-between mb-4">
                                         <label className="text-xs font-black uppercase text-muted-foreground tracking-widest leading-none">{t('ads.product_photos')}</label>
                                         <span className="text-[10px] font-bold text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border">{formData.images.length} / 10</span>
@@ -662,8 +662,8 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             </div>
                                         ))}
                                         {formData.images.length < 10 && (
-                                            <label className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 hover:scale-[0.98] transition-all bg-background group">
-                                                <div className="h-8 w-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-card transition-all shadow-sm">
+                                            <label className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 hover:scale-[0.98] transition-all bg-white dark:bg-slate-700 group">
+                                                <div className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-all shadow-sm">
                                                     {uploading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                                                 </div>
                                                 <span className="text-[9px] font-black uppercase text-muted-foreground mt-2 tracking-widest group-hover:text-primary transition-colors">{t('ads.photo')}</span>
