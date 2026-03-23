@@ -3,14 +3,16 @@ import { z } from 'zod';
 // Auth schemas
 export const loginSchema = z.object({
     identifier: z.string()
+        .trim()
         .min(1, 'Email или Телефон обязателен')
         .refine((val) => {
-            // If it looks like a phone number (contains digits and optional characters)
-            if (/^[\d\s\+\-\(\)]+$/.test(val)) {
-                return val.replace(/[\D]/g, '').length >= 9; // At least 9 digits
+            // If it contains an '@', validate as email
+            if (val.includes('@')) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
             }
-            // Otherwise, validate as email
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+            // Otherwise, assume it's a phone number and validate digits
+            const digits = val.replace(/[\D]/g, '');
+            return digits.length >= 9;
         }, {
             message: 'Введите корректный номер телефона или email'
         }),
