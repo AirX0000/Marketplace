@@ -64,7 +64,7 @@ export function MarketplaceListing() {
                     "Вторичные",
                     "Нежилое помещение",
                     "Аренда",
-                    "Ипотека"
+                    "Участки"
                 ]
             },
             {
@@ -221,6 +221,10 @@ export function MarketplaceListing() {
                         params.category = "Автосалон,Новый без пробега,Автосалон (Новые авто)";
                     } else if (filters.subcategory === "С пробегом") {
                         params.category = "С пробегом,Бозор (Авто с пробегом)";
+                    } else if (filters.subcategory === "Вторичные") {
+                        params.category = "Вторичные,Вторичное жильё";
+                    } else if (filters.subcategory === "Нежилое помещение") {
+                        params.category = "Нежилое помещение,Коммерческая недвижимость";
                     }
                 }
             }
@@ -780,7 +784,7 @@ export function MarketplaceListing() {
                         {/* Pill Categories for Real Estate */}
                         {isRealEstateCategory && (
                             <div className="flex gap-2 overflow-x-auto pb-6 no-scrollbar scroll-smooth">
-                                {["Все", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда", "Ипотека"].map(pill => {
+                                {["Все", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда", "Участки"].map(pill => {
                                     const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
                                     return (
                                         <button

@@ -80,12 +80,12 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 <div className="group relative flex overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div className="w-48 h-48 flex-shrink-0 overflow-hidden bg-muted/30 p-6 relative">
                         <img
-                            src={getImageUrl(marketplace.images || marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
+                            src={getImageUrl(marketplace.images || marketplace.image) || "/images/car_mock.png"}
                             alt={displayName}
                             loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-500 group-hover:scale-110"
                             onError={(e) => {
                                 e.target.onerror = null;
-                                e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
+                                e.target.src = "/images/car_mock.png";
                             }}
                         />
                         <button
@@ -217,13 +217,6 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-                style={{
-                    rotateY,
-                    rotateX,
-                    transformStyle: "preserve-3d",
-                }}
                 className={`group relative flex flex-col rounded-2xl border bg-card transition-all duration-300 shadow-sm hover:shadow-2xl overflow-hidden ${marketplace.isFeatured ? 'border-indigo-500/50 ring-2 ring-indigo-500/20' : 'border-border'}`}
             >
                 {marketplace.isFeatured && (
@@ -232,16 +225,13 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                     </div>
                 )}
                 <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-4 md:p-5 relative border-b border-border/50">
-                    <motion.img
-                        src={getImageUrl(marketplace.images || marketplace.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"}
+                    <img
+                        src={getImageUrl(marketplace.images || marketplace.image) || "/images/car_mock.png"}
                         alt={displayName}
-                        style={{
-                            translateZ: 50,
-                        }}
-                        loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-300 group-hover:scale-110"
+                        loading="lazy" decoding="async" className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
                         onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000";
+                            e.target.src = "/images/car_mock.png";
                         }}
                     />
 
@@ -320,19 +310,36 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 <Check className="w-2.5 h-2.5" /> Проверено
                             </span>
                         )}
-                        {(marketplace.status === 'SUPER_PRICE' || marketplace.discount >= 10 || marketplace.name.toLowerCase().includes('скидка')) && (
+
+                        {/* Condition / Subcategory Badge */}
+                        {(() => {
+                            let displayCat = marketplace.category || "";
+                            // Legacy mappings
+                            if (displayCat === "Бозор (Авто с пробегом)") displayCat = "С пробегом";
+                            if (displayCat === "Автосалон (Новые авто)") displayCat = "Автосалон";
+                            if (displayCat === "Вторичное жильё") displayCat = "Вторичные";
+                            if (displayCat === "Коммерческая недвижимость") displayCat = "Нежилое помещение";
+
+                            const highlightCategories = ["С пробегом", "Автосалон", "Новый без пробега", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда", "Участки"];
+                            
+                            if (highlightCategories.includes(displayCat)) {
+                                return (
+                                    <span className="rounded-md bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300 dark:border-indigo-800/40 px-2.5 py-0.5 shadow-sm border border-indigo-100 flex items-center gap-1">
+                                        {displayCat}
+                                    </span>
+                                );
+                            }
+                            return null;
+                        })()}
+
+                        {(marketplace.status === 'SUPER_PRICE' || marketplace.discount >= 10 || (marketplace.name && marketplace.name.toLowerCase().includes('скидка'))) && (
                             <span className="rounded-md bg-gradient-to-r from-rose-500 to-orange-500 text-white px-2 py-0.5 shadow-sm shadow-orange-500/30 flex items-center gap-1">
                                 <Flame className="w-3 h-3" /> Супер Цена
                             </span>
                         )}
                         {marketplace.status === 'SOON' && (
                             <span className="rounded-md bg-slate-800 dark:bg-slate-700 text-white px-2 py-0.5 shadow-sm flex items-center gap-1 border border-slate-600">
-                                <Clock className="w-3 h-3" /> Скоро в продаже
-                            </span>
-                        )}
-                        {["Квартиры", "Дома", "Коммерческая", "Земля", "Apartments", "Houses", "Недвижимость"].includes(marketplace.category) && (
-                            <span className="rounded-md bg-emerald-50 text-emerald-700 px-2 py-0.5 border border-emerald-100 italic">
-                                Недвижимость
+                                <Clock className="w-3 h-3" /> Скоро
                             </span>
                         )}
                         {["Седан", "Кроссовер", "Внедорожник", "Электромобиль", "Cars", "Transport"].includes(marketplace.category) && (

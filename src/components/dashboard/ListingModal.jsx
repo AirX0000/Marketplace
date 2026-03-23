@@ -16,10 +16,11 @@ const CATEGORIES = [
         name: "Транспорт",
         key: "ads.cat_transport",
         sub: [
-            { id: "sub_used_cars", label: "ads.sub_used_cars", value: "Бозор (Авто с пробегом)" },
-            { id: "sub_new_cars", label: "ads.sub_new_cars", value: "Автосалон (Новые авто)" },
-            { id: "sub_moto", label: "ads.sub_moto", value: "Мотоциклы" },
-            { id: "sub_special", label: "ads.sub_special", value: "Спецтехника" }
+            { id: "sub_used_cars", label: "С пробегом", value: "С пробегом" },
+            { id: "sub_new_cars", label: "Автосалон", value: "Автосалон" },
+            { id: "sub_new_no_mileage", label: "Новый без пробега", value: "Новый без пробега" },
+            { id: "sub_moto", label: "Мотоциклы", value: "Мотоциклы" },
+            { id: "sub_special", label: "Спецтехника", value: "Спецтехника" }
         ]
     },
     {
@@ -27,11 +28,11 @@ const CATEGORIES = [
         name: "Недвижимость",
         key: "ads.cat_real_estate",
         sub: [
-            { id: "sub_resale", label: "ads.sub_resale", value: "Вторичное жильё" },
-            { id: "sub_new_build", label: "ads.sub_new_build", value: "Новостройки" },
-            { id: "sub_rent", label: "ads.sub_rent", value: "Аренда" },
-            { id: "sub_land", label: "ads.sub_land", value: "Участки" },
-            { id: "sub_commercial", label: "ads.sub_commercial", value: "Коммерческая недвижимость" }
+            { id: "sub_resale", label: "Вторичные", value: "Вторичные" },
+            { id: "sub_new_build", label: "Новостройки", value: "Новостройки" },
+            { id: "sub_commercial", label: "Нежилое помещение", value: "Нежилое помещение" },
+            { id: "sub_rent", label: "Аренда", value: "Аренда" },
+            { id: "sub_land", label: "Участки", value: "Участки" }
         ]
     },
     {
@@ -136,6 +137,15 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             }
         };
 
+        const rawCat = listing?.category || initialCategory || "";
+        const LEGACY_CATEGORY_MAP = {
+            "Бозор (Авто с пробегом)": "С пробегом",
+            "Автосалон (Новые авто)": "Автосалон",
+            "Вторичное жильё": "Вторичные",
+            "Коммерческая недвижимость": "Нежилое помещение"
+        };
+        const finalCat = LEGACY_CATEGORY_MAP[rawCat] || rawCat;
+
         return {
             name: listing?.name || "",
             name_uz: listing?.name_uz || "",
@@ -144,7 +154,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             price: listing?.price || 0,
             discount: listing?.discount || 0,
             region: listing?.region || "Global",
-            category: listing?.category || initialCategory || "Бозор (Авто с пробегом)",
+            category: finalCat,
             images: parseImages(listing?.images || listing?.image),
             certificates: parseImages(listing?.certificates),
             attributes: initialAttrs,
@@ -161,13 +171,14 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
     const [langTab, setLangTab] = useState('ru'); // 'ru' | 'uz'
 
     // Find initial main category based on subcategory
-    const initialMainCat = CATEGORIES.find(c => c.sub.some(s => s.value === formData.category)) || CATEGORIES[0];
+    const initialMainCat = formData.category ? CATEGORIES.find(c => c.sub.some(s => s.value === formData.category)) : null;
     const [mainCategory, setMainCategory] = useState(initialMainCat);
 
     const [displayPrice, setDisplayPrice] = useState(formatPrice(listing?.price || 0));
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [generatingAI, setGeneratingAI] = useState(false);
+    const [detectingCategory, setDetectingCategory] = useState(false);
     const [analyzingListing, setAnalyzingListing] = useState(false);
     const [listingAnalysis, setListingAnalysis] = useState(null);
 
@@ -187,6 +198,40 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             toast.error("Не удалось проанализировать объявление");
         } finally {
             setAnalyzingListing(false);
+        }
+    };
+
+    const handleAutoCategory = async () => {
+        if (!formData.name) {
+            toast.error(t('ads.enter_name_first') || "Сначала введите название для авто-подбора");
+            return;
+        }
+
+        setDetectingCategory(true);
+        const loadingToast = toast.loading("Авто-подбор категории...");
+        try {
+            const allSubs = CATEGORIES.flatMap(c => c.sub.map(s => s.value));
+            const prompt = `Determine the most suitable category for this item/service: "${formData.name}". Reply ONLY with the EXACT name of the category from this list, nothing else: [${allSubs.join(', ')}]. If unsure, reply with "Бозор (Авто с пробегом)".`;
+
+            const response = await api.aiChat(prompt, []);
+            let detected = response.reply?.trim();
+            if (detected) detected = detected.replace(/["']/g, '');
+
+            if (detected && allSubs.includes(detected)) {
+                const mainCat = CATEGORIES.find(c => c.sub.some(s => s.value === detected));
+                if (mainCat) {
+                    setMainCategory(mainCat);
+                    setFormData(prev => ({ ...prev, category: detected }));
+                    toast.success("Категория выбрана: " + detected, { id: loadingToast });
+                }
+            } else {
+                toast.error("Не удалось однозначно определить категорию.", { id: loadingToast });
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Ошибка авто-подбора", { id: loadingToast });
+        } finally {
+            setDetectingCategory(false);
         }
     };
 
@@ -221,6 +266,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
             // Validation before going to next step
             if (currentStep === 1) {
                 if (!formData.name && !formData.name_uz) return toast.error(t('ads.name_required') || "Название обязательно");
+                if (!formData.category || !mainCategory) return toast.error(t('ads.category_req') || "Пожалуйста, выберите точную Подкатегорию товара/услуги!");
                 if (!formData.price || formData.price === 0) return toast.error(t('ads.price_required') || "Цена обязательна");
             }
             if (currentStep === 3) {
@@ -412,27 +458,41 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-xs font-black uppercase text-muted-foreground/80 tracking-widest mb-1.5 block px-1">{t('ads.category') || 'Kategoriya'}</label>
+                                        <div className="flex justify-between items-center mb-1.5">
+                                            <label className="text-xs font-black uppercase text-muted-foreground/80 tracking-widest block px-1">{t('ads.category') || 'Kategoriya'}</label>
+                                            <button 
+                                                type="button" 
+                                                onClick={handleAutoCategory}
+                                                disabled={detectingCategory || !formData.name}
+                                                className="text-[10px] text-primary font-bold flex items-center gap-1 hover:opacity-80 transition-opacity disabled:opacity-50"
+                                                title="Автоматически определить по названию"
+                                            >
+                                                {detectingCategory ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />} AI
+                                            </button>
+                                        </div>
                                         <select
                                             className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
-                                            value={mainCategory.id}
+                                            value={mainCategory?.id || ""}
                                             onChange={(e) => {
                                                 const cat = CATEGORIES.find(c => c.id === parseInt(e.target.value));
                                                 setMainCategory(cat);
-                                                setFormData({ ...formData, category: cat.sub[0].value });
+                                                setFormData({ ...formData, category: "" }); // Reset subcategory when main changes
                                             }}
                                         >
+                                            <option value="">{t('ads.select_category') || 'Выберите Категорию...'}</option>
                                             {CATEGORIES.map(c => <option key={c.id} value={c.id}>{t(c.key)}</option>)}
                                         </select>
                                     </div>
                                     <div>
                                         <label className="text-xs font-black uppercase text-muted-foreground/80 tracking-widest mb-1.5 block px-1">{t('ads.subcategory')}</label>
                                         <select
-                                            className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
+                                            className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none disabled:opacity-50"
                                             value={formData.category}
+                                            disabled={!mainCategory}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                         >
-                                            {mainCategory.sub.map(sub => <option key={sub.id} value={sub.value}>{t(sub.label)}</option>)}
+                                            <option value="">{t('ads.select_subcategory') || 'Выберите Подкатегорию...'}</option>
+                                            {mainCategory?.sub.map(sub => <option key={sub.id} value={sub.value}>{t(sub.label)}</option>)}
                                         </select>
                                     </div>
                                 </div>
@@ -441,7 +501,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                     <label className="text-sm font-semibold text-foreground/80 mb-1.5 block">
                                         {t('ads.name_select')}
                                     </label>
-                                    {mainCategory.name === 'Транспорт' ? (
+                                    {mainCategory?.name === 'Транспорт' ? (
                                         <div className="grid grid-cols-2 gap-4">
                                             <select
                                                 required
@@ -473,7 +533,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                                 {(BRANDS_MODELS[formData.attributes.specs?.make] || []).sort().map(m => <option key={m} value={m}>{m}</option>)}
                                             </select>
                                         </div>
-                                    ) : mainCategory.name === 'Недвижимость' ? (
+                                    ) : mainCategory?.name === 'Недвижимость' ? (
                                         <select
                                             required
                                             className="h-12 w-full rounded-xl border border-border bg-muted/50 text-foreground px-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
@@ -538,7 +598,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 className="space-y-6"
                             >
                                 {/* Real Estate Specific Fields */}
-                                {["Недвижимость", "Apartments", "Houses", "Commercial", "Land"].includes(mainCategory.name) && (
+                                {["Недвижимость", "Apartments", "Houses", "Commercial", "Land"].includes(mainCategory?.name) && (
                                     <div className="p-5 bg-card rounded-2xl border border-border space-y-4">
                                         <h3 className="font-black text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                             <Building className="h-4 w-4 text-primary" /> {t('ads.property_specs')}
@@ -553,7 +613,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 )}
 
                                 {/* Transport Specific Fields */}
-                                {["Транспорт", "Transport", "Cars", "Motorcycles", "Trucks"].includes(mainCategory.name) && (
+                                {["Транспорт", "Transport", "Cars", "Motorcycles", "Trucks"].includes(mainCategory?.name) && (
                                     <div className="p-5 bg-card rounded-2xl border border-border space-y-4">
                                         <h3 className="font-black text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                             <Car className="h-4 w-4 text-primary" /> {t('ads.car_specs')}
@@ -568,7 +628,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                 )}
 
                                 {/* Professional Specialized Fields */}
-                                {mainCategory.name === 'Услуги' && PROFESSIONAL_FIELDS[formData.name] && (
+                                {mainCategory?.name === 'Услуги' && PROFESSIONAL_FIELDS[formData.name] && (
                                     <div className="p-5 bg-card rounded-2xl border border-border space-y-4">
                                         <h3 className="font-black text-xs uppercase tracking-widest text-primary flex items-center gap-2">
                                             <Briefcase className="h-4 w-4" /> Профессиональные данные

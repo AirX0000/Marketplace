@@ -16,6 +16,7 @@ export function getImageUrl(img) {
     try {
         if (typeof img === 'string' && (img.startsWith('[') || img.startsWith('"'))) {
             const parsed = JSON.parse(img);
+            if (Array.isArray(parsed) && parsed.length === 0) return null;
             img = Array.isArray(parsed) ? parsed[0] : parsed;
         }
     } catch (e) {
