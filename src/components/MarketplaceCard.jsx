@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { useCompare } from '../context/CompareContext';
-import { Star, ShoppingCart, Heart, Check, Scale, Eye, Share2 } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Check, Scale, Eye, Share2, Flame, Clock } from 'lucide-react';
 import { QuickViewModal } from './QuickViewModal';
 import { getImageUrl } from '../lib/utils';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
@@ -318,6 +318,16 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         {marketplace.isVerified && (
                             <span className="rounded-md bg-emerald-500 text-white px-2 py-0.5 shadow-sm shadow-emerald-500/20 flex items-center gap-1">
                                 <Check className="w-2.5 h-2.5" /> Проверено
+                            </span>
+                        )}
+                        {(marketplace.status === 'SUPER_PRICE' || marketplace.discount >= 10 || marketplace.name.toLowerCase().includes('скидка')) && (
+                            <span className="rounded-md bg-gradient-to-r from-rose-500 to-orange-500 text-white px-2 py-0.5 shadow-sm shadow-orange-500/30 flex items-center gap-1">
+                                <Flame className="w-3 h-3" /> Супер Цена
+                            </span>
+                        )}
+                        {marketplace.status === 'SOON' && (
+                            <span className="rounded-md bg-slate-800 dark:bg-slate-700 text-white px-2 py-0.5 shadow-sm flex items-center gap-1 border border-slate-600">
+                                <Clock className="w-3 h-3" /> Скоро в продаже
                             </span>
                         )}
                         {["Квартиры", "Дома", "Коммерческая", "Земля", "Apartments", "Houses", "Недвижимость"].includes(marketplace.category) && (

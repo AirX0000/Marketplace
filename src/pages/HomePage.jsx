@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, Search, Gift, Zap, Crown, Flame, Clock, Percent, Smartphone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { ServiceGrid } from '../components/home/ServiceGrid';
 import { BannerSlider } from '../components/home/BannerSlider';
 import { RecentlyViewed } from '../components/RecentlyViewed';
+import { BrandCarousel } from '../components/home/BrandCarousel';
 import { useTranslation } from 'react-i18next';
 import { api } from '../lib/api';
 import { useShop } from '../context/ShopContext';
+
+const SEMANTIC_CATEGORIES = [
+    { id: 'popular', label: 'Популярное', search: 'hot', icon: Flame, color: 'text-orange-500 bg-orange-100 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20' },
+    { id: 'electric', label: 'Электро', search: 'электромобиль', icon: Zap, color: 'text-blue-500 bg-blue-100 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
+    { id: 'premium', label: 'Премиум', search: 'premium', icon: Crown, color: 'text-amber-500 bg-amber-100 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20' },
+    { id: 'discounts', label: 'Супер Цена', search: 'скидка', icon: Percent, color: 'text-emerald-500 bg-emerald-100 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20' },
+    { id: 'gifts', label: 'В подарок', search: 'подарок', icon: Gift, color: 'text-pink-500 bg-pink-100 dark:bg-pink-500/10 border-pink-200 dark:border-pink-500/20' },
+    { id: 'soon', label: 'Скоро', search: 'скоро', icon: Clock, color: 'text-slate-500 bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600' },
+];
 
 const MOCK_LISTINGS = [
     {
@@ -143,6 +153,12 @@ export function HomePage() {
         navigate(`/marketplaces?${params.toString()}`);
     };
 
+    const handleSemanticClick = (searchKeyword) => {
+        const params = new URLSearchParams();
+        if (searchKeyword) params.set('search', searchKeyword);
+        navigate(`/marketplaces?${params.toString()}`);
+    };
+
     return (
         <main className="min-h-screen bg-transparent">
             <Helmet>
@@ -199,13 +215,31 @@ export function HomePage() {
                             </div>
                         </div>
                         
-                        {/* Category Icons */}
-                        <div className="max-w-4xl mx-auto w-full">
+                        {/* Category Icons & Semantic Chips */}
+                        <div className="max-w-5xl mx-auto w-full space-y-8">
                             <ServiceGrid />
+                            
+                            {/* Semantic Category Chips */}
+                            <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 scrollbar-hide">
+                                {SEMANTIC_CATEGORIES.map((cat) => {
+                                    const Icon = cat.icon;
+                                    return (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => handleSemanticClick(cat.search)}
+                                            className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-2xl font-bold text-[13px] md:text-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${cat.color}`}
+                                        >
+                                            <Icon className="w-4 h-4 md:w-5 md:h-5" />
+                                            {cat.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 </section>
 
+                <BrandCarousel />
                 <RecentlyViewed />
 
                 {/* Recommendations Section */}
