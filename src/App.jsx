@@ -52,6 +52,7 @@ import { SharedWishlistPage } from './pages/SharedWishlistPage';
 import { MortgageInfoPage } from './pages/services/MortgageInfoPage';
 import { ServiceDetail } from './pages/ServiceDetail';
 import { LoanApplication } from './pages/services/LoanApplication';
+import { QRPayPage } from './pages/fintech/QRPayPage';
 import { NotFound } from './pages/NotFound';
 
 // Admin Pages
@@ -150,6 +151,7 @@ function App() {
                           <Route path="orders" element={<OrderHistoryPage />} />
                           <Route path="settings" element={<ProfileSettingsPage />} />
                           <Route path="wallet" element={<AutohousePayDashboard />} />
+                          <Route path="qr-pay" element={<QRPayPage />} />
                           <Route path="chat" element={<ChatPage />} />
 
                           {/* Public Footer Routes */}

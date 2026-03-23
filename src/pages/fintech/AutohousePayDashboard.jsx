@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { PinModal } from '../../components/fintech/PinModal';
 
 // ─── localStorage helpers ───────────────────────────────────────────────────
 const CARDS_KEY = 'autohouse_linked_cards';
@@ -143,6 +144,9 @@ export function AutohousePayDashboard() {
     const [transferData, setTransferData] = useState({ recipient: '', amount: '' });
     const [newCard, setNewCard] = useState({ number: '', holder: '', expiry: '', cvv: '', balance: '' });
     const [actionLoading, setActionLoading] = useState(false);
+    
+    // Pin Protection State
+    const [pinModal, setPinModal] = useState({ isOpen: false, action: null, amount: null, title: '' });
 
     useEffect(() => {
         async function load() {
@@ -198,8 +202,7 @@ export function AutohousePayDashboard() {
         toast.success('Карта удалена');
     };
 
-    const handleTopUp = async () => {
-        if (!topUpAmount || isNaN(topUpAmount)) return toast.error('Введите корректную сумму');
+    const handleTopUpConfirm = async () => {
         setActionLoading(true);
         try {
             await api.walletDeposit(Number(topUpAmount));
@@ -211,8 +214,12 @@ export function AutohousePayDashboard() {
         finally { setActionLoading(false); }
     };
 
-    const handleTransfer = async () => {
-        if (!transferData.recipient || !transferData.amount) return toast.error('Заполните все поля');
+    const handleTopUpClick = () => {
+        if (!topUpAmount || isNaN(topUpAmount) || Number(topUpAmount) <= 0) return toast.error('Введите корректную сумму');
+        setPinModal({ isOpen: true, action: handleTopUpConfirm, amount: topUpAmount, title: 'Пополнение кошелька' });
+    };
+
+    const handleTransferConfirm = async () => {
         setActionLoading(true);
         try {
             await api.walletTransfer({ recipientIdentifier: transferData.recipient, amount: Number(transferData.amount) });
@@ -222,6 +229,12 @@ export function AutohousePayDashboard() {
             if (fresh) setWallet(fresh);
         } catch { toast.error('Ошибка перевода. Проверьте данные.'); }
         finally { setActionLoading(false); }
+    };
+
+    const handleTransferClick = () => {
+        if (!transferData.recipient || !transferData.amount || Number(transferData.amount) <= 0) return toast.error('Заполните все поля');
+        if (Number(transferData.amount) > walletBalance) return toast.error('Недостаточно средств на кошельке');
+        setPinModal({ isOpen: true, action: handleTransferConfirm, amount: transferData.amount, title: 'Перевод P2P' });
     };
 
     const formatDate = (s) => new Date(s).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -331,13 +344,21 @@ export function AutohousePayDashboard() {
                             {[
                                 { label: 'Top Up', icon: Plus, action: () => setTopUpModal(true), color: 'bg-purple-600 hover:bg-purple-500 shadow-purple-600/20' },
                                 { label: 'Transfer', icon: Send, action: () => setTransferModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
-                                { label: 'Withdraw', icon: ArrowUpRight, action: () => toast.error('Для вывода обратитесь в поддержку'), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
-                            ].map(({ label, icon: Icon, action, color }) => (
-                                <button key={label} onClick={action}
-                                    className={`flex flex-col items-center gap-2 p-5 text-white rounded-2xl transition-all shadow-lg hover:-translate-y-0.5 active:translate-y-0 ${color}`}>
-                                    <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center"><Icon size={20} /></div>
-                                    <span className="text-sm font-bold">{label}</span>
-                                </button>
+                                { label: 'QR Pay', icon: ArrowUpRight, isLink: true, path: '/qr-pay', color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                            ].map(({ label, icon: Icon, action, isLink, path, color }) => (
+                                isLink ? (
+                                    <Link key={label} to={path}
+                                        className={`flex flex-col items-center gap-2 p-5 text-white rounded-2xl transition-all shadow-lg hover:-translate-y-0.5 active:translate-y-0 ${color}`}>
+                                        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center"><Icon size={20} /></div>
+                                        <span className="text-sm font-bold">{label}</span>
+                                    </Link>
+                                ) : (
+                                    <button key={label} onClick={action}
+                                        className={`flex flex-col items-center gap-2 p-5 text-white rounded-2xl transition-all shadow-lg hover:-translate-y-0.5 active:translate-y-0 ${color}`}>
+                                        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center"><Icon size={20} /></div>
+                                        <span className="text-sm font-bold">{label}</span>
+                                    </button>
+                                )
                             ))}
                         </div>
 
@@ -540,7 +561,7 @@ export function AutohousePayDashboard() {
                     </div>
                     <div className="flex gap-3 pt-2">
                         <button onClick={() => setTopUpModal(false)} className="flex-1 py-3 border border-white/10 rounded-xl text-slate-400 hover:text-white text-sm font-bold transition-colors">Отмена</button>
-                        <button onClick={handleTopUp} disabled={actionLoading} className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2">
+                        <button onClick={handleTopUpClick} disabled={actionLoading} className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2">
                             {actionLoading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />} Пополнить
                         </button>
                     </div>
@@ -562,12 +583,20 @@ export function AutohousePayDashboard() {
                     </div>
                     <div className="flex gap-3 pt-2">
                         <button onClick={() => setTransferModal(false)} className="flex-1 py-3 border border-white/10 rounded-xl text-slate-400 hover:text-white text-sm font-bold transition-colors">Отмена</button>
-                        <button onClick={handleTransfer} disabled={actionLoading} className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2">
+                        <button onClick={handleTransferClick} disabled={actionLoading} className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2">
                             {actionLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />} Отправить
                         </button>
                     </div>
                 </div>
             </Modal>
+            
+            <PinModal 
+                isOpen={pinModal.isOpen} 
+                onClose={() => setPinModal({ isOpen: false, action: null, amount: null, title: '' })}
+                onSuccess={() => { if (pinModal.action) pinModal.action(); }}
+                actionName={pinModal.title}
+                amount={pinModal.amount}
+            />
         </div>
     );
 }

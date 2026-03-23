@@ -180,6 +180,67 @@ router.post('/transfer', authenticateToken, asyncHandler(async (req, res) => {
     res.json({ message: 'Transfer successful' });
 }));
 
+// Pay for Order from Wallet Balance
+router.post('/pay', authenticateToken, asyncHandler(async (req, res) => {
+    const { amount, orderId, description } = req.body;
+
+    if (!amount || amount <= 0) {
+        const error = new Error('Invalid amount');
+        error.status = 400;
+        throw error;
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+        const user = await tx.user.findUnique({ where: { id: req.user.userId } });
+
+        if (!user) {
+            const error = new Error('User not found');
+            error.status = 404;
+            throw error;
+        }
+
+        if (user.balance < amount) {
+            const error = new Error(`Insufficient funds. Balance: ${user.balance}, Required: ${amount}`);
+            error.status = 400;
+            throw error;
+        }
+
+        // Deduct balance
+        const updated = await tx.user.update({
+            where: { id: req.user.userId },
+            data: { balance: { decrement: parseFloat(amount) } },
+            select: { balance: true }
+        });
+
+        // Record payment transaction
+        const transaction = await tx.transaction.create({
+            data: {
+                amount: parseFloat(amount),
+                type: 'PAYMENT',
+                status: 'COMPLETED',
+                senderId: req.user.userId,
+                description: description || (orderId ? `Order Payment #${orderId}` : 'Wallet Payment'),
+                ...(orderId ? { orderId } : {})
+            }
+        });
+
+        return { newBalance: updated.balance, transactionId: transaction.id };
+    });
+
+    sendBalanceEmail(
+        await prisma.user.findUnique({ where: { id: req.user.userId } }),
+        parseFloat(amount),
+        'SPEND',
+        result.newBalance
+    );
+
+    res.json({
+        message: 'Payment successful',
+        newBalance: result.newBalance,
+        transactionId: result.transactionId
+    });
+}));
+
 // Helper
 async function getUserBalance(userId) {
     const user = await prisma.user.findUnique({ where: { id: userId } });

@@ -9,6 +9,7 @@ import { EscrowInfo } from '../components/checkout/EscrowInfo';
 import { cn } from '../lib/utils';
 import { useShop } from '../context/ShopContext';
 import CheckoutMap from '../components/CheckoutMap';
+import { PinModal } from '../components/fintech/PinModal';
 import toast from 'react-hot-toast';
 
 const STEPS = [
@@ -30,6 +31,10 @@ export function CheckoutPage() {
     // Derived state for Shipping Cost logic (kept separate as it relies on complex map logic)
     const [shippingDistance, setShippingDistance] = useState(0);
     const [shippingCost, setShippingCost] = useState(25000);
+    
+    // Pin Protection State
+    const [pinModalOpen, setPinModalOpen] = useState(false);
+    const [pendingOrderData, setPendingOrderData] = useState(null);
 
     const { register, control, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm({
         resolver: zodResolver(checkoutSchema),
@@ -158,6 +163,27 @@ export function CheckoutPage() {
 
         if (valid || step === 3) { // Force step 3 -> 4 transition without strict validation if Zod passes
             if (step < 4) setStep(step + 1);
+        }
+    };
+
+    const initiateOrder = (data) => {
+        const isDepositRequired = cartItems.some(i => ['Apartments', 'Houses', 'Commercial', 'Land', 'Cars', 'Transport'].includes(i.category));
+        const effectivePaymentMethod = isDepositRequired ? 'DEPOSIT' : data.paymentMethod;
+
+        if (effectivePaymentMethod === 'WALLET' || effectivePaymentMethod === 'DEPOSIT') {
+             // Require PIN for internal balance deductions
+             setPendingOrderData(data);
+             setPinModalOpen(true);
+        } else {
+             // Direct process for external cards or other methods
+             onPlaceOrder(data);
+        }
+    };
+
+    const confirmWalletOrder = () => {
+        if (pendingOrderData) {
+            onPlaceOrder(pendingOrderData);
+            setPendingOrderData(null);
         }
     };
 
@@ -769,10 +795,52 @@ export function CheckoutPage() {
                                                 ) : (
                                                     <>
                                                         <div
-                                                            onClick={() => field.onChange('FULL')}
+                                                            onClick={() => field.onChange('WALLET')}
                                                             className={cn(
                                                                 "p-6 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group",
-                                                                field.value === 'FULL' ? "bg-purple-600/10 border-purple-600/30" : "bg-[#13111C]/30 border-white/5 hover:border-white/10"
+                                                                field.value === 'WALLET' ? "bg-purple-600/10 border-purple-600/30 shadow-[0_0_30px_rgba(147,51,234,0.1)]" : "bg-[#13111C]/30 border-white/5 hover:border-white/10"
+                                                            )}
+                                                        >
+                                                            <div className="flex items-center gap-4">
+                                                                <div className={cn(
+                                                                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-inner",
+                                                                    field.value === 'WALLET' ? "bg-gradient-to-br from-purple-500 to-indigo-600 text-white" : "bg-white/5 text-slate-500"
+                                                                )}>
+                                                                    <Wallet size={20} />
+                                                                </div>
+                                                                <div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="text-sm font-bold text-white">Autohouse Pay</div>
+                                                                        {field.value === 'WALLET' && <div className="text-[9px] font-black tracking-widest uppercase bg-purple-500 text-white px-2 py-0.5 rounded-full">Выбран</div>}
+                                                                    </div>
+                                                                    <div className={cn(
+                                                                        "text-xs font-medium transition-colors mt-1",
+                                                                        (settings.userBalance || 0) < total ? "text-red-400" : "text-emerald-400"
+                                                                    )}>
+                                                                        Баланс: {(settings.userBalance || 0).toLocaleString()} UZS
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className={cn(
+                                                                "h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors",
+                                                                field.value === 'WALLET' ? "border-purple-500" : "border-slate-700"
+                                                            )}>
+                                                                {field.value === 'WALLET' && <div className="h-2 w-2 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(147,51,234,1)]" />}
+                                                            </div>
+                                                        </div>
+
+                                                        {((settings.userBalance || 0) < total && field.value === 'WALLET') && (
+                                                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex items-start gap-3 text-xs mt-2">
+                                                                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                                                <div>Недостаточно средств. Пожалуйста, пополните баланс в <a href="/wallet" target="_blank" className="font-bold underline underline-offset-2">Кошельке</a> перед покупкой.</div>
+                                                            </div>
+                                                        )}
+
+                                                        <div
+                                                            onClick={() => field.onChange('FULL')}
+                                                            className={cn(
+                                                                "p-6 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group opacity-50 cursor-not-allowed",
+                                                                field.value === 'FULL' ? "bg-purple-600/10 border-purple-600/30" : "bg-[#13111C]/30 border-white/5"
                                                             )}
                                                         >
                                                             <div className="flex items-center gap-4">
@@ -780,11 +848,11 @@ export function CheckoutPage() {
                                                                     "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
                                                                     field.value === 'FULL' ? "bg-purple-600 text-white" : "bg-white/5 text-slate-500"
                                                                 )}>
-                                                                    <Wallet size={20} />
+                                                                    <CreditCard size={20} />
                                                                 </div>
                                                                 <div>
-                                                                    <div className="text-sm font-bold text-white">Полная оплата</div>
-                                                                    <div className="text-xs text-slate-500 font-medium">Картой или Электронными деньгами</div>
+                                                                    <div className="text-sm font-bold text-white">Банковская Карта</div>
+                                                                    <div className="text-xs text-slate-500 font-medium">Временно недоступно (Используйте кошелёк)</div>
                                                                 </div>
                                                             </div>
                                                             <div className={cn(
@@ -1103,7 +1171,7 @@ export function CheckoutPage() {
                                             Назад
                                         </button>
                                         <button
-                                            onClick={handleSubmit(onPlaceOrder)}
+                                            onClick={handleSubmit(initiateOrder)}
                                             disabled={loading}
                                             className="h-16 rounded-[1.25rem] bg-purple-600 hover:bg-purple-500 text-white font-black uppercase tracking-[0.2em] text-xs shadow-[0_15px_30px_rgba(147,51,234,0.3)] transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
                                         >
@@ -1177,6 +1245,20 @@ export function CheckoutPage() {
                     </div>
                 </div>
             </div>
+            
+            <PinModal 
+                isOpen={pinModalOpen} 
+                onClose={() => { setPinModalOpen(false); setPendingOrderData(null); }}
+                onSuccess={confirmWalletOrder}
+                actionName="Оплата заказа"
+                amount={
+                    pendingOrderData && (
+                        cartItems.some(i => ['Apartments', 'Houses', 'Commercial', 'Land', 'Cars', 'Transport'].includes(i.category)) 
+                        ? 100000 
+                        : (pendingOrderData.paymentMethod === 'WALLET' ? total : totalWithInterest)
+                    )
+                }
+            />
         </main>
     );
 }
