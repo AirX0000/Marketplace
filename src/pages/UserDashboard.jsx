@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Package, Heart, Settings, User, MapPin,
     LogOut, Bell, Shield, Wallet, ChevronRight,
-    CreditCard, LayoutDashboard, Plus, Trash2, Edit2, ShieldCheck, Car, Truck
+    CreditCard, LayoutDashboard, Plus, Trash2, Edit2, ShieldCheck, Car, Truck, Check
 } from 'lucide-react';
 import CheckoutMap from '../components/CheckoutMap';
 import { PartnerVerification } from '../components/PartnerVerification';
@@ -136,6 +136,17 @@ export function UserDashboard() {
             ...prev,
             addresses: prev.addresses.map(a => a.id === id ? { ...a, [field]: value } : a)
         }));
+    };
+
+    const confirmEscrowDelivery = async (orderId) => {
+        if (!window.confirm('Вы уверены, что получили товар? Средства будут безвозвратно переведены продавцу.')) return;
+        try {
+            await api.updateOrderStatus(orderId, 'COMPLETED');
+            toast.success('Получение подтверждено! Сделка завершена.');
+            api.getOrders().then(setOrders).catch(console.error);
+        } catch (e) {
+            toast.error('Ошибка при подтверждении');
+        }
     };
 
     const removeAddress = (id) => {
@@ -329,10 +340,12 @@ export function UserDashboard() {
                                                             <div className="text-right">
                                                                 <div className="text-2xl font-black text-white">{order.total.toLocaleString()} UZS</div>
                                                             </div>
-                                                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${order.status === 'DELIVERED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                                                order.status === 'DELIVERED' || order.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                                                order.status === 'ESCROW_HOLD' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
                                                                 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                                                                 }`}>
-                                                                {order.status}
+                                                                {order.status === 'ESCROW_HOLD' ? 'Безопасная сделка' : order.status}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -357,6 +370,21 @@ export function UserDashboard() {
                                                             <div>
                                                                 <span className="font-bold text-slate-400">Адрес доставки:</span> {order.shippingCity}, {order.shippingAddress}
                                                             </div>
+                                                        </div>
+                                                    )}
+
+                                                    {order.status === 'ESCROW_HOLD' && (
+                                                        <div className="mt-6 border-t border-white/5 pt-6 flex justify-between items-center bg-emerald-500/5 -mx-6 -mb-6 px-6 pb-6 rounded-b-3xl border-emerald-500/20">
+                                                            <div>
+                                                                <div className="text-sm font-bold text-emerald-400">Товар у вас?</div>
+                                                                <div className="text-xs text-emerald-500/70 mt-1">Средства заморожены. Подтвердите получение, чтобы перевести их продавцу.</div>
+                                                            </div>
+                                                            <button 
+                                                                onClick={() => confirmEscrowDelivery(order.id)}
+                                                                className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold rounded-xl shadow-[0_5px_20px_rgba(16,185,129,0.3)] transition-all flex items-center gap-2"
+                                                            >
+                                                                <Check size={16} /> Подтвердить получение
+                                                            </button>
                                                         </div>
                                                     )}
                                                 </div>

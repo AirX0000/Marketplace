@@ -35,6 +35,7 @@ export function CheckoutPage() {
     // Pin Protection State
     const [pinModalOpen, setPinModalOpen] = useState(false);
     const [pendingOrderData, setPendingOrderData] = useState(null);
+    const [isEscrowEnabled, setIsEscrowEnabled] = useState(true);
 
     const { register, control, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm({
         resolver: zodResolver(checkoutSchema),
@@ -172,7 +173,7 @@ export function CheckoutPage() {
 
         if (effectivePaymentMethod === 'WALLET' || effectivePaymentMethod === 'DEPOSIT') {
              // Require PIN for internal balance deductions
-             setPendingOrderData(data);
+             setPendingOrderData({ ...data, isEscrowEnabled });
              setPinModalOpen(true);
         } else {
              // Direct process for external cards or other methods
@@ -211,6 +212,7 @@ export function CheckoutPage() {
                     cardLast4: data.cardDetails?.number?.slice(-4) || '0000',
                     schedule: effectivePaymentMethod === 'INSTALLMENT' ? paymentSchedule : null
                 },
+                isEscrowEnabled: data.isEscrowEnabled || false,
                 contactName: data.contactName,
                 contactPhone: data.contactPhone,
                 contactEmail: data.contactEmail,
@@ -551,21 +553,19 @@ export function CheckoutPage() {
                                                         <input
                                                             {...field}
                                                             onChange={e => {
-                                                                let val = e.target.value.replace(/\D/g, '');
-                                                                if (!val.startsWith('998')) val = '998' + val;
-                                                                val = val.slice(0, 12);
-                                                                let formatted = '+998 ';
-                                                                if (val.length > 3) formatted += `(${val.slice(3, 5)}) `;
-                                                                if (val.length > 5) formatted += `${val.slice(5, 8)}`;
-                                                                if (val.length > 8) formatted += `-${val.slice(8, 10)}`;
-                                                                if (val.length > 10) formatted += `-${val.slice(10, 12)}`;
-                                                                field.onChange(formatted.trim());
+                                                                let val = e.target.value;
+                                                                // Just ensure it starts with + if they are typing a number
+                                                                if (val && !val.startsWith('+') && /\d/.test(val[0])) {
+                                                                    val = '+' + val;
+                                                                }
+                                                                field.onChange(val);
                                                             }}
+                                                            type="tel"
                                                             className={cn(
                                                                 "w-full pl-12 h-14 rounded-2xl border bg-[#13111C]/50 text-white font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-purple-600/50 transition-all",
                                                                 errors.contactPhone ? "border-red-500/50" : "border-white/5 group-hover/input:border-white/10"
                                                             )}
-                                                            placeholder="+998 (90) 123-45-67"
+                                                            placeholder="+998 90 123 45 67"
                                                         />
                                                     )}
                                                 />
@@ -833,6 +833,26 @@ export function CheckoutPage() {
                                                             <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex items-start gap-3 text-xs mt-2">
                                                                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                                                                 <div>Недостаточно средств. Пожалуйста, пополните баланс в <a href="/wallet" target="_blank" className="font-bold underline underline-offset-2">Кошельке</a> перед покупкой.</div>
+                                                            </div>
+                                                        )}
+
+                                                        {field.value === 'WALLET' && (
+                                                            <div 
+                                                                className="mt-2 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer flex items-start gap-3 transition-colors hover:bg-emerald-500/10"
+                                                                onClick={() => setIsEscrowEnabled(!isEscrowEnabled)}
+                                                            >
+                                                                <div className={cn(
+                                                                    "w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition-colors",
+                                                                    isEscrowEnabled ? "bg-emerald-500 border-emerald-500" : "bg-white/5 border-white/20"
+                                                                )}>
+                                                                    {isEscrowEnabled && <Check size={14} className="text-white" />}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="text-xs font-bold text-emerald-400">Безопасная сделка (Эскроу)</div>
+                                                                    <div className="text-[10px] text-emerald-500/70 mt-1 leading-relaxed">
+                                                                        Ваши средства будут заморожены на счету гаранта и переведены продавцу только после того, как вы подтвердите получение товара в истории заказов.
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         )}
 

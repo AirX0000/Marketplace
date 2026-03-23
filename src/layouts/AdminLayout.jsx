@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, Settings, LogOut, Package, Users, BadgeDollarSign, Briefcase, FileText, Mail, Shield, Truck, HandCoins, Store, Home, ClipboardList, BookOpen, UserCircle, PhoneCall, CalendarDays, Menu, X } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Settings, LogOut, Package, Users, BadgeDollarSign, Briefcase, FileText, Mail, Shield, Truck, HandCoins, Store, Home, ClipboardList, BookOpen, UserCircle, PhoneCall, CalendarDays, Menu, X, WalletCards } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { cn } from '../lib/utils';
@@ -173,6 +173,18 @@ export function AdminLayout() {
                             <FileText className="mr-3 h-5 w-5" />
                             Кредит / Ипотека
                         </Link>
+                        {isSuperAdmin && (
+                            <Link
+                                to="/admin/autohouse-pay"
+                                className={cn(
+                                    "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                    isActive('/admin/autohouse-pay') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 font-bold border border-emerald-100/50 bg-emerald-50/20"
+                                )}
+                            >
+                                <WalletCards className="mr-3 h-5 w-5" />
+                                Autohouse Pay
+                            </Link>
+                        )}
                         <Link
                             to="/admin/companies"
                             className={cn(

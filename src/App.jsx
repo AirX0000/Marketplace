@@ -53,10 +53,12 @@ import { MortgageInfoPage } from './pages/services/MortgageInfoPage';
 import { ServiceDetail } from './pages/ServiceDetail';
 import { LoanApplication } from './pages/services/LoanApplication';
 import { QRPayPage } from './pages/fintech/QRPayPage';
+import { PayLinkPage } from './pages/fintech/PayLinkPage';
 import { NotFound } from './pages/NotFound';
 
 // Admin Pages
 import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { AdminAutohousePay } from './pages/admin/AdminAutohousePay';
 import { SuperAdminDashboard } from './pages/admin/SuperAdminDashboard';
 import { AdminListings } from './pages/admin/AdminListings';
 import { AdminOrders } from './pages/admin/AdminOrders';
@@ -152,6 +154,7 @@ function App() {
                           <Route path="settings" element={<ProfileSettingsPage />} />
                           <Route path="wallet" element={<AutohousePayDashboard />} />
                           <Route path="qr-pay" element={<QRPayPage />} />
+                          <Route path="pay" element={<PayLinkPage />} />
                           <Route path="chat" element={<ChatPage />} />
 
                           {/* Public Footer Routes */}
@@ -182,6 +185,7 @@ function App() {
                           <Route path="companies" element={<AdminCompanies />} />
                           <Route path="offers" element={<PartnerOffers />} />
                           <Route path="finance" element={<PartnerFinance />} />
+                          <Route path="autohouse-pay" element={<AdminAutohousePay />} />
                           <Route path="emails" element={<SuperAdminEmails />} />
                           <Route path="support" element={<AdminSupport />} />
                           <Route path="settings" element={<AdminSettings />} />

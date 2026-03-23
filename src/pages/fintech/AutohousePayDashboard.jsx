@@ -3,7 +3,8 @@ import { api } from '../../lib/api';
 import {
     Wallet, Send, Plus, ArrowUpRight, CreditCard,
     LayoutDashboard, Car, ShoppingBag, MessageSquare, Settings,
-    Bell, Building2, ShieldCheck, X, Loader2, Check, Trash2
+    Bell, Building2, ShieldCheck, X, Loader2, Check, Trash2,
+    ArrowDownLeft, ShoppingCart, Download, FileText, Link as LinkIcon, Copy
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
@@ -37,7 +38,6 @@ function formatCardInput(val) {
     return val.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
 }
 
-// ─── Mock transactions ────────────────────────────────────────────────────────
 const MOCK_TX = [
     { id: 1, title: 'BMW M4 Maintenance', category: 'Service', amount: -4200000, status: 'COMPLETED', date: '2026-03-20T14:20:00', icon: '🔧' },
     { id: 2, title: 'Wallet Top-Up', category: 'Deposit', amount: +15000000, status: 'COMPLETED', date: '2026-03-18T09:15:00', icon: '➕' },
@@ -45,6 +45,47 @@ const MOCK_TX = [
     { id: 4, title: 'Vehicle Sale Revenue', category: 'Revenue', amount: +120000000, status: 'COMPLETED', date: '2026-03-10T11:30:00', icon: '🚗' },
     { id: 5, title: 'Listing Premium Plan', category: 'Subscription', amount: -1500000, status: 'COMPLETED', date: '2026-03-05T08:00:00', icon: '⭐' },
 ];
+
+function getTxDetails(tx, accountId) {
+    if (tx.icon && tx.title) return { icon: <span className="text-lg">{tx.icon}</span>, title: tx.title, isPositive: tx.amount > 0, displayAmount: tx.amount, bgColor: 'bg-white/5', iconColor: 'text-white' };
+    
+    const isSender = tx.senderId === accountId;
+    const isReceiver = tx.receiverId === accountId;
+    const isPositive = isReceiver || tx.type === 'DEPOSIT';
+    const amountMult = isPositive ? 1 : -1;
+    const displayAmount = Math.abs(tx.amount) * amountMult;
+
+    let icon = <Check size={16} />;
+    let title = 'Транзакция';
+    let iconColor = 'text-white';
+    let bgColor = 'bg-white/10';
+
+    if (tx.type === 'DEPOSIT') {
+        icon = <Plus size={16} />;
+        title = 'Пополнение кошелька';
+        iconColor = 'text-emerald-400';
+        bgColor = 'bg-emerald-400/10';
+    } else if (tx.type === 'PAYMENT') {
+        icon = <ShoppingCart size={16} />;
+        title = 'Оплата заказа';
+        iconColor = 'text-purple-400';
+        bgColor = 'bg-purple-400/10';
+    } else if (tx.type === 'TRANSFER') {
+        if (isSender) {
+            icon = <ArrowUpRight size={16} />;
+            title = 'Перевод: ' + (tx.receiverId || 'Пользователю');
+            iconColor = 'text-rose-400';
+            bgColor = 'bg-rose-400/10';
+        } else {
+            icon = <ArrowDownLeft size={16} />;
+            title = 'Перевод от: ' + (tx.senderId || 'Пользователя');
+            iconColor = 'text-emerald-400';
+            bgColor = 'bg-emerald-400/10';
+        }
+    }
+
+    return { icon, title, displayAmount, isPositive, bgColor, iconColor };
+}
 
 const SPENDING = [
     { label: 'Service & Repair', percent: 45, color: 'bg-indigo-500' },
@@ -141,7 +182,14 @@ export function AutohousePayDashboard() {
     const [transferModal, setTransferModal] = useState(false);
     const [addCardModal, setAddCardModal] = useState(false);
     const [topUpAmount, setTopUpAmount] = useState('');
+    const [topUpCardId, setTopUpCardId] = useState('');
+    const [withdrawModal, setWithdrawModal] = useState(false);
+    const [withdrawAmount, setWithdrawAmount] = useState('');
+    const [withdrawCardId, setWithdrawCardId] = useState('');
     const [transferData, setTransferData] = useState({ recipient: '', amount: '' });
+    const [requestModal, setRequestModal] = useState(false);
+    const [requestData, setRequestData] = useState({ amount: '', desc: '' });
+    const [receiptModal, setReceiptModal] = useState(null);
     const [newCard, setNewCard] = useState({ number: '', holder: '', expiry: '', cvv: '', balance: '' });
     const [actionLoading, setActionLoading] = useState(false);
     
@@ -206,8 +254,11 @@ export function AutohousePayDashboard() {
         setActionLoading(true);
         try {
             await api.walletDeposit(Number(topUpAmount));
-            toast.success(`Запрос на пополнение ${Number(topUpAmount).toLocaleString('ru-RU')} UZS отправлен!`);
-            setTopUpModal(false); setTopUpAmount('');
+            if (topUpCardId) {
+                setCards(prev => prev.map(c => c.id === topUpCardId ? { ...c, balance: Math.max(0, (c.balance || 0) - Number(topUpAmount)) } : c));
+            }
+            toast.success(`Кошелек пополнен на ${Number(topUpAmount).toLocaleString('ru-RU')} UZS!`);
+            setTopUpModal(false); setTopUpAmount(''); setTopUpCardId('');
             const fresh = await api.getWallet().catch(() => null);
             if (fresh) setWallet(fresh);
         } catch { toast.error('Ошибка пополнения. Попробуйте позже.'); }
@@ -215,7 +266,14 @@ export function AutohousePayDashboard() {
     };
 
     const handleTopUpClick = () => {
+        if (!topUpCardId) return toast.error('Выберите карту для пополнения');
         if (!topUpAmount || isNaN(topUpAmount) || Number(topUpAmount) <= 0) return toast.error('Введите корректную сумму');
+        
+        const selectedCard = cards.find(c => c.id === topUpCardId);
+        if (selectedCard && selectedCard.balance > 0 && Number(topUpAmount) > selectedCard.balance) {
+            return toast.error('Недостаточно средств на выбранной карте. Укажите сумму поменьше.');
+        }
+
         setPinModal({ isOpen: true, action: handleTopUpConfirm, amount: topUpAmount, title: 'Пополнение кошелька' });
     };
 
@@ -235,6 +293,32 @@ export function AutohousePayDashboard() {
         if (!transferData.recipient || !transferData.amount || Number(transferData.amount) <= 0) return toast.error('Заполните все поля');
         if (Number(transferData.amount) > walletBalance) return toast.error('Недостаточно средств на кошельке');
         setPinModal({ isOpen: true, action: handleTransferConfirm, amount: transferData.amount, title: 'Перевод P2P' });
+    };
+
+    const handleWithdrawConfirm = async () => {
+        setActionLoading(true);
+        try {
+            // In a real app, this would be a POST to /api/wallet/withdraw
+            await api.walletTransfer({ recipientIdentifier: 'INTERNAL_BANK_BRIDGE', amount: Number(withdrawAmount) });
+            
+            if (withdrawCardId) {
+                setCards(prev => prev.map(c => c.id === withdrawCardId ? { ...c, balance: (Number(c.balance) || 0) + Number(withdrawAmount) } : c));
+            }
+            
+            toast.success(`Средства в размере ${Number(withdrawAmount).toLocaleString('ru-RU')} UZS выведены на карту!`);
+            setWithdrawModal(false); setWithdrawAmount(''); setWithdrawCardId('');
+            const fresh = await api.getWallet().catch(() => null);
+            if (fresh) setWallet(fresh);
+        } catch { toast.error('Ошибка вывода. Попробуйте позже.'); }
+        finally { setActionLoading(false); }
+    };
+
+    const handleWithdrawClick = () => {
+        if (!withdrawCardId) return toast.error('Выберите карту для вывода');
+        if (!withdrawAmount || isNaN(withdrawAmount) || Number(withdrawAmount) <= 0) return toast.error('Введите корректную сумму');
+        if (Number(withdrawAmount) > walletBalance) return toast.error('Недостаточно средств в кошельке');
+
+        setPinModal({ isOpen: true, action: handleWithdrawConfirm, amount: withdrawAmount, title: 'Вывод на карту' });
     };
 
     const formatDate = (s) => new Date(s).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -340,10 +424,12 @@ export function AutohousePayDashboard() {
                         </div>
 
                         {/* Quick Actions */}
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                             {[
                                 { label: 'Top Up', icon: Plus, action: () => setTopUpModal(true), color: 'bg-purple-600 hover:bg-purple-500 shadow-purple-600/20' },
                                 { label: 'Transfer', icon: Send, action: () => setTransferModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                                { label: 'Withdraw', icon: CreditCard, action: () => setWithdrawModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                                { label: 'Request', icon: LinkIcon, action: () => setRequestModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
                                 { label: 'QR Pay', icon: ArrowUpRight, isLink: true, path: '/qr-pay', color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
                             ].map(({ label, icon: Icon, action, isLink, path, color }) => (
                                 isLink ? (
@@ -372,24 +458,33 @@ export function AutohousePayDashboard() {
                                 <span>Transaction</span><span>Category</span><span>Amount</span><span>Status</span>
                             </div>
                             <div className="divide-y divide-white/5">
-                                {transactions.map(tx => (
-                                    <div key={tx.id} className="grid grid-cols-4 items-center px-6 py-4 hover:bg-white/[0.02] transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 bg-white/5 rounded-xl flex items-center justify-center text-lg shrink-0">{tx.icon}</div>
-                                            <div>
-                                                <div className="text-sm font-bold text-white truncate max-w-[110px]">{tx.title}</div>
-                                                <div className="text-[10px] text-slate-500">{formatDate(tx.date)}</div>
+                                {transactions.map(tx => {
+                                    const { icon, title, displayAmount, isPositive, bgColor, iconColor } = getTxDetails(tx, accountId);
+                                    return (
+                                        <div 
+                                            key={tx.id} 
+                                            onClick={() => setReceiptModal({ ...tx, displayAmount, isPositive, generatedTitle: title })}
+                                            className="grid grid-cols-4 items-center px-6 py-4 hover:bg-white/[0.04] cursor-pointer transition-colors group"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${bgColor} ${iconColor} group-hover:scale-110 transition-transform`}>
+                                                    {icon}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-white truncate max-w-[130px] group-hover:text-purple-400 transition-colors">{title}</div>
+                                                    <div className="text-[10px] text-slate-500">{formatDate(tx.date || tx.createdAt)}</div>
+                                                </div>
                                             </div>
+                                            <span className="text-xs font-bold text-slate-400 bg-white/5 px-2.5 py-1 rounded-lg w-fit truncate max-w-[100px]">{tx.category || tx.type}</span>
+                                            <span className={`text-sm font-bold ${isPositive ? 'text-emerald-400' : 'text-white'}`}>
+                                                {isPositive ? '+' : ''}{displayAmount.toLocaleString('ru-RU')} <span className="text-[10px] text-slate-500">UZS</span>
+                                            </span>
+                                            <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg w-fit ${tx.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                                                {tx.status === 'COMPLETED' ? 'Выполнен' : 'Ожидание'}
+                                            </span>
                                         </div>
-                                        <span className="text-xs font-bold text-slate-400 bg-white/5 px-2.5 py-1 rounded-lg w-fit">{tx.category}</span>
-                                        <span className={`text-sm font-bold ${tx.amount >= 0 ? 'text-emerald-400' : 'text-white'}`}>
-                                            {tx.amount >= 0 ? '+' : ''}{tx.amount.toLocaleString('ru-RU')} <span className="text-[10px] text-slate-500">UZS</span>
-                                        </span>
-                                        <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg w-fit ${tx.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                                            {tx.status === 'COMPLETED' ? 'Выполнен' : 'Ожидание'}
-                                        </span>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -428,8 +523,40 @@ export function AutohousePayDashboard() {
                             )}
                         </div>
 
+                        {/* Cashback & Rewards */}
+                        <div className="bg-gradient-to-br from-purple-900/40 to-[#13111C] rounded-3xl border border-purple-500/20 p-6 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all"></div>
+                            <div className="flex items-start justify-between relative z-10 mb-4">
+                                <div>
+                                    <h2 className="text-base font-bold text-white flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                                            <ShoppingBag size={14} />
+                                        </div>
+                                        Кешбэк & Бонусы
+                                    </h2>
+                                    <p className="text-[10px] text-slate-400 mt-2 uppercase tracking-widest font-bold">Заработано за всё время</p>
+                                </div>
+                            </div>
+                            <div className="relative z-10 mb-5">
+                                <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">
+                                    {Math.round(totalBalance * 0.015).toLocaleString('ru-RU')}
+                                </span>
+                                <span className="text-sm text-emerald-500/70 font-bold ml-2">UZS</span>
+                            </div>
+                            <div className="relative z-10 bg-[#13111C]/80 backdrop-blur-sm rounded-2xl p-4 border border-white/5">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-xs text-slate-400 font-bold">Текущий уровень</span>
+                                    <span className="text-xs text-purple-400 font-black">1% на всё</span>
+                                </div>
+                                <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full w-[35%] shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
+                                </div>
+                                <p className="text-[9px] text-slate-500 mt-2 text-center uppercase tracking-widest font-bold">Осталось 4,500,000 UZS до 2% Кешбэка</p>
+                            </div>
+                        </div>
+
                         {/* Spending Breakdown */}
-                        <div className="bg-[#13111C] rounded-3xl border border-white/5 p-6">
+                        <div className="bg-[#13111C] rounded-3xl border border-white/5 p-6 hidden lg:block">
                             <h2 className="text-base font-bold text-white mb-5">Spending Breakdown</h2>
                             <div className="space-y-4">
                                 {SPENDING.map(({ label, percent, color }) => (
@@ -552,16 +679,38 @@ export function AutohousePayDashboard() {
 
             {/* ── Top Up Modal ── */}
             <Modal isOpen={topUpModal} onClose={() => setTopUpModal(false)} title="Пополнить кошелёк">
-                <div className="space-y-4">
-                    <p className="text-sm text-slate-400">Введите сумму. После подтверждения администратором средства поступят на счёт.</p>
+                <div className="space-y-6">
+                    <div>
+                        <label className="block text-xs text-slate-400 mb-2 font-bold uppercase tracking-widest">Выберите карту</label>
+                        {cards.length > 0 ? (
+                            <select 
+                                value={topUpCardId} 
+                                onChange={e => setTopUpCardId(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500 appearance-none"
+                            >
+                                <option value="" className="bg-[#1E1B2E]">-- Выберите карту --</option>
+                                {cards.map(c => (
+                                    <option key={c.id} value={c.id} className="bg-[#1E1B2E]">
+                                        {c.type} •••• {c.number.slice(-4)} {c.balance > 0 ? `(${Number(c.balance).toLocaleString('ru-RU')} UZS)` : ''}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <div className="text-sm text-rose-400 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">
+                                У вас нет привязанных карт. Сначала добавьте карту в кошелек.
+                            </div>
+                        )}
+                    </div>
+                    
                     <div>
                         <label className="block text-xs text-slate-400 mb-2 font-bold uppercase tracking-widest">Сумма (UZS)</label>
                         <input type="number" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} placeholder="500000"
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500" />
                     </div>
+                    
                     <div className="flex gap-3 pt-2">
                         <button onClick={() => setTopUpModal(false)} className="flex-1 py-3 border border-white/10 rounded-xl text-slate-400 hover:text-white text-sm font-bold transition-colors">Отмена</button>
-                        <button onClick={handleTopUpClick} disabled={actionLoading} className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2">
+                        <button onClick={handleTopUpClick} disabled={actionLoading || cards.length === 0} className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                             {actionLoading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />} Пополнить
                         </button>
                     </div>
@@ -586,6 +735,155 @@ export function AutohousePayDashboard() {
                         <button onClick={handleTransferClick} disabled={actionLoading} className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2">
                             {actionLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />} Отправить
                         </button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* ── Withdraw Modal ── */}
+            <Modal isOpen={withdrawModal} onClose={() => setWithdrawModal(false)} title="Вывод на карту">
+                <div className="space-y-6">
+                    <div>
+                        <label className="block text-xs text-slate-400 mb-2 font-bold uppercase tracking-widest">Выберите карту для зачисления</label>
+                        {cards.length > 0 ? (
+                            <select 
+                                value={withdrawCardId} 
+                                onChange={e => setWithdrawCardId(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500 appearance-none"
+                            >
+                                <option value="" className="bg-[#1E1B2E]">-- Выберите карту --</option>
+                                {cards.map(c => (
+                                    <option key={c.id} value={c.id} className="bg-[#1E1B2E]">
+                                        {c.type} •••• {c.number.slice(-4)}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <div className="text-sm text-rose-400 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">
+                                У вас нет привязанных карт для вывода.
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div>
+                        <label className="block text-xs text-slate-400 mb-2 font-bold uppercase tracking-widest">Сумма вывода (UZS)</label>
+                        <input type="number" value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)} placeholder="100000"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500" />
+                        <p className="text-[10px] text-slate-500 mt-1">Доступно: {walletBalance.toLocaleString('ru-RU')} UZS</p>
+                    </div>
+                    
+                    <div className="flex gap-3 pt-2">
+                        <button onClick={() => setWithdrawModal(false)} className="flex-1 py-3 border border-white/10 rounded-xl text-slate-400 hover:text-white text-sm font-bold transition-colors">Отмена</button>
+                        <button onClick={handleWithdrawClick} disabled={actionLoading || cards.length === 0} className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            {actionLoading ? <Loader2 size={16} className="animate-spin" /> : <ArrowUpRight size={16} />} Вывести
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* ── Receipt Modal ── */}
+            <Modal isOpen={!!receiptModal} onClose={() => setReceiptModal(null)} title="Квитанция об операции">
+                {receiptModal && (
+                    <div className="relative">
+                        <div className="bg-[#13111C] rounded-2xl p-6 border border-white/10 relative overflow-hidden">
+                            {/* Receipt Header Pattern */}
+                            <div className="absolute top-0 left-0 right-0 h-1 flex justify-around opacity-20">
+                                {[...Array(20)].map((_, i) => <div key={i} className="w-2 h-2 rounded-full border border-white"></div>)}
+                            </div>
+                            
+                            <div className="text-center mb-8 pt-4">
+                                <div className="w-16 h-16 mx-auto rounded-full bg-purple-500/10 flex items-center justify-center mb-4">
+                                    <FileText size={32} className="text-purple-400" />
+                                </div>
+                                <h3 className="text-2xl font-black text-white">{receiptModal.generatedTitle}</h3>
+                                <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mt-2">Электронный Чек</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center pb-4 border-b border-white/5 border-dashed">
+                                    <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">Сумма:</span>
+                                    <span className={`text-lg font-black ${receiptModal.isPositive ? 'text-emerald-400' : 'text-white'}`}>
+                                        {receiptModal.isPositive ? '+' : ''}{receiptModal.displayAmount.toLocaleString('ru-RU')} <span className="text-xs text-slate-500 uppercase">UZS</span>
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center pb-4 border-b border-white/5 border-dashed">
+                                    <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">Статус:</span>
+                                    <span className={`text-xs font-black uppercase tracking-widest ${receiptModal.status === 'COMPLETED' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                        {receiptModal.status === 'COMPLETED' ? 'Выполнен' : receiptModal.status}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center pb-4 border-b border-white/5 border-dashed">
+                                    <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">Дата и время:</span>
+                                    <span className="text-sm font-bold text-white tracking-widest">{formatDate(receiptModal.date || receiptModal.createdAt)}</span>
+                                </div>
+                                <div className="flex justify-between items-center pb-4 border-b border-white/5 border-dashed">
+                                    <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">ID Транзакции:</span>
+                                    <span className="text-xs font-mono font-bold text-slate-400">TX-{receiptModal.id}</span>
+                                </div>
+                                {(receiptModal.senderId || receiptModal.receiverId) && (
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                                            {receiptModal.senderId === accountId ? 'Отправлено на ID:' : 'Получено от ID:'}
+                                        </span>
+                                        <span className="text-sm font-bold text-white tracking-widest">
+                                            {receiptModal.senderId === accountId ? receiptModal.receiverId : receiptModal.senderId}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="absolute bottom-0 left-0 right-0 h-1 flex justify-around opacity-20">
+                                {[...Array(20)].map((_, i) => <div key={i} className="w-2 h-2 rounded-full border border-white"></div>)}
+                            </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <button className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-2xl text-white text-sm font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
+                                <Download size={18} /> Сохранить чек (PDF)
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
+            {/* ── Request Modal ── */}
+            <Modal isOpen={requestModal} onClose={() => setRequestModal(false)} title="Запросить средства">
+                <div className="space-y-4">
+                    <p className="text-xs text-slate-400 mb-4">Сгенерируйте ссылку на онлайн-оплату. Отправьте её тому, от кого ждёте перевод.</p>
+                    
+                    <div>
+                        <label className="block text-xs text-slate-400 mb-2 font-bold uppercase tracking-widest">Сумма (UZS)</label>
+                        <input type="number" value={requestData.amount} onChange={e => setRequestData(p => ({ ...p, amount: e.target.value }))} placeholder="Например: 500000"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500" />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-xs text-slate-400 mb-2 font-bold uppercase tracking-widest">Назначение (необязательно)</label>
+                        <input type="text" value={requestData.desc} onChange={e => setRequestData(p => ({ ...p, desc: e.target.value }))} placeholder="Например: Залог за аренду"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500" />
+                    </div>
+
+                    {requestData.amount && Number(requestData.amount) > 0 && (
+                        <div className="mt-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl animate-in fade-in zoom-in-95 duration-200">
+                            <label className="block text-[10px] text-emerald-400 mb-2 font-bold uppercase tracking-widest">Ваша ссылка для оплаты</label>
+                            <div className="flex items-center gap-2">
+                                <div className="flex-1 overflow-x-auto bg-[#13111C] px-3 py-2 rounded-lg border border-white/5 text-xs font-mono text-slate-300 whitespace-nowrap">
+                                    https://autohouse.uz/pay?to={accountId}&amount={requestData.amount}
+                                </div>
+                                <button 
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(`https://autohouse.uz/pay?to=${accountId}&amount=${requestData.amount}`);
+                                        toast.success('Ссылка скопирована!');
+                                    }}
+                                    className="w-10 h-10 shrink-0 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg flex items-center justify-center transition-colors"
+                                >
+                                    <Copy size={16} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="pt-2">
+                        <button onClick={() => setRequestModal(false)} className="w-full py-4 border border-white/10 rounded-xl text-slate-400 hover:text-white text-sm font-bold transition-colors">Закрыть</button>
                     </div>
                 </div>
             </Modal>
