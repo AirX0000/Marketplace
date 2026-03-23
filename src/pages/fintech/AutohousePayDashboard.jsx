@@ -190,7 +190,7 @@ export function AutohousePayDashboard() {
     const [requestModal, setRequestModal] = useState(false);
     const [requestData, setRequestData] = useState({ amount: '', desc: '' });
     const [receiptModal, setReceiptModal] = useState(null);
-    const [newCard, setNewCard] = useState({ number: '', holder: '', expiry: '', cvv: '', balance: '' });
+    const [newCard, setNewCard] = useState({ number: '', holder: '', expiry: '', cvv: '', balance: '', mfo: '' });
     const [actionLoading, setActionLoading] = useState(false);
     const [isBusinessMode, setIsBusinessMode] = useState(false);
     
@@ -230,9 +230,32 @@ export function AutohousePayDashboard() {
 
     const handleAddCard = () => {
         const num = newCard.number.replace(/\s/g, '');
+        
+        if (isBusinessMode) {
+            if (num.length < 20) return toast.error('Введите полный номер расчетного счета (IBAN, 20 цифр)');
+            if (!newCard.mfo || newCard.mfo.length < 5) return toast.error('Введите корректный МФО банка (5 цифр)');
+            if (!newCard.holder.trim()) return toast.error('Укажите наименование компании');
+
+            const card = {
+                id: Date.now().toString(),
+                number: num,
+                holder: newCard.holder.trim().toUpperCase(),
+                expiry: 'БЕССРОЧНО',
+                type: 'IBAN',
+                balance: Math.floor(Math.random() * 50000000) + 10000000,
+            };
+            setCards(prev => [...prev, card]);
+            setAddCardModal(false);
+            setNewCard({ number: '', holder: profile?.name?.toUpperCase() || '', expiry: '', cvv: '', balance: '', mfo: '' });
+            toast.success('Расчетный счет успешно добавлен!');
+            return;
+        }
+
         if (num.length < 16) return toast.error('Введите полный номер карты (16 цифр)');
         if (!newCard.expiry.match(/^\d{2}\/\d{2}$/)) return toast.error('Формат срока: ММ/ГГ');
         if (!newCard.holder.trim()) return toast.error('Укажите имя держателя карты');
+
+        const simulatedBalance = Math.floor(Math.random() * 5000000) + 500000;
 
         const card = {
             id: Date.now().toString(),
@@ -240,11 +263,11 @@ export function AutohousePayDashboard() {
             holder: newCard.holder.trim().toUpperCase(),
             expiry: newCard.expiry,
             type: detectCardType(num),
-            balance: Number(newCard.balance) || 0,
+            balance: simulatedBalance,
         };
         setCards(prev => [...prev, card]);
         setAddCardModal(false);
-        setNewCard({ number: '', holder: profile?.name?.toUpperCase() || '', expiry: '', cvv: '', balance: '' });
+        setNewCard({ number: '', holder: profile?.name?.toUpperCase() || '', expiry: '', cvv: '', balance: '', mfo: '' });
         toast.success('Карта успешно добавлена!');
     };
 
@@ -710,93 +733,160 @@ export function AutohousePayDashboard() {
             </main>
 
             {/* ── Add Card Modal ── */}
-            <Modal isOpen={addCardModal} onClose={() => setAddCardModal(false)} title="Добавить банковскую карту">
+            <Modal isOpen={addCardModal} onClose={() => setAddCardModal(false)} title={isBusinessMode ? "Добавить расчетный счет" : "Добавить банковскую карту"}>
                 <div className="space-y-4">
                     {/* Live card preview */}
-                    {newCard.number && (
+                    {newCard.number && !isBusinessMode && (
                         <div className={`rounded-2xl p-5 bg-gradient-to-br ${
-                            detectCardType(newCard.number) === 'VISA' ? 'from-indigo-700 to-blue-700' :
-                            detectCardType(newCard.number) === 'MASTERCARD' ? 'from-orange-700 to-red-700' :
-                            detectCardType(newCard.number) === 'UZCARD' ? 'from-slate-700 to-slate-600' :
-                            detectCardType(newCard.number) === 'HUMO' ? 'from-emerald-700 to-teal-700' :
-                            'from-purple-700 to-indigo-700'
-                        } mb-2`}>
+                            detectCardType(newCard.number) === 'VISA' ? 'from-indigo-700 to-blue-700 shadow-blue-500/30' :
+                            detectCardType(newCard.number) === 'MASTERCARD' ? 'from-orange-700 to-red-700 shadow-orange-500/30' :
+                            detectCardType(newCard.number) === 'UZCARD' ? 'from-slate-700 to-slate-600 shadow-slate-500/30' :
+                            detectCardType(newCard.number) === 'HUMO' ? 'from-emerald-700 to-teal-700 shadow-emerald-500/30' :
+                            'from-purple-700 to-indigo-700 shadow-purple-500/30'
+                        } mb-2 shadow-2xl transition-all`}>
                             <div className="flex justify-between items-start mb-4">
                                 <CreditCard size={20} className="text-white/60" />
-                                <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">{detectCardType(newCard.number)}</span>
+                                <span className="text-[10px] font-black text-white/90 uppercase tracking-widest px-2 py-0.5 bg-white/10 rounded backdrop-blur-sm">{detectCardType(newCard.number)}</span>
                             </div>
-                            <p className="font-mono text-white text-base tracking-widest mb-3">{newCard.number || '**** **** **** ****'}</p>
+                            <p className="font-mono text-white text-base tracking-widest mb-3">{newCard.number || '0000 0000 0000 0000'}</p>
                             <div className="flex justify-between">
-                                <span className="text-white/60 text-xs uppercase">{newCard.holder || 'CARDHOLDER NAME'}</span>
-                                <span className="text-white/60 text-xs">{newCard.expiry || 'MM/YY'}</span>
+                                <span className="text-white/80 text-xs uppercase font-medium">{newCard.holder || 'ИМЯ ФАМИЛИЯ'}</span>
+                                <span className="text-white/80 text-xs font-medium">{newCard.expiry || 'MM/YY'}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {newCard.number && isBusinessMode && (
+                        <div className="rounded-2xl p-5 bg-gradient-to-br from-blue-900 to-[#13111C] border border-blue-500/20 mb-2 shadow-xl shadow-blue-900/20">
+                            <div className="flex justify-between items-start mb-4">
+                                <Building2 size={20} className="text-blue-400" />
+                                <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest px-2 py-0.5 bg-blue-500/10 rounded">Р/С (IBAN)</span>
+                            </div>
+                            <p className="font-mono text-white text-sm tracking-wider mb-2 break-all">{newCard.number || '2020 8000 9000 0000 0000'}</p>
+                            <div className="flex justify-between border-t border-white/10 pt-3 mt-1">
+                                <div>
+                                    <p className="text-white/40 text-[9px] uppercase tracking-widest font-bold">Организация</p>
+                                    <span className="text-white/80 text-xs uppercase font-medium mt-0.5">{newCard.holder || 'ООО КОМПАНИЯ'}</span>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-white/40 text-[9px] uppercase tracking-widest font-bold">МФО</p>
+                                    <span className="text-white/80 text-xs font-medium mt-0.5">{newCard.mfo || '00000'}</span>
+                                </div>
                             </div>
                         </div>
                     )}
 
                     {/* Inputs */}
-                    <div>
-                        <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">Номер карты</label>
-                        <input
-                            type="text" inputMode="numeric" maxLength={19}
-                            value={newCard.number}
-                            onChange={e => setNewCard(p => ({ ...p, number: formatCardInput(e.target.value) }))}
-                            placeholder="0000 0000 0000 0000"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-purple-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">Имя держателя</label>
-                        <input
-                            type="text"
-                            value={newCard.holder}
-                            onChange={e => setNewCard(p => ({ ...p, holder: e.target.value.toUpperCase() }))}
-                            placeholder="IVAN IVANOV"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500"
-                        />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">Срок (ММ/ГГ)</label>
-                            <input
-                                type="text" maxLength={5}
-                                value={newCard.expiry}
-                                onChange={e => {
-                                    let v = e.target.value.replace(/\D/g, '');
-                                    if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
-                                    setNewCard(p => ({ ...p, expiry: v }));
-                                }}
-                                placeholder="MM/YY"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">CVV</label>
-                            <input
-                                type="password" maxLength={3}
-                                value={newCard.cvv}
-                                onChange={e => setNewCard(p => ({ ...p, cvv: e.target.value.replace(/\D/g, '') }))}
-                                placeholder="•••"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500"
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">Баланс карты (UZS) — опционально</label>
-                        <input
-                            type="number"
-                            value={newCard.balance}
-                            onChange={e => setNewCard(p => ({ ...p, balance: e.target.value }))}
-                            placeholder="Например: 3000000"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500"
-                        />
-                        <p className="text-[10px] text-slate-600 mt-1">Если указать баланс, он добавится к общему балансу кошелька.</p>
-                    </div>
+                    {!isBusinessMode ? (
+                        <>
+                            <div className="relative">
+                                <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">Номер карты</label>
+                                <div className="relative">
+                                    <input
+                                        type="text" inputMode="numeric" maxLength={19}
+                                        value={newCard.number}
+                                        onChange={e => setNewCard(p => ({ ...p, number: formatCardInput(e.target.value) }))}
+                                        placeholder="0000 0000 0000 0000"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-16 py-3 text-white font-mono text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                                    />
+                                    {newCard.number.length > 2 && (
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black px-2 py-1 bg-white/10 text-white rounded uppercase tracking-widest">
+                                            {detectCardType(newCard.number)}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">Имя держателя</label>
+                                <input
+                                    type="text"
+                                    value={newCard.holder}
+                                    onChange={e => setNewCard(p => ({ ...p, holder: e.target.value.toUpperCase() }))}
+                                    placeholder="IVAN IVANOV"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">Срок (ММ/ГГ)</label>
+                                    <input
+                                        type="text" maxLength={5}
+                                        value={newCard.expiry}
+                                        onChange={e => {
+                                            let v = e.target.value.replace(/\D/g, '');
+                                            if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
+                                            setNewCard(p => ({ ...p, expiry: v }));
+                                        }}
+                                        placeholder="MM/YY"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">CVV</label>
+                                    <input
+                                        type="password" maxLength={3}
+                                        value={newCard.cvv}
+                                        onChange={e => setNewCard(p => ({ ...p, cvv: e.target.value.replace(/\D/g, '') }))}
+                                        placeholder="•••"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500"
+                                    />
+                                </div>
+                            </div>
+                            <div className="p-3 bg-purple-500/5 border border-purple-500/10 rounded-xl flex items-start gap-3">
+                                <ShieldCheck size={16} className="text-purple-400 shrink-0 mt-0.5" />
+                                <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                                    Текущий баланс карты будет автоматически загружен и синхронизирован с банком после привязки.
+                                </p>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div>
+                                <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">Номер счета (IBAN)</label>
+                                <input
+                                    type="text" inputMode="numeric" maxLength={20}
+                                    value={newCard.number}
+                                    onChange={e => setNewCard(p => ({ ...p, number: e.target.value.replace(/\D/g, '') }))}
+                                    placeholder="20208000900000000000"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-blue-500"
+                                />
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2">
+                                    <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">Название компании</label>
+                                    <input
+                                        type="text"
+                                        value={newCard.holder}
+                                        onChange={e => setNewCard(p => ({ ...p, holder: e.target.value.toUpperCase() }))}
+                                        placeholder="ООО АВТОХАУС"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-slate-400 mb-1.5 font-bold uppercase tracking-widest">МФО Банка</label>
+                                    <input
+                                        type="text" inputMode="numeric" maxLength={5}
+                                        value={newCard.mfo}
+                                        onChange={e => setNewCard(p => ({ ...p, mfo: e.target.value.replace(/\D/g, '') }))}
+                                        placeholder="00014"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500"
+                                    />
+                                </div>
+                            </div>
+                            <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl flex items-start gap-3">
+                                <ShieldCheck size={16} className="text-blue-400 shrink-0 mt-0.5" />
+                                <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                                    Ваш корпоративный счет будет привязан к личному кабинету после проверки реквизитов.
+                                </p>
+                            </div>
+                        </>
+                    )}
 
                     <div className="flex gap-3 pt-2">
                         <button onClick={() => setAddCardModal(false)} className="flex-1 py-3 border border-white/10 rounded-xl text-slate-400 hover:text-white text-sm font-bold transition-colors">
                             Отмена
                         </button>
-                        <button onClick={handleAddCard} className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                        <button onClick={handleAddCard} className={`flex-1 py-3 rounded-xl text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 ${isBusinessMode ? 'bg-blue-600 hover:bg-blue-500' : 'bg-purple-600 hover:bg-purple-500'}`}>
                             <Check size={16} /> Добавить
                         </button>
                     </div>
