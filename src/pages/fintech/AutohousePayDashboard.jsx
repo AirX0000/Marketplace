@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import {
     Wallet, Send, Plus, ArrowUpRight, CreditCard,
@@ -192,6 +192,7 @@ export function AutohousePayDashboard() {
     const [receiptModal, setReceiptModal] = useState(null);
     const [newCard, setNewCard] = useState({ number: '', holder: '', expiry: '', cvv: '', balance: '' });
     const [actionLoading, setActionLoading] = useState(false);
+    const [isBusinessMode, setIsBusinessMode] = useState(false);
     
     // Pin Protection State
     const [pinModal, setPinModal] = useState({ isOpen: false, action: null, amount: null, title: '' });
@@ -224,6 +225,8 @@ export function AutohousePayDashboard() {
     const cardsTotal = cards.reduce((sum, c) => sum + (Number(c.balance) || 0), 0);
     const totalBalance = walletBalance + cardsTotal;
     const accountId = wallet?.accountId ?? '122883';
+    
+    const isPartner = profile?.role === 'PARTNER' || profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN';
 
     const handleAddCard = () => {
         const num = newCard.number.replace(/\s/g, '');
@@ -371,16 +374,32 @@ export function AutohousePayDashboard() {
             <main className="flex-1 overflow-y-auto">
                 <header className="sticky top-0 z-10 bg-[#0F0D1A]/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between">
                     <div>
-                        <h1 className="text-xl font-black text-white">Financial Wallet</h1>
-                        <p className="text-xs text-slate-500">Manage your funds and cards</p>
+                        <h1 className="text-xl font-black text-white">{isBusinessMode ? 'Бизнес-Кошелек' : 'Financial Wallet'}</h1>
+                        <p className="text-xs text-slate-500">{isBusinessMode ? 'Управление доходами компании' : 'Manage your funds and cards'}</p>
                     </div>
                     <div className="flex items-center gap-3">
+                        {isPartner && (
+                            <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 hidden sm:flex">
+                                <button 
+                                    onClick={() => setIsBusinessMode(false)}
+                                    className={`px-4 py-1.5 text-[11px] font-bold rounded-lg uppercase tracking-wider transition-all ${!isBusinessMode ? 'bg-[#1E1B2E] text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+                                >
+                                    Личный
+                                </button>
+                                <button 
+                                    onClick={() => setIsBusinessMode(true)}
+                                    className={`px-4 py-1.5 text-[11px] font-bold rounded-lg uppercase tracking-wider transition-all flex items-center gap-1.5 ${isBusinessMode ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+                                >
+                                    <Building2 size={12} /> Бизнес
+                                </button>
+                            </div>
+                        )}
                         <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white relative">
                             <Bell size={16} />
                             <span className="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full" />
                         </button>
                         <button onClick={() => setAddCardModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-purple-600/25">
+                            className={`flex items-center gap-2 px-4 py-2 ${isBusinessMode ? 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/25' : 'bg-purple-600 hover:bg-purple-500 shadow-purple-600/25'} text-white rounded-xl text-sm font-bold transition-all shadow-lg`}>
                             <Plus size={16} /> Добавить карту
                         </button>
                     </div>
@@ -390,34 +409,52 @@ export function AutohousePayDashboard() {
                     {/* ── Left col ── */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Total Balance Card */}
-                        <div className="relative rounded-3xl overflow-hidden p-8 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 shadow-2xl shadow-purple-900/40">
+                        <div className={`relative rounded-3xl overflow-hidden p-8 shadow-2xl ${isBusinessMode ? 'bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-800 shadow-blue-900/40' : 'bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 shadow-purple-900/40'}`}>
                             <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_top_left,_rgba(255,255,255,0.15),_transparent_60%)]" />
                             <div className="relative z-10">
-                                <p className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">Общий баланс</p>
-                                {cardsTotal > 0 && (
+                                <p className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">
+                                    {isBusinessMode ? 'Доступно к выводу' : 'Общий баланс'}
+                                </p>
+                                {!isBusinessMode && cardsTotal > 0 && (
                                     <p className="text-white/50 text-[10px] mb-1">
                                         Кошелёк: {walletBalance.toLocaleString('ru-RU')} + Карты: {cardsTotal.toLocaleString('ru-RU')} UZS
                                     </p>
                                 )}
-                                <div className="flex items-end justify-between">
-                                    <p className="text-4xl font-black text-white tracking-tight">
-                                        {totalBalance.toLocaleString('ru-RU')} <span className="text-2xl opacity-80">UZS</span>
-                                    </p>
-                                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/20">
-                                        <CreditCard size={22} className="text-white" />
+                                <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-6">
+                                    {isBusinessMode ? (walletBalance * 3.5).toLocaleString('ru-RU') : (walletBalance + cardsTotal).toLocaleString('ru-RU')} <span className="text-xl text-white/70 font-bold">UZS</span>
+                                </h2>
+
+                                {isBusinessMode && (
+                                    <div className="flex gap-4 mb-6">
+                                        <div>
+                                            <p className="text-white/60 flex items-center gap-1 text-[10px] font-bold uppercase"><ShieldCheck size={12}/> В Холде (Escrow)</p>
+                                            <p className="text-white text-sm font-black mt-0.5">{(walletBalance * 1.5).toLocaleString('ru-RU')} UZS</p>
+                                        </div>
+                                        <div className="w-px bg-white/20" />
+                                        <div>
+                                            <p className="text-white/60 flex items-center gap-1 text-[10px] font-bold uppercase"><ArrowUpRight size={12}/> Выручка за мес.</p>
+                                            <p className="text-white text-sm font-black mt-0.5">{(walletBalance * 8).toLocaleString('ru-RU')} UZS</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="mt-6 flex items-center justify-between">
+                                )}
+                                <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-6">
                                     <div>
-                                        <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest">Account ID</p>
-                                        <p className="text-white font-mono text-sm font-bold mt-1">{accountId}</p>
+                                        <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest">{isBusinessMode ? 'Расчетный счет' : 'Account ID'}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <p className="text-white font-mono text-sm font-bold bg-white/10 px-2 py-0.5 rounded backdrop-blur-md border border-white/10">{isBusinessMode ? '20208000900123456789' : accountId}</p>
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(isBusinessMode ? '20208000900123456789' : accountId); toast.success('Скопировано!'); }}
+                                                className="text-white/60 hover:text-white transition-colors"
+                                            >
+                                                <Copy size={14} />
+                                            </button>
+                                        </div>
                                     </div>
                                     <div>
                                         <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest text-right">Статус</p>
-                                        <div className="flex items-center gap-1.5 mt-1">
-                                            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                                            <span className="text-emerald-400 text-sm font-bold">Активен</span>
-                                        </div>
+                                        <p className="text-emerald-400 text-sm font-bold flex items-center gap-1 mt-1 justify-end">
+                                            <ShieldCheck size={14} /> {isBusinessMode ? 'Активный IBAN' : 'Идентифицирован'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -426,10 +463,10 @@ export function AutohousePayDashboard() {
                         {/* Quick Actions */}
                         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                             {[
-                                { label: 'Top Up', icon: Plus, action: () => setTopUpModal(true), color: 'bg-purple-600 hover:bg-purple-500 shadow-purple-600/20' },
-                                { label: 'Transfer', icon: Send, action: () => setTransferModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
-                                { label: 'Withdraw', icon: CreditCard, action: () => setWithdrawModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
-                                { label: 'Request', icon: LinkIcon, action: () => setRequestModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                                { label: isBusinessMode ? 'Пополнить Р/С' : 'Top Up', icon: isBusinessMode ? ArrowDownLeft : Plus, action: () => setTopUpModal(true), color: isBusinessMode ? 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/20' : 'bg-purple-600 hover:bg-purple-500 shadow-purple-600/20' },
+                                { label: isBusinessMode ? 'Выплата' : 'Transfer', icon: Send, action: () => setTransferModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                                { label: isBusinessMode ? 'На IBAN' : 'Withdraw', icon: CreditCard, action: () => setWithdrawModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                                { label: isBusinessMode ? 'Выставить Счет' : 'Request', icon: LinkIcon, action: () => setRequestModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
                                 { label: 'QR Pay', icon: ArrowUpRight, isLink: true, path: '/qr-pay', color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
                             ].map(({ label, icon: Icon, action, isLink, path, color }) => (
                                 isLink ? (
@@ -552,6 +589,95 @@ export function AutohousePayDashboard() {
                                     <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full w-[35%] shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
                                 </div>
                                 <p className="text-[9px] text-slate-500 mt-2 text-center uppercase tracking-widest font-bold">Осталось 4,500,000 UZS до 2% Кешбэка</p>
+                            </div>
+                        </div>
+
+                        {/* Subscriptions / Автоплатежи */}
+                        <div className="bg-[#13111C] rounded-3xl border border-white/5 p-6">
+                            <div className="flex items-center justify-between mb-5">
+                                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                                    Автоплатежи
+                                </h2>
+                                <button className="text-xs text-purple-400 font-bold hover:text-purple-300 transition-colors">
+                                    Все
+                                </button>
+                            </div>
+                            
+                            <div className="space-y-3">
+                                <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center justify-between group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0">
+                                            <ShieldCheck size={18} className="text-orange-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white">Страховка OSAGO</p>
+                                            <p className="text-[10px] text-slate-500 mt-0.5">Списание 15-го числа</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-bold text-white">-120,000 UZS</p>
+                                        <div className="flex items-center justify-end gap-1 mt-1">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                            <span className="text-[9px] text-emerald-400 uppercase font-bold tracking-widest">Активен</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center justify-between group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0">
+                                            <Car size={18} className="text-purple-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white">Premium Подписка</p>
+                                            <p className="text-[10px] text-slate-500 mt-0.5">Ежедневное обновление</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-bold text-white">-15,000 UZS</p>
+                                        <div className="flex items-center justify-end gap-1 mt-1">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                            <span className="text-[9px] text-emerald-400 uppercase font-bold tracking-widest">Активен</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Shared Goals / Сбор средств */}
+                        <div className="bg-[#13111C] rounded-3xl border border-white/5 p-6">
+                            <div className="flex items-center justify-between mb-5">
+                                <h2 className="text-base font-bold text-white">Совместные Цели</h2>
+                                <button className="w-7 h-7 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center hover:bg-blue-500/20 transition-colors">
+                                    <Plus size={14} />
+                                </button>
+                            </div>
+                            
+                            <div className="bg-white/5 border border-white/5 rounded-2xl p-4 group hover:bg-white/[0.07] transition-all cursor-pointer">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div>
+                                        <h3 className="text-sm font-bold text-white">На новую машину 🚗</h3>
+                                        <p className="text-[10px] text-slate-500 mt-1">Осталось: 15,000,000 UZS</p>
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText('autohouse.uz/goals/car'); toast.success('Ссылка на сбор скопирована!'); }} className="text-slate-400 hover:text-white transition-colors" title="Поделиться">
+                                        <LinkIcon size={14} />
+                                    </button>
+                                </div>
+                                
+                                <div className="h-1.5 bg-white/5 rounded-full overflow-hidden mb-3">
+                                    <div className="h-full bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" style={{ width: '70%' }} />
+                                </div>
+                                
+                                <div className="flex items-center justify-between">
+                                    <div className="flex -space-x-2">
+                                        <img src="https://ui-avatars.com/api/?name=T+M&background=3b82f6&color=fff&size=64" className="w-6 h-6 rounded-full border border-[#13111C]" alt="Cont1" />
+                                        <img src="https://ui-avatars.com/api/?name=A+S&background=10b981&color=fff&size=64" className="w-6 h-6 rounded-full border border-[#13111C]" alt="Cont2" />
+                                        <div className="w-6 h-6 rounded-full border border-[#13111C] bg-white/20 flex items-center justify-center text-[9px] text-white font-bold backdrop-blur-md">+2</div>
+                                    </div>
+                                    <div className="text-xs font-black text-white">
+                                        35M <span className="text-[10px] text-slate-500 font-bold">/ 50M</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
