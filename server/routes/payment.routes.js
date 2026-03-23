@@ -268,4 +268,35 @@ router.post('/payme', asyncHandler(async (req, res) => {
     }
 }));
 
+// ─────────────────────────────────────────────
+// Card Tokenization & Billing Mock (Payme API Simulator)
+// ─────────────────────────────────────────────
+
+router.post('/cards/create', authenticateToken, asyncHandler(async (req, res) => {
+    const { number, expire } = req.body;
+    res.json({ result: { card: { token: `mock_token_${Date.now()}` } } });
+}));
+
+router.post('/cards/get_verify_code', authenticateToken, asyncHandler(async (req, res) => {
+    res.json({ result: { sent: true, phone: '+998 ** *** ** 88' } });
+}));
+
+router.post('/cards/verify', authenticateToken, asyncHandler(async (req, res) => {
+    const { token, code } = req.body;
+    if (code !== '1111') {
+        return res.status(400).json({ error: { message: 'Invalid SMS code' } });
+    }
+    res.json({ result: { card: { verify: true, token } } });
+}));
+
+router.post('/receipts/create', authenticateToken, asyncHandler(async (req, res) => {
+    const { amount, account } = req.body;
+    res.json({ result: { receipt: { _id: `mock_receipt_${Date.now()}` } } });
+}));
+
+router.post('/receipts/pay', authenticateToken, asyncHandler(async (req, res) => {
+    const { id, token } = req.body;
+    res.json({ result: { receipt: { state: 4 } } });
+}));
+
 module.exports = router;

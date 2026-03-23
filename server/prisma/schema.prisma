@@ -60,6 +60,8 @@ model User {
   // Wallet
   balance      Float    @default(0)
   accountId    String?  @unique // Short ID for top-up
+  createdGoals FundingGoal[] @relation("CreatedGoals")
+  subscriptions Subscription[] @relation("UserSubscriptions")
   
   loanApplications LoanApplication[]
   paymentOrders    PaymentOrder[]
@@ -548,4 +550,35 @@ model ServiceLead {
 
   @@index([partnerId])
   @@index([status])
+}
+
+model FundingGoal {
+  id            String   @id @default(uuid())
+  title         String
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  creatorId     String
+  creator       User     @relation("CreatedGoals", fields: [creatorId], references: [id])
+  contributors  String   @default("[]") // JSON string of [{userId, amount, avatar}]
+  status        String   @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([creatorId])
+}
+
+model Subscription {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  amount          Float
+  frequency       String   @default("MONTHLY") // DAILY, WEEKLY, MONTHLY, YEARLY
+  nextPaymentDate DateTime
+  active          Boolean  @default(true)
+  userId          String
+  user            User     @relation("UserSubscriptions", fields: [userId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
 }

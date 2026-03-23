@@ -247,4 +247,77 @@ async function getUserBalance(userId) {
     return user.balance;
 }
 
+// --- Phase 6: Goals and Subscriptions ---
+
+router.post('/goals', authenticateToken, asyncHandler(async (req, res) => {
+    const { title, targetAmount } = req.body;
+    const goal = await prisma.fundingGoal.create({
+        data: {
+            title,
+            targetAmount: parseFloat(targetAmount),
+            creatorId: req.user.userId
+        }
+    });
+    res.json(goal);
+}));
+
+router.get('/goals', authenticateToken, asyncHandler(async (req, res) => {
+    const goals = await prisma.fundingGoal.findMany({
+        where: { creatorId: req.user.userId }
+    });
+    res.json(goals);
+}));
+
+router.post('/goals/:id/contribute', authenticateToken, asyncHandler(async (req, res) => {
+    const { amount } = req.body;
+    const goalId = req.params.id;
+    
+    const result = await prisma.$transaction(async (tx) => {
+        const user = await tx.user.findUnique({ where: { id: req.user.userId } });
+        if (user.balance < amount) {
+            const err = new Error('Insufficient funds'); err.status = 400; throw err;
+        }
+        
+        await tx.user.update({
+            where: { id: req.user.userId },
+            data: { balance: { decrement: parseFloat(amount) } }
+        });
+        
+        const goal = await tx.fundingGoal.update({
+            where: { id: goalId },
+            data: { currentAmount: { increment: parseFloat(amount) } }
+        });
+        
+        await tx.transaction.create({
+            data: { 
+                amount: parseFloat(amount), 
+                type: 'PAYMENT', 
+                status: 'COMPLETED', 
+                senderId: req.user.userId, 
+                description: `Contribution to goal: ${goal.title}` 
+            }
+        });
+        
+        return goal;
+    });
+    
+    res.json(result);
+}));
+
+router.get('/subscriptions', authenticateToken, asyncHandler(async (req, res) => {
+    const subs = await prisma.subscription.findMany({
+        where: { userId: req.user.userId }
+    });
+    res.json(subs);
+}));
+
+router.post('/subscriptions/toggle', authenticateToken, asyncHandler(async (req, res) => {
+    const { id, active } = req.body;
+    const sub = await prisma.subscription.update({
+        where: { id, userId: req.user.userId },
+        data: { active }
+    });
+    res.json(sub);
+}));
+
 module.exports = router;
