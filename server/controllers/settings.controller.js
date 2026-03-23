@@ -1,4 +1,5 @@
 const prisma = require('../config/database');
+const env = require('../config/env');
 
 exports.getSettings = async (req, res) => {
     try {
@@ -7,6 +8,7 @@ exports.getSettings = async (req, res) => {
         settingsList.forEach(s => {
             settings[s.key] = s.value;
         });
+        settings.vapidPublicKey = env.vapidPublicKey;
         res.json(settings);
     } catch (error) {
         console.error('Error fetching settings:', error);

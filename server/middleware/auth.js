@@ -15,7 +15,7 @@ const authenticateToken = (req, res, next) => {
     jwt.verify(token, env.jwtSecret, (err, user) => {
         if (err) {
             console.error(`[AUTH_DEBUG] Token verification failed for ${req.path}:`, err.message);
-            return res.sendStatus(403);
+            return res.sendStatus(401);
         }
         // Normalize backward-compatible IDs from old JWT tokens
         user.userId = user.userId || user.id;

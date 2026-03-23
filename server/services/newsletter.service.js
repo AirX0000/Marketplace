@@ -2,6 +2,7 @@ console.log('🔹 [NewsletterService] Requiring database...');
 const prisma = require('../config/database');
 console.log('🔹 [NewsletterService] Requiring emailService...');
 const { sendBulkEmail } = require('../emailService');
+const notificationService = require('./notification.service');
 console.log('🔹 [NewsletterService] Imports done.');
 
 class NewsletterService {
@@ -18,6 +19,14 @@ class NewsletterService {
         if (recipients.length === 0) return 0;
 
         const sentCount = await sendBulkEmail(recipients, subject, message);
+
+        // Send Push Notifications asynchronously
+        const pushPayload = { title: subject, body: message, url: '/profile' };
+        Promise.allSettled(
+            users
+                .filter(u => Array.isArray(u.pushSubscriptions) && u.pushSubscriptions.length > 0)
+                .map(u => notificationService.sendPushToUser(u.id, pushPayload))
+        ).catch(console.error);
 
         await prisma.newsletter.create({
             data: {

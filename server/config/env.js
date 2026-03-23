@@ -38,5 +38,8 @@ module.exports = {
     clickSecretKey: process.env.CLICK_SECRET_KEY,
     paymeId: process.env.PAYME_ID,
     paymeKey: process.env.PAYME_KEY,
-    appUrl: process.env.APP_URL || 'https://autohouse.uz'
+    appUrl: process.env.APP_URL || 'https://autohouse.uz',
+    vapidPublicKey: process.env.VAPID_PUBLIC_KEY,
+    vapidPrivateKey: process.env.VAPID_PRIVATE_KEY,
+    vapidMailto: process.env.VAPID_MAILTO || 'mailto:admin@urbandrive.uz'
 };

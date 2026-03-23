@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IMaskInput } from 'react-imask';
 import { api } from '../lib/api';
-import { User, Mail, Phone, Save, Camera, Settings, Check, AlertCircle, Building2, MapPin, Trash2, Plus } from 'lucide-react';
+import { User, Mail, Phone, Save, Camera, Settings, Check, AlertCircle, Building2, MapPin, Trash2, Plus, Bell, BellRing } from 'lucide-react';
 import { TopUpModal } from '../components/TopUpModal';
 
 export function ProfileSettingsPage() {
@@ -10,6 +10,74 @@ export function ProfileSettingsPage() {
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState(null);
+    const [pushEnabled, setPushEnabled] = useState(false);
+
+    useEffect(() => {
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.getRegistration().then(reg => {
+                if (reg) {
+                    reg.pushManager.getSubscription().then(sub => {
+                        setPushEnabled(!!sub);
+                    });
+                }
+            });
+        }
+    }, []);
+
+    const handleTogglePush = async () => {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            alert('Ваш браузер не поддерживает Push уведомления.');
+            return;
+        }
+        
+        try {
+            const reg = await navigator.serviceWorker.register('/sw.js');
+            const sub = await reg.pushManager.getSubscription();
+            
+            if (sub) {
+                await sub.unsubscribe();
+                setPushEnabled(false);
+                setMessage({ type: 'success', text: 'Уведомления успешно отключены.' });
+            } else {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    setMessage({ type: 'error', text: 'Вы запретили отправку уведомлений в браузере.' });
+                    return;
+                }
+                
+                const settings = await api.getSettings();
+                const applicationServerKey = settings.vapidPublicKey;
+                
+                if (!applicationServerKey) {
+                    setMessage({ type: 'error', text: 'Ошибка конфигурации сервера (VAPID ключ не найден).' });
+                    return;
+                }
+                
+                const urlBase64ToUint8Array = (base64String) => {
+                    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+                    const rawData = window.atob(base64);
+                    const outputArray = new Uint8Array(rawData.length);
+                    for (let i = 0; i < rawData.length; ++i) {
+                        outputArray[i] = rawData.charCodeAt(i);
+                    }
+                    return outputArray;
+                };
+                
+                const newSub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(applicationServerKey)
+                });
+                
+                await api.subscribePush(newSub);
+                setPushEnabled(true);
+                setMessage({ type: 'success', text: 'Уведомления успешно включены!' });
+            }
+        } catch (error) {
+            console.error('Error toggling push:', error);
+            setMessage({ type: 'error', text: 'Ошибка при настройке уведомлений.' });
+        }
+    };
 
     useEffect(() => {
         async function load() {
@@ -298,6 +366,28 @@ export function ProfileSettingsPage() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+
+                    {/* Push Notifications Settings */}
+                    <div className="bg-card border rounded-2xl p-6 shadow-sm">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
+                                    {pushEnabled ? <BellRing className="h-5 w-5 text-emerald-500" /> : <Bell className="h-5 w-5 text-slate-400" />}
+                                    Уведомления
+                                </h2>
+                                <p className="text-sm text-slate-500 max-w-sm">
+                                    Получайте мгновенные уведомления о статусе заказов, изменении цен и сообщениях.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleTogglePush}
+                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none flex-shrink-0 ${pushEnabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                            >
+                                <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${pushEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Address Book */}
