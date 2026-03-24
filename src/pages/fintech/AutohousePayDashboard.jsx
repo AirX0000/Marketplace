@@ -94,12 +94,12 @@ const SPENDING = [
 ];
 
 const SIDEBAR = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/profile' },
-    { icon: Wallet, label: 'Wallet', path: '/wallet', active: true },
-    { icon: Car, label: 'My Vehicles', path: '/profile?tab=garage' },
-    { icon: ShoppingBag, label: 'Orders', path: '/profile?tab=orders' },
-    { icon: MessageSquare, label: 'Messages', path: '/chat' },
-    { icon: Settings, label: 'Settings', path: '/profile?tab=profile' },
+    { icon: LayoutDashboard, label: 'Обзор', path: '/profile' },
+    { icon: Wallet, label: 'Кошелёк', path: '/wallet', active: true },
+    { icon: Car, label: 'Мой Гараж', path: '/profile?tab=garage' },
+    { icon: ShoppingBag, label: 'Мои Покупки', path: '/profile?tab=orders' },
+    { icon: MessageSquare, label: 'Сообщения', path: '/chat' },
+    { icon: Settings, label: 'Настройки', path: '/profile?tab=profile' },
 ];
 
 // ─── Modal wrapper ────────────────────────────────────────────────────────────
@@ -132,18 +132,26 @@ function CardChip({ card, onRemove }) {
         <div className={`relative rounded-2xl p-5 bg-gradient-to-br ${gradient} shadow-lg group overflow-hidden`}>
             <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
             <div className="flex items-start justify-between mb-5 relative z-10">
-                <div className="w-9 h-7 bg-white/20 backdrop-blur-sm rounded flex items-center justify-center border border-white/20">
+                <div className="w-9 h-7 bg-white/20 backdrop-blur-sm rounded flex items-center justify-center border border-white/20 shrink-0">
                     <CreditCard size={14} className="text-white/80" />
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">{card.type}</span>
-                    <button
-                        onClick={() => onRemove(card.id)}
-                        className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-full bg-rose-600/80 flex items-center justify-center text-white hover:bg-rose-600 transition-all"
-                        title="Удалить карту"
-                    >
-                        <Trash2 size={12} />
-                    </button>
+                <div className="flex flex-col items-end gap-2">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">{card.type}</span>
+                        <button
+                            onClick={() => onRemove(card.id)}
+                            className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-full bg-rose-600/80 flex items-center justify-center text-white hover:bg-rose-600 transition-all shrink-0"
+                            title="Удалить карту"
+                        >
+                            <Trash2 size={12} />
+                        </button>
+                    </div>
+                    {card.balance > 0 && (
+                        <div className="text-right">
+                            <p className="text-white/40 text-[9px] uppercase tracking-widest font-bold leading-none mb-1">Баланс</p>
+                            <p className="text-white text-xs font-bold leading-none">{Number(card.balance).toLocaleString('ru-RU')} UZS</p>
+                        </div>
+                    )}
                 </div>
             </div>
             <p className="font-mono text-white text-sm tracking-widest mb-4 relative z-10">{maskNumber(card.number)}</p>
@@ -157,12 +165,6 @@ function CardChip({ card, onRemove }) {
                     <p className="text-white text-xs font-bold mt-0.5">{card.expiry}</p>
                 </div>
             </div>
-            {card.balance > 0 && (
-                <div className="absolute top-3.5 right-12 text-right">
-                    <p className="text-white/40 text-[9px] uppercase tracking-widest font-bold">Баланс</p>
-                    <p className="text-white text-xs font-bold">{Number(card.balance).toLocaleString('ru-RU')} UZS</p>
-                </div>
-            )}
         </div>
     );
 }
@@ -221,7 +223,7 @@ export function AutohousePayDashboard() {
     // Persist cards
     useEffect(() => { saveCards(cards); }, [cards]);
 
-    const walletBalance = wallet?.balance ?? 50000;
+    const walletBalance = wallet?.balance ?? 0;
     const cardsTotal = cards.reduce((sum, c) => sum + (Number(c.balance) || 0), 0);
     const totalBalance = walletBalance + cardsTotal;
     const accountId = wallet?.accountId ?? '122883';
@@ -356,49 +358,13 @@ export function AutohousePayDashboard() {
     );
 
     return (
-        <div className="min-h-screen bg-[#0F0D1A] text-slate-200 font-sans flex">
-            {/* ── Sidebar ── */}
-            <aside className="hidden lg:flex flex-col w-64 bg-[#13111C] border-r border-white/5 p-6 shrink-0 sticky top-0 h-screen">
-                <div className="flex items-center gap-3 mb-10">
-                    <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-600/30">
-                        <Wallet size={18} className="text-white" />
-                    </div>
-                    <span className="font-black text-white tracking-wide text-sm">Autohouse</span>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 mb-8">
-                    <img
-                        src={profile?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'User')}&background=7c3aed&color=fff`}
-                        alt="Avatar" className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div>
-                        <div className="text-sm font-bold text-white">{profile?.name || 'My Account'}</div>
-                        <div className="text-xs text-purple-400">Premium Member</div>
-                    </div>
-                </div>
-
-                <nav className="flex-1 space-y-1">
-                    {SIDEBAR.map(({ icon: Icon, label, path, active }) => (
-                        <Link key={label} to={path}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${active ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
-                            <Icon size={18} />{label}
-                        </Link>
-                    ))}
-                </nav>
-                <div className="pt-6 border-t border-white/5">
-                    <p className="text-[10px] text-slate-600 uppercase tracking-widest font-bold mb-3">Support</p>
-                    <button className="w-full py-2.5 px-4 rounded-xl bg-purple-600/10 text-purple-400 text-sm font-bold hover:bg-purple-600/20 transition-colors flex items-center gap-2">
-                        <MessageSquare size={16} /> Help Center
-                    </button>
-                </div>
-            </aside>
-
+        <div className="w-full h-full bg-[#0F0D1A] text-slate-200 font-sans flex flex-col rounded-3xl overflow-hidden border border-white/5 shadow-xl min-h-[600px] relative">
             {/* ── Main ── */}
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto w-full">
                 <header className="sticky top-0 z-10 bg-[#0F0D1A]/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between">
                     <div>
-                        <h1 className="text-xl font-black text-white">{isBusinessMode ? 'Бизнес-Кошелек' : 'Financial Wallet'}</h1>
-                        <p className="text-xs text-slate-500">{isBusinessMode ? 'Управление доходами компании' : 'Manage your funds and cards'}</p>
+                        <h1 className="text-xl font-black text-white">{isBusinessMode ? 'Бизнес-Кошелек' : 'Кошелек Autohouse'}</h1>
+                        <p className="text-xs text-slate-500">{isBusinessMode ? 'Управление доходами компании' : 'Управление вашими средствами и картами'}</p>
                     </div>
                     <div className="flex items-center gap-3">
                         {isPartner && (
@@ -486,23 +452,23 @@ export function AutohousePayDashboard() {
                         {/* Quick Actions */}
                         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                             {[
-                                { label: isBusinessMode ? 'Пополнить Р/С' : 'Top Up', icon: isBusinessMode ? ArrowDownLeft : Plus, action: () => setTopUpModal(true), color: isBusinessMode ? 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/20' : 'bg-purple-600 hover:bg-purple-500 shadow-purple-600/20' },
-                                { label: isBusinessMode ? 'Выплата' : 'Transfer', icon: Send, action: () => setTransferModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
-                                { label: isBusinessMode ? 'На IBAN' : 'Withdraw', icon: CreditCard, action: () => setWithdrawModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
-                                { label: isBusinessMode ? 'Выставить Счет' : 'Request', icon: LinkIcon, action: () => setRequestModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
-                                { label: 'QR Pay', icon: ArrowUpRight, isLink: true, path: '/qr-pay', color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                                { label: isBusinessMode ? 'Пополнить Р/С' : 'Пополнить', icon: isBusinessMode ? ArrowDownLeft : Plus, action: () => setTopUpModal(true), color: isBusinessMode ? 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/20' : 'bg-purple-600 hover:bg-purple-500 shadow-purple-600/20' },
+                                { label: isBusinessMode ? 'Выплата' : 'Перевод', icon: Send, action: () => setTransferModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                                { label: isBusinessMode ? 'На IBAN' : 'Вывод', icon: CreditCard, action: () => setWithdrawModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                                { label: isBusinessMode ? 'Выставить Счет' : 'Запрос', icon: LinkIcon, action: () => setRequestModal(true), color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
+                                { label: 'Оплата QR', icon: ArrowUpRight, isLink: true, path: '/qr-pay', color: 'bg-[#1E1B2E] hover:bg-[#252236] border border-white/10' },
                             ].map(({ label, icon: Icon, action, isLink, path, color }) => (
                                 isLink ? (
                                     <Link key={label} to={path}
                                         className={`flex flex-col items-center gap-2 p-5 text-white rounded-2xl transition-all shadow-lg hover:-translate-y-0.5 active:translate-y-0 ${color}`}>
                                         <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center"><Icon size={20} /></div>
-                                        <span className="text-sm font-bold">{label}</span>
+                                        <span className="text-sm font-bold text-center">{label}</span>
                                     </Link>
                                 ) : (
                                     <button key={label} onClick={action}
                                         className={`flex flex-col items-center gap-2 p-5 text-white rounded-2xl transition-all shadow-lg hover:-translate-y-0.5 active:translate-y-0 ${color}`}>
                                         <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center"><Icon size={20} /></div>
-                                        <span className="text-sm font-bold">{label}</span>
+                                        <span className="text-sm font-bold text-center">{label}</span>
                                     </button>
                                 )
                             ))}
@@ -511,11 +477,11 @@ export function AutohousePayDashboard() {
                         {/* Transactions */}
                         <div className="bg-[#13111C] rounded-3xl border border-white/5 overflow-hidden">
                             <div className="px-6 py-5 flex items-center justify-between border-b border-white/5">
-                                <h2 className="text-base font-bold text-white">Transaction History</h2>
-                                <span className="text-xs text-purple-400 font-bold">View all</span>
+                                <h2 className="text-base font-bold text-white">История транзакций</h2>
+                                <span className="text-xs text-purple-400 font-bold">Посмотреть все</span>
                             </div>
                             <div className="grid grid-cols-4 px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-600 border-b border-white/5">
-                                <span>Transaction</span><span>Category</span><span>Amount</span><span>Status</span>
+                                <span>Транзакция</span><span>Категория</span><span>Сумма</span><span>Статус</span>
                             </div>
                             <div className="divide-y divide-white/5">
                                 {transactions.map(tx => {
@@ -706,7 +672,7 @@ export function AutohousePayDashboard() {
 
                         {/* Spending Breakdown */}
                         <div className="bg-[#13111C] rounded-3xl border border-white/5 p-6 hidden lg:block">
-                            <h2 className="text-base font-bold text-white mb-5">Spending Breakdown</h2>
+                            <h2 className="text-base font-bold text-white mb-5">Аналитика расходов</h2>
                             <div className="space-y-4">
                                 {SPENDING.map(({ label, percent, color }) => (
                                     <div key={label}>
@@ -723,8 +689,8 @@ export function AutohousePayDashboard() {
                             <div className="mt-6 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex items-start gap-3">
                                 <ShieldCheck size={18} className="text-emerald-400 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-xs font-bold text-emerald-400">Secure Transactions</p>
-                                    <p className="text-[11px] text-slate-500 mt-0.5">256-bit SSL encryption active.</p>
+                                    <p className="text-xs font-bold text-emerald-400">Безопасные транзакции</p>
+                                    <p className="text-[11px] text-slate-500 mt-0.5">256-битное шифрование SSL активно.</p>
                                 </div>
                             </div>
                         </div>

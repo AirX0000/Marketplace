@@ -101,8 +101,14 @@ export function RegisterPage() {
                 (response.user.role === 'ADMIN' || response.user.role === 'SUPER_ADMIN') ? '/admin' : '/profile';
             navigate(defaultRoute);
         } catch (err) {
-            setError(err.message || 'Ошибка регистрации');
-            notify.error(err.message || 'Ошибка регистрации');
+            let msg = err.message || 'Ошибка регистрации';
+            if (msg.includes('Phone number already registered') || msg.includes('Unique constraint violation')) {
+                msg = 'Этот номер телефона уже зарегистрирован. Пожалуйста, авторизуйтесь.';
+            } else if (msg.includes('Email already registered')) {
+                msg = 'Этот email уже зарегистрирован.';
+            }
+            setError(msg);
+            notify.error(msg);
         } finally {
             setLoading(false);
         }

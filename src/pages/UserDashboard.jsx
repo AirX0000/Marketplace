@@ -15,6 +15,8 @@ import { useShop } from '../context/ShopContext';
 import { api } from '../lib/api';
 import { notify } from '../lib/notify';
 
+import { AutohousePayDashboard } from './fintech/AutohousePayDashboard';
+
 export function UserDashboard() {
     const { user, logout, isAdmin } = useShop();
     const navigate = useNavigate();
@@ -186,7 +188,7 @@ export function UserDashboard() {
                                 { id: 'listings', label: 'My Listings', icon: Package },
                                 { id: 'orders', label: 'Мои Покупки', icon: Package },
                                 { id: 'addresses', label: 'Адреса доставки', icon: MapPin },
-                                { id: 'wallet', label: 'Кошелёк', icon: Wallet, href: '/wallet' },
+                                { id: 'wallet', label: 'Кошелёк', icon: Wallet },
                                 { id: 'profile', label: 'Настройки профиля', icon: Settings },
                                 { id: 'security', label: 'Безопасность', icon: Shield },
                                 ...(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' ? [
@@ -255,6 +257,11 @@ export function UserDashboard() {
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
                             >
+                                {/* CONTENT: WALLET */}
+                                {activeTab === 'wallet' && (
+                                    <AutohousePayDashboard />
+                                )}
+
                                 {/* CONTENT: OVERVIEW */}
                                 {activeTab === 'overview' && (
                                     <div className="space-y-6">

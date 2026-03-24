@@ -146,13 +146,13 @@ function App() {
                           <Route path="profile/loans" element={<CreditApplicationsPage />} />
                           <Route path="profile/offers" element={<MyOffersPage />} />
                           <Route path="profile/returns" element={<MyReturnsPage />} />
-                          <Route path="profile/wallet" element={<AutohousePayDashboard />} />
+                          <Route path="profile/wallet" element={<Navigate to="/profile?tab=wallet" replace />} />
                           <Route path="profile/chat" element={<ChatPage />} />
                           <Route path="profile" element={<UserDashboard />} />
                           <Route path="profile/settings" element={<ProfileSettingsPage />} />
                           <Route path="orders" element={<OrderHistoryPage />} />
                           <Route path="settings" element={<ProfileSettingsPage />} />
-                          <Route path="wallet" element={<AutohousePayDashboard />} />
+                          <Route path="wallet" element={<Navigate to="/profile?tab=wallet" replace />} />
                           <Route path="qr-pay" element={<QRPayPage />} />
                           <Route path="pay" element={<PayLinkPage />} />
                           <Route path="chat" element={<ChatPage />} />
