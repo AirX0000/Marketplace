@@ -12,6 +12,18 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
         select: {
             balance: true,
             accountId: true,
+            linkedCards: {
+                select: {
+                    id: true,
+                    cardNumber: true,
+                    expiry: true,
+                    cardHolder: true,
+                    cardType: true,
+                    isActive: true,
+                    isDefault: true,
+                    balance: true
+                }
+            }
         }
     });
 
@@ -40,8 +52,68 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
     res.json({
         balance: user.balance,
         accountId: user.accountId,
+        cards: user.linkedCards,
         transactions
     });
+}));
+
+// Add a linked card (Mocking the tokenization process)
+router.post('/cards', authenticateToken, asyncHandler(async (req, res) => {
+    const userId = req.user.userId;
+    const { cardNumber, expiry, cardHolder, cardType, isDefault } = req.body;
+
+    const cleanNumber = cardNumber.replace(/\D/g, '');
+    if (cleanNumber.length < 16) {
+        const error = new Error('Invalid card number');
+        error.status = 400; throw error;
+    }
+
+    const crypto = require('crypto');
+    const fakeToken = crypto.randomBytes(16).toString('hex');
+    const mockBalance = Math.floor(Math.random() * 5000000) + 100000;
+
+    if (isDefault) {
+        await prisma.linkedCard.updateMany({
+            where: { userId },
+            data: { isDefault: false }
+        });
+    }
+
+    const newCard = await prisma.linkedCard.create({
+        data: {
+            userId,
+            cardNumber: cleanNumber,
+            expiry,
+            cardHolder: cardHolder ? cardHolder.toUpperCase() : null,
+            cardType: cardType || 'CARD',
+            token: fakeToken,
+            balance: mockBalance,
+            isDefault: isDefault || false
+        }
+    });
+
+    res.status(201).json(newCard);
+}));
+
+// Remove a linked card
+router.delete('/cards/:id', authenticateToken, asyncHandler(async (req, res) => {
+    const userId = req.user.userId;
+    const { id } = req.params;
+
+    const card = await prisma.linkedCard.findFirst({
+        where: { id, userId }
+    });
+
+    if (!card) {
+        const error = new Error('Card not found');
+        error.status = 404; throw error;
+    }
+
+    await prisma.linkedCard.delete({
+        where: { id }
+    });
+
+    res.json({ message: 'Card removed successfully' });
 }));
 
 // Top Up Balance (Manual/System)

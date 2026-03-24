@@ -594,31 +594,7 @@ export function MarketplaceListing() {
                                     </div>
                                 )}
 
-                                {/* Category */}
-                                <div>
-                                    <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Категория</h4>
-                                    <div className="space-y-2">
-                                        {categories.map((c) => {
-                                            const catName = c.name || c;
-                                            return (
-                                                <label key={catName} className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary transition-colors text-slate-700 dark:text-slate-300">
-                                                    <input
-                                                        type="radio"
-                                                        name="category"
-                                                        checked={filters.category === catName}
-                                                        onChange={() => {
-                                                            // Reset subcategory when changing main category
-                                                            const newFilters = { ...filters, category: catName, subcategory: "" };
-                                                            setFilters(newFilters);
-                                                        }}
-                                                        className="h-4 w-4 border-gray-300 text-primary focus:ring-primary dark:bg-slate-700 dark:border-slate-600"
-                                                    />
-                                                    <span>{catName}</span>
-                                                </label>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
+
 
                                 {/* Subcategories Filter */}
                                 {filters.category !== "Все" && categories.find(c => (c.name || c) === filters.category)?.sub && (

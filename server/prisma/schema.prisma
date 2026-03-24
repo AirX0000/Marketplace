@@ -66,6 +66,7 @@ model User {
   loanApplications LoanApplication[]
   paymentOrders    PaymentOrder[]
   cars             UserCar[] // Added for Virtual Garage
+  linkedCards      LinkedCard[] @relation("UserLinkedCards")
   
   // Push Notifications & Price Alerts
   pushSubscriptions Json?
@@ -579,6 +580,27 @@ model Subscription {
   user            User     @relation("UserSubscriptions", fields: [userId], references: [id])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model LinkedCard {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation("UserLinkedCards", fields: [userId], references: [id], onDelete: Cascade)
+  
+  cardNumber  String   // Masked: "**** **** **** 1234"
+  expiry      String   // "12/26"
+  cardHolder  String?
+  cardType    String   // "UZCARD", "HUMO", "VISA", "MASTERCARD"
+  
+  token       String   @unique // The reusable token from Payme/Click
+  isActive    Boolean  @default(true)
+  isDefault   Boolean  @default(false)
+  balance     Float    @default(0) // Mock balance for UI/Demo purposes
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([userId])
 }

@@ -388,7 +388,7 @@ export function AdminListings() {
                                                         <div className="flex items-center gap-3">
                                                     <div className="h-10 w-10 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border">
                                                         <img 
-                                                            src={getImageUrl(item.images || item.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"} 
+                                                            src={getImageUrl(item.image) || getImageUrl(item.images) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"} 
                                                             className="h-full w-full object-cover" 
                                                             alt={item.name}
                                                             onError={(e) => {
@@ -568,7 +568,7 @@ export function AdminListings() {
                                 <div className="flex gap-4 mb-4">
                                     <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted flex-shrink-0 border border-border">
                                         <img 
-                                            src={getImageUrl(item.images || item.image) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"} 
+                                            src={getImageUrl(item.image) || getImageUrl(item.images) || "https://images.unsplash.com/photo-1472851294608-4151050801cd?auto=format&fit=crop&q=80&w=1000"} 
                                             className="w-full h-full object-cover" 
                                             alt={item.name}
                                             onError={(e) => {

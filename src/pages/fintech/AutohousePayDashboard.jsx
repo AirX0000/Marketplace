@@ -11,14 +11,7 @@ import { Link } from 'react-router-dom';
 import { PinModal } from '../../components/fintech/PinModal';
 
 // ─── localStorage helpers ───────────────────────────────────────────────────
-const CARDS_KEY = 'autohouse_linked_cards';
-function loadCards() {
-    try { return JSON.parse(localStorage.getItem(CARDS_KEY)) || []; }
-    catch { return []; }
-}
-function saveCards(cards) {
-    localStorage.setItem(CARDS_KEY, JSON.stringify(cards));
-}
+// DEPRECATED: Now using real backend LinkedCard system.
 
 // ─── Detect card network by number ──────────────────────────────────────────
 function detectCardType(num) {
@@ -38,16 +31,7 @@ function formatCardInput(val) {
     return val.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
 }
 
-const MOCK_TX = [
-    { id: 1, title: 'BMW M4 Maintenance', category: 'Service', amount: -4200000, status: 'COMPLETED', date: '2026-03-20T14:20:00', icon: '🔧' },
-    { id: 2, title: 'Wallet Top-Up', category: 'Deposit', amount: +15000000, status: 'COMPLETED', date: '2026-03-18T09:15:00', icon: '➕' },
-    { id: 3, title: 'Insurance Renewal', category: 'Insurance', amount: -2500000, status: 'PENDING', date: '2026-03-15T18:45:00', icon: '🔒' },
-    { id: 4, title: 'Vehicle Sale Revenue', category: 'Revenue', amount: +120000000, status: 'COMPLETED', date: '2026-03-10T11:30:00', icon: '🚗' },
-    { id: 5, title: 'Listing Premium Plan', category: 'Subscription', amount: -1500000, status: 'COMPLETED', date: '2026-03-05T08:00:00', icon: '⭐' },
-];
-
 function getTxDetails(tx, accountId) {
-    if (tx.icon && tx.title) return { icon: <span className="text-lg">{tx.icon}</span>, title: tx.title, isPositive: tx.amount > 0, displayAmount: tx.amount, bgColor: 'bg-white/5', iconColor: 'text-white' };
     
     const isSender = tx.senderId === accountId;
     const isReceiver = tx.receiverId === accountId;
@@ -176,8 +160,8 @@ export function AutohousePayDashboard() {
     const [loading, setLoading] = useState(true);
     const [transactions, setTransactions] = useState([]);
 
-    // Cards state (from localStorage)
-    const [cards, setCards] = useState(loadCards);
+    // Cards state (from backend)
+    const [cards, setCards] = useState([]);
 
     // Modals
     const [topUpModal, setTopUpModal] = useState(false);
@@ -208,7 +192,8 @@ export function AutohousePayDashboard() {
                 ]);
                 setWallet(walletData);
                 setProfile(profileData);
-                setTransactions(walletData?.transactions || MOCK_TX);
+                setCards(walletData?.cards || []);
+                setTransactions(walletData?.transactions || []);
 
                 // Pre-fill cardholder name from profile
                 if (profileData?.name) {
@@ -220,8 +205,7 @@ export function AutohousePayDashboard() {
         load();
     }, []);
 
-    // Persist cards
-    useEffect(() => { saveCards(cards); }, [cards]);
+    // Removed SaveCards effect
 
     const walletBalance = wallet?.balance ?? 0;
     const cardsTotal = cards.reduce((sum, c) => sum + (Number(c.balance) || 0), 0);
@@ -230,7 +214,7 @@ export function AutohousePayDashboard() {
     
     const isPartner = profile?.role === 'PARTNER' || profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN';
 
-    const handleAddCard = () => {
+    const handleAddCard = async () => {
         const num = newCard.number.replace(/\s/g, '');
         
         if (isBusinessMode) {
@@ -238,18 +222,23 @@ export function AutohousePayDashboard() {
             if (!newCard.mfo || newCard.mfo.length < 5) return toast.error('Введите корректный МФО банка (5 цифр)');
             if (!newCard.holder.trim()) return toast.error('Укажите наименование компании');
 
-            const card = {
-                id: Date.now().toString(),
-                number: num,
-                holder: newCard.holder.trim().toUpperCase(),
-                expiry: 'БЕССРОЧНО',
-                type: 'IBAN',
-                balance: Math.floor(Math.random() * 50000000) + 10000000,
-            };
-            setCards(prev => [...prev, card]);
-            setAddCardModal(false);
-            setNewCard({ number: '', holder: profile?.name?.toUpperCase() || '', expiry: '', cvv: '', balance: '', mfo: '' });
-            toast.success('Расчетный счет успешно добавлен!');
+            setActionLoading(true);
+            try {
+                const card = await api.walletAddCard({
+                    cardNumber: num,
+                    holder: newCard.holder.trim(),
+                    expiry: 'БЕССРОЧНО',
+                    cardType: 'IBAN'
+                });
+                setCards(prev => [...prev, card]);
+                setAddCardModal(false);
+                setNewCard({ number: '', holder: profile?.name?.toUpperCase() || '', expiry: '', cvv: '', balance: '', mfo: '' });
+                toast.success('Расчетный счет успешно добавлен!');
+            } catch (err) {
+                toast.error(err.message || 'Ошибка добавления счета');
+            } finally {
+                setActionLoading(false);
+            }
             return;
         }
 
@@ -257,25 +246,33 @@ export function AutohousePayDashboard() {
         if (!newCard.expiry.match(/^\d{2}\/\d{2}$/)) return toast.error('Формат срока: ММ/ГГ');
         if (!newCard.holder.trim()) return toast.error('Укажите имя держателя карты');
 
-        const simulatedBalance = Math.floor(Math.random() * 5000000) + 500000;
-
-        const card = {
-            id: Date.now().toString(),
-            number: num,
-            holder: newCard.holder.trim().toUpperCase(),
-            expiry: newCard.expiry,
-            type: detectCardType(num),
-            balance: simulatedBalance,
-        };
-        setCards(prev => [...prev, card]);
-        setAddCardModal(false);
-        setNewCard({ number: '', holder: profile?.name?.toUpperCase() || '', expiry: '', cvv: '', balance: '', mfo: '' });
-        toast.success('Карта успешно добавлена!');
+        setActionLoading(true);
+        try {
+            const card = await api.walletAddCard({
+                cardNumber: num,
+                cardHolder: newCard.holder.trim(),
+                expiry: newCard.expiry,
+                cardType: detectCardType(num)
+            });
+            setCards(prev => [...prev, card]);
+            setAddCardModal(false);
+            setNewCard({ number: '', holder: profile?.name?.toUpperCase() || '', expiry: '', cvv: '', balance: '', mfo: '' });
+            toast.success('Карта успешно добавлена!');
+        } catch (err) {
+            toast.error(err.message || 'Ошибка добавления карты');
+        } finally {
+            setActionLoading(false);
+        }
     };
 
-    const handleRemoveCard = (id) => {
-        setCards(prev => prev.filter(c => c.id !== id));
-        toast.success('Карта удалена');
+    const handleRemoveCard = async (id) => {
+        try {
+            await api.walletRemoveCard(id);
+            setCards(prev => prev.filter(c => c.id !== id));
+            toast.success('Карта удалена');
+        } catch (err) {
+            toast.error(err.message || 'Ошибка удаления карты');
+        }
     };
 
     const handleTopUpConfirm = async () => {

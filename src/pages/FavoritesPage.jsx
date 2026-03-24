@@ -20,7 +20,7 @@ const SIDEBAR_LINKS = [
 ];
 
 function FavoriteCard({ item, onRemove }) {
-    const imageUrl = getImageUrl(item.images || item.image) || '/images/car_mock.png';
+    const imageUrl = getImageUrl(item.image) || getImageUrl(item.images) || '/images/car_mock.png';
     const isAuto = ['С пробегом', 'Автосалон', 'Новый без пробега', 'Transport', 'Cars'].includes(item.category);
     const isEstate = ['Вторичные', 'Новостройки', 'Нежилое помещение', 'Аренда', 'Участки', 'Недвижимость'].includes(item.category);
 

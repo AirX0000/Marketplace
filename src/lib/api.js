@@ -221,6 +221,8 @@ export const api = {
     getWallet: () => fetchAPI('/wallet'),
     walletDeposit: (amount) => fetchAPI('/wallet/deposit', { method: 'POST', body: JSON.stringify({ amount }) }),
     walletTransfer: (data) => fetchAPI('/wallet/transfer', { method: 'POST', body: JSON.stringify(data) }),
+    walletAddCard: (data) => fetchAPI('/wallet/cards', { method: 'POST', body: JSON.stringify(data) }),
+    walletRemoveCard: (id) => fetchAPI(`/wallet/cards/${id}`, { method: 'DELETE' }),
 
     // Addresses
     getAddresses: () => fetchAPI('/user/addresses'),
