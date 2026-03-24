@@ -17,7 +17,11 @@ if (process.env.DATABASE_URL) {
 
         // Map DIRECT_URL (must not have pgbouncer=true)
         const directUrl = new URL(dbUrlStr);
-        directUrl.searchParams.set('sslmode', 'require');
+        if (!directUrl.hostname.includes('localhost') && !directUrl.hostname.includes('127.0.0.1')) {
+            directUrl.searchParams.set('sslmode', 'require');
+        } else {
+            directUrl.searchParams.set('sslmode', 'disable');
+        }
         directUrl.searchParams.delete('pgbouncer');
         directUrl.searchParams.delete('connection_limit');
         process.env.DIRECT_URL = directUrl.toString();
@@ -25,11 +29,16 @@ if (process.env.DATABASE_URL) {
         // Map DATABASE_URL for regular app queries. We use local Prisma pooling (connection_limit=3)
         // to avoid exhausting DO's native 15-connection limit.
         const poolUrl = new URL(dbUrlStr);
-        poolUrl.searchParams.set('sslmode', 'require');
-        if (poolUrl.port === '25061') {
-             poolUrl.searchParams.set('pgbouncer', 'true');
+        if (!poolUrl.hostname.includes('localhost') && !poolUrl.hostname.includes('127.0.0.1')) {
+            poolUrl.searchParams.set('sslmode', 'require');
+            if (poolUrl.port === '25061') {
+                 poolUrl.searchParams.set('pgbouncer', 'true');
+            } else {
+                 poolUrl.searchParams.delete('pgbouncer');
+            }
         } else {
-             poolUrl.searchParams.delete('pgbouncer');
+            poolUrl.searchParams.set('sslmode', 'disable');
+            poolUrl.searchParams.delete('pgbouncer');
         }
         poolUrl.searchParams.set('connection_limit', '3'); // Strict local limit
         poolUrl.searchParams.set('pool_timeout', '10');
@@ -94,6 +103,8 @@ const apiRouter = express.Router();
 apiRouter.use('/', marketplaceRoutes); // provides /listings, /categories, /regions
 apiRouter.use('/user', userRoutes.userRouter);
 apiRouter.use('/admin', userRoutes.adminRouter);
+const adminFinanceRoutes = require('./routes/admin.finance');
+apiRouter.use('/admin/finance', adminFinanceRoutes);
 apiRouter.use('/orders', orderRoutes);
 apiRouter.use('/', partnerRoutes); // partnerRoutes already has /partner and /partners internally
 apiRouter.use('/payment', paymentRoutes);

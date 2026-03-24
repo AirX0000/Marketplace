@@ -81,10 +81,13 @@ class AuthService {
         };
     }
 
-    async login({ identifier, password }) {
+    async login({ identifier, email, phone, password }) {
         // Normalize input identifier
-        const isEmail = identifier.includes('@');
-        const normalizedIdentifier = isEmail ? identifier.toLowerCase().trim() : identifier.replace(/\D/g, '');
+        const loginId = identifier || email || phone;
+        if (!loginId) throw new AuthenticationError('Identifier, email, or phone is required');
+        
+        const isEmail = loginId.includes('@');
+        const normalizedIdentifier = isEmail ? loginId.toLowerCase().trim() : loginId.replace(/\D/g, '');
 
         // Try finding user by email or phone
         const user = await prisma.user.findFirst({

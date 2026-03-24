@@ -95,6 +95,32 @@ router.post('/deposits/reject', authenticateToken, authorizeRole(['ADMIN']), asy
     res.json({ message: 'Deposit rejected' });
 }));
 
+// Get All Escrow Transactions
+router.get('/escrows', authenticateToken, authorizeRole(['ADMIN']), asyncHandler(async (req, res) => {
+    const escrows = await prisma.transaction.findMany({
+        where: { status: 'ESCROW_HOLD' },
+        include: {
+            sender: { select: { id: true, name: true } },
+            receiver: { select: { id: true, name: true } }
+        },
+        orderBy: { createdAt: 'desc' }
+    });
+    res.json(escrows);
+}));
+
+// Get Recent Transactions
+router.get('/transactions', authenticateToken, authorizeRole(['ADMIN']), asyncHandler(async (req, res) => {
+    const transactions = await prisma.transaction.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+        include: {
+            sender: { select: { id: true, name: true } },
+            receiver: { select: { id: true, name: true } }
+        }
+    });
+    res.json(transactions);
+}));
+
 // Resolve Escrow Dispute
 router.post('/escrow/:transactionId/resolve', authenticateToken, authorizeRole(['ADMIN']), asyncHandler(async (req, res) => {
     const { transactionId } = req.params;

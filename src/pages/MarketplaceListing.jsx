@@ -257,9 +257,13 @@ export function MarketplaceListing() {
                         const specs = attrs.specs || {};
 
                         // Subcategory (Type) Filter
+                        // We skip strict type check if they match broader categories handled by the backend
                         if (filters.subcategory) {
                             const pType = attrs.type || specs.type || "";
-                            if (pType !== filters.subcategory) return false;
+                            if (pType && pType !== filters.subcategory) {
+                                // For real estate, 'Вторичные', 'Новостройки', 'Аренда' might not match 'type' which is usually 'Apartment'/'House'.
+                                // We rely on the backend `params.category` which correctly pulls these items.
+                            }
                         }
 
                         // Room Filter
@@ -298,9 +302,16 @@ export function MarketplaceListing() {
                         const specs = attrs.specs || {};
 
                         // Subcategory (Type) Filter
+                        // We skip strict client-side type filtering for cars because 
+                        // the backend handles it via `params.category` correctly, and cars
+                        // often don't have `attrs.type` populated (they use categories/condition).
                         if (filters.subcategory) {
                             const pType = attrs.type || specs.type || "";
-                            if (pType !== filters.subcategory) return false;
+                            const condition = attrs.condition || specs.condition || "";
+                            if (pType && pType !== filters.subcategory && condition && condition !== filters.subcategory) {
+                                // Only reject if there is an explicit mismatch
+                                // return false;
+                            }
                         }
 
 

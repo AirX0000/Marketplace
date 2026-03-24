@@ -287,6 +287,16 @@ export const api = {
         body: JSON.stringify({ isFeatured })
     }),
     deleteAdminListing: (id) => fetchAPI(`/admin/marketplaces/${id}`, { method: 'DELETE' }),
+
+    // Admin Finance
+    getAdminFinanceStats: () => fetchAPI('/admin/finance/stats'),
+    getAdminFinanceEscrows: () => fetchAPI('/admin/finance/escrows'),
+    getAdminFinanceTransactions: () => fetchAPI('/admin/finance/transactions'),
+    resolveAdminEscrow: (transactionId, action) => fetchAPI(`/admin/finance/escrow/${transactionId}/resolve`, {
+        method: 'POST',
+        body: JSON.stringify({ action })
+    }),
+
     getAdminKYC: () => fetchAPI('/admin/kyc'),
     updateAdminKYCStatus: (id, status, adminComment) => fetchAPI(`/admin/kyc/${id}/status`, {
         method: 'PUT',

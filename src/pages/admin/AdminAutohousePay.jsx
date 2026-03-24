@@ -7,43 +7,59 @@ export function AdminAutohousePay() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('overview'); // overview, escrow, transactions
     
-    // Mocked data for AutohousePay ecosystem metrics
     const [metrics, setMetrics] = useState({
-        totalLiquidity: 1450000000,
-        activeWallets: 1240,
-        transactionsToday: 245,
-        escrowLocked: 320000000
+        totalLiquidity: 0,
+        activeWallets: 0,
+        transactionsToday: 0,
+        escrowLocked: 0
     });
 
-    const [escrowOrders, setEscrowOrders] = useState([
-        { id: 'ORD-12345', date: '2026-03-23T10:00:00Z', buyerId: 'AH-88331', sellerId: 'AH-99212', amount: 150000000, status: 'ESCROW_HOLD', dispute: false },
-        { id: 'ORD-11223', date: '2026-03-22T14:30:00Z', buyerId: 'AH-55211', sellerId: 'AH-77233', amount: 85000000, status: 'ESCROW_HOLD', dispute: true },
-        { id: 'ORD-99881', date: '2026-03-21T09:15:00Z', buyerId: 'AH-11223', sellerId: 'AH-44332', amount: 45000000, status: 'ESCROW_HOLD', dispute: false }
-    ]);
+    const [escrowOrders, setEscrowOrders] = useState([]);
+    const [transactions, setTransactions] = useState([]);
 
-    const [transactions, setTransactions] = useState([
-        { id: 'TX-998877', type: 'FUNDS_DEPOSIT', amount: 2000000, userId: 'AH-11223', date: '2026-03-23T16:45:00Z' },
-        { id: 'TX-998876', type: 'ESCROW_LOCK', amount: -150000000, userId: 'AH-88331', date: '2026-03-23T10:05:00Z' },
-        { id: 'TX-998875', type: 'WITHDRAWAL', amount: -500000, userId: 'AH-44332', date: '2026-03-23T09:30:00Z' },
-        { id: 'TX-998874', type: 'P2P_TRANSFER', amount: 150000, userId: 'AH-55211', date: '2026-03-22T18:20:00Z' }
-    ]);
+    const loadData = async () => {
+        try {
+            setLoading(true);
+            const [statsRes, escrowsRes, txRes] = await Promise.all([
+                api.getAdminFinanceStats(),
+                api.getAdminFinanceEscrows(),
+                api.getAdminFinanceTransactions()
+            ]);
+            
+            setMetrics({
+                totalLiquidity: statsRes.totalLiquidity || 0,
+                activeWallets: 0, // In future, calculate active wallets
+                transactionsToday: txRes.length || 0,
+                escrowLocked: statsRes.escrowVolume || 0
+            });
+            
+            setEscrowOrders(escrowsRes || []);
+            setTransactions(txRes || []);
+        } catch (error) {
+            console.error("Failed to load admin finance data:", error);
+            toast.error('Ошибка загрузки финансовых данных');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        // Simulate loading data
-        setTimeout(() => setLoading(false), 800);
+        loadData();
     }, []);
 
-    const handleResolveDispute = (orderId, resolution) => {
-        if (!window.confirm(`Вы уверены, что хотите перевести средства в пользу ${resolution}?`)) return;
+    const handleResolveDispute = async (transactionId, resolution) => {
+        const actionText = resolution === 'SELLER' ? 'продавца' : 'покупателя';
+        if (!window.confirm(`Вы уверены, что хотите перевести средства в пользу ${actionText}?`)) return;
         
-        setEscrowOrders(prev => prev.map(o => {
-            if (o.id === orderId) {
-                return { ...o, status: resolution === 'SELLER' ? 'COMPLETED' : 'REFUNDED', dispute: false };
-            }
-            return o;
-        }));
-        
-        toast.success(`Спор по заказу ${orderId} решен в пользу ${resolution}`);
+        try {
+            const action = resolution === 'SELLER' ? 'RELEASE' : 'REFUND';
+            await api.resolveAdminEscrow(transactionId, action);
+            toast.success(`Спор решен в пользу ${actionText}`);
+            loadData();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message || 'Ошибка разрешения спора');
+        }
     };
 
     if (loading) {
@@ -161,11 +177,11 @@ export function AdminAutohousePay() {
                                             <div className="font-black text-emerald-600">{order.amount.toLocaleString()} UZS</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-xs font-mono text-slate-500">Покуп: {order.buyerId}</div>
-                                            <div className="text-xs font-mono text-slate-500 mt-0.5">Прод: {order.sellerId}</div>
+                                            <div className="text-xs font-mono text-slate-500">Покуп: {order.sender?.name || order.senderId}</div>
+                                            <div className="text-xs font-mono text-slate-500 mt-0.5">Прод: {order.receiver?.name || order.receiverId}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            {order.dispute ? (
+                                            {order.status === 'ESCROW_HOLD' && order.description?.includes('DISPUTE') ? (
                                                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-100 text-rose-600">
                                                     <AlertOctagon size={14} /> Открыт Спор
                                                 </span>
@@ -184,7 +200,7 @@ export function AdminAutohousePay() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            {order.dispute && (
+                                            {order.status === 'ESCROW_HOLD' && order.description?.includes('DISPUTE') && (
                                                 <div className="flex justify-end gap-2">
                                                     <button onClick={() => handleResolveDispute(order.id, 'BUYER')} className="text-[10px] px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors">
                                                         Возврат Покупателю
@@ -194,8 +210,18 @@ export function AdminAutohousePay() {
                                                     </button>
                                                 </div>
                                             )}
-                                            {!order.dispute && order.status === 'ESCROW_HOLD' && (
-                                                <span className="text-xs text-slate-400 font-medium italic">Ожидает подтверждения</span>
+                                            {order.status === 'ESCROW_HOLD' && !order.description?.includes('DISPUTE') && (
+                                                <div className="flex flex-col items-end gap-2">
+                                                    <span className="text-xs text-slate-400 font-medium italic">Ожидает подтверждения</span>
+                                                    <div className="flex justify-end gap-1">
+                                                        <button onClick={() => handleResolveDispute(order.id, 'BUYER')} className="text-[10px] px-2 py-1 bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-600 font-bold rounded-lg transition-colors">
+                                                            Принуд. Отмена
+                                                        </button>
+                                                        <button onClick={() => handleResolveDispute(order.id, 'SELLER')} className="text-[10px] px-2 py-1 bg-slate-50 hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 font-bold rounded-lg transition-colors">
+                                                            Принуд. Вывод
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             )}
                                         </td>
                                     </tr>
@@ -228,7 +254,7 @@ export function AdminAutohousePay() {
                                     <tr key={i} className="hover:bg-slate-50/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="font-bold text-slate-900">{tx.id}</div>
-                                            <div className="text-xs text-slate-400 mt-0.5">{new Date(tx.date).toLocaleString('ru-RU')}</div>
+                                            <div className="text-xs text-slate-400 mt-0.5">{new Date(tx.createdAt || tx.date).toLocaleString('ru-RU')}</div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="text-[10px] font-black uppercase text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
@@ -236,7 +262,7 @@ export function AdminAutohousePay() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="font-mono text-xs">{tx.userId}</span>
+                                            <span className="font-mono text-xs">{tx.sender?.name || tx.senderId}</span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <span className={`font-black ${tx.amount > 0 ? 'text-emerald-600' : 'text-slate-900'}`}>

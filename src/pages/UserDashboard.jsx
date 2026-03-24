@@ -141,11 +141,11 @@ export function UserDashboard() {
     const confirmEscrowDelivery = async (orderId) => {
         if (!window.confirm('Вы уверены, что получили товар? Средства будут безвозвратно переведены продавцу.')) return;
         try {
-            await api.updateOrderStatus(orderId, 'COMPLETED');
-            toast.success('Получение подтверждено! Сделка завершена.');
+            await api.confirmOrderReceipt(orderId);
+            notify.success('Получение подтверждено! Сделка завершена.');
             api.getOrders().then(setOrders).catch(console.error);
         } catch (e) {
-            toast.error('Ошибка при подтверждении');
+            notify.error('Ошибка при подтверждении: ' + (e.message || ''));
         }
     };
 
