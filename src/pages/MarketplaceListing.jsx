@@ -48,13 +48,19 @@ export function MarketplaceListing() {
 
     // Categories state
     const [categories, setCategories] = useState([]); // Full category objects
-    const regions = ["Все", "Tashkent", "Tashkent Region", "Samarkand", "Bukhara", "Andijan", "Fergana"];
+    const [regions, setRegions] = useState(["Все", "г.Ташкент", "Ташкентская область", "Самаркандская область", "Бухарская область", "Андижанская область", "Ферганская область"]);
     const isRealEstateCategory = ["Недвижимость", "Недвижимость", "House", "Apartment", "Houses", "Land", "New Building", "Private House"].includes(filters.category);
     const isAutoCategory = ["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category);
     const isServicesCategory = filters.category === "Услуги";
 
     // Load categories from backend or use defaults
     useEffect(() => {
+        api.getRegions().then(data => {
+            if (data && data.length > 0) {
+                setRegions(["Все", ...data.map(r => r.name)]);
+            }
+        }).catch(err => console.error("Failed to fetch regions", err));
+
         // Fallback static categories in case API is empty or we want to enforce structure
         const STATIC_CATEGORIES = [
             {
@@ -204,7 +210,7 @@ export function MarketplaceListing() {
             if (filters.category !== "Все") {
                 if (["Недвижимость", "Real Estate", "House", "Apartment", "Houses", "Land", "New Building", "Private House"].includes(filters.category)) {
                     // Match any subcategory of Real Estate OR the main category itself
-                    params.category = "Real Estate,Недвижимость,Квартиры,Дома,Коммерческая,Земля,Apartments,Houses,New Building,Private House,Property";
+                    params.category = "Real Estate,Недвижимость,Квартиры,Дома,Коммерческая,Земля,Apartments,Houses,New Building,Private House,Property,Вторичные,Вторичное жильё,Новостройки,Нежилое помещение,Аренда,Участки";
                 } else if (["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category)) {
                     // Match any subcategory of Cars OR the main category itself
                     params.category = "Transport,Cars,Автомобили,Авто,Автосалон,С пробегом,Новый без пробега,Dealer,Private Auto,Vehicle,Бозор (Авто с пробегом),Автосалон (Новые авто)";
