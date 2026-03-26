@@ -118,10 +118,8 @@ export function HomePage() {
         }
         load();
     }, []);
-
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-
         const params = new URLSearchParams();
         if (searchQuery.trim()) params.set('search', searchQuery.trim());
         if (searchRegion !== 'Все') params.set('region', searchRegion);
@@ -169,73 +167,78 @@ export function HomePage() {
             </Helmet>
             <h1 className="sr-only">Autohouse.uz - Автомобили и недвижимость в Узбекистане</h1>
             <div className="flex flex-col min-h-screen">
-                {/* HERO SECTION WITH BANNER AND ICONS */}
-                {/* HERO SECTION WITH BANNER AND ICONS */}
-                <section className="container py-4 md:py-6 relative">
-                    <div className="flex flex-col gap-4 md:gap-6 relative">
-                        {/* Main Banner Slider */}
-                        <div className="relative w-full h-[50vh] min-h-[400px] md:h-[60vh] md:max-h-[600px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
-                            <BannerSlider />
-                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-                            
-                            {/* Floating Search Bar */}
-                            <div className="absolute inset-x-4 bottom-8 md:bottom-12 z-20 flex flex-col items-center">
-                                <div className="text-center mb-6 hidden md:block">
-                                    <h2 className="text-white text-4xl md:text-5xl font-black italic uppercase tracking-tighter drop-shadow-2xl">
-                                        Найди свой дом или авто
-                                    </h2>
-                                    <p className="text-white/70 text-sm font-black uppercase tracking-[0.3em] mt-2">
-                                        Премиальный маркетплейс в Узбекистане
-                                    </p>
-                                </div>
-                                
-                                <form 
-                                    onSubmit={handleSearchSubmit}
-                                    className="w-full max-w-2xl bg-black/40 backdrop-blur-3xl rounded-2xl md:rounded-[2rem] p-2 border border-white/10 shadow-2xl hover:bg-black/50 transition-all group/form"
-                                >
-                                    <div className="flex flex-col md:flex-row gap-2">
-                                        <div className="flex-1 relative group">
-                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50 group-hover:text-white transition-colors" />
-                                            <input 
-                                                type="text"
-                                                placeholder="Поиск объявлений..."
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                                className="w-full h-12 md:h-14 pl-12 pr-4 bg-transparent text-white font-bold placeholder:text-white/50 border-none focus:ring-0 outline-none"
-                                            />
-                                        </div>
-                                        <button 
-                                            type="submit"
-                                            className="h-12 md:h-14 px-8 bg-primary text-primary-foreground rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/25"
-                                        >
-                                            Найти
-                                        </button>
-                                    </div>
-                                </form>
+                {/* HERO SEARCH SECTION */}
+                <section className="relative bg-[#0F1117] pt-6 pb-12 overflow-hidden">
+                    {/* Background Decorative Elements */}
+                    <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
+                         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-600/30 blur-[120px] rounded-full" />
+                         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-emerald-600/20 blur-[120px] rounded-full" />
+                    </div>
+
+                    <div className="container relative z-10">
+                        <div className="max-w-4xl mx-auto flex flex-col items-center">
+                            {/* Heading */}
+                            <div className="text-center mb-8">
+                                <h2 className="text-white text-3xl md:text-5xl font-black italic uppercase tracking-tighter drop-shadow-2xl">
+                                    {t('home.hero_title', 'Найди свой дом или авто')}
+                                </h2>
+                                <p className="text-white/50 text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mt-3">
+                                    {t('home.hero_subtitle', 'Премиальный маркетплейс в Узбекистане')}
+                                </p>
                             </div>
-                        </div>
-                        
-                        {/* Category Icons & Semantic Chips */}
-                        <div className="max-w-5xl mx-auto w-full space-y-8">
+
+                            {/* Main Search Bar */}
+                            <form 
+                                onSubmit={handleSearchSubmit}
+                                className="w-full bg-white/5 backdrop-blur-2xl rounded-2xl md:rounded-[2.5rem] p-2 md:p-3 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:bg-white/10 transition-all group/form mb-12"
+                            >
+                                <div className="flex flex-col md:flex-row gap-2">
+                                    <div className="flex-1 relative group">
+                                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40 group-hover:text-white transition-colors" />
+                                        <input 
+                                            type="text"
+                                            placeholder={t('common.search_placeholder', 'Поиск объявлений...')}
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="w-full h-14 md:h-16 pl-14 pr-6 bg-transparent text-white text-lg font-bold placeholder:text-white/30 border-none focus:ring-0 outline-none"
+                                        />
+                                    </div>
+                                    <button 
+                                        type="submit"
+                                        className="h-14 md:h-16 px-10 bg-primary text-primary-foreground rounded-xl md:rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/30"
+                                    >
+                                        {t('common.find', 'Найти')}
+                                    </button>
+                                </div>
+                            </form>
+
+                            {/* Featured Categories (ServiceGrid) */}
                             <ServiceGrid />
-                            
+
                             {/* Semantic Category Chips */}
-                            <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 scrollbar-hide">
+                            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
                                 {SEMANTIC_CATEGORIES.map((cat) => {
                                     const Icon = cat.icon;
                                     return (
                                         <button
                                             key={cat.id}
                                             onClick={() => handleSemanticClick(cat.search)}
-                                            className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-2xl font-bold text-[13px] md:text-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${cat.color}`}
+                                            className={`flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 rounded-full font-bold text-[11px] md:text-xs border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg backdrop-blur-md opacity-80 hover:opacity-100 ${cat.color}`}
                                         >
-                                            <Icon className="w-4 h-4 md:w-5 md:h-5" />
+                                            <Icon className="w-3.5 h-3.5 md:w-4 h-4" />
                                             {cat.label}
                                         </button>
                                     );
                                 })}
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                {/* Main Banner Slider - Moved below search */}
+                <section className="container py-8 md:py-12">
+                     <div className="relative w-full h-[40vh] min-h-[300px] md:h-[50vh] md:max-h-[500px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
+                        <BannerSlider />
                     </div>
                 </section>
 

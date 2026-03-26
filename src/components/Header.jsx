@@ -61,12 +61,10 @@ export function Header() {
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchTerm.trim()) {
-            const nlpParams = parseNLPQuery(searchTerm);
-            const searchParams = new URLSearchParams();
-            searchParams.set('q', searchTerm);
-            Object.entries(nlpParams).forEach(([k, v]) => searchParams.set(k, v));
+            const params = new URLSearchParams();
+            params.set('search', searchTerm.trim());
             
-            navigate(`/catalog?${searchParams.toString()}`);
+            navigate(`/marketplaces?${params.toString()}`);
             setSearchTerm('');
         }
     };
@@ -127,8 +125,8 @@ export function Header() {
                         </button>
                     )}
 
-                    {/* Search - Desktop Only */}
-                    {(!isAuthenticated || isBuyer()) && (
+                    {/* Search - Desktop Only - Hidden on Home Page to use the main banner search */}
+                    {(!isAuthenticated || isBuyer()) && location.pathname !== '/' && (
                         <form onSubmit={handleSearch} className="hidden md:block flex-1 max-w-xl mx-2 md:mx-4">
                             <div className="relative w-full">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

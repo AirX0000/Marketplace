@@ -105,7 +105,7 @@ export function CategoryModal({ isOpen, onClose }) {
                                 return (
                                     <Link
                                         key={category.name}
-                                        to={`/catalog?category=${encodeURIComponent(category.name)}`}
+                                        to={`/marketplaces?category=${encodeURIComponent(category.name)}`}
                                         onClick={onClose}
                                         className={`group relative p-6 rounded-xl border-2 bg-gradient-to-br ${colorClass} transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer`}
                                     >
@@ -134,7 +134,7 @@ export function CategoryModal({ isOpen, onClose }) {
                     {/* View All Link */}
                     {!loading && categories.length > 0 && (
                         <Link
-                            to="/catalog"
+                            to="/marketplaces"
                             onClick={onClose}
                             className="mt-6 flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed border-slate-600 hover:border-primary hover:bg-primary/5 transition-all group"
                         >
