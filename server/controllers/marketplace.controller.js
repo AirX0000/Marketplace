@@ -1,4 +1,5 @@
 const { asyncHandler } = require('../middleware/errorHandler');
+const marketplaceService = require('../services/marketplace.service');
 const cache = require('../services/cache.service');
 console.log('🔹 [MarketplaceController] Imports done.');
 
