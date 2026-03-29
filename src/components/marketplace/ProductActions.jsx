@@ -71,7 +71,7 @@ export const ProductActions = ({
             {/* CTAs */}
             <div className="space-y-4 pt-4">
                 <MagneticButton 
-                    onClick={() => window.location.href = `tel:${marketplace.phone || '+998900000000'}`}
+                    onClick={() => window.location.href = `tel:${marketplace.owner?.phone || marketplace.phone || '+998900000000'}`}
                     className="w-full bg-indigo-600 hover:bg-indigo-500 text-white h-16 rounded-2xl font-black uppercase tracking-widest text-[10px] flex gap-3 transition-all shadow-lg shadow-indigo-600/20 active:scale-95 italic overflow-hidden"
                 >
                     <div className="w-16 h-full bg-indigo-700/50 flex items-center justify-center shrink-0">
@@ -79,7 +79,7 @@ export const ProductActions = ({
                     </div>
                     <div className="flex flex-col items-start justify-center text-left py-2">
                         <span className="text-[9px] text-indigo-200 uppercase tracking-widest">Связаться с продавцом</span>
-                        <span className="text-sm font-bold tracking-wider">{marketplace.phone || 'Номер не указан'}</span>
+                        <span className="text-sm font-bold tracking-wider">{marketplace.owner?.phone || marketplace.phone || 'Номер не указан'}</span>
                     </div>
                 </MagneticButton>
 
