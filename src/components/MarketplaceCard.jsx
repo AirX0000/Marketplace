@@ -4,7 +4,7 @@ import { useShop } from '../context/ShopContext';
 import { useCompare } from '../context/CompareContext';
 import { Star, Heart, Check, Scale, Share2, Flame, Clock } from 'lucide-react';
 import { getImageUrl } from '../lib/utils';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
 export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
@@ -41,9 +41,6 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
             alert('Ссылка скопирована!');
         }
     };
-
-    const mouseXSpring = useSpring(x);
-    const mouseYSpring = useSpring(y);
 
     // List View
     if (viewMode === 'list') {
