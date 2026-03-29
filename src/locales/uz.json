@@ -174,5 +174,11 @@
         "sub_rent": "Ijaraga berish",
         "sub_land": "Uchastkalar",
         "sub_commercial": "Tijorat ko'chmas mulki"
+    },
+    "seo": {
+        "home_title": "Autohouse.uz — O'zbekistondagi avtomobillar va ko'chmas mulk",
+        "home_description": "O'zbekistondagi avto va ko'chmas mulkning eng yaxshi marketpleysi. Toshkentda mashina, kvartira yoki uy sotib olish. Tasdiqlangan e'lonlar va hamyonbop narxlar.",
+        "buy_auto": "O'zbekistonda avto sotib olish",
+        "buy_real_estate": "Toshkentda ko'chmas mulk sotuvi"
     }
 }

@@ -160,9 +160,10 @@ export function MarketplaceDetail() {
     return (
         <div className="min-h-screen bg-[#13111C] relative overflow-x-hidden">
             <Helmet>
-                <title>{`${isAuto ? 'Купить автомобиль' : 'Продажа недвижимости'} ${displayName} в Узбекистане | Autohouse`}</title>
-                <meta name="description" content={`Продажа ${displayName} в Узбекистане. ${displayPrice > 0 ? `Цена: ${displayPrice.toLocaleString()} сум.` : ''} ${displayDescription?.substring(0, 150)}...`} />
-                <meta name="keywords" content={`${displayName}, купить ${isAuto ? 'авто' : 'квартиру'}, продажа ${isAuto ? 'машин' : 'домов'}, Узбекистан, Ташкент, Autohouse`} />
+                <title>{`${isUz ? (isAuto ? 'Avtomobil sotib olish' : 'Ko\'chmas mulk sotuvi') : (isAuto ? 'Купить автомобиль' : 'Продажа недвижимости')} ${displayName} | Autohouse`}</title>
+                <meta name="description" content={`${isUz ? (isAuto ? 'Avtomobil sotuvi' : 'Ko\'chmas mulk sotuvi') : (isAuto ? 'Продажа авто' : 'Продажа недвижимости')} ${displayName}. ${displayPrice > 0 ? `${isUz ? 'Narxi' : 'Цена'}: ${displayPrice.toLocaleString()} UZS.` : ''} ${displayDescription?.substring(0, 150)}...`} />
+                <meta name="keywords" content={`${displayName}, ${isUz ? 'avto sotib olish, uy sotib olish' : 'купить авто, купить квартиру'}, ${isUz ? 'mashina sotish' : 'продажа машин'}, O'zbekiston, Toshkent, Autohouse`} />
+                <link rel="canonical" href={`https://autohouse.uz/marketplaces/${slug}`} />
                 
                 {/* Structured Data (JSON-LD) */}
                 <script type="application/ld+json">

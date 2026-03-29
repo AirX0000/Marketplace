@@ -9,8 +9,11 @@ import { LayoutGrid, Map as MapIcon, RotateCw, Filter, ArrowUpDown, Search, Sort
 import { api } from '../lib/api';
 import { cn } from '../lib/utils'; // Assuming cn utility is available here
 import { Link } from 'react-router-dom'; // Assuming Link is available for the new card structure
+import { useTranslation } from 'react-i18next';
 
 export function MarketplaceListing() {
+    const { t, i18n } = useTranslation();
+    const isUz = i18n.language === 'uz';
     const [searchParams, setSearchParams] = useSearchParams();
     const [marketplaces, setMarketplaces] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -392,26 +395,26 @@ export function MarketplaceListing() {
             <Helmet>
                 <title>
                     {isRealEstateCategory
-                        ? 'Купить недвижимость в Узбекистане — квартиры, дома, участки | Autohouse.uz'
+                        ? (isUz ? 'O\'zbekistonda ko\'chmas mulk sotib olish — kvartiralar, uylar | Autohouse.uz' : 'Купить недвижимость в Узбекистане — квартиры, дома, участки | Autohouse.uz')
                         : isAutoCategory
-                            ? 'Купить автомобиль в Узбекистане — новые и б/у авто, цены | Autohouse.uz'
+                            ? (isUz ? 'O\'zbekistonda avtomobil sotib olish — yangi va b/u moshinalar | Autohouse.uz' : 'Купить автомобиль в Узбекистане — новые и б/у авто, цены | Autohouse.uz')
                             : isServicesCategory
-                                ? 'Услуги — страхование, нотариус, оценка, риелтор | Autohouse.uz'
+                                ? (isUz ? 'Xizmatlar — sug\'urta, notarius, baholash | Autohouse.uz' : 'Услуги — страхование, нотариус, оценка, реалтор | Autohouse.uz')
                                 : filters.search
-                                    ? `Поиск: «${filters.search}» — Купить авто и недвижимость | Autohouse.uz`
-                                    : 'Каталог объявлений — Купить авто, недвижимость в Узбекистане | Autohouse.uz'}
+                                    ? `${isUz ? 'Qidiruv' : 'Поиск'}: «${filters.search}» — Autohouse.uz`
+                                    : (isUz ? 'E\'lonlar katalogi — Avto va ko\'chmas mulk | Autohouse.uz' : 'Каталог объявлений — Купить авто, недвижимость в Узбекистане | Autohouse.uz')}
                 </title>
                 <meta name="description" content={
                     isRealEstateCategory
-                        ? 'Продажа недвижимости в Ташкенте и Узбекистане. Купить квартиру в новостройке или вторичку. Огромный выбор домов и участков на Autohouse.uz.'
+                        ? (isUz ? 'Toshkent va O\'zbekistonda ko\'chmas mulk sotuvi. Yangi uylar yoki ikkinchi qo\'l kvartiralarni sotib oling.' : 'Продажа недвижимости в Ташкенте и Узбекистане. Купить квартиру в новостройке или вторичку. Огромный выбор домов и участков на Autohouse.uz.')
                         : isAutoCategory
-                            ? 'Продажа новых и б/у автомобилей в Узбекистане. Купить машину в рассрочку или через автосалон. Проверенные объявления на Autohouse.uz.'
-                            : 'Маркетплейс Autohouse.uz — лучший способ купить или продать авто, недвижимость и запчасти в Узбекистане.'
+                            ? (isUz ? 'O\'zbekistonda yangi va ishlatilgan avtomobillar sotuvi. Moshinalarni bo\'lib to\'lashga yoki avtosalondan sotib oling.' : 'Продажа новых и б/у автомобилей в Узбекистане. Купить машину в рассрочку или через автосалон. Проверенные объявления на Autohouse.uz.')
+                            : (isUz ? 'Autohouse.uz — O\'zbekistonda avto va ko\'chmas mulk sotib olishning eng yaxshi usuli.' : 'Маркетплейс Autohouse.uz — лучший способ купить или продать авто, недвижимость и запчасти в Узбекистане.')
                 } />
-                <meta name="keywords" content="купить авто Ташкент, продажа машин Узбекистан, купить квартиру Ташкент, недвижимость цены, авторынок, Autohouse" />
+                <meta name="keywords" content={isUz ? "avto sotib olish Toshkent, moshina bozori, uy sotish, ko'chmas mulk narxlari, Autohouse" : "купить авто Ташкент, продажа машин Узбекистан, купить квартиру Ташкент, недвижимость цены, авторынок, Autohouse"} />
                 <link rel="canonical" href={`https://autohouse.uz/marketplaces${filters.category !== 'Все' ? `?category=${encodeURIComponent(filters.category)}` : ''}`} />
-                <meta property="og:title" content="Каталог объявлений | Autohouse.uz" />
-                <meta property="og:description" content="Лучшие предложения по продаже авто и недвижимости в Узбекистане." />
+                <meta property="og:title" content={isUz ? "E'lonlar katalogi | Autohouse.uz" : "Каталог объявлений | Autohouse.uz"} />
+                <meta property="og:description" content={isUz ? "O'zbekistonda avto va ko'chmas mulk sotuvi bo'yicha eng yaxshi takliflar." : "Лучшие предложения по продаже авто и недвижимости в Узбекистане."} />
                 <meta property="og:type" content="website" />
                 <meta property="og:site_name" content="Autohouse.uz" />
             </Helmet>

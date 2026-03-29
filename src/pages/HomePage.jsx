@@ -170,10 +170,44 @@ export function HomePage() {
     return (
         <main className="min-h-screen bg-transparent">
             <Helmet>
-                <title>Autohouse.uz - Автомобили и недвижимость в Узбекистане</title>
-                <meta name="description" content="Лучший маркетплейс автомобилей и недвижимости в Узбекистане. Безопасные сделки, проверенные продавцы." />
-                <meta property="og:title" content="Autohouse.uz" />
+                <title>{t('seo.home_title')}</title>
+                <meta name="description" content={t('seo.home_description')} />
+                <link rel="canonical" href="https://autohouse.uz/" />
+                <meta property="og:title" content={t('seo.home_title')} />
+                <meta property="og:description" content={t('seo.home_description')} />
                 <meta property="og:type" content="website" />
+                <meta property="og:image" content="https://autohouse.uz/og-image.jpg" />
+                
+                {/* Structured Data (JSON-LD) */}
+                <script type="application/ld+json">
+                    {JSON.stringify([
+                        {
+                            "@context": "https://schema.org",
+                            "@type": "WebSite",
+                            "name": "Autohouse",
+                            "url": "https://autohouse.uz/",
+                            "potentialAction": {
+                                "@type": "SearchAction",
+                                "target": "https://autohouse.uz/marketplaces?search={search_term_string}",
+                                "query-input": "required name=search_term_string"
+                            }
+                        },
+                        {
+                            "@context": "https://schema.org",
+                            "@type": "LocalBusiness",
+                            "name": "Autohouse.uz",
+                            "image": "https://autohouse.uz/logo.png",
+                            "address": {
+                                "@type": "PostalAddress",
+                                "streetAddress": "Tashkent City",
+                                "addressLocality": "Tashkent",
+                                "addressCountry": "UZ"
+                            },
+                            "url": "https://autohouse.uz/",
+                            "telephone": "+998710000000"
+                        }
+                    ])}
+                </script>
             </Helmet>
             <h1 className="sr-only">Autohouse.uz - Автомобили и недвижимость в Узбекистане</h1>
             <div className="flex flex-col min-h-screen">
@@ -268,7 +302,7 @@ export function HomePage() {
                     <section className="container py-8 md:py-12">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                                Рекомендуем для вас
+                                {t('home.recommendations_title', 'Персональные рекомендации для вас')}
                             </h2>
                         </div>
                         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -283,7 +317,7 @@ export function HomePage() {
                 <section className="container py-8 md:py-12">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                            {SEMANTIC_CATEGORIES.find(c => c.id === activeTab)?.label || t('home.popular', 'Популярное')}
+                            {SEMANTIC_CATEGORIES.find(c => c.id === activeTab)?.label || t('home.popular', 'Популярные предложения')}
                         </h2>
                     </div>
                     {loading ? (

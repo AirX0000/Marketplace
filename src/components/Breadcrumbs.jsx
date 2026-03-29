@@ -1,12 +1,38 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 export function Breadcrumbs({ items }) {
     if (!items || items.length === 0) return null;
 
+    // Structured Data for SEO (BreadcrumbList)
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Главная",
+                "item": "https://autohouse.uz/"
+            },
+            ...items.map((item, index) => ({
+                "@type": "ListItem",
+                "position": index + 2,
+                "name": item.label,
+                "item": item.path ? `https://autohouse.uz${item.path}` : undefined
+            }))
+        ]
+    };
+
     return (
         <nav aria-label="Breadcrumb" className="mb-4 overflow-x-auto text-sm text-muted-foreground whitespace-nowrap pb-2">
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify(jsonLd)}
+                </script>
+            </Helmet>
             <ol className="flex items-center gap-2">
                 <li>
                     <Link to="/" className="flex items-center hover:text-primary transition-colors">
