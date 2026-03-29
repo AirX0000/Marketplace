@@ -23,24 +23,30 @@ import { AdminLayout } from './layouts/AdminLayout';
 
 // Public Pages
 import { HomePage } from './pages/HomePage';
-import { MarketplaceListing } from './pages/MarketplaceListing';
-import { ComparePage } from './pages/ComparePage';
 import { CartPage } from './pages/CartPage';
-import { CheckoutPage } from './pages/CheckoutPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 
 // Lazy loaded heavy routes
 const MarketplaceDetail = lazy(() => import('./pages/MarketplaceDetail').then(m => ({ default: m.MarketplaceDetail })));
 const CatalogPage = lazy(() => import('./pages/CatalogPage').then(m => ({ default: m.CatalogPage })));
 const PartnerStorePage = lazy(() => import('./pages/PartnerStorePage').then(m => ({ default: m.PartnerStorePage })));
+const MarketplaceListing = lazy(() => import('./pages/MarketplaceListing').then(m => ({ default: m.MarketplaceListing })));
+const UserDashboard = lazy(() => import('./pages/UserDashboard').then(m => ({ default: m.UserDashboard })));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage').then(m => ({ default: m.CheckoutPage })));
+const ProfileSettingsPage = lazy(() => import('./pages/ProfileSettingsPage').then(m => ({ default: m.ProfileSettingsPage })));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const AdminListings = lazy(() => import('./pages/admin/AdminListings').then(m => ({ default: m.AdminListings })));
+const AdminOrders = lazy(() => import('./pages/admin/AdminOrders').then(m => ({ default: m.AdminOrders })));
+const AdminCustomers = lazy(() => import('./pages/admin/AdminCustomers').then(m => ({ default: m.AdminCustomers })));
+const AdminCompanies = lazy(() => import('./pages/admin/AdminCompanies').then(m => ({ default: m.AdminCompanies })));
+const SuperAdminDashboard = lazy(() => import('./pages/admin/SuperAdminDashboard').then(m => ({ default: m.SuperAdminDashboard })));
+const SuperAdminUsers = lazy(() => import('./pages/admin/SuperAdminUsers').then(m => ({ default: m.SuperAdminUsers })));
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings').then(m => ({ default: m.AdminSettings })));
 
 // User Pages
-import { UserDashboard } from './pages/UserDashboard';
-import { OrderHistoryPage } from './pages/OrderHistoryPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { CreditApplicationsPage } from './pages/CreditApplicationsPage';
 import { MyOffersPage } from './pages/MyOffersPage';
-import { ProfileSettingsPage } from './pages/ProfileSettingsPage';
 import { PaymentSuccess } from './pages/PaymentSuccess';
 import { PaymentFailure } from './pages/PaymentFailure';
 import { AutohousePayDashboard } from './pages/fintech/AutohousePayDashboard';
@@ -57,18 +63,11 @@ import { PayLinkPage } from './pages/fintech/PayLinkPage';
 import { NotFound } from './pages/NotFound';
 
 // Admin Pages
-import { AdminDashboard } from './pages/admin/AdminDashboard';
+// Some imported as lazy above for build optimization
 import { AdminAutohousePay } from './pages/admin/AdminAutohousePay';
-import { SuperAdminDashboard } from './pages/admin/SuperAdminDashboard';
-import { AdminListings } from './pages/admin/AdminListings';
-import { AdminOrders } from './pages/admin/AdminOrders';
-import { AdminCustomers } from './pages/admin/AdminCustomers';
-import { AdminCompanies } from './pages/admin/AdminCompanies';
 import { PartnerFinance } from './pages/admin/PartnerFinance';
-import { AdminSettings } from './pages/admin/AdminSettings';
 import { AdminCareers } from './pages/admin/AdminCareers';
 import { AdminBlog } from './pages/admin/AdminBlog';
-import { SuperAdminUsers } from './pages/admin/SuperAdminUsers';
 import { SuperAdminEmails } from './pages/admin/SuperAdminEmails';
 import { AdminPartners } from './pages/admin/AdminPartners';
 import { AdminSupport } from './pages/admin/AdminSupport';

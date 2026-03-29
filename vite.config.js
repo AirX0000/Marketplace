@@ -77,20 +77,10 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'vendor-core';
-            }
-            if (id.includes('lucide-react') || id.includes('framer-motion')) {
-              return 'vendor-ui';
-            }
             if (id.includes('leaflet')) {
               return 'vendor-maps';
             }
             return 'vendor';
-          }
-          if (id.includes('/src/pages/')) {
-            const name = id.split('/src/pages/')[1].split('.')[0].toLowerCase();
-            return `page-${name}`;
           }
         }
       }
