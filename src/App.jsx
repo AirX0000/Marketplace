@@ -42,6 +42,8 @@ const AdminCompanies = lazy(() => import('./pages/admin/AdminCompanies').then(m 
 const SuperAdminDashboard = lazy(() => import('./pages/admin/SuperAdminDashboard').then(m => ({ default: m.SuperAdminDashboard })));
 const SuperAdminUsers = lazy(() => import('./pages/admin/SuperAdminUsers').then(m => ({ default: m.SuperAdminUsers })));
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings').then(m => ({ default: m.AdminSettings })));
+const ComparePage = lazy(() => import('./pages/ComparePage').then(m => ({ default: m.ComparePage })));
+const OrderHistoryPage = lazy(() => import('./pages/OrderHistoryPage').then(m => ({ default: m.OrderHistoryPage })));
 
 // User Pages
 import { HistoryPage } from './pages/HistoryPage';
