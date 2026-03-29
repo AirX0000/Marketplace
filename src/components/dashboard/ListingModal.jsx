@@ -49,8 +49,8 @@ const CATEGORIES = [
 ];
 
 const BRANDS_MODELS = {
-    'Chevrolet': ['Cobalt', 'Gentra', 'Malibu', 'Tracker', 'Equinox', 'Lacetti', 'Nexia 3', 'Damas', 'Tahoe', 'Traverse'],
-    'BYD': ['Song Plus', 'Chazor', 'Han', 'Atto 3', 'Seal', 'Destroyer 05', 'Tang'],
+    'Chevrolet': ['Cobalt', 'Gentra', 'Malibu', 'Tracker', 'Equinox', 'Lacetti', 'Nexia 3', 'Damas', 'Tahoe', 'Traverse', 'Spark', 'Matiz', 'Captiva', 'Epica'],
+    'BYD': ['Song Plus', 'Chazor', 'Han', 'Atto 3', 'Seal', 'Destroyer 05', 'Tang', 'Song Pro', 'Qin Plus', 'e2', 'Seagull', 'Yuan Plus', 'Dolphin'],
     'Kia': ['Rio', 'K5', 'Sorento', 'Sportage', 'Stinger', 'Carnival', 'EV6', 'Telluride'],
     'Hyundai': ['Accent', 'Elantra', 'Tucson', 'Santa Fe', 'Sonata', 'Palisade', 'Kona', 'Staria'],
     'Toyota': ['Camry', 'Corolla', 'RAV4', 'Land Cruiser', 'Prado', 'Highlander', 'Avalon', 'Hilux'],
@@ -623,6 +623,43 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             <input placeholder={t('ads.model')} value={formData.attributes.specs?.model || ""} onChange={e => handleSpecChange('model', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
                                             <input type="number" placeholder={t('ads.year')} value={formData.attributes.specs?.year || ""} onChange={e => handleSpecChange('year', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
                                             <input type="number" placeholder={t('ads.mileage')} value={formData.attributes.specs?.mileage || ""} onChange={e => handleSpecChange('mileage', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <select value={formData.attributes.specs?.color || ""} onChange={e => handleSpecChange('color', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold appearance-none">
+                                                <option value="">Цвет</option>
+                                                <option value="Белый">Белый</option>
+                                                <option value="Черный">Черный</option>
+                                                <option value="Серебристый">Серебристый</option>
+                                                <option value="Серый">Серый</option>
+                                                <option value="Синий">Синий</option>
+                                                <option value="Красный">Красный</option>
+                                                <option value="Зеленый">Зеленый</option>
+                                                <option value="Другой">Другой</option>
+                                            </select>
+                                            <select value={formData.attributes.specs?.transmission || ""} onChange={e => handleSpecChange('transmission', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold appearance-none">
+                                                <option value="">КПП</option>
+                                                <option value="Автомат">Автомат</option>
+                                                <option value="Механика">Механика</option>
+                                                <option value="Робот">Робот</option>
+                                                <option value="Вариатор">Вариатор</option>
+                                            </select>
+                                            <input type="number" step="0.1" placeholder="Объем двигателя (л)" value={formData.attributes.specs?.engine || ""} onChange={e => handleSpecChange('engine', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
+                                            <select value={formData.attributes.specs?.fuel || ""} onChange={e => handleSpecChange('fuel', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold appearance-none">
+                                                <option value="">Топливо</option>
+                                                <option value="Бензин">Бензин</option>
+                                                <option value="Дизель">Дизель</option>
+                                                <option value="Газ">Газ</option>
+                                                <option value="Электро">Электро</option>
+                                                <option value="Гибрид">Гибрид</option>
+                                            </select>
+                                        </div>
+                                        <div className="flex items-center gap-6 pt-2 px-1">
+                                            <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer text-foreground/80 hover:text-foreground">
+                                                <input type="checkbox" checked={formData.attributes.specs?.accident_history || false} onChange={e => handleSpecChange('accident_history', e.target.checked)} className="rounded border-border text-primary focus:ring-primary w-4 h-4 cursor-pointer" />
+                                                Битый
+                                            </label>
+                                            <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer text-foreground/80 hover:text-foreground">
+                                                <input type="checkbox" checked={formData.attributes.specs?.repainted || false} onChange={e => handleSpecChange('repainted', e.target.checked)} className="rounded border-border text-primary focus:ring-primary w-4 h-4 cursor-pointer" />
+                                                Крашеный
+                                            </label>
                                         </div>
                                     </div>
                                 )}

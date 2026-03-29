@@ -24,17 +24,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
+    limits: { fileSize: 50 * 1024 * 1024 }, // Increased to 50MB for high-res phone photos
     fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|webp/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
-        if (extname && mimetype) {
+        // Accept all types of images, including HEIC/HEIF from iPhones
+        const isImage = file.mimetype.startsWith('image/') || 
+                        /heic|heif/i.test(file.mimetype) ||
+                        /heic|heif|jpeg|jpg|png|webp|bmp|gif/i.test(path.extname(file.originalname));
+        
+        if (isImage) {
             return cb(null, true);
         }
-        cb(new Error('Only images (jpeg, jpg, png, webp) are allowed!'));
+        cb(new Error('Разрешены только изображения (jpeg, png, webp, heic и т.д.)!'));
     }
 });
+
 
 // POST /api/upload
 router.post('/', upload.single('image'), (req, res) => {

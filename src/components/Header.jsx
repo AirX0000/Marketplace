@@ -295,15 +295,7 @@ export function Header() {
                             </Link>
                         )}
 
-                        {/* Cart */}
-                        <Link to="/cart" aria-label="Корзина" className="relative p-2 rounded-lg hover:bg-muted transition-colors group">
-                            <ShoppingCart className="h-6 w-6 md:h-5 md:w-5 text-foreground group-hover:text-primary" />
-                            {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white ring-2 ring-background animate-in zoom-in">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </Link>
+                        {/* Cart has been removed per user request */}
                         
                         {/* Mobile Theme Toggle & Search Toggle */}
                         <div className="flex items-center md:hidden">

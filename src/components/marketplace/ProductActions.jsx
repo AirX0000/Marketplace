@@ -40,7 +40,6 @@ export const ProductActions = ({
     displayPrice, 
     isFav, 
     toggleFavorite, 
-    addToCart, 
     isWatchingPrice, 
     setIsWatchingPrice,
     setOfferModalOpen,
@@ -84,17 +83,11 @@ export const ProductActions = ({
                     </div>
                 </MagneticButton>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <button 
-                        onClick={() => addToCart(marketplace)}
-                        className="h-14 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all border border-white/5 italic"
-                    >
-                        <ShoppingCart className="h-4 w-4" /> В корзину
-                    </button>
+                <div className="grid gap-4">
                     <button 
                         onClick={() => toggleFavorite(marketplace)}
                         className={cn(
-                            "h-14 rounded-2xl font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all border italic",
+                            "w-full h-14 rounded-2xl font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all border italic",
                             isFav ? "bg-red-500/10 border-red-500/50 text-red-500" : "bg-white/5 border-white/5 text-white hover:bg-white/10"
                         )}
                     >

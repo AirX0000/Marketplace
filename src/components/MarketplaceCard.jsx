@@ -1,17 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { useCompare } from '../context/CompareContext';
-import { Star, ShoppingCart, Heart, Check, Scale, Eye, Share2, Flame, Clock } from 'lucide-react';
-import { QuickViewModal } from './QuickViewModal';
+import { Star, Heart, Check, Scale, Share2, Flame, Clock } from 'lucide-react';
 import { getImageUrl } from '../lib/utils';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
 export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
-    const { toggleFavorite, isFavorite, addToCart } = useShop();
+    const { toggleFavorite, isFavorite } = useShop();
     const { addToCompare, compareItems, removeFromCompare } = useCompare();
     const { i18n } = useTranslation();
+    const navigate = useNavigate();
     const isUz = i18n.language === 'uz';
 
     // Use UZ translations if available and language is UZ, otherwise fall back to RU
@@ -20,8 +20,12 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
 
     const isFav = isFavorite(marketplace.id);
     const isInCompare = compareItems.some(i => i.id === marketplace.id);
-    const [isAdded, setIsAdded] = React.useState(false);
-    const [showQuickView, setShowQuickView] = React.useState(false);
+
+    const handleCardClick = (e) => {
+        // Prevent navigation if clicking on a button inside the card
+        if (e.target.closest('button')) return;
+        navigate(`/marketplaces/${marketplace.slug || marketplace.id}`);
+    };
 
     const handleShare = (e) => {
         e.preventDefault();
@@ -38,46 +42,17 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
         }
     };
 
-    const handleAddToCart = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        addToCart(marketplace);
-        setIsAdded(true);
-        setTimeout(() => setIsAdded(false), 2000);
-    };
-
-    // Parallax logic
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-
     const mouseXSpring = useSpring(x);
     const mouseYSpring = useSpring(y);
-
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
-
-    const handleMouseMove = (e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const width = rect.width;
-        const height = rect.height;
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        const xPct = mouseX / width - 0.5;
-        const yPct = mouseY / height - 0.5;
-        x.set(xPct);
-        y.set(yPct);
-    };
-
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
 
     // List View
     if (viewMode === 'list') {
         return (
             <>
-                <div className="group relative flex overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div 
+                    onClick={handleCardClick}
+                    className="group cursor-pointer relative flex overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                >
                     <div className="w-48 h-48 flex-shrink-0 overflow-hidden bg-muted/30 p-6 relative">
                         <img
                             src={getImageUrl(marketplace.images || marketplace.image) || "/images/car_mock.png"}
@@ -88,16 +63,6 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 e.target.src = "/images/car_mock.png";
                             }}
                         />
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setShowQuickView(true);
-                            }}
-                            aria-label="Быстрый просмотр"
-                            className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold"
-                        >
-                            <Eye className="w-8 h-8" />
-                        </button>
                     </div>
 
                     <div className="flex flex-1 flex-col p-6">
@@ -122,18 +87,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 </p>
                             </div>
 
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setShowQuickView(true);
-                                    }}
-                                    aria-label="Быстрый просмотр"
-                                    className="rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg bg-card/90 text-foreground hover:bg-card hover:scale-105 md:hidden"
-                                    title="Быстрый просмотр"
-                                >
-                                    <Eye className="h-5 w-5" />
-                                </button>
+                            <div className="flex gap-2 relative z-10">
                                 <button
                                     onClick={handleShare}
                                     aria-label="Поделиться"
@@ -187,26 +141,13 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             </div>
                             </div>
                             <button
-                                onClick={handleAddToCart}
-                                disabled={isAdded}
-                                className={`inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-medium transition-all duration-300 active:scale-95 ${isAdded ? 'bg-accent text-white' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}
+                                className={`inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-medium transition-all duration-300 active:scale-95 bg-emerald-600 text-white hover:bg-emerald-700 relative z-10`}
                             >
-                                {isAdded ? (
-                                    <>
-                                        <Check className="mr-2 h-4 w-4" />
-                                        В Корзине
-                                    </>
-                                ) : (
-                                    <>
-                                        <ShoppingCart className="mr-2 h-4 w-4" />
-                                        Купить
-                                    </>
-                                )}
+                                Заказать
                             </button>
                         </div>
                     </div>
                 </div>
-                {showQuickView && <QuickViewModal product={marketplace} onClose={() => setShowQuickView(false)} />}
             </>
         );
     }
@@ -215,9 +156,10 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
     return (
         <>
             <motion.div
+                onClick={handleCardClick}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`group relative flex flex-col rounded-2xl border bg-card transition-all duration-300 shadow-sm hover:shadow-2xl overflow-hidden ${marketplace.isFeatured ? 'border-indigo-500/50 ring-2 ring-indigo-500/20' : 'border-border'}`}
+                className={`group cursor-pointer relative flex flex-col rounded-2xl border bg-card transition-all duration-300 shadow-sm hover:shadow-2xl overflow-hidden ${marketplace.isFeatured ? 'border-indigo-500/50 ring-2 ring-indigo-500/20' : 'border-border'}`}
             >
                 {marketplace.isFeatured && (
                     <div className="absolute top-2 left-2 z-20 bg-indigo-600 text-white text-[9px] font-black px-2 py-1 rounded-lg shadow-lg shadow-indigo-600/30 flex items-center gap-1 uppercase tracking-widest animate-pulse">
@@ -249,20 +191,6 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             return null;
                         })()
                     )}
-                    {/* Quick View Button (Desktop overlay) */}
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setShowQuickView(true);
-                        }}
-                        aria-label="Быстрый просмотр"
-                        className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold"
-                    >
-                        <div className="bg-card text-foreground rounded-full px-4 py-2 flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg border border-border">
-                            <Eye className="w-4 h-4" />
-                            <span>Быстрый просмотр</span>
-                        </div>
-                    </button>
 
                     <div className="absolute right-2 top-2 flex flex-col gap-2 z-10 md:translate-x-12 group-hover:translate-x-0 transition-transform duration-300">
                         <button
@@ -412,20 +340,13 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         </div>
 
                         <button
-                            onClick={handleAddToCart}
-                            disabled={isAdded}
-                            className={`flex h-9 md:h-10 items-center justify-center rounded-xl px-4 text-xs md:text-sm font-bold transition-all duration-300 shadow-sm active:scale-95 ${isAdded
-                                ? 'bg-emerald-500 text-white'
-                                : 'bg-primary text-primary-foreground hover:bg-primary/90'
-                                }`}
+                            className={`flex h-9 md:h-10 items-center justify-center rounded-xl px-4 text-xs md:text-sm font-bold transition-all duration-300 shadow-sm active:scale-95 bg-emerald-600 text-white hover:bg-emerald-700 relative z-10`}
                         >
-                            {isAdded ? 'В корзине' : 'Купить'}
+                            Заказать
                         </button>
                     </div>
                 </div>
             </motion.div >
-            {showQuickView && <QuickViewModal product={marketplace} onClose={() => setShowQuickView(false)} />
-            }
         </>
     );
 }

@@ -1,6 +1,6 @@
 {
     "common": {
-        "search_placeholder": "Nomi, VIN yoki Artikul orqali qidirish...",
+        "search_placeholder": "E'lonlarni nomi bo'yicha qidirish...",
         "login": "Kirish",
         "register": "Ro'yxatdan o'tish",
         "logout": "Chiqish",
