@@ -125,28 +125,37 @@ export function Header() {
                         </button>
                     )}
 
-                    {/* Search - Desktop Only - Hidden on Home Page to use the main banner search */}
-                    {(!isAuthenticated || isBuyer()) && location.pathname !== '/' && (
-                        <form onSubmit={handleSearch} className="hidden md:block flex-1 max-w-xl mx-2 md:mx-4">
-                            <div className="relative w-full">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    {/* Search - Global */}
+                    {(!isAuthenticated || isBuyer() || user?.role === 'SUPER_ADMIN') && (
+                        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl mx-2 md:mx-8 items-center">
+                            <div className="relative w-full flex items-center group bg-slate-100 dark:bg-slate-900 rounded-2xl border border-transparent dark:border-slate-800 transition-all hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder={t('common.search_placeholder')}
+                                    placeholder={t('common.search_placeholder', 'Поиск по объявлениям...')}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full h-10 pl-10 pr-12 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
+                                    className="w-full h-12 pl-12 pr-24 bg-transparent text-sm md:text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={startRecording}
-                                    className={cn(
-                                        "absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-all",
-                                        isListening ? "text-red-500 bg-red-500/10 animate-pulse" : "text-muted-foreground hover:text-primary hover:bg-muted"
-                                    )}
-                                >
-                                    {isListening ? <Mic size={16} /> : <Mic size={16} />}
-                                </button>
+                                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={startRecording}
+                                        className={cn(
+                                            "p-2 rounded-xl transition-all mr-1",
+                                            isListening ? "text-red-500 bg-red-100 dark:bg-red-500/20 animate-pulse" : "text-slate-400 hover:text-slate-600 hover:bg-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+                                        )}
+                                        title="Голосовой поиск"
+                                    >
+                                        <Mic size={18} />
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="h-10 px-6 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20"
+                                    >
+                                        {t('common.find', 'Найти')}
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     )}

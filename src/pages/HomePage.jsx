@@ -187,30 +187,7 @@ export function HomePage() {
                                 </p>
                             </div>
 
-                            {/* Main Search Bar */}
-                            <form 
-                                onSubmit={handleSearchSubmit}
-                                className="w-full bg-white/5 backdrop-blur-2xl rounded-2xl md:rounded-[2.5rem] p-2 md:p-3 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:bg-white/10 transition-all group/form mb-12"
-                            >
-                                <div className="flex flex-col md:flex-row gap-2">
-                                    <div className="flex-1 relative group">
-                                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40 group-hover:text-white transition-colors" />
-                                        <input 
-                                            type="text"
-                                            placeholder={t('common.search_placeholder', 'Поиск объявлений...')}
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full h-14 md:h-16 pl-14 pr-6 bg-transparent text-white text-lg font-bold placeholder:text-white/30 border-none focus:ring-0 outline-none"
-                                        />
-                                    </div>
-                                    <button 
-                                        type="submit"
-                                        className="h-14 md:h-16 px-10 bg-primary text-primary-foreground rounded-xl md:rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/30"
-                                    >
-                                        {t('common.find', 'Найти')}
-                                    </button>
-                                </div>
-                            </form>
+                            {/* Main Search Bar Removed - Moved to Header globally */}
 
                             {/* Featured Categories (ServiceGrid) */}
                             <ServiceGrid />

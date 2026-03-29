@@ -39,7 +39,23 @@ class MarketplaceService {
         }
 
         if (region && region !== 'All' && region !== 'Все') {
-            where.region = region;
+            const rLower = region.toLowerCase();
+            if (rLower.includes('tashkent region') || rLower.includes('ташкентская') || rLower.includes('toshkent viloyati')) {
+                where.region = { in: ['Tashkent Region', 'Ташкентская область', 'Tashkent viloyati'] };
+            } else if (rLower.includes('tashkent') || rLower.includes('ташкент') || rLower.includes('toshkent')) {
+                // Must be exact Tashkent city, but some people write 'г.Ташкент'
+                where.region = { in: ['Tashkent', 'Ташкент', 'г.Ташкент', 'Toshkent', 'г. Ташкент'] };
+            } else if (rLower.includes('samarkand') || rLower.includes('самарканд') || rLower.includes('samarqand')) {
+                where.region = { in: ['Samarkand', 'Самарканд', 'Самаркандская область', 'Samarqand'] };
+            } else if (rLower.includes('bukhara') || rLower.includes('бухара') || rLower.includes('buxoro')) {
+                where.region = { in: ['Bukhara', 'Бухара', 'Бухарская область', 'Buxoro'] };
+            } else if (rLower.includes('andijan') || rLower.includes('андижан') || rLower.includes('andijon')) {
+                where.region = { in: ['Andijan', 'Андижан', 'Андижанская область', 'Andijon'] };
+            } else if (rLower.includes('fergana') || rLower.includes('фергана') || rLower.includes('farg')) {
+                where.region = { in: ['Fergana', 'Фергана', 'Ферганская область', "Farg'ona", "Fargona"] };
+            } else {
+                where.region = region;
+            }
         }
 
         if (isFeatured === 'true' || isFeatured === true) {
