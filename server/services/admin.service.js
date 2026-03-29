@@ -151,11 +151,35 @@ class AdminService {
     }
 
 
-    async updateMarketplaceStatus(id, status) {
-        return prisma.marketplace.update({
+    async updateMarketplaceStatus(id, status, adminComment = '') {
+        const listing = await prisma.marketplace.update({
             where: { id },
-            data: { status }
+            data: { status },
+            include: { owner: true }
         });
+
+        // Create persistent notification in DB
+        if (listing.ownerId) {
+            const notification = await prisma.notification.create({
+                data: {
+                    userId: listing.ownerId,
+                    title: status === 'APPROVED' ? 'Объявление одобрено! 🎉' : 'Объявление отклонено',
+                    body: status === 'APPROVED' 
+                        ? `Ваше объявление "${listing.name}" успешно прошло модерацию и теперь доступно в каталоге.`
+                        : `Ваше объявление "${listing.name}" отклонено модератором.${adminComment ? ` Причина: ${adminComment}` : ''}`,
+                    type: status,
+                    link: `/marketplaces/${listing.slug || listing.id}`
+                }
+            });
+
+            // Emit real-time socket event if io is available
+            if (global.io) {
+                global.io.to(listing.ownerId).emit('notification', notification);
+                console.log(`[Notification] Sent ${status} to user ${listing.ownerId}`);
+            }
+        }
+
+        return listing;
     }
 
     async toggleMarketplaceFeatured(id, isFeatured) {

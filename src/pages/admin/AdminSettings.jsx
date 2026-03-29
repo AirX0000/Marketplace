@@ -48,6 +48,14 @@ export function AdminSettings() {
                 >
                     <Settings className="h-4 w-4" /> Платежи
                 </button>
+                <button
+                    onClick={() => setActiveTab('banners')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'banners'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'}`}
+                >
+                    <Camera className="h-4 w-4" /> Баннеры
+                </button>
             </div>
 
             <div className="min-h-[400px]">
@@ -55,6 +63,7 @@ export function AdminSettings() {
                 {activeTab === 'categories' && <CategoryManager />}
                 {activeTab === 'profile' && <ProfileSettings />}
                 {activeTab === 'payments' && <PaymentManager />}
+                {activeTab === 'banners' && <BannerManager />}
             </div>
         </div>
     );
@@ -679,3 +688,138 @@ function ProfileSettings() {
         </div>
     );
 }
+
+function BannerManager() {
+    const [banners, setBanners] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
+    const [form, setForm] = useState({ title: '', imageUrl: '', link: '', order: 0 });
+
+    useEffect(() => { load(); }, []);
+
+    const load = () => api.getAdminBanners().then(setBanners).catch(console.error).finally(() => setLoading(false));
+
+    const handleUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setUploading(true);
+        try {
+            const data = await api.uploadImage(file);
+            setForm(prev => ({ ...prev, imageUrl: data.url }));
+        } catch (e) {
+            alert("Ошибка загрузки");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleCreate = async () => {
+        if (!form.imageUrl) return alert("Выберите изображение");
+        try {
+            await api.createBanner(form);
+            setForm({ title: '', imageUrl: '', link: '', order: 0 });
+            load();
+        } catch (e) {
+            alert("Ошибка создания");
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!confirm("Удалить баннер?")) return;
+        try {
+            await api.deleteBanner(id);
+            load();
+        } catch (e) {
+            alert("Ошибка удаления");
+        }
+    };
+
+    const toggleStatus = async (banner) => {
+        try {
+            await api.updateBanner(banner.id, { isActive: !banner.isActive });
+            load();
+        } catch (e) {
+            alert("Ошибка изменения статуса");
+        }
+    };
+
+    return (
+        <div className="space-y-8 max-w-4xl text-slate-900 animate-in fade-in duration-500">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-slate-800">Добавить Новый Баннер</h3>
+                    {loading && <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>}
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-slate-700">Заголовок</label>
+                        <input
+                            value={form.title}
+                            onChange={e => setForm({ ...form, title: e.target.value })}
+                            className="w-full h-11 rounded-xl border border-slate-200 px-4 text-sm"
+                            placeholder="Напр. Скидки на электромобили"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-slate-700">Ссылка</label>
+                        <input
+                            value={form.link}
+                            onChange={e => setForm({ ...form, link: e.target.value })}
+                            className="w-full h-11 rounded-xl border border-slate-200 px-4 text-sm"
+                            placeholder="/marketplaces?category=Transport"
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700">Изображение</label>
+                    <div className="flex gap-4 items-center">
+                        <div className="h-24 w-44 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden bg-slate-50">
+                            {form.imageUrl ? (
+                                <img src={form.imageUrl} className="h-full w-full object-cover" />
+                            ) : (
+                                <Camera className="h-8 w-8 text-slate-300" />
+                            )}
+                        </div>
+                        <label className="cursor-pointer bg-slate-100 px-4 py-2 rounded-lg font-bold text-sm hover:bg-slate-200 transition-colors">
+                            {uploading ? "Загрузка..." : "Выбрать файл"}
+                            <input type="file" className="hidden" onChange={handleUpload} accept="image/*" />
+                        </label>
+                    </div>
+                </div>
+
+                <button
+                    onClick={handleCreate}
+                    disabled={!form.imageUrl || uploading}
+                    className="w-full h-12 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                >
+                    Создать Баннер
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {banners.map(b => (
+                    <div key={b.id} className={`group relative bg-white rounded-2xl border overflow-hidden shadow-sm transition-all ${b.isActive ? 'border-slate-200' : 'border-slate-100 opacity-60'}`}>
+                        <div className="h-32 overflow-hidden relative">
+                            <img src={b.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div className="absolute top-2 right-2 flex gap-2">
+                                <button onClick={() => toggleStatus(b)} className={`p-1.5 rounded-lg ${b.isActive ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-600'}`}>
+                                    <Check className="h-4 w-4" />
+                                </button>
+                                <button onClick={() => handleDelete(b.id)} className="p-1.5 rounded-lg bg-red-500 text-white">
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="p-3">
+                            <h4 className="font-bold text-slate-800 text-sm truncate">{b.title || 'Без названия'}</h4>
+                            <p className="text-[10px] text-slate-500 truncate">{b.link}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+

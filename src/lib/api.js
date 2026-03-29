@@ -174,6 +174,20 @@ export const api = {
     createCategory: (data) => fetchAPI('/categories', { method: 'POST', body: JSON.stringify(data) }),
     deleteCategory: (id) => fetchAPI(`/categories/${id}`, { method: 'DELETE' }),
 
+    // Banners
+    getBanners: () => fetchAPI('/banners'),
+    getAdminBanners: () => fetchAPI('/banners/admin'),
+    createBanner: (data) => fetchAPI('/banners', { method: 'POST', body: JSON.stringify(data) }),
+    updateBanner: (id, data) => fetchAPI(`/banners/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+    deleteBanner: (id) => fetchAPI(`/banners/${id}`, { method: 'DELETE' }),
+
+    // Listing Management
+    updateListingStatus: (id, status, adminComment) => 
+        fetchAPI(`/listings/${id}/status`, { 
+            method: 'PATCH', 
+            body: JSON.stringify({ status, adminComment }) 
+        }),
+
     getRegions: () => fetchAPI('/regions'),
     createRegion: (data) => fetchAPI('/regions', { method: 'POST', body: JSON.stringify(data) }),
     deleteRegion: (id) => fetchAPI(`/regions/${id}`, { method: 'DELETE' }),

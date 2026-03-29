@@ -5,14 +5,17 @@ const offerController = require('../controllers/offer.controller');
 const { authenticateToken } = require('../middleware/auth');
 const { kycCheck } = require('../middleware/kycCheck');
 
+const { validate } = require('../middleware/validation');
+const { listingSchema } = require('../validators/listing.validator');
+
 // Public Partner Profile
 router.get('/partners/:id', partnerController.getPartner);
 
 // Protected Partner Management Routes
 // Protected endpoints (Management)
 router.get('/partner/listings', authenticateToken, partnerController.getListings);
-router.post('/partner/listings', authenticateToken, kycCheck, partnerController.createListing);
-router.put('/partner/listings/:id', authenticateToken, kycCheck, partnerController.updateListing);
+router.post('/partner/listings', authenticateToken, kycCheck, validate(listingSchema), partnerController.createListing);
+router.put('/partner/listings/:id', authenticateToken, kycCheck, validate(listingSchema), partnerController.updateListing);
 router.delete('/partner/listings/:id', authenticateToken, partnerController.deleteListing);
 
 router.get('/partner/orders', authenticateToken, partnerController.getOrders);

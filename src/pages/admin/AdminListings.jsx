@@ -57,9 +57,14 @@ export function AdminListings() {
     };
 
     const handleStatusChange = async (id, newStatus) => {
+        let adminComment = '';
+        if (newStatus === 'REJECTED') {
+            adminComment = prompt("Укажите причину отклонения (необязательно):") || '';
+        }
+        
         const loadingToast = toast.loading("Обновление статуса...");
         try {
-            await api.updateMarketplaceStatus(id, newStatus);
+            await api.updateListingStatus(id, newStatus, adminComment);
             setListings(listings.map(l => l.id === id ? { ...l, status: newStatus } : l));
             toast.success(`Товар ${newStatus === 'APPROVED' ? 'одобрен' : 'отклонен'} `, { id: loadingToast });
         } catch (error) {

@@ -777,21 +777,25 @@ export function MarketplaceListing() {
                         {/* Pill Categories for Real Estate */}
                         {isRealEstateCategory && (
                             <div className="flex gap-2 overflow-x-auto pb-6 no-scrollbar scroll-smooth">
-                                {["Все", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда", "Участки"].map(pill => {
-                                    const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
-                                    return (
-                                        <button
-                                            key={pill}
-                                            onClick={() => updateFilter('subcategory', pill === "Все" ? "" : pill)}
-                                            className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${isActive
-                                                ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/25 scale-105'
-                                                : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-600 hover:text-emerald-600'
-                                                }`}
-                                        >
-                                            {pill}
-                                        </button>
-                                    );
-                                })}
+                                {(() => {
+                                    const currCat = categories.find(c => (c.name || c) === filters.category);
+                                    const pills = currCat?.sub ? ["Все", ...currCat.sub] : ["Все", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда", "Участки"];
+                                    return pills.map(pill => {
+                                        const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
+                                        return (
+                                            <button
+                                                key={pill}
+                                                onClick={() => updateFilter('subcategory', pill === "Все" ? "" : pill)}
+                                                className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${isActive
+                                                    ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/25 scale-105'
+                                                    : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-600 hover:text-emerald-600 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:hover:border-emerald-500 hover:shadow-sm'
+                                                    }`}
+                                            >
+                                                {pill}
+                                            </button>
+                                        );
+                                    });
+                                })()}
                             </div>
                         )}
 
@@ -823,22 +827,26 @@ export function MarketplaceListing() {
 
                                 {/* Pill Categories for Cars */}
                                 <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
-                                    {["Все", "Автосалон", "С пробегом", "Новый без пробега"].map(pill => {
-                                        // Map pill names if necessary to match data subcategories
-                                        const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
-                                        return (
-                                            <button
-                                                key={pill}
-                                                onClick={() => updateFilter('subcategory', pill === "Все" ? "" : pill)}
-                                                className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${isActive
-                                                    ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/25 scale-105'
-                                                    : 'bg-white border-slate-200 text-slate-600 hover:border-blue-600 hover:text-blue-600'
-                                                    }`}
-                                            >
-                                                {pill}
-                                            </button>
-                                        );
-                                    })}
+                                    {(() => {
+                                        const currCat = categories.find(c => (c.name || c) === filters.category);
+                                        const pills = currCat?.sub ? ["Все", ...currCat.sub] : ["Все", "Автосалон", "С пробегом", "Новый без пробега"];
+                                        
+                                        return pills.map(pill => {
+                                            const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
+                                            return (
+                                                <button
+                                                    key={pill}
+                                                    onClick={() => updateFilter('subcategory', pill === "Все" ? "" : pill)}
+                                                    className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${isActive
+                                                        ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/25 scale-105'
+                                                        : 'bg-white border-slate-200 text-slate-600 hover:border-blue-600 hover:text-blue-600 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:hover:border-blue-500 hover:shadow-sm'
+                                                        }`}
+                                                >
+                                                    {pill}
+                                                </button>
+                                            );
+                                        });
+                                    })()}
                                 </div>
                             </div>
                         )}

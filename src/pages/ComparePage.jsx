@@ -118,7 +118,7 @@ export function ComparePage() {
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr>
-                                    <th className="p-8 border-b border-r border-white/5 bg-[#13111C]/50 text-left min-w-[240px]">
+                                    <th className="p-8 border-b border-r border-white/5 bg-[#13111C]/50 text-left min-w-[240px] sticky left-0 z-20 backdrop-blur-xl">
                                         <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic mb-2">Технические</div>
                                         <div className="text-xl font-black text-white uppercase tracking-tighter italic">Характеристики</div>
                                     </th>

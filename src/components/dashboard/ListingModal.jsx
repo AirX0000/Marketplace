@@ -572,7 +572,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label className="text-xs font-black uppercase text-muted-foreground/80 tracking-widest mb-1.5 block px-1">{t('ads.price')}</label>
                                         <input type="text" required value={displayPrice} onChange={handlePriceChange} className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
@@ -583,6 +583,17 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             <option value="">{t('ads.select_region')}</option>
                                             <option value="Global">Global</option>
                                             {regions.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-black uppercase text-muted-foreground/80 tracking-widest mb-1.5 block px-1">Метка (Опционально)</label>
+                                        <select value={formData.attributes.tag || ""} onChange={e => handleAttributeChange('tag', e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card text-foreground px-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none">
+                                            <option value="">Без метки</option>
+                                            <option value="popular">Популярное (Premium)</option>
+                                            <option value="premium">Премиум</option>
+                                            <option value="скидка">Супер Цена</option>
+                                            <option value="подарок">В подарок</option>
+                                            <option value="скоро">Скоро</option>
                                         </select>
                                     </div>
                                 </div>

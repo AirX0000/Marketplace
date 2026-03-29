@@ -6,7 +6,7 @@ console.log('🔹 [MarketplaceService] Database required.');
 class MarketplaceService {
     async getAllListings(filters) {
         const {
-            category, minPrice, maxPrice, region, sort, search, isFeatured, ids,
+            category, minPrice, maxPrice, region, sort, search, isFeatured, ids, tag,
             // Car Filters
             minYear, maxYear,
             minMileage, maxMileage,
@@ -60,6 +60,33 @@ class MarketplaceService {
 
         if (isFeatured === 'true' || isFeatured === true) {
             where.isFeatured = true;
+        }
+
+        if (tag) {
+            if (tag === 'popular') {
+                where.isFeatured = true;
+            } else if (tag === 'electric') {
+                where.category = { in: ['Cars', 'Transport', 'Автомобили', 'Транспорт'] };
+                where.attributes = { path: ['specs', 'fuel'], equals: 'Электро' };
+            } else if (tag === 'скидка' || tag === 'super_price') {
+                where.OR = [
+                    { discount: { gt: 0 } },
+                    { attributes: { path: ['tag'], equals: 'скидка' } },
+                    { status: 'SUPER_PRICE' }
+                ];
+            } else if (tag === 'premium') {
+                where.attributes = { path: ['tag'], equals: 'premium' };
+            } else if (tag === 'подарок' || tag === 'gift') {
+                where.OR = [
+                    { attributes: { path: ['tag'], equals: 'подарок' } },
+                    { status: 'GIFT' }
+                ];
+            } else if (tag === 'скоро' || tag === 'soon') {
+                where.OR = [
+                    { attributes: { path: ['tag'], equals: 'скоро' } },
+                    { status: 'SOON' }
+                ];
+            }
         }
 
         if (ids) {

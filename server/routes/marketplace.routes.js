@@ -31,5 +31,8 @@ router.get('/listings/:id/price-history', marketplaceController.getPriceHistory)
 // Admin Trust Badges
 router.patch('/listings/:id/trust', authenticateToken, authorizeRole(['ADMIN']), marketplaceController.setTrustFlags);
 
+// Admin: Approve/Reject Listing
+router.patch('/listings/:id/status', authenticateToken, authorizeRole(['ADMIN']), marketplaceController.updateListingStatus);
+
 module.exports = router;
 

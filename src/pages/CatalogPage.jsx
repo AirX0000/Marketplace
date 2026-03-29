@@ -270,24 +270,9 @@ export function CatalogPage() {
                                     ))}
                                 </div>
                             ) : products.length === 0 ? (
-                                <motion.div
-                                    key="empty"
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    className="text-center py-32 bg-[#191624] rounded-[3rem] border border-white/5 border-dashed"
-                                >
-                                    <div className="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
-                                        <Search size={40} className="text-slate-700" />
-                                    </div>
-                                    <h3 className="text-2xl font-black uppercase tracking-tight mb-4">Ничего не найдено</h3>
-                                    <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mb-8">Попробуйте изменить параметры поиска</p>
-                                    <button
-                                        onClick={() => handleFilterChange('reset', null)}
-                                        className="px-10 py-4 bg-purple-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-purple-500 transition-all shadow-[0_15px_30px_rgba(147,51,234,0.3)] active:scale-95"
-                                    >
-                                        Сбросить фильтры
-                                    </button>
-                                </motion.div>
+                                <EmptyState 
+                                    onReset={() => handleFilterChange('reset', null)} 
+                                />
                             ) : viewMode === 'map' ? (
                                 <motion.div
                                     key="map"

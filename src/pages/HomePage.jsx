@@ -11,6 +11,7 @@ import { BrandCarousel } from '../components/home/BrandCarousel';
 import { useTranslation } from 'react-i18next';
 import { api } from '../lib/api';
 import { useShop } from '../context/ShopContext';
+import { EmptyState } from '../components/ui/EmptyState';
 
 const SEMANTIC_CATEGORIES = [
     { id: 'popular', label: 'Популярное', search: 'hot', icon: Flame, color: 'text-orange-500 bg-orange-100 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20' },
@@ -75,19 +76,28 @@ export function HomePage() {
     const [featured, setFeatured] = useState([]);
     const [recommendations, setRecommendations] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('popular');
 
     const [error, setError] = useState(null);
     const [searchTab, setSearchTab] = useState('realestate'); // 'realestate' | 'auto'
     const [searchQuery, setSearchQuery] = useState('');
     const [searchRegion, setSearchRegion] = useState('Все');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
 
     const navigate = useNavigate();
 
     useEffect(() => {
         async function load() {
+            setLoading(true);
             try {
-                const data = await api.getFeaturedMarketplaces();
-                console.log("Featured data received:", data);
+                // Always fetch via getMarketplaces using the new 'tag' backend parameter
+                const params = { tag: activeTab, limit: 12 };
+                if (minPrice) params.minPrice = minPrice;
+                if (maxPrice) params.maxPrice = maxPrice;
+                
+                const data = await api.getMarketplaces(params);
+                console.log("Tab data received:", data);
                 let listings = Array.isArray(data) ? data : (data?.listings || []);
                 
                 // Filter out the persistent seeded mock items that user wants removed
@@ -117,7 +127,7 @@ export function HomePage() {
             }
         }
         load();
-    }, []);
+    }, [activeTab, isAuthenticated, minPrice, maxPrice]);
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         const params = new URLSearchParams();
@@ -192,15 +202,46 @@ export function HomePage() {
                             {/* Featured Categories (ServiceGrid) */}
                             <ServiceGrid />
 
-                            {/* Semantic Category Chips */}
+                            {/* Quick Price Filter */}
+                            <div className="w-full max-w-lg mb-8 bg-white/5 backdrop-blur-xl border border-white/10 p-2 rounded-2xl flex items-center gap-2 group/price transition-all focus-within:border-purple-500/50">
+                                <div className="pl-4 text-slate-500">
+                                    <Zap size={14} className="text-purple-500" />
+                                </div>
+                                <input
+                                    type="number"
+                                    placeholder="От (сум)"
+                                    value={minPrice}
+                                    onChange={(e) => setMinPrice(e.target.value)}
+                                    className="w-full bg-transparent border-none outline-none text-white text-[10px] font-black uppercase tracking-widest placeholder:text-slate-600"
+                                />
+                                <div className="h-4 w-[1px] bg-white/10" />
+                                <input
+                                    type="number"
+                                    placeholder="До (сум)"
+                                    value={maxPrice}
+                                    onChange={(e) => setMaxPrice(e.target.value)}
+                                    className="w-full bg-transparent border-none outline-none text-white text-[10px] font-black uppercase tracking-widest placeholder:text-slate-600"
+                                />
+                                {(minPrice || maxPrice) && (
+                                    <button 
+                                        onClick={() => { setMinPrice(''); setMaxPrice(''); }}
+                                        className="p-2 hover:bg-white/10 rounded-xl text-slate-400 hover:text-white transition-colors"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Semantic Category Chips (Tabs) */}
                             <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
                                 {SEMANTIC_CATEGORIES.map((cat) => {
                                     const Icon = cat.icon;
+                                    const isActive = activeTab === cat.id;
                                     return (
                                         <button
                                             key={cat.id}
-                                            onClick={() => handleSemanticClick(cat.search)}
-                                            className={`flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 rounded-full font-bold text-[11px] md:text-xs border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg backdrop-blur-md opacity-80 hover:opacity-100 ${cat.color}`}
+                                            onClick={() => setActiveTab(cat.id)}
+                                            className={`flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 rounded-full font-bold text-[11px] md:text-xs border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg backdrop-blur-md ${isActive ? 'ring-2 ring-white/50 opacity-100 scale-105' : 'opacity-70 hover:opacity-100'} ${cat.color}`}
                                         >
                                             <Icon className="w-3.5 h-3.5 md:w-4 h-4" />
                                             {cat.label}
@@ -242,7 +283,7 @@ export function HomePage() {
                 <section className="container py-8 md:py-12">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                            {t('home.popular', 'Популярное')}
+                            {SEMANTIC_CATEGORIES.find(c => c.id === activeTab)?.label || t('home.popular', 'Популярное')}
                         </h2>
                     </div>
                     {loading ? (
@@ -259,13 +300,11 @@ export function HomePage() {
                             </button>
                         </div>
                     ) : featured.length === 0 ? (
-                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0 md:mx-0 md:px-0 no-scrollbar">
-                            {MOCK_LISTINGS.map((item) => (
-                                <div key={item.id} className="snap-center shrink-0 w-[280px] md:w-auto">
-                                    <MarketplaceCard marketplace={item} />
-                                </div>
-                            ))}
-                        </div>
+                        <EmptyState 
+                            title={minPrice || maxPrice ? "В этом диапазоне пусто" : "Ничего не найдено"}
+                            description="Попробуйте изменить ценовой фильтр или выбрать другую категорию"
+                            onReset={() => { setMinPrice(''); setMaxPrice(''); setActiveTab('popular'); }}
+                        />
                     ) : (
                         <div className="grid grid-cols-2 lg:grid-cols-3 md:gap-6 gap-4">
                             {featured.map((item) => (

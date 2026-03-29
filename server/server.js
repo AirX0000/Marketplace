@@ -96,6 +96,7 @@ const passwordResetRoutes = require('./routes/password_reset.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const seoRoutes = require('./routes/seo.routes');
 const leadsRoutes = require('./routes/leads.routes');
+const bannerRoutes = require('./routes/banner.routes');
 
 // Mount all at /api
 const apiRouter = express.Router();
@@ -132,6 +133,7 @@ apiRouter.use('/auth', passwordResetRoutes); // Password reset routes (e.g. /aut
 apiRouter.use('/upload', uploadRoutes);
 apiRouter.use('/seo', seoRoutes);
 apiRouter.use('/leads', leadsRoutes);
+apiRouter.use('/banners', bannerRoutes);
 
 // Catch-all for API 404s before it hits the SPA index.html fallback
 apiRouter.use((req, res) => {
@@ -140,6 +142,43 @@ apiRouter.use((req, res) => {
 });
 
 app.use('/api', apiRouter);
+
+// Sitemap.xml at root (for Google Search Console)
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        const prisma = require('./config/database');
+        const baseUrl = 'https://autohouse.uz';
+        const staticRoutes = ['/', '/catalog', '/marketplaces', '/about', '/contacts', '/blog', '/mortgage', '/partners', '/help'];
+        const [marketplaces, blogs] = await Promise.all([
+            prisma.marketplace.findMany({ where: { status: 'APPROVED' }, select: { slug: true, id: true, updatedAt: true }, orderBy: { updatedAt: 'desc' }, take: 5000 }),
+            prisma.blogPost.findMany({ where: { isPublished: true }, select: { id: true, updatedAt: true }, take: 200 }).catch(() => [])
+        ]);
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+        xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+        staticRoutes.forEach(r => { xml += `  <url><loc>${baseUrl}${r}</loc><changefreq>daily</changefreq><priority>0.8</priority></url>\n`; });
+        marketplaces.forEach(m => {
+            const loc = m.slug ? `/marketplaces/${m.slug}` : `/marketplaces/${m.id}`;
+            const d = m.updatedAt ? new Date(m.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+            xml += `  <url><loc>${baseUrl}${loc}</loc><lastmod>${d}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>\n`;
+        });
+        blogs.forEach(b => {
+            const d = b.updatedAt ? new Date(b.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+            xml += `  <url><loc>${baseUrl}/blog/${b.id}</loc><lastmod>${d}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
+        });
+        xml += '</urlset>';
+        res.header('Content-Type', 'application/xml');
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.send(xml);
+    } catch (e) {
+        res.status(500).send('Sitemap error');
+    }
+});
+
+// Robots.txt
+app.get('/robots.txt', (req, res) => {
+    res.type('text/plain');
+    res.send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /profile\nDisallow: /api/\nSitemap: https://autohouse.uz/sitemap.xml\n`);
+});
 
 // SPA Fallback - Serve index.html for any unknown non-API routes
 const distPath = path.join(__dirname, '../dist');

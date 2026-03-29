@@ -1,7 +1,5 @@
-console.log('🔹 [MarketplaceController] Requiring service...');
-const marketplaceService = require('../services/marketplace.service');
-console.log('🔹 [MarketplaceController] Requiring asyncHandler...');
 const { asyncHandler } = require('../middleware/errorHandler');
+const cache = require('../services/cache.service');
 console.log('🔹 [MarketplaceController] Imports done.');
 
 exports.getAllListings = asyncHandler(async (req, res) => {
@@ -26,8 +24,12 @@ exports.getListingById = asyncHandler(async (req, res) => {
 });
 
 exports.getCategories = asyncHandler(async (req, res) => {
+    const cachedCategories = cache.get(cache.KEYS.CATEGORIES);
+    if (cachedCategories) return res.json(cachedCategories);
+
     try {
         const categories = await marketplaceService.getCategories();
+        cache.set(cache.KEYS.CATEGORIES, categories);
         res.json(categories);
     } catch (e) {
         // Fallback if table doesn't exist yet or other error
@@ -41,8 +43,12 @@ exports.getCategories = asyncHandler(async (req, res) => {
 });
 
 exports.getRegions = asyncHandler(async (req, res) => {
+    const cachedRegions = cache.get(cache.KEYS.REGIONS);
+    if (cachedRegions) return res.json(cachedRegions);
+
     try {
         const regions = await marketplaceService.getRegions();
+        cache.set(cache.KEYS.REGIONS, regions);
         res.json(regions);
     } catch (e) {
         // Fallback
@@ -67,21 +73,25 @@ exports.addReview = asyncHandler(async (req, res) => {
 // Admin CRUD
 exports.createCategory = asyncHandler(async (req, res) => {
     const category = await marketplaceService.createCategory(req.body);
+    cache.del(cache.KEYS.CATEGORIES); // Invalidate cache
     res.status(201).json(category);
 });
 
 exports.deleteCategory = asyncHandler(async (req, res) => {
     await marketplaceService.deleteCategory(req.params.id);
+    cache.del(cache.KEYS.CATEGORIES); // Invalidate cache
     res.json({ success: true });
 });
 
 exports.createRegion = asyncHandler(async (req, res) => {
     const region = await marketplaceService.createRegion(req.body);
+    cache.del(cache.KEYS.REGIONS); // Invalidate cache
     res.status(201).json(region);
 });
 
 exports.deleteRegion = asyncHandler(async (req, res) => {
     await marketplaceService.deleteRegion(req.params.id);
+    cache.del(cache.KEYS.REGIONS); // Invalidate cache
     res.json({ success: true });
 });
 
@@ -97,6 +107,14 @@ exports.setTrustFlags = asyncHandler(async (req, res) => {
             ...(typeof isOfficial === 'boolean' && { isOfficial }),
         }
     });
+    res.json(listing);
+});
+
+exports.updateListingStatus = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { status, adminComment } = req.body;
+    const adminService = require('../services/admin.service');
+    const listing = await adminService.updateMarketplaceStatus(id, status, adminComment);
     res.json(listing);
 });
 

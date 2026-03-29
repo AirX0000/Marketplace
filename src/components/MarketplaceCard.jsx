@@ -257,16 +257,35 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             return null;
                         })()}
 
-                        {(marketplace.status === 'SUPER_PRICE' || marketplace.discount >= 10 || (marketplace.name && marketplace.name.toLowerCase().includes('скидка'))) && (
-                            <span className="rounded-md bg-gradient-to-r from-rose-500 to-orange-500 text-white px-2 py-0.5 shadow-sm shadow-orange-500/30 flex items-center gap-1">
-                                <Flame className="w-3 h-3" /> Супер Цена
-                            </span>
-                        )}
-                        {marketplace.status === 'SOON' && (
-                            <span className="rounded-md bg-slate-800 dark:bg-slate-700 text-white px-2 py-0.5 shadow-sm flex items-center gap-1 border border-slate-600">
-                                <Clock className="w-3 h-3" /> Скоро
-                            </span>
-                        )}
+                        {(() => {
+                            const parsed = marketplace.attributes ? (typeof marketplace.attributes === 'string' ? JSON.parse(marketplace.attributes) : marketplace.attributes) : {};
+                            const tag = parsed.tag;
+                            
+                            return (
+                                <>
+                                    {(marketplace.status === 'SUPER_PRICE' || tag === 'скидка' || marketplace.discount >= 10 || (marketplace.name && marketplace.name.toLowerCase().includes('скидка'))) && (
+                                        <span className="rounded-md bg-gradient-to-r from-rose-500 to-orange-500 text-white px-2 py-0.5 shadow-sm shadow-orange-500/30 flex items-center gap-1">
+                                            <Flame className="w-3 h-3" /> Супер Цена
+                                        </span>
+                                    )}
+                                    {(marketplace.status === 'SOON' || tag === 'скоро') && (
+                                        <span className="rounded-md bg-slate-800 dark:bg-slate-700 text-white px-2 py-0.5 shadow-sm flex items-center gap-1 border border-slate-600">
+                                            <Clock className="w-3 h-3" /> Скоро
+                                        </span>
+                                    )}
+                                    {(marketplace.status === 'GIFT' || tag === 'подарок') && (
+                                        <span className="rounded-md bg-pink-500 text-white px-2 py-0.5 shadow-sm flex items-center gap-1">
+                                            🎁 В подарок
+                                        </span>
+                                    )}
+                                    {tag === 'premium' && (
+                                        <span className="rounded-md bg-amber-500 text-white px-2 py-0.5 shadow-sm shadow-amber-500/20 flex items-center gap-1">
+                                            👑 Премиум
+                                        </span>
+                                    )}
+                                </>
+                            );
+                        })()}
                         {["Седан", "Кроссовер", "Внедорожник", "Электромобиль", "Cars", "Transport"].includes(marketplace.category) && (
                             <>
                                 <span className="rounded-md bg-blue-600 text-white px-2 py-0.5 shadow-sm shadow-blue-600/20">

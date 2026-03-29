@@ -59,6 +59,7 @@ export function PostAdPage() {
                 const toastId = toast.loading('Публикация объявления...');
                 try {
                     await api.createListing(pendingData);
+                    setPendingData(null); // Clear after success
                     toast.success('Объявление опубликовано!', { id: toastId });
                     navigate('/admin/listings');
                 } catch (err) {

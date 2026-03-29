@@ -604,3 +604,32 @@ model LinkedCard {
 
   @@index([userId])
 }
+
+model Banner {
+  id        String   @id @default(uuid())
+  title     String?
+  imageUrl  String
+  link      String?  @default("/marketplaces")
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  body      String
+  type      String   @default("INFO") // INFO, APPROVED, REJECTED, ORDER, SYSTEM
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@index([userId])
+}
+

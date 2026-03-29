@@ -8,56 +8,59 @@ import { BannerSkeleton } from './BannerSkeleton';
 export function BannerSlider() {
     const { t } = useTranslation();
     const [currentIndex, setCurrentIndex] = useState(0);
-
-    const banners = [
-        {
-            id: 1,
-            url: 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=2000',
-            alt: t('home.banners.premium_cars', 'Premium Cars'),
-            link: '/marketplaces?category=Transport'
-        },
-        {
-            id: 2,
-            url: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2000',
-            alt: t('home.banners.luxury_villas', 'Luxury Villas'),
-            link: '/marketplaces?category=Недвижимость'
-        },
-        {
-            id: 3,
-            url: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=2000',
-            alt: t('home.banners.business_class', 'Business Class'),
-            link: '/marketplaces?category=Transport'
-        },
-        {
-            id: 4,
-            url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2000',
-            alt: t('home.banners.modern_living', 'Modern Living'),
-            link: '/marketplaces?category=Недвижимость'
-        },
-        {
-            id: 5,
-            url: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=2000',
-            alt: t('home.banners.sport_cars', 'Sport Cars'),
-            link: '/marketplaces?category=Transport'
-        }
-    ];
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % banners.length);
-        }, 5000); // Change banner every 5 seconds
-
-        return () => clearInterval(timer);
-    }, []);
-
+    const [banners, setBanners] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    useEffect(() => {
+        const loadBanners = async () => {
+            try {
+                const data = await api.getBanners();
+                if (data && data.length > 0) {
+                    setBanners(data);
+                } else {
+                    // Fallback to defaults if no banners in DB
+                    setBanners([
+                        {
+                            id: 'default-1',
+                            imageUrl: 'https://images.unsplash.com/photo-1620067335606-f138e65893b8?q=80&w=2000',
+                            title: t('home.banners.premium_cars', 'Доступные автомобили'),
+                            link: '/marketplaces?category=Transport'
+                        },
+                        {
+                            id: 'default-2',
+                            imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000',
+                            title: t('home.banners.luxury_villas', 'Лучшая недвижимость'),
+                            link: '/marketplaces?category=Недвижимость'
+                        }
+                    ]);
+                }
+            } catch (error) {
+                console.error("Failed to load banners", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadBanners();
+    }, []);
+
+    useEffect(() => {
+        if (banners.length === 0) return;
+        const timer = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % banners.length);
+        }, 6000);
+        return () => clearInterval(timer);
+    }, [banners.length]);
+
     const handleImageLoad = () => {
-        setIsLoading(false);
+        // We can keep track of per-image loading if needed, but for now just one global sweep is fine
+        // setIsLoading(false);
     };
 
     const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % banners.length);
     const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length);
+
+    if (isLoading) return <BannerSkeleton className="w-full h-full" />;
+    if (banners.length === 0) return null;
 
     return (
         <div className="relative w-full h-full overflow-hidden">
@@ -74,10 +77,22 @@ export function BannerSlider() {
                 >
                     <Link to={banners[currentIndex].link} className="block w-full h-full">
                         {/* Dark gradient overlay for text readability */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-transparent z-10 pointer-events-none" />
+                        <div className="absolute inset-x-0 bottom-0 top-1/4 bg-linear-to-t from-black/80 via-black/20 to-transparent z-10 pointer-events-none" />
+                        
+                        <div className="absolute bottom-16 left-12 z-20 max-w-xl animate-in fade-in slide-in-from-left-8 duration-700">
+                            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight drop-shadow-lg uppercase">
+                                {banners[currentIndex].title}
+                            </h2>
+                            <div className="flex gap-4">
+                                <span className="px-6 py-2.5 bg-white text-slate-900 rounded-xl font-bold text-sm shadow-xl hover:scale-105 transition-transform">
+                                    Подробнее
+                                </span>
+                            </div>
+                        </div>
+
                         <img
-                            src={banners[currentIndex].url}
-                            alt={banners[currentIndex].alt}
+                            src={banners[currentIndex].imageUrl}
+                            alt={banners[currentIndex].title}
                             loading="lazy"
                             className="w-full h-full object-cover"
                             onLoad={handleImageLoad}

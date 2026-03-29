@@ -72,13 +72,26 @@ export default defineConfig({
     }
   },
   build: {
-    chunkSizeWarningLimit: 1600,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['framer-motion', 'lucide-react'],
-          maps: ['leaflet', 'react-leaflet']
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'vendor-core';
+            }
+            if (id.includes('lucide-react') || id.includes('framer-motion')) {
+              return 'vendor-ui';
+            }
+            if (id.includes('leaflet')) {
+              return 'vendor-maps';
+            }
+            return 'vendor';
+          }
+          if (id.includes('/src/pages/')) {
+            const name = id.split('/src/pages/')[1].split('.')[0].toLowerCase();
+            return `page-${name}`;
+          }
         }
       }
     }
