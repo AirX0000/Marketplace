@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { api } from '../../lib/api';
 import { BannerSkeleton } from './BannerSkeleton';
 
 export function BannerSlider() {
