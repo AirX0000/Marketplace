@@ -392,25 +392,26 @@ export function MarketplaceListing() {
             <Helmet>
                 <title>
                     {isRealEstateCategory
-                        ? 'Недвижимость в Узбекистане — купить квартиру, дом, участок | Autohouse.uz'
+                        ? 'Купить недвижимость в Узбекистане — квартиры, дома, участки | Autohouse.uz'
                         : isAutoCategory
-                            ? 'Автомобили в Узбекистане — новые и б/у авто, автосалоны | Autohouse.uz'
+                            ? 'Купить автомобиль в Узбекистане — новые и б/у авто, цены | Autohouse.uz'
                             : isServicesCategory
                                 ? 'Услуги — страхование, нотариус, оценка, риелтор | Autohouse.uz'
                                 : filters.search
-                                    ? `Поиск: «${filters.search}» — Autohouse.uz`
-                                    : 'Каталог объявлений — авто, недвижимость, запчасти | Autohouse.uz'}
+                                    ? `Поиск: «${filters.search}» — Купить авто и недвижимость | Autohouse.uz`
+                                    : 'Каталог объявлений — Купить авто, недвижимость в Узбекистане | Autohouse.uz'}
                 </title>
                 <meta name="description" content={
                     isRealEstateCategory
-                        ? 'Купить квартиру, дом или коммерческое помещение в Ташкенте и по всему Узбекистану. Новостройки, вторичка, аренда. Ипотечный калькулятор на сайте.'
+                        ? 'Продажа недвижимости в Ташкенте и Узбекистане. Купить квартиру в новостройке или вторичку. Огромный выбор домов и участков на Autohouse.uz.'
                         : isAutoCategory
-                            ? 'Купить новый или б/у автомобиль в Узбекистане. Официальные дилеры, выгодная рассрочка, Trade-in. Сотни предложений на Autohouse.uz.'
-                            : 'Маркетплейс Autohouse.uz — авто, недвижимость, запчасти, услуги по всему Узбекистану.'
+                            ? 'Продажа новых и б/у автомобилей в Узбекистане. Купить машину в рассрочку или через автосалон. Проверенные объявления на Autohouse.uz.'
+                            : 'Маркетплейс Autohouse.uz — лучший способ купить или продать авто, недвижимость и запчасти в Узбекистане.'
                 } />
+                <meta name="keywords" content="купить авто Ташкент, продажа машин Узбекистан, купить квартиру Ташкент, недвижимость цены, авторынок, Autohouse" />
                 <link rel="canonical" href={`https://autohouse.uz/marketplaces${filters.category !== 'Все' ? `?category=${encodeURIComponent(filters.category)}` : ''}`} />
-                <meta property="og:title" content="Каталог | Autohouse.uz" />
-                <meta property="og:description" content="Авто, недвижимость, запчасти и услуги на Autohouse.uz" />
+                <meta property="og:title" content="Каталог объявлений | Autohouse.uz" />
+                <meta property="og:description" content="Лучшие предложения по продаже авто и недвижимости в Узбекистане." />
                 <meta property="og:type" content="website" />
                 <meta property="og:site_name" content="Autohouse.uz" />
             </Helmet>

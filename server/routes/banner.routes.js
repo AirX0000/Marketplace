@@ -1,3 +1,8 @@
+const express = require('express');
+const router = express.Router();
+const prisma = require('../config/database');
+const { asyncHandler } = require('../middleware/errorHandler');
+const { authenticateToken, authorizeRole } = require('../middleware/auth');
 const cache = require('../services/cache.service');
 
 // GET all active banners (for frontend)

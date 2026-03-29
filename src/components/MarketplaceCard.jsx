@@ -53,7 +53,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                     <div className="w-48 h-48 flex-shrink-0 overflow-hidden bg-muted/30 p-6 relative">
                         <img
                             src={getImageUrl(marketplace.images || marketplace.image) || "/images/car_mock.png"}
-                            alt={displayName}
+                            alt={`${displayName} - ${marketplace.region} | Autohouse`}
                             loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-500 group-hover:scale-110"
                             onError={(e) => {
                                 e.target.onerror = null;
@@ -166,7 +166,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 <div className="aspect-[4/3] overflow-hidden bg-muted/30 p-4 md:p-5 relative border-b border-border/50">
                     <img
                         src={getImageUrl(marketplace.images || marketplace.image) || "/images/car_mock.png"}
-                        alt={displayName}
+                        alt={`${displayName} - ${marketplace.region} | Autohouse`}
                         loading="lazy" decoding="async" className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
                         onError={(e) => {
                             e.target.onerror = null;

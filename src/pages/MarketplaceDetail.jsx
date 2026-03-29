@@ -160,8 +160,49 @@ export function MarketplaceDetail() {
     return (
         <div className="min-h-screen bg-[#13111C] relative overflow-x-hidden">
             <Helmet>
-                <title>{`${displayName} - Autohouse Premium`}</title>
-                <meta name="description" content={displayDescription?.substring(0, 160)} />
+                <title>{`${isAuto ? 'Купить автомобиль' : 'Продажа недвижимости'} ${displayName} в Узбекистане | Autohouse`}</title>
+                <meta name="description" content={`Продажа ${displayName} в Узбекистане. ${displayPrice > 0 ? `Цена: ${displayPrice.toLocaleString()} сум.` : ''} ${displayDescription?.substring(0, 150)}...`} />
+                <meta name="keywords" content={`${displayName}, купить ${isAuto ? 'авто' : 'квартиру'}, продажа ${isAuto ? 'машин' : 'домов'}, Узбекистан, Ташкент, Autohouse`} />
+                
+                {/* Structured Data (JSON-LD) */}
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org/",
+                        "@type": isAuto ? "Car" : "RealEstateListing",
+                        "name": displayName,
+                        "description": displayDescription,
+                        "image": allImages[0]?.startsWith('http') ? allImages[0] : `https://autohouse.uz${allImages[0]}`,
+                        "offers": {
+                            "@type": "Offer",
+                            "price": displayPrice,
+                            "priceCurrency": "UZS",
+                            "availability": "https://schema.org/InStock",
+                            "url": window.location.href
+                        },
+                        ...(isAuto ? {
+                            "brand": marketplace?.brand || attrs?.specs?.brand,
+                            "productionDate": attrs?.specs?.year,
+                            "fuelType": attrs?.specs?.fuelType,
+                            "mileageFromOdometer": {
+                                "@type": "QuantitativeValue",
+                                "value": attrs?.specs?.mileage,
+                                "unitCode": "KMT"
+                            }
+                        } : {
+                            "address": {
+                                "@type": "PostalAddress",
+                                "addressLocality": marketplace?.region,
+                                "addressCountry": "UZ"
+                            },
+                            "numberOfRooms": attrs?.specs?.rooms,
+                            "floorSize": {
+                                "@type": "QuantitativeValue",
+                                "value": attrs?.specs?.area,
+                                "unitCode": "MTK"
+                            }
+                        })
+                    })}
+                </script>
             </Helmet>
 
             <motion.div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 z-[100]" style={{ scaleX }} />

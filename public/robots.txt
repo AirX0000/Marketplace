@@ -1,8 +1,8 @@
 User-agent: *
-Disallow: /profile/
+Allow: /
 Disallow: /admin/
+Disallow: /partner/
 Disallow: /checkout/
-Disallow: /settings/
-Disallow: /super-admin/
+Disallow: /api/
 
 Sitemap: https://autohouse.uz/api/seo/sitemap.xml
