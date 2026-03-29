@@ -5,14 +5,14 @@ import { motion } from 'framer-motion';
 const BRANDS = [
     { name: 'BMW', url: 'https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg' },
     { name: 'Mercedes-Benz', url: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg' },
-    { name: 'BYD', url: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/Build_Your_Dreams_logo.svg' },
-    { name: 'Zeekr', url: 'https://upload.wikimedia.org/wikipedia/commons/1/15/Zeekr_Logomark.svg' },
+    { name: 'BYD', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/BYD_Auto_2022_logo.svg/512px-BYD_Auto_2022_logo.svg.png' },
+    { name: 'Zeekr', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Zeekr_Logomark.svg/512px-Zeekr_Logomark.svg.png' },
     { name: 'Tesla', url: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg' },
     { name: 'Chevrolet', url: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Chevrolet-logo.png' },
     { name: 'Hyundai', url: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Hyundai_Motor_Company_logo.svg' },
     { name: 'Kia', url: 'https://upload.wikimedia.org/wikipedia/commons/4/47/KIA_logo2.svg' },
     { name: 'Toyota', url: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_carlogo.svg' },
-    { name: 'Lexus', url: 'https://upload.wikimedia.org/wikipedia/commons/6/62/Lexus_logo.svg' }
+    { name: 'Lexus', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Lexus_logo.svg/512px-Lexus_logo.svg.png' }
 ];
 
 export function BrandCarousel() {
