@@ -231,98 +231,48 @@ export function HomePage() {
                                 </p>
                             </div>
 
-                            {/* Main Search Bar - Restored per user request */}
-                            <div className="w-full max-w-3xl mb-12">
-                                <div className="flex bg-[#1a1c23]/60 backdrop-blur-2xl rounded-3xl p-1.5 shadow-2xl border border-white/5">
-                                    <div className="flex flex-1 items-center bg-[#0F1117] rounded-[1.25rem] p-1.5 relative group">
-                                        <div className="flex gap-1 mr-3 p-1 bg-white/5 rounded-xl">
-                                            <button 
-                                                onClick={() => setSearchTab('realestate')}
-                                                className={cn(
-                                                    "px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all",
-                                                    searchTab === 'realestate' ? "bg-white text-slate-900 shadow-xl" : "text-white/40 hover:text-white/70"
-                                                )}
-                                            >
-                                                {t('home.real_estate', 'Недвижимость')}
-                                            </button>
-                                            <button 
-                                                onClick={() => setSearchTab('auto')}
-                                                className={cn(
-                                                    "px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all",
-                                                    searchTab === 'auto' ? "bg-white text-slate-900 shadow-xl" : "text-white/40 hover:text-white/70"
-                                                )}
-                                            >
-                                                {t('home.auto', 'Авто')}
-                                            </button>
-                                        </div>
-
-                                        <div className="flex-1 flex items-center min-w-0">
-                                            <Search className="ml-3 text-slate-500 shrink-0" size={18} />
-                                            <input 
-                                                type="text"
-                                                placeholder={searchTab === 'realestate' ? "Район, улица или ЖК..." : "Марка, модель или запчасть..."}
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                                className="w-full bg-transparent border-none outline-none text-white text-[12px] md:text-sm font-medium px-3 placeholder:text-slate-600"
-                                            />
-                                        </div>
-
-                                        <div className="hidden lg:flex items-center px-4 border-l border-white/5 gap-2 group/region cursor-pointer">
-                                            <Building2 size={16} className="text-slate-500 group-hover/region:text-white transition-colors" />
-                                            <select 
-                                                value={searchRegion}
-                                                onChange={(e) => setSearchRegion(e.target.value)}
-                                                className="bg-transparent border-none outline-none text-white text-[10px] md:text-xs font-bold uppercase tracking-widest cursor-pointer"
-                                            >
-                                                <option value="Все">Весь Узбекистан</option>
-                                                <option value="Tashkent">Ташкент</option>
-                                                <option value="Samarkand">Самарканд</option>
-                                                <option value="Bukhara">Бухара</option>
-                                            </select>
-                                        </div>
-
-                                        <button 
-                                            onClick={handleSearchSubmit}
-                                            className="ml-2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20 active:scale-95 transition-all"
-                                        >
-                                            {t('common.find', 'Найти')}
-                                        </button>
+                            {/* Main Search Bar - Simplified per user request */}
+                            <div className="w-full max-w-4xl mb-12">
+                                <form 
+                                    onSubmit={handleSearchSubmit}
+                                    className="flex bg-white/5 backdrop-blur-2xl rounded-[2rem] p-1.5 shadow-2xl border border-white/10 group/search focus-within:border-blue-500/50 transition-all"
+                                >
+                                    <div className="flex flex-1 items-center gap-3 px-4">
+                                        <Search className="text-slate-500 group-focus-within/search:text-blue-500 transition-colors" size={20} />
+                                        <input 
+                                            type="text"
+                                            placeholder={t('home.search_placeholder', 'Поиск авто, недвижимости или услуг...')}
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="w-full bg-transparent border-none outline-none text-white text-sm md:text-base font-medium py-3 placeholder:text-slate-600"
+                                        />
                                     </div>
-                                </div>
+
+                                    <div className="hidden md:flex items-center px-6 border-l border-white/10 gap-2">
+                                        <Building2 size={18} className="text-slate-500" />
+                                        <select 
+                                            value={searchRegion}
+                                            onChange={(e) => setSearchRegion(e.target.value)}
+                                            className="bg-transparent border-none outline-none text-white text-xs font-bold uppercase tracking-widest cursor-pointer"
+                                        >
+                                            <option value="Все">Весь Узбекистан</option>
+                                            <option value="Tashkent">Ташкент</option>
+                                            <option value="Samarkand">Самарканд</option>
+                                            <option value="Bukhara">Бухара</option>
+                                        </select>
+                                    </div>
+
+                                    <button 
+                                        type="submit"
+                                        className="ml-2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20 active:scale-95 transition-all outline-none"
+                                    >
+                                        {t('common.find', 'Найти')}
+                                    </button>
+                                </form>
                             </div>
 
                             {/* Featured Categories (ServiceGrid) */}
                             <ServiceGrid />
-
-                            {/* Quick Price Filter */}
-                            <div className="w-full max-w-lg mb-8 bg-white/5 backdrop-blur-xl border border-white/10 p-2 rounded-2xl flex items-center gap-2 group/price transition-all focus-within:border-purple-500/50">
-                                <div className="pl-4 text-slate-500">
-                                    <Zap size={14} className="text-purple-500" />
-                                </div>
-                                <input
-                                    type="number"
-                                    placeholder="От (сум)"
-                                    value={minPrice}
-                                    onChange={(e) => setMinPrice(e.target.value)}
-                                    className="w-full bg-transparent border-none outline-none text-white text-[10px] font-black uppercase tracking-widest placeholder:text-slate-600"
-                                />
-                                <div className="h-4 w-[1px] bg-white/10" />
-                                <input
-                                    type="number"
-                                    placeholder="До (сум)"
-                                    value={maxPrice}
-                                    onChange={(e) => setMaxPrice(e.target.value)}
-                                    className="w-full bg-transparent border-none outline-none text-white text-[10px] font-black uppercase tracking-widest placeholder:text-slate-600"
-                                />
-                                {(minPrice || maxPrice) && (
-                                    <button 
-                                        onClick={() => { setMinPrice(''); setMaxPrice(''); }}
-                                        className="p-2 hover:bg-white/10 rounded-xl text-slate-400 hover:text-white transition-colors"
-                                    >
-                                        <X size={14} />
-                                    </button>
-                                )}
-                            </div>
 
                             {/* Semantic Category Chips (Tabs) */}
                             <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
