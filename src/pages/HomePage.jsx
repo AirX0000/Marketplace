@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, Search, Mic } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { MarketplaceCard } from '../components/MarketplaceCard';
