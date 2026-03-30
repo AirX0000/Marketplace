@@ -88,7 +88,7 @@ export function Header() {
                 const searchParams = new URLSearchParams();
                 searchParams.set('q', transcript);
                 Object.entries(nlpParams).forEach(([k, v]) => searchParams.set(k, v));
-                navigate(`/catalog?${searchParams.toString()}`);
+                navigate(`/marketplaces?${searchParams.toString()}`);
             }, 500);
         };
         recognition.start();
@@ -132,7 +132,7 @@ export function Header() {
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder={t('common.search_placeholder', 'Поиск по объявлениям...')}
+                                    placeholder={t('common.search_placeholder', 'Поиск товара по имени...')}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full h-12 pl-12 pr-24 bg-transparent text-sm md:text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none"

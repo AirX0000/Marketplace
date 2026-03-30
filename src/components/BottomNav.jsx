@@ -13,7 +13,7 @@ export function BottomNav() {
 
     const tabs = [
         { id: 'home', path: '/', icon: Home, label: t('common.home', 'Главная') },
-        { id: 'catalog', path: '/catalog', icon: LayoutGrid, label: t('common.catalog', 'Каталог') },
+        { id: 'catalog', path: '/marketplaces', icon: LayoutGrid, label: t('common.catalog', 'Каталог') },
         { id: 'post-ad', path: '/post-ad', icon: Plus, label: t('common.add_listing_nav', 'Подать'), primary: true },
         { id: 'favorites', path: '/favorites', icon: Heart, label: t('common.wishlist', 'Избранное') },
         { id: 'profile', path: isAuthenticated ? '/profile' : '/login', icon: User, label: t('common.profile', 'Профиль') },

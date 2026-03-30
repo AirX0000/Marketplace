@@ -28,7 +28,8 @@ import { FavoritesPage } from './pages/FavoritesPage';
 
 // Lazy loaded heavy routes
 const MarketplaceDetail = lazy(() => import('./pages/MarketplaceDetail').then(m => ({ default: m.MarketplaceDetail })));
-const CatalogPage = lazy(() => import('./pages/CatalogPage').then(m => ({ default: m.CatalogPage })));
+// CatalogPage is deprecated
+
 const PartnerStorePage = lazy(() => import('./pages/PartnerStorePage').then(m => ({ default: m.PartnerStorePage })));
 const MarketplaceListing = lazy(() => import('./pages/MarketplaceListing').then(m => ({ default: m.MarketplaceListing })));
 const UserDashboard = lazy(() => import('./pages/UserDashboard').then(m => ({ default: m.UserDashboard })));
@@ -120,7 +121,8 @@ function App() {
                         <Route path="/" element={<RootLayout />}>
                           <Route index element={<HomePage />} />
                           <Route path="post-ad" element={<PostAdPage />} />
-                          <Route path="catalog" element={<CatalogPage />} />
+                          {/* <Route path="catalog" element={<CatalogPage />} /> */}
+                          <Route path="catalog" element={<Navigate to="/marketplaces" replace />} />
                           <Route path="marketplaces" element={<MarketplaceListing />} />
                           <Route path="marketplaces/:slug" element={<MarketplaceDetail />} />
                           <Route path="compare" element={<ComparePage />} />
@@ -214,7 +216,7 @@ function App() {
                           <Route path="loans" element={<AdminLoans />} />
                         </Route>
                         <Route path="/partner" element={<Navigate to="/admin" replace />} />
-                        <Route path="/cars" element={<Navigate to="/catalog?category=Transport" replace />} />
+                        <Route path="/cars" element={<Navigate to="/marketplaces?category=Transport" replace />} />
                         <Route path="/offline" element={<OfflinePage />} />
 
                         {/* Catch all */}

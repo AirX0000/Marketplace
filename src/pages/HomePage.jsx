@@ -173,7 +173,7 @@ export function HomePage() {
                                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50 group-hover:text-white transition-colors" />
                                             <input 
                                                 type="text"
-                                                placeholder="Поиск объявлений..."
+                                                placeholder="Поиск товара по имени..."
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
                                                 className="w-full h-12 md:h-14 pl-12 pr-4 bg-transparent text-white font-bold placeholder:text-white/50 border-none focus:ring-0 outline-none"

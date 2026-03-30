@@ -641,7 +641,7 @@ export function UserDashboard() {
 
                                                 {/* Discover New Asset Placeholder */}
                                                 <Link
-                                                    to="/catalog"
+                                                    to="/marketplaces"
                                                     className="bg-[#191624]/50 border-2 border-dashed border-slate-700/50 hover:border-purple-500/50 hover:bg-[#191624] rounded-3xl p-8 flex flex-col items-center justify-center min-h-[400px] transition-all group active:scale-[0.98]"
                                                 >
                                                     <div className="w-16 h-16 rounded-full bg-[#252236] group-hover:bg-purple-600/20 text-purple-500 flex items-center justify-center mb-4 transition-colors">
@@ -657,7 +657,7 @@ export function UserDashboard() {
                                                 <Heart size={48} className="mx-auto text-purple-500/50 mb-6" />
                                                 <h3 className="text-2xl font-bold text-white mb-2">Your wishlist is empty</h3>
                                                 <p className="text-slate-400 mb-8 max-w-sm mx-auto">Discover extraordinary vehicles and premium real estate to add to your collection.</p>
-                                                <Link to="/catalog" className="inline-block px-8 py-4 bg-purple-600 text-white rounded-full font-bold hover:bg-purple-500 shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all active:scale-95">
+                                                <Link to="/marketplaces" className="inline-block px-8 py-4 bg-purple-600 text-white rounded-full font-bold hover:bg-purple-500 shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all active:scale-95">
                                                     Explore Marketplace
                                                 </Link>
                                             </div>

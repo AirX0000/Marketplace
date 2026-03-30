@@ -72,13 +72,13 @@ export const ProductActions = ({
             <div className="space-y-4 pt-4">
                 <MagneticButton 
                     onClick={() => window.location.href = `tel:${marketplace.owner?.phone || marketplace.phone || '+998900000000'}`}
-                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white h-16 rounded-2xl font-black uppercase tracking-widest text-[10px] flex gap-3 transition-all shadow-lg shadow-indigo-600/20 active:scale-95 italic overflow-hidden"
+                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white h-16 rounded-2xl font-black uppercase tracking-widest text-[10px] flex gap-3 transition-all shadow-lg shadow-emerald-600/20 active:scale-95 italic overflow-hidden"
                 >
-                    <div className="w-16 h-full bg-indigo-700/50 flex items-center justify-center shrink-0">
+                    <div className="w-16 h-full bg-emerald-700/50 flex items-center justify-center shrink-0">
                         <Phone className="h-6 w-6" />
                     </div>
                     <div className="flex flex-col items-start justify-center text-left py-2">
-                        <span className="text-[9px] text-indigo-200 uppercase tracking-widest">Связаться с продавцом</span>
+                        <span className="text-[9px] text-emerald-100 uppercase tracking-widest">Заказать</span>
                         <span className="text-sm font-bold tracking-wider">{marketplace.owner?.phone || marketplace.phone || 'Номер не указан'}</span>
                     </div>
                 </MagneticButton>

@@ -389,7 +389,7 @@ export function PartnerLeads() {
 
                                     {/* Marketplace Item Reference */}
                                     {lead.marketplace && (
-                                        <Link to={`/catalog/${lead.marketplace.id}`} target="_blank" className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 hover:bg-white/10 transition-all cursor-pointer group/link">
+                                        <Link to={`/marketplaces/${lead.marketplace.id}`} target="_blank" className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 hover:bg-white/10 transition-all cursor-pointer group/link">
                                             <div className="w-12 h-12 rounded-xl bg-black/20 overflow-hidden ring-1 ring-white/10 shrink-0">
                                                 {getImageUrl(lead.marketplace.image) ? (
                                                 <img 

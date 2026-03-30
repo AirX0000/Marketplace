@@ -52,9 +52,10 @@ export function MarketplaceListing() {
     // Categories state
     const [categories, setCategories] = useState([]); // Full category objects
     const [regions, setRegions] = useState(["Все", "г.Ташкент", "Ташкентская область", "Самаркандская область", "Бухарская область", "Андижанская область", "Ферганская область"]);
-    const isRealEstateCategory = ["Недвижимость", "Недвижимость", "House", "Apartment", "Houses", "Land", "New Building", "Private House"].includes(filters.category);
-    const isAutoCategory = ["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category);
-    const isServicesCategory = filters.category === "Услуги";
+    const catLowerState = (filters.category || "").toLowerCase();
+    const isRealEstateCategory = ["недвижимость", "real estate", "house", "apartment", "houses", "land", "new building", "private house"].includes(catLowerState);
+    const isAutoCategory = ["автомобили", "cars", "car", "auto", "transport", "dealer", "private auto"].includes(catLowerState);
+    const isServicesCategory = ["услуги", "services"].includes(catLowerState);
 
     // Load categories from backend or use defaults
     useEffect(() => {
@@ -210,14 +211,19 @@ export function MarketplaceListing() {
             if (filters.bounds) params.bounds = filters.bounds;
 
 
-            if (filters.category !== "Все") {
-                if (["Недвижимость", "Real Estate", "House", "Apartment", "Houses", "Land", "New Building", "Private House"].includes(filters.category)) {
+            const catLower = (filters.category || "").toLowerCase();
+            const isRealEstate = ["недвижимость", "real estate", "house", "apartment", "houses", "land", "new building", "private house"].includes(catLower);
+            const isAuto = ["автомобили", "cars", "car", "auto", "transport", "dealer", "private auto"].includes(catLower);
+            const isServices = ["услуги", "services"].includes(catLower);
+
+            if (catLower !== "все" && catLower !== "all" && catLower !== "") {
+                if (isRealEstate) {
                     // Match any subcategory of Real Estate OR the main category itself
                     params.category = "Real Estate,Недвижимость,Квартиры,Дома,Коммерческая,Земля,Apartments,Houses,New Building,Private House,Property,Вторичные,Вторичное жильё,Новостройки,Нежилое помещение,Аренда,Участки";
-                } else if (["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category)) {
+                } else if (isAuto) {
                     // Match any subcategory of Cars OR the main category itself
                     params.category = "Transport,Cars,Автомобили,Авто,Автосалон,С пробегом,Новый без пробега,Dealer,Private Auto,Vehicle,Бозор (Авто с пробегом),Автосалон (Новые авто)";
-                } else if (filters.category === "Услуги") {
+                } else if (isServices) {
                     params.category = "Услуги,Services,Страхование,Оценка,Нотариус,Риелтор,Realtor";
                 }
 
@@ -252,7 +258,7 @@ export function MarketplaceListing() {
             }
 
             // Real Estate Filtering (Client-side)
-            if (["Недвижимость", "Недвижимость", "House", "Apartment", "Houses", "Land", "New Building", "Private House"].includes(filters.category)) {
+            if (isRealEstate) {
                 console.log("Filtering Real Estate. Total items:", filtered.length);
                 filtered = filtered.filter(p => {
                     try {
@@ -297,7 +303,7 @@ export function MarketplaceListing() {
             }
 
             // Car Filtering (Client-side)
-            if (["Автомобили", "Cars", "Car", "Auto", "Transport", "Dealer", "Private Auto"].includes(filters.category)) {
+            if (isAuto) {
                 console.log("Filtering Cars");
                 filtered = filtered.filter(p => {
                     try {

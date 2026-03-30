@@ -49,12 +49,14 @@ export const ProductInfo = ({
                     </div>
 
                     <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-2 relative z-10">
-                        <DetailRow label="Двигатель" value={attrs.specs?.engine || 'Электро'} />
+                        <DetailRow label="Двигатель" value={attrs.specs?.engine || attrs.specs?.engineType || 'ДВС'} />
                         <DetailRow label="Коробка" value={attrs.specs?.transmission || 'Автомат'} />
-                        <DetailRow label="Привод" value={attrs.specs?.drive || 'Полный'} />
+                        <DetailRow label="Привод" value={attrs.specs?.drive || 'Передний'} />
                         <DetailRow label="Цвет" value={selectedColor?.name || attrs.specs?.color || 'Белый'} />
                         <DetailRow label="Пробег" value={`${attrs.specs?.mileage || 0} км`} />
                         <DetailRow label="Год выпуска" value={attrs.specs?.year} />
+                        <DetailRow label="Состояние" value={attrs.specs?.accidentHistory === 'Есть' || attrs.specs?.accidentHistory === true ? 'Битый / Есть повреждения' : 'Не битый'} />
+                        {attrs.specs?.repainted && <DetailRow label="Окрас" value={attrs.specs.repainted === 'Есть' || attrs.specs.repainted === true ? 'Освежен / Крашен' : 'В родной краске'} />}
                     </div>
                 </section>
             )}

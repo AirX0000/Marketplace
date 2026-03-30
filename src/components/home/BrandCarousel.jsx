@@ -1,17 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-
+import { getImageUrl } from '../../lib/utils';
 const BRANDS = [
-    { name: 'BMW', url: 'https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg' },
-    { name: 'Mercedes-Benz', url: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg' },
+    { name: 'BMW', url: '/brands/bmw.png' },
+    { name: 'Mercedes-Benz', url: '/brands/mercedes.png' },
     { name: 'BYD', url: '/brands/byd.png' },
     { name: 'Zeekr', url: '/brands/zeekr.png' },
-    { name: 'Tesla', url: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg' },
-    { name: 'Chevrolet', url: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Chevrolet-logo.png' },
-    { name: 'Hyundai', url: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Hyundai_Motor_Company_logo.svg' },
-    { name: 'Kia', url: 'https://upload.wikimedia.org/wikipedia/commons/4/47/KIA_logo2.svg' },
-    { name: 'Toyota', url: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_carlogo.svg' },
+    { name: 'Tesla', url: '/brands/tesla.png' },
+    { name: 'Chevrolet', url: '/brands/chevrolet.png' },
+    { name: 'Hyundai', url: '/brands/hyundai.png' },
+    { name: 'Kia', url: '/brands/kia.png' },
+    { name: 'Toyota', url: '/brands/toyota.png' },
     { name: 'Lexus', url: '/brands/lexus.png' }
 ];
 
@@ -43,7 +43,7 @@ export function BrandCarousel() {
                             className="mx-2 md:mx-4 shrink-0 flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-card border border-border rounded-2xl md:rounded-[2rem] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group-btn p-4 hover:border-primary/50"
                         >
                             <img
-                                src={brand.url}
+                                src={getImageUrl(brand.url)}
                                 alt={brand.name}
                                 className="w-full h-full object-contain filter dark:brightness-200 dark:grayscale transition-all duration-300 drop-shadow-sm group-hover:scale-110"
                                 loading="lazy"

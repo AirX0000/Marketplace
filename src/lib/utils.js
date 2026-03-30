@@ -33,8 +33,14 @@ export function getImageUrl(img) {
     }
     
     if (typeof window !== 'undefined' && url.startsWith('/')) {
-        // If we're on localhost development server, use the localhost backend port (3000)
+        // Paths starting with /images/ or /brands/ are local frontend public assets
+        const isPublicAsset = url.startsWith('/images/') || url.startsWith('/brands/');
+        
+        // If we're on localhost development server, decide whether to use 3000 (backend) or current origin (frontend)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            if (isPublicAsset) {
+                return `${window.location.origin}${url}`;
+            }
             return `http://${window.location.hostname}:3000${url}`;
         }
         

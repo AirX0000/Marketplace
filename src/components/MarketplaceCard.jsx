@@ -96,17 +96,6 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        isInCompare ? removeFromCompare(marketplace.id) : addToCompare(marketplace);
-                                    }}
-                                    aria-label="Сравнить"
-                                    className={`rounded-full p-2.5 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
-                                    title="Сравнить"
-                                >
-                                    <Scale className="h-5 w-5" />
-                                </button>
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
                                         toggleFavorite(marketplace);
                                     }}
                                     aria-label="В избранное"
@@ -193,24 +182,13 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
+                                e.stopPropagation();
                                 toggleFavorite(marketplace);
                             }}
                             aria-label="В избранное"
                             className={`rounded-full p-2 backdrop-blur-md transition-all shadow-lg ${isFav ? 'bg-red-500 text-white scale-110' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
                         >
                             <Heart className={`h-4 w-4 ${isFav ? 'fill-current' : ''}`} />
-                        </button>
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                isInCompare ? removeFromCompare(marketplace.id) : addToCompare(marketplace);
-                            }}
-                            aria-label="Сравнить"
-                            className={`rounded-full p-2 backdrop-blur-md transition-all shadow-lg ${isInCompare ? 'bg-emerald-500 text-white' : 'bg-card/90 text-foreground hover:bg-card hover:scale-105'}`}
-                            title="Сравнить"
-                        >
-                            <Scale className="h-4 w-4" />
                         </button>
                     </div>
                 </div>

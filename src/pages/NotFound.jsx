@@ -72,8 +72,8 @@ export function NotFound() {
                     </div>
 
                     <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 opacity-50">
-                        <QuickLink icon={<Map size={16} />} label="Каталог" path="/catalog" navigate={navigate} />
-                        <QuickLink icon={<Search size={16} />} label="Поиск" path="/catalog" navigate={navigate} />
+                        <QuickLink icon={<Map size={16} />} label="Каталог" path="/marketplaces" navigate={navigate} />
+                        <QuickLink icon={<Search size={16} />} label="Поиск" path="/marketplaces" navigate={navigate} />
                         <QuickLink icon={<Home size={16} />} label="О нас" path="/about" navigate={navigate} />
                         <QuickLink icon={<Map size={16} />} label="Помощь" path="/help" navigate={navigate} />
                     </div>

@@ -91,8 +91,8 @@ export function MarketplaceDetail() {
 
     const breadcrumbs = useMemo(() => [
         { label: 'Главная', path: '/' },
-        { label: 'Каталог', path: '/catalog' },
-        { label: marketplace?.categoryName || marketplace?.category, path: `/catalog?category=${marketplace?.category}` },
+        { label: 'Каталог', path: '/marketplaces' },
+        { label: marketplace?.categoryName || marketplace?.category, path: `/marketplaces?category=${marketplace?.category}` },
         { label: displayName }
     ], [marketplace, displayName]);
 

@@ -49,7 +49,7 @@ const CATEGORIES = [
 ];
 
 const BRANDS_MODELS = {
-    'Chevrolet': ['Cobalt', 'Gentra', 'Malibu', 'Tracker', 'Equinox', 'Lacetti', 'Nexia 3', 'Damas', 'Tahoe', 'Traverse', 'Spark', 'Matiz', 'Captiva', 'Epica'],
+    'Chevrolet': ['Spark', 'Cobalt', 'Gentra', 'Malibu', 'Tracker', 'Equinox', 'Lacetti', 'Nexia 3', 'Damas', 'Tahoe', 'Traverse', 'Matiz', 'Captiva', 'Epica'],
     'BYD': ['Song Plus', 'Chazor', 'Han', 'Atto 3', 'Seal', 'Destroyer 05', 'Tang', 'Song Pro', 'Qin Plus', 'e2', 'Seagull', 'Yuan Plus', 'Dolphin'],
     'Kia': ['Rio', 'K5', 'Sorento', 'Sportage', 'Stinger', 'Carnival', 'EV6', 'Telluride'],
     'Hyundai': ['Accent', 'Elantra', 'Tucson', 'Santa Fe', 'Sonata', 'Palisade', 'Kona', 'Staria'],
@@ -653,18 +653,19 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                                 <option value="Вариатор">Вариатор</option>
                                             </select>
                                             <input type="number" step="0.1" placeholder="Объем двигателя (л)" value={formData.attributes.specs?.engine || ""} onChange={e => handleSpecChange('engine', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold" />
-                                            <select value={formData.attributes.specs?.fuel || ""} onChange={e => handleSpecChange('fuel', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold appearance-none">
-                                                <option value="">Топливо</option>
+                                            <select value={formData.attributes.specs?.engineType || formData.attributes.specs?.fuel || ""} onChange={e => handleSpecChange('engineType', e.target.value)} className="h-10 border border-border bg-background text-foreground rounded-xl px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-semibold appearance-none">
+                                                <option value="">Тип двигателя</option>
                                                 <option value="Бензин">Бензин</option>
                                                 <option value="Дизель">Дизель</option>
-                                                <option value="Газ">Газ</option>
+                                                <option value="Метан">Метан</option>
+                                                <option value="Пропан">Пропан</option>
                                                 <option value="Электро">Электро</option>
                                                 <option value="Гибрид">Гибрид</option>
                                             </select>
                                         </div>
                                         <div className="flex items-center gap-6 pt-2 px-1">
                                             <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer text-foreground/80 hover:text-foreground">
-                                                <input type="checkbox" checked={formData.attributes.specs?.accident_history || false} onChange={e => handleSpecChange('accident_history', e.target.checked)} className="rounded border-border text-primary focus:ring-primary w-4 h-4 cursor-pointer" />
+                                                <input type="checkbox" checked={formData.attributes.specs?.accidentHistory || false} onChange={e => handleSpecChange('accidentHistory', e.target.checked)} className="rounded border-border text-primary focus:ring-primary w-4 h-4 cursor-pointer" />
                                                 Битый
                                             </label>
                                             <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer text-foreground/80 hover:text-foreground">

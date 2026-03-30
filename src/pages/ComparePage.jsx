@@ -158,10 +158,10 @@ export function ComparePage() {
 
                                                 <div className="flex gap-4">
                                                     <button
-                                                        onClick={() => { addToCart(item); toast.success('Добавлено в корзину'); }}
-                                                        className="flex-1 h-12 bg-purple-600 hover:bg-purple-500 text-white font-black text-[9px] uppercase tracking-[0.2em] rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-600/20 active:scale-95 italic"
+                                                        onClick={() => { window.location.href = `tel:${item.owner?.phone || item.phone || '+998900000000'}`; }}
+                                                        className="flex-1 h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[9px] uppercase tracking-[0.2em] rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-600/20 active:scale-95 italic"
                                                     >
-                                                        <ShoppingCart size={14} /> Купить
+                                                        <Phone size={14} /> Заказать
                                                     </button>
                                                     <Link
                                                         to={`/marketplaces/${item.slug || item.id}`}
@@ -250,10 +250,10 @@ export function ComparePage() {
                                     {compareItems.map(item => (
                                         <td key={item.id} className="p-8 text-center">
                                             <button
-                                                onClick={() => { addToCart(item); toast.success('Добавлено!'); }}
-                                                className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl transition-all shadow-xl shadow-purple-600/20 active:scale-95 italic group/cta"
+                                                onClick={() => { window.location.href = `tel:${item.owner?.phone || item.phone || '+998900000000'}`; }}
+                                                className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl transition-all shadow-xl shadow-emerald-600/20 active:scale-95 italic group/cta"
                                             >
-                                                <Zap size={14} className="inline-block mr-2 group-hover:scale-125 transition-transform" fill="currentColor" /> Купить Сейчас
+                                                <Phone size={14} className="inline-block mr-2 group-hover:scale-125 transition-transform" /> Заказать
                                             </button>
                                         </td>
                                     ))}

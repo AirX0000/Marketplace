@@ -19,9 +19,9 @@ export function CommandPalette() {
     const { isAuthenticated, isBuyer, isPartner, isAdmin, user } = useShop();
 
     const actions = [
-        { id: 'catalog', name: 'Каталог товаров', icon: LayoutGrid, path: '/catalog', shortcut: 'C' },
-        { id: 'cars', name: 'Автомобили', icon: Car, path: '/catalog?category=Transport', shortcut: 'A' },
-        { id: 'homes', name: 'Недвижимость', icon: Home, path: '/catalog?category=Real Estate', shortcut: 'R' },
+        { id: 'catalog', name: 'Каталог товаров', icon: LayoutGrid, path: '/marketplaces', shortcut: 'C' },
+        { id: 'cars', name: 'Автомобили', icon: Car, path: '/marketplaces?category=Transport', shortcut: 'A' },
+        { id: 'homes', name: 'Недвижимость', icon: Home, path: '/marketplaces?category=Real Estate', shortcut: 'R' },
         { id: 'chat', name: 'Сообщения', icon: MessageSquare, path: '/chat', shortcut: 'M' },
         { id: 'favorites', name: 'Избранное', icon: Heart, path: '/favorites', shortcut: 'F' },
         { id: 'profile', name: 'Личный кабинет', icon: User, path: '/profile', shortcut: 'P' },

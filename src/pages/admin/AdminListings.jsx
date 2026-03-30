@@ -441,7 +441,7 @@ export function AdminListings() {
                                                     {isAdmin ? (
                                                         <>
                                                             <Link
-                                                                to={`/catalog/${item.id}`}
+                                                                to={`/marketplaces/${item.id}`}
                                                                 target="_blank"
                                                                 className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-border text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                                                                 title="Смотреть на сайте"
@@ -641,7 +641,7 @@ export function AdminListings() {
                                 )}
                                 
                                 <div className="mt-4">
-                                    <Link to={`/catalog/${item.id}`} target="_blank" className="flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-slate-100 text-slate-600 font-bold text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-colors border border-slate-200">
+                                    <Link to={`/marketplaces/${item.id}`} target="_blank" className="flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-slate-100 text-slate-600 font-bold text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-colors border border-slate-200">
                                         <ExternalLink size={14} /> Смотреть на сайте
                                     </Link>
                                 </div>
