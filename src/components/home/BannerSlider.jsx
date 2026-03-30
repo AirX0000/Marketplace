@@ -123,7 +123,7 @@ export function BannerSlider() {
             </div>
 
             {/* Navigation Dots */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                 {banners.map((_, index) => (
                     <button
                         key={index}

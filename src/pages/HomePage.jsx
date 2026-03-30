@@ -153,7 +153,7 @@ export function HomePage() {
                             <BannerSlider />
                             
                             {/* Floating Search Bar */}
-                            <div className="absolute inset-x-4 bottom-8 md:bottom-12 z-20 flex flex-col items-center">
+                            <div className="absolute inset-x-4 bottom-4 md:bottom-6 z-20 flex flex-col items-center">
                                 <div className="text-center mb-6 hidden md:block">
                                     <h2 className="text-white text-4xl md:text-5xl font-black italic uppercase tracking-tighter drop-shadow-2xl">
                                         Найди свой дом или авто
