@@ -86,7 +86,7 @@ export function Header() {
             setTimeout(() => {
                 const nlpParams = parseNLPQuery(transcript);
                 const searchParams = new URLSearchParams();
-                searchParams.set('q', transcript);
+                searchParams.set('search', transcript);
                 Object.entries(nlpParams).forEach(([k, v]) => searchParams.set(k, v));
                 navigate(`/marketplaces?${searchParams.toString()}`);
             }, 500);
@@ -137,23 +137,24 @@ export function Header() {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full h-12 pl-12 pr-24 bg-transparent text-sm md:text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none"
                                 />
-                                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-2">
                                     <button
                                         type="button"
                                         onClick={startRecording}
                                         className={cn(
-                                            "p-2 rounded-xl transition-all mr-1",
+                                            "h-10 w-10 flex items-center justify-center rounded-xl transition-all",
                                             isListening ? "text-red-500 bg-red-100 dark:bg-red-500/20 animate-pulse" : "text-slate-400 hover:text-slate-600 hover:bg-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-300"
                                         )}
                                         title="Голосовой поиск"
                                     >
-                                        <Mic size={18} />
+                                        <Mic size={20} />
                                     </button>
                                     <button
                                         type="submit"
-                                        className="h-10 px-6 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20"
+                                        className="h-10 px-6 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20 flex items-center gap-2"
                                     >
-                                        {t('common.find', 'Найти')}
+                                        <Search size={16} className="md:hidden lg:block" />
+                                        <span>{t('common.find', 'Найти')}</span>
                                     </button>
                                 </div>
                             </div>

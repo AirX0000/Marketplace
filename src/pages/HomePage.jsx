@@ -180,9 +180,10 @@ export function HomePage() {
                                         </div>
                                         <button 
                                             type="submit"
-                                            className="h-12 md:h-14 px-8 bg-primary text-primary-foreground rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/25"
+                                            className="h-12 md:h-14 px-8 bg-primary text-primary-foreground rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/25 flex items-center gap-2"
                                         >
-                                            Найти
+                                            <Search size={18} />
+                                            <span>Найти</span>
                                         </button>
                                     </div>
                                 </form>
