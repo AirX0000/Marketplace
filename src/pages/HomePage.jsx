@@ -151,7 +151,6 @@ export function HomePage() {
                         {/* Main Banner Slider */}
                         <div className="relative w-full aspect-[4/5] sm:aspect-square md:aspect-video md:max-h-[550px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
                             <BannerSlider />
-                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
                             
                             {/* Floating Search Bar */}
                             <div className="absolute inset-x-4 bottom-8 md:bottom-12 z-20 flex flex-col items-center">

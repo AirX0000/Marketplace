@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
+import { getImageUrl } from '../../lib/utils';
 import { BannerSkeleton } from './BannerSkeleton';
 
 export function BannerSlider() {
@@ -23,13 +24,13 @@ export function BannerSlider() {
                     setBanners([
                         {
                             id: 'default-1',
-                            imageUrl: 'https://images.unsplash.com/photo-1620067335606-f138e65893b8?q=80&w=2000',
+                            imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000',
                             title: t('home.banners.premium_cars', 'Доступные автомобили'),
                             link: '/marketplaces?category=Transport'
                         },
                         {
                             id: 'default-2',
-                            imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000',
+                            imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000',
                             title: t('home.banners.luxury_villas', 'Лучшая недвижимость'),
                             link: '/marketplaces?category=Недвижимость'
                         }
@@ -77,22 +78,23 @@ export function BannerSlider() {
                     className="absolute inset-0"
                 >
                     <Link to={banners[currentIndex].link} className="block w-full h-full">
-                        {/* Dark gradient overlay for text readability */}
-                        <div className="absolute inset-x-0 bottom-0 top-1/4 bg-linear-to-t from-black/80 via-black/20 to-transparent z-10 pointer-events-none" />
+                        {/* Gradient overlays for text readability */}
+                        <div className="absolute inset-x-0 bottom-0 top-1/2 bg-linear-to-t from-black/60 to-transparent z-10 pointer-events-none" />
+                        <div className="absolute inset-x-0 top-0 h-1/2 bg-linear-to-b from-black/60 to-transparent z-10 pointer-events-none" />
                         
-                        <div className="absolute bottom-16 left-12 z-20 max-w-xl animate-in fade-in slide-in-from-left-8 duration-700">
-                            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight drop-shadow-lg uppercase">
+                        <div className="absolute top-12 md:top-20 left-8 md:left-12 z-20 max-w-xl animate-in fade-in slide-in-from-top-8 duration-700">
+                            <h2 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight drop-shadow-2xl uppercase leading-tight">
                                 {banners[currentIndex].title}
                             </h2>
                             <div className="flex gap-4">
-                                <span className="px-6 py-2.5 bg-white text-slate-900 rounded-xl font-bold text-sm shadow-xl hover:scale-105 transition-transform">
+                                <span className="px-6 py-2 bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-xl font-bold text-xs md:text-sm shadow-xl hover:bg-white/30 transition-all uppercase tracking-widest">
                                     Подробнее
                                 </span>
                             </div>
                         </div>
 
                         <img
-                            src={banners[currentIndex].imageUrl}
+                            src={getImageUrl(banners[currentIndex].imageUrl)}
                             alt={banners[currentIndex].title}
                             loading="lazy"
                             className="w-full h-full object-cover"
