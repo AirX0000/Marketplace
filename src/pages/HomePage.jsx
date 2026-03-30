@@ -1,26 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ArrowRight, Search, Gift, Zap, Crown, Flame, Clock, Percent, Smartphone, Building2 } from 'lucide-react';
+import { ArrowRight, Search } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { ServiceGrid } from '../components/home/ServiceGrid';
 import { BannerSlider } from '../components/home/BannerSlider';
-import { RecentlyViewed } from '../components/RecentlyViewed';
-import { BrandCarousel } from '../components/home/BrandCarousel';
+import { RecentlyViewed } from '../components/home/RecentlyViewed';
 import { useTranslation } from 'react-i18next';
 import { api } from '../lib/api';
 import { useShop } from '../context/ShopContext';
-import { EmptyState } from '../components/ui/EmptyState';
-
-const SEMANTIC_CATEGORIES = [
-    { id: 'popular', label: 'Популярное', search: 'hot', icon: Flame, color: 'text-orange-500 bg-orange-100 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20' },
-    { id: 'electric', label: 'Электро', search: 'электромобиль', icon: Zap, color: 'text-blue-500 bg-blue-100 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
-    { id: 'premium', label: 'Премиум', search: 'premium', icon: Crown, color: 'text-amber-500 bg-amber-100 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20' },
-    { id: 'discounts', label: 'Супер Цена', search: 'скидка', icon: Percent, color: 'text-emerald-500 bg-emerald-100 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20' },
-    { id: 'gifts', label: 'В подарок', search: 'подарок', icon: Gift, color: 'text-pink-500 bg-pink-100 dark:bg-pink-500/10 border-pink-200 dark:border-pink-500/20' },
-    { id: 'soon', label: 'Скоро', search: 'скоро', icon: Clock, color: 'text-slate-500 bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600' },
-];
 
 const MOCK_LISTINGS = [
     {
@@ -76,39 +65,21 @@ export function HomePage() {
     const [featured, setFeatured] = useState([]);
     const [recommendations, setRecommendations] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('popular');
 
     const [error, setError] = useState(null);
     const [searchTab, setSearchTab] = useState('realestate'); // 'realestate' | 'auto'
     const [searchQuery, setSearchQuery] = useState('');
     const [searchRegion, setSearchRegion] = useState('Все');
-    const [minPrice, setMinPrice] = useState('');
-    const [maxPrice, setMaxPrice] = useState('');
 
     const navigate = useNavigate();
 
     useEffect(() => {
         async function load() {
-            setLoading(true);
             try {
-                // Always fetch via getMarketplaces using the new 'tag' backend parameter
-                const params = { tag: activeTab, limit: 12 };
-                if (minPrice) params.minPrice = minPrice;
-                if (maxPrice) params.maxPrice = maxPrice;
-                
-                const data = await api.getMarketplaces(params);
-                console.log("Tab data received:", data);
-                let listings = Array.isArray(data) ? data : (data?.listings || []);
-                
-                // Filter out the persistent seeded mock items that user wants removed
-                const mockNamesToRemove = [
-                    "bmw x5", "tesla model", "li auto l9", "пентхаус в центре", "современная вилла"
-                ];
-                listings = listings.filter(item => {
-                    const itemName = (item.name || "").toLowerCase();
-                    return !mockNamesToRemove.some(mock => itemName.includes(mock));
-                });
-
+                const data = await api.getFeaturedMarketplaces();
+                console.log("Featured data received:", data);
+                // Handle both { listings: [...] } and [...] formats
+                const listings = Array.isArray(data) ? data : (data?.listings || []);
                 setFeatured(listings);
 
                 if (isAuthenticated) {
@@ -127,9 +98,11 @@ export function HomePage() {
             }
         }
         load();
-    }, [activeTab, isAuthenticated, minPrice, maxPrice]);
+    }, []);
+
     const handleSearchSubmit = (e) => {
         e.preventDefault();
+
         const params = new URLSearchParams();
         if (searchQuery.trim()) params.set('search', searchQuery.trim());
         if (searchRegion !== 'Все') params.set('region', searchRegion);
@@ -161,156 +134,80 @@ export function HomePage() {
         navigate(`/marketplaces?${params.toString()}`);
     };
 
-    const handleSemanticClick = (searchKeyword) => {
-        const params = new URLSearchParams();
-        if (searchKeyword) params.set('search', searchKeyword);
-        navigate(`/marketplaces?${params.toString()}`);
-    };
-
     return (
         <main className="min-h-screen bg-transparent">
             <Helmet>
-                <title>{t('seo.home_title')}</title>
-                <meta name="description" content={t('seo.home_description')} />
-                <link rel="canonical" href="https://autohouse.uz/" />
-                <meta property="og:title" content={t('seo.home_title')} />
-                <meta property="og:description" content={t('seo.home_description')} />
+                <title>Autohouse.uz - Автомобили и недвижимость в Узбекистане</title>
+                <meta name="description" content="Лучший маркетплейс автомобилей и недвижимости в Узбекистане. Безопасные сделки, проверенные продавцы." />
+                <meta property="og:title" content="Autohouse.uz" />
                 <meta property="og:type" content="website" />
-                <meta property="og:image" content="https://autohouse.uz/og-image.jpg" />
-                
-                {/* Structured Data (JSON-LD) */}
-                <script type="application/ld+json">
-                    {JSON.stringify([
-                        {
-                            "@context": "https://schema.org",
-                            "@type": "WebSite",
-                            "name": "Autohouse",
-                            "url": "https://autohouse.uz/",
-                            "potentialAction": {
-                                "@type": "SearchAction",
-                                "target": "https://autohouse.uz/marketplaces?search={search_term_string}",
-                                "query-input": "required name=search_term_string"
-                            }
-                        },
-                        {
-                            "@context": "https://schema.org",
-                            "@type": "LocalBusiness",
-                            "name": "Autohouse.uz",
-                            "image": "https://autohouse.uz/logo.png",
-                            "address": {
-                                "@type": "PostalAddress",
-                                "streetAddress": "Tashkent City",
-                                "addressLocality": "Tashkent",
-                                "addressCountry": "UZ"
-                            },
-                            "url": "https://autohouse.uz/",
-                            "telephone": "+998710000000"
-                        }
-                    ])}
-                </script>
             </Helmet>
             <h1 className="sr-only">Autohouse.uz - Автомобили и недвижимость в Узбекистане</h1>
             <div className="flex flex-col min-h-screen">
-                {/* HERO SEARCH SECTION */}
-                <section className="relative bg-[#0F1117] pt-6 pb-12 overflow-hidden">
-                    {/* Background Decorative Elements */}
-                    <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
-                         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-600/30 blur-[120px] rounded-full" />
-                         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-emerald-600/20 blur-[120px] rounded-full" />
-                    </div>
-
-                    <div className="container relative z-10">
-                        <div className="max-w-4xl mx-auto flex flex-col items-center">
-                            {/* Heading */}
-                            <div className="text-center mb-8">
-                                <h2 className="text-white text-3xl md:text-5xl font-black italic uppercase tracking-tighter drop-shadow-2xl">
-                                    {t('home.hero_title', 'Найди свой дом или авто')}
-                                </h2>
-                                <p className="text-white/50 text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mt-3">
-                                    {t('home.hero_subtitle', 'Премиальный маркетплейс в Узбекистане')}
-                                </p>
-                            </div>
-
-                            {/* Main Search Bar - Simplified per user request */}
-                            <div className="w-full max-w-4xl mb-12">
+                {/* HERO SECTION WITH BANNER AND ICONS */}
+                {/* HERO SECTION WITH BANNER AND ICONS */}
+                <section className="container py-4 md:py-6 px-4 md:px-6 relative">
+                    <div className="flex flex-col gap-4 md:gap-6 relative">
+                        {/* Main Banner Slider */}
+                        <div className="relative w-full aspect-[4/5] sm:aspect-square md:aspect-video md:max-h-[550px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
+                            <BannerSlider />
+                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
+                            
+                            {/* Floating Search Bar */}
+                            <div className="absolute inset-x-4 bottom-8 md:bottom-12 z-20 flex flex-col items-center">
+                                <div className="text-center mb-6 hidden md:block">
+                                    <h2 className="text-white text-4xl md:text-5xl font-black italic uppercase tracking-tighter drop-shadow-2xl">
+                                        Найди свой дом или авто
+                                    </h2>
+                                    <p className="text-white/70 text-sm font-black uppercase tracking-[0.3em] mt-2">
+                                        Премиальный маркетплейс в Узбекистане
+                                    </p>
+                                </div>
+                                
                                 <form 
                                     onSubmit={handleSearchSubmit}
-                                    className="flex bg-white/5 backdrop-blur-2xl rounded-[2rem] p-1.5 shadow-2xl border border-white/10 group/search focus-within:border-blue-500/50 transition-all"
+                                    className="w-full max-w-2xl bg-white/10 backdrop-blur-2xl rounded-2xl md:rounded-3xl p-2 border border-white/20 shadow-2xl hover:bg-white/[0.15] transition-all"
                                 >
-                                    <div className="flex flex-1 items-center gap-3 px-4">
-                                        <Search className="text-slate-500 group-focus-within/search:text-blue-500 transition-colors" size={20} />
-                                        <input 
-                                            type="text"
-                                            placeholder={t('home.search_placeholder', 'Поиск авто, недвижимости или услуг...')}
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full bg-transparent border-none outline-none text-white text-sm md:text-base font-medium py-3 placeholder:text-slate-600"
-                                        />
-                                    </div>
-
-                                    <div className="hidden md:flex items-center px-6 border-l border-white/10 gap-2">
-                                        <Building2 size={18} className="text-slate-500" />
-                                        <select 
-                                            value={searchRegion}
-                                            onChange={(e) => setSearchRegion(e.target.value)}
-                                            className="bg-transparent border-none outline-none text-white text-xs font-bold uppercase tracking-widest cursor-pointer"
+                                    <div className="flex flex-col md:flex-row gap-2">
+                                        <div className="flex-1 relative group">
+                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50 group-hover:text-white transition-colors" />
+                                            <input 
+                                                type="text"
+                                                placeholder="Поиск объявлений..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="w-full h-12 md:h-14 pl-12 pr-4 bg-transparent text-white font-bold placeholder:text-white/50 border-none focus:ring-0 outline-none"
+                                            />
+                                        </div>
+                                        <button 
+                                            type="submit"
+                                            className="h-12 md:h-14 px-8 bg-primary text-primary-foreground rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/25"
                                         >
-                                            <option value="Все">Весь Узбекистан</option>
-                                            <option value="Tashkent">Ташкент</option>
-                                            <option value="Samarkand">Самарканд</option>
-                                            <option value="Bukhara">Бухара</option>
-                                        </select>
+                                            Найти
+                                        </button>
                                     </div>
-
-                                    <button 
-                                        type="submit"
-                                        className="ml-2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20 active:scale-95 transition-all outline-none"
-                                    >
-                                        {t('common.find', 'Найти')}
-                                    </button>
                                 </form>
                             </div>
+                        </div>
+                        
+                        <RecentlyViewed />
 
-                            {/* Featured Categories (ServiceGrid) */}
+                        {/* Category Icons */}
+                        <div className="max-w-4xl mx-auto w-full">
                             <ServiceGrid />
-
-                            {/* Semantic Category Chips (Tabs) */}
-                            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
-                                {SEMANTIC_CATEGORIES.map((cat) => {
-                                    const Icon = cat.icon;
-                                    const isActive = activeTab === cat.id;
-                                    return (
-                                        <button
-                                            key={cat.id}
-                                            onClick={() => setActiveTab(cat.id)}
-                                            className={`flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 rounded-full font-bold text-[11px] md:text-xs border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg backdrop-blur-md ${isActive ? 'ring-2 ring-white/50 opacity-100 scale-105' : 'opacity-70 hover:opacity-100'} ${cat.color}`}
-                                        >
-                                            <Icon className="w-3.5 h-3.5 md:w-4 h-4" />
-                                            {cat.label}
-                                        </button>
-                                    );
-                                })}
-                            </div>
                         </div>
                     </div>
                 </section>
 
-                {/* Main Banner Slider - Moved below search */}
-                <section className="container py-8 md:py-12">
-                     <div className="relative w-full h-[40vh] min-h-[300px] md:h-[50vh] md:max-h-[500px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group">
-                        <BannerSlider />
-                    </div>
-                </section>
 
-                <BrandCarousel />
-                <RecentlyViewed />
+
 
                 {/* Recommendations Section */}
                 {isAuthenticated && recommendations.length > 0 && (
-                    <section className="container py-8 md:py-12">
+                    <section className="container py-8 md:py-12 px-4 md:px-6">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                                {t('home.recommendations_title', 'Персональные рекомендации для вас')}
+                                Рекомендуем для вас
                             </h2>
                         </div>
                         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -322,10 +219,10 @@ export function HomePage() {
                 )}
 
                 {/* Featured Section */}
-                <section className="container py-8 md:py-12">
+                <section className="container py-8 md:py-12 px-4 md:px-6">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                            {SEMANTIC_CATEGORIES.find(c => c.id === activeTab)?.label || t('home.popular', 'Популярные предложения')}
+                            {t('home.popular', 'Популярное')}
                         </h2>
                     </div>
                     {loading ? (
@@ -342,11 +239,13 @@ export function HomePage() {
                             </button>
                         </div>
                     ) : featured.length === 0 ? (
-                        <EmptyState 
-                            title={minPrice || maxPrice ? "В этом диапазоне пусто" : "Ничего не найдено"}
-                            description="Попробуйте изменить ценовой фильтр или выбрать другую категорию"
-                            onReset={() => { setMinPrice(''); setMaxPrice(''); setActiveTab('popular'); }}
-                        />
+                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0 md:mx-0 md:px-0 no-scrollbar">
+                            {MOCK_LISTINGS.map((item) => (
+                                <div key={item.id} className="snap-center shrink-0 w-[280px] md:w-auto">
+                                    <MarketplaceCard marketplace={item} />
+                                </div>
+                            ))}
+                        </div>
                     ) : (
                         <div className="grid grid-cols-2 lg:grid-cols-3 md:gap-6 gap-4">
                             {featured.map((item) => (
