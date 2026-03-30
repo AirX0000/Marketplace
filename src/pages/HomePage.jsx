@@ -73,6 +73,31 @@ export function HomePage() {
 
     const navigate = useNavigate();
 
+    const [isListening, setIsListening] = useState(false);
+    const { i18n } = useTranslation();
+
+    const startRecording = () => {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Ваш браузер не поддерживает голосовой поиск.");
+            return;
+        }
+
+        const recognition = new window.webkitSpeechRecognition();
+        recognition.lang = i18n.language === 'uz' ? 'uz-UZ' : 'ru-RU';
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setSearchQuery(transcript);
+            setTimeout(() => {
+                const params = new URLSearchParams();
+                params.set('search', transcript);
+                navigate(`/marketplaces?${params.toString()}`);
+            }, 500);
+        };
+        recognition.start();
+    };
+
     useEffect(() => {
         async function load() {
             try {
@@ -169,22 +194,33 @@ export function HomePage() {
                                 >
                                     <div className="flex flex-col md:flex-row gap-2">
                                         <div className="flex-1 relative group">
-                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50 group-hover:text-white transition-colors" />
+                                            <button
+                                                type="button"
+                                                onClick={startRecording}
+                                                className={cn(
+                                                    "absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-xl transition-all z-10",
+                                                    isListening ? "text-red-500 bg-red-100/20" : "text-white/50 hover:text-white hover:bg-white/10"
+                                                )}
+                                            >
+                                                <Mic size={22} />
+                                            </button>
                                             <input 
                                                 type="text"
                                                 placeholder="Поиск товара по имени..."
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                                className="w-full h-12 md:h-14 pl-12 pr-4 bg-transparent text-white font-bold placeholder:text-white/50 border-none focus:ring-0 outline-none"
+                                                className="w-full h-12 md:h-14 pl-14 pr-4 bg-transparent text-white font-bold placeholder:text-white/50 border-none focus:ring-0 outline-none"
                                             />
+                                            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                                                <button
+                                                    type="submit"
+                                                    className="h-10 px-6 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20 flex items-center gap-2"
+                                                >
+                                                    <Search size={16} />
+                                                    <span>{t('common.find', 'Найти')}</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button 
-                                            type="submit"
-                                            className="h-12 md:h-14 px-8 bg-primary text-primary-foreground rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/25 flex items-center gap-2"
-                                        >
-                                            <Search size={18} />
-                                            <span>Найти</span>
-                                        </button>
                                     </div>
                                 </form>
                             </div>

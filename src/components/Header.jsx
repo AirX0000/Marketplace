@@ -128,35 +128,34 @@ export function Header() {
                     {/* Search - Global */}
                     {(!isAuthenticated || isBuyer() || user?.role === 'SUPER_ADMIN') && (
                         <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl mx-2 md:mx-8 items-center">
-                            <div className="relative w-full flex items-center group bg-slate-100 dark:bg-slate-900 rounded-2xl border border-transparent dark:border-slate-800 transition-all hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50">
-                                <input
-                                    type="text"
-                                    placeholder={t('common.search_placeholder', 'Поиск товара по имени...')}
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full h-12 pl-6 pr-36 bg-transparent text-sm md:text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none"
-                                />
-                                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                                <div className="relative w-full flex items-center group bg-slate-100 dark:bg-slate-900 rounded-2xl border border-transparent dark:border-slate-800 transition-all hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50">
                                     <button
                                         type="button"
                                         onClick={startRecording}
                                         className={cn(
-                                            "h-10 w-10 flex items-center justify-center rounded-xl transition-all",
+                                            "absolute left-1 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-xl transition-all z-10",
                                             isListening ? "text-red-500 bg-red-100 dark:bg-red-500/20 animate-pulse" : "text-slate-400 hover:text-slate-600 hover:bg-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-300"
                                         )}
                                         title="Голосовой поиск"
                                     >
                                         <Mic size={20} />
                                     </button>
-                                    <button
-                                        type="submit"
-                                        className="h-10 px-6 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20 flex items-center gap-2"
-                                    >
-                                        <Search size={16} className="md:hidden lg:block" />
-                                        <span>{t('common.find', 'Найти')}</span>
-                                    </button>
+                                    <input
+                                        type="text"
+                                        placeholder={t('common.search_placeholder', 'Поиск товара по имени...')}
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full h-12 pl-12 pr-28 bg-transparent text-sm md:text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none"
+                                    />
+                                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                                        <button
+                                            type="submit"
+                                            className="h-10 px-6 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20"
+                                        >
+                                            {t('common.find', 'Найти')}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
                         </form>
                     )}
 
