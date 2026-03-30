@@ -129,13 +129,12 @@ export function Header() {
                     {(!isAuthenticated || isBuyer() || user?.role === 'SUPER_ADMIN') && (
                         <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl mx-2 md:mx-8 items-center">
                             <div className="relative w-full flex items-center group bg-slate-100 dark:bg-slate-900 rounded-2xl border border-transparent dark:border-slate-800 transition-all hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                                 <input
                                     type="text"
                                     placeholder={t('common.search_placeholder', 'Поиск товара по имени...')}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full h-12 pl-12 pr-24 bg-transparent text-sm md:text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none"
+                                    className="w-full h-12 pl-6 pr-36 bg-transparent text-sm md:text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none"
                                 />
                                 <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-2">
                                     <button
