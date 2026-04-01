@@ -20,7 +20,7 @@ class MarketplaceService {
 
         const where = { status: 'APPROVED' };
 
-        if (category && category !== 'All') {
+        if (category && category !== 'All' && category !== 'Все') {
             if (category.includes(',')) {
                 const categories = category.split(',').map(c => c.trim());
                 where.category = { in: categories };
@@ -100,39 +100,52 @@ class MarketplaceService {
         }
 
         // --- JSON Filtering (Cars & Real Estate) ---
-        // We use path-based filtering for JSON fields
-        if (["Cars", "Transport", "Автомобили"].includes(category)) {
+        // We use path-based filtering for JSON fields. 
+        // We detect the category group more broadly to apply these filters.
+        const catLower = (category || "").toLowerCase();
+        const isAutoGroup = ["cars", "transport", "автомобили", "транспорт", "avtomobil", "avto", "с пробегом", "автосалон"].some(s => catLower.includes(s));
+        const isRealEstateGroup = ["real estate", "apartments", "houses", "недвижимость", "uy", "joy", "новостройки", "вторичные", "вторичное жильё", "аренда"].some(s => catLower.includes(s));
+
+        if (isAutoGroup) {
             if (minYear || maxYear || minMileage || maxMileage || (transmission && transmission !== 'Все') || (bodyType && bodyType !== 'Все')) {
-                where.attributes = {
-                    path: ['specs'],
-                    string_contains: '' // Placeholder to invoke JSON path filtering logic if needed, 
-                    // but Prisma's `path` filter is more specific.
-                };
+                // If we already have attributes filter (e.g. from tag), we need to be careful.
+                // For simplicity, we merge into 'where.attributes' if it's already an AND/OR or just an object.
+                const carFilters = [];
+                
+                if (minYear) carFilters.push({ path: ['specs', 'year'], gte: parseInt(minYear) });
+                if (maxYear) carFilters.push({ path: ['specs', 'year'], lte: parseInt(maxYear) });
+                if (minMileage) carFilters.push({ path: ['specs', 'mileage'], gte: parseInt(minMileage) });
+                if (maxMileage) carFilters.push({ path: ['specs', 'mileage'], lte: parseInt(maxMileage) });
+                if (transmission && transmission !== 'Все') carFilters.push({ path: ['specs', 'transmission'], equals: transmission });
+                if (bodyType && bodyType !== 'Все') carFilters.push({ path: ['specs', 'bodyType'], equals: bodyType });
 
-                // Refined JSON filtering logic for Prisma
-                const specsFilter = {};
-                if (minYear) specsFilter.year = { gte: parseInt(minYear) };
-                if (maxYear) specsFilter.year = { lte: parseInt(maxYear) };
-                if (minMileage) specsFilter.mileage = { gte: parseInt(minMileage) };
-                if (maxMileage) specsFilter.mileage = { lte: parseInt(maxMileage) };
-                if (transmission && transmission !== 'Все') specsFilter.transmission = { equals: transmission };
-                if (bodyType && bodyType !== 'Все') specsFilter.bodyType = { equals: bodyType };
-
-                where.attributes = { path: ['specs'], equals: specsFilter };
-                // Note: Complex range and exact match mix in deep JSON is better done via separate fields 
-                // but since we migrated to Json type, we can use prisma.marketplace.findMany with path logic.
+                if (carFilters.length > 0) {
+                    if (!where.AND) where.AND = [];
+                    carFilters.forEach(f => where.AND.push({ attributes: f }));
+                }
             }
         }
 
-        if (["Real Estate", "Apartments", "Houses", "Недвижимость"].includes(category)) {
-            const specsFilter = {};
-            if (minArea) specsFilter.area = { gte: parseInt(minArea) };
-            if (maxArea) specsFilter.area = { lte: parseInt(maxArea) };
-            if (rooms && rooms !== 'Все') specsFilter.rooms = { equals: parseInt(rooms) };
-            if (floor && floor !== 'Все') specsFilter.floor = { equals: parseInt(floor) };
+        if (isRealEstateGroup) {
+            const reFilters = [];
+            if (minArea) reFilters.push({ path: ['specs', 'area'], gte: parseInt(minArea) });
+            if (maxArea) reFilters.push({ path: ['specs', 'area'], lte: parseInt(maxArea) });
+            if (rooms && rooms !== 'Все' && rooms !== '') {
+                const roomVal = parseInt(rooms);
+                if (!isNaN(roomVal)) {
+                    reFilters.push({ path: ['specs', 'rooms'], equals: roomVal });
+                }
+            }
+            if (floor && floor !== 'Все' && floor !== '') {
+                const floorVal = parseInt(floor);
+                if (!isNaN(floorVal)) {
+                    reFilters.push({ path: ['specs', 'floor'], equals: floorVal });
+                }
+            }
 
-            if (Object.keys(specsFilter).length > 0) {
-                where.attributes = { path: ['specs'], equals: specsFilter };
+            if (reFilters.length > 0) {
+                if (!where.AND) where.AND = [];
+                reFilters.forEach(f => where.AND.push({ attributes: f }));
             }
         }
 

@@ -145,7 +145,7 @@ export function Header() {
                                         placeholder={t('common.search_placeholder', 'Поиск товара по имени...')}
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full h-12 pl-12 pr-28 bg-transparent text-sm md:text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none"
+                                        className="w-full h-12 pl-12 pr-28 bg-transparent text-sm md:text-base text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none"
                                     />
                                     <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
                                         <button

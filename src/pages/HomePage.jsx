@@ -190,7 +190,7 @@ export function HomePage() {
                                 
                                 <form 
                                     onSubmit={handleSearchSubmit}
-                                    className="w-full max-w-2xl bg-white/10 backdrop-blur-2xl rounded-2xl md:rounded-3xl p-2 border border-white/20 shadow-2xl hover:bg-white/[0.15] transition-all"
+                                    className="w-full max-w-2xl bg-slate-900/40 backdrop-blur-2xl rounded-2xl md:rounded-3xl p-2 border border-white/20 shadow-2xl hover:bg-slate-900/60 transition-all"
                                 >
                                     <div className="flex flex-col md:flex-row gap-2">
                                         <div className="flex-1 relative group">
@@ -209,7 +209,7 @@ export function HomePage() {
                                                 placeholder="Поиск товара по имени..."
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                                className="w-full h-12 md:h-14 pl-14 pr-4 bg-transparent text-white font-bold placeholder:text-white/50 border-none focus:ring-0 outline-none"
+                                                className="w-full h-12 md:h-14 pl-14 pr-4 bg-transparent text-white font-bold placeholder:text-white/70 border-none focus:ring-0 outline-none"
                                             />
                                             <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
                                                 <button

@@ -53,9 +53,9 @@ export function MarketplaceListing() {
     const [categories, setCategories] = useState([]); // Full category objects
     const [regions, setRegions] = useState(["Все", "г.Ташкент", "Ташкентская область", "Самаркандская область", "Бухарская область", "Андижанская область", "Ферганская область"]);
     const catLowerState = (filters.category || "").toLowerCase();
-    const isRealEstateCategory = ["недвижимость", "real estate", "house", "apartment", "houses", "land", "new building", "private house"].includes(catLowerState);
-    const isAutoCategory = ["автомобили", "cars", "car", "auto", "transport", "dealer", "private auto"].includes(catLowerState);
-    const isServicesCategory = ["услуги", "services"].includes(catLowerState);
+    const isRealEstateCategory = ["недвижимость", "ko'chmas mulk", "real estate", "house", "apartment", "houses", "land", "new building", "private house", "новостройки", "вторичные", "вторичное жильё", "участки", "аренда"].includes(catLowerState);
+    const isAutoCategory = ["автомобили", "avtomobillar", "cars", "car", "auto", "transport", "dealer", "private auto", "автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)"].includes(catLowerState);
+    const isServicesCategory = ["услуги", "xizmatlar", "services"].includes(catLowerState);
 
     // Load categories from backend or use defaults
     useEffect(() => {
@@ -194,6 +194,22 @@ export function MarketplaceListing() {
         };
         // Only update if actually different to avoid loops
         if (JSON.stringify(newFilters) !== JSON.stringify(filters)) {
+            // Smart normalization: If the category from URL is actually a subcategory, 
+            // set the correct parent category and subcategory filter
+            const cat = newFilters.category;
+            const catL = cat.toLowerCase();
+            
+            const realEstateSubs = ["новостройки", "вторичные", "вторичное жильё", "нежилое помещение", "аренда", "участки"];
+            const autoSubs = ["автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)"];
+            
+            if (realEstateSubs.includes(catL)) {
+                newFilters.category = "Недвижимость";
+                newFilters.subcategory = cat;
+            } else if (autoSubs.includes(catL)) {
+                newFilters.category = "Автомобили";
+                newFilters.subcategory = cat;
+            }
+
             setFilters(newFilters);
         }
     }, [searchParams]);
@@ -212,9 +228,9 @@ export function MarketplaceListing() {
 
 
             const catLower = (filters.category || "").toLowerCase();
-            const isRealEstate = ["недвижимость", "real estate", "house", "apartment", "houses", "land", "new building", "private house"].includes(catLower);
-            const isAuto = ["автомобили", "cars", "car", "auto", "transport", "dealer", "private auto"].includes(catLower);
-            const isServices = ["услуги", "services"].includes(catLower);
+            const isRealEstate = ["недвижимость", "ko'chmas mulk", "real estate", "house", "apartment", "houses", "land", "new building", "private house", "новостройки", "вторичные", "вторичное жильё", "участки", "аренда"].includes(catLower);
+            const isAuto = ["автомобили", "avtomobillar", "cars", "car", "auto", "transport", "dealer", "private auto", "автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)"].includes(catLower);
+            const isServices = ["услуги", "xizmatlar", "services"].includes(catLower);
 
             if (catLower !== "все" && catLower !== "all" && catLower !== "") {
                 if (isRealEstate) {
@@ -225,21 +241,33 @@ export function MarketplaceListing() {
                     params.category = "Transport,Cars,Автомобили,Авто,Автосалон,С пробегом,Новый без пробега,Dealer,Private Auto,Vehicle,Бозор (Авто с пробегом),Автосалон (Новые авто)";
                 } else if (isServices) {
                     params.category = "Услуги,Services,Страхование,Оценка,Нотариус,Риелтор,Realtor";
+                } else {
+                    // Fallback: send the category string as is
+                    params.category = filters.category;
                 }
 
-                // If a subcategory is selected, override with specific subcategory
-                if (filters.subcategory) {
-                    params.category = filters.subcategory;
+                // If a subcategory is selected OR if the category itself is a subcategory, 
+                // override with specific subcategory mapping
+                const currentSub = filters.subcategory || (isRealEstate && filters.category !== "Недвижимость" ? filters.category : "") || (isAuto && filters.category !== "Автомобили" ? filters.category : "");
+
+                if (currentSub) {
+                    params.category = currentSub;
                     
+                    const subL = currentSub.toLowerCase();
+
                     // Specific mapping for car categories that match DB values
-                    if (filters.subcategory === "Новый без пробега" || filters.subcategory === "Автосалон") {
+                    if (subL === "новый без пробега" || subL === "автосалон" || subL === "автосалон (новые авто)") {
                         params.category = "Автосалон,Новый без пробега,Автосалон (Новые авто)";
-                    } else if (filters.subcategory === "С пробегом") {
+                    } else if (subL === "с пробегом" || subL === "бозор (авто с пробегом)") {
                         params.category = "С пробегом,Бозор (Авто с пробегом)";
-                    } else if (filters.subcategory === "Вторичные") {
-                        params.category = "Вторичные,Вторичное жильё";
-                    } else if (filters.subcategory === "Нежилое помещение") {
-                        params.category = "Нежилое помещение,Коммерческая недвижимость";
+                    } else if (subL === "вторичные" || subL === "вторичное жильё") {
+                        params.category = "Вторичные,Вторичное жильё,Вторичка";
+                    } else if (subL === "новостройки") {
+                        params.category = "Новостройки,New Building,Infinity Luxury Residence,Golden House"; // Added more variants
+                    } else if (subL === "нежилое помещение") {
+                        params.category = "Нежилое помещение,Коммерческая недвижимость,Коммерческая";
+                    } else if (subL === "участки") {
+                        params.category = "Участки,Земля,Land";
                     }
                 }
             }
@@ -270,14 +298,31 @@ export function MarketplaceListing() {
                         }
 
                         const specs = attrs.specs || {};
+                        const pCat = (p.category || "").toLowerCase();
+
+                        // Ensure item is actually Real Estate
+                        if (!pCat.match(/real estate|недвижимость|квартир|дом|земля|участ|аренд|новострой|вторич/)) return false;
 
                         // Subcategory (Type) Filter
-                        // We skip strict type check if they match broader categories handled by the backend
-                        if (filters.subcategory) {
-                            const pType = attrs.type || specs.type || "";
-                            if (pType && pType !== filters.subcategory) {
-                                // For real estate, 'Вторичные', 'Новостройки', 'Аренда' might not match 'type' which is usually 'Apartment'/'House'.
-                                // We rely on the backend `params.category` which correctly pulls these items.
+                        const currentSub = filters.subcategory || (filters.category !== "Недвижимость" ? filters.category : "");
+                        if (currentSub && currentSub !== "Все") {
+                            const subL = currentSub.toLowerCase();
+                            const pType = (attrs.type || specs.type || "").toLowerCase();
+
+                            // Match if category name contains subcategory, OR if attributes.type matches
+                            const matchesSub = pCat.includes(subL) || pType.includes(subL);
+                            
+                            // Special cases
+                            if (subL === "новостройки") {
+                                if (!matchesSub && !pCat.includes("new building") && !pType.includes("new building")) {
+                                    if (!specs.yearBuilt || Number(specs.yearBuilt) < 2024) return false;
+                                }
+                            } else if (subL === "вторичные" || subL === "вторичное жильё") {
+                                if (!matchesSub && !pCat.includes("вторич") && !pType.includes("вторич")) return false;
+                            } else if (subL === "аренда") {
+                                if (!pCat.includes("аренда") && !pType.includes("rent") && !p.name.toLowerCase().includes("аренд")) return false;
+                            } else if (!matchesSub) {
+                                return false;
                             }
                         }
 
@@ -297,7 +342,7 @@ export function MarketplaceListing() {
                         return true;
                     } catch (e) {
                         console.error("Filter error", e);
-                        return true; // Don't hide if filter crashes
+                        return true;
                     }
                 });
             }
@@ -315,20 +360,10 @@ export function MarketplaceListing() {
                         }
 
                         const specs = attrs.specs || {};
+                        const pCat = (p.category || "").toLowerCase();
 
-                        // Subcategory (Type) Filter
-                        // We skip strict client-side type filtering for cars because 
-                        // the backend handles it via `params.category` correctly, and cars
-                        // often don't have `attrs.type` populated (they use categories/condition).
-                        if (filters.subcategory) {
-                            const pType = attrs.type || specs.type || "";
-                            const condition = attrs.condition || specs.condition || "";
-                            if (pType && pType !== filters.subcategory && condition && condition !== filters.subcategory) {
-                                // Only reject if there is an explicit mismatch
-                                // return false;
-                            }
-                        }
-
+                        // Ensure item is actually Auto
+                        if (!pCat.match(/transport|cars|авто|машин|седан|кроссовер|внедорож/)) return false;
 
                         // Year Filter
                         if (filters.minYear && (!specs.year || Number(specs.year) < Number(filters.minYear))) return false;
@@ -470,7 +505,7 @@ export function MarketplaceListing() {
                                     placeholder="Поиск..."
                                     value={filters.search}
                                     onChange={(e) => updateFilter('search', e.target.value)}
-                                    className="w-full rounded-md border border-input bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                    className="w-full rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                 />
                             </div>
 

@@ -5,13 +5,25 @@ import { api } from '../lib/api';
 
 const categoryIcons = {
     'Недвижимость': Building2,
+    'Новостройки': Home,
+    'Вторичное жильё': Building2,
     'Автомобили': Car,
+    'С пробегом': Car,
+    'Автосалон': Car,
+    'Бозор (Авто с пробегом)': Car,
+    'Автосалон (Новые авто)': Car,
     'Услуги': Briefcase,
 };
 
 const categoryColors = {
     'Недвижимость': 'from-emerald-500/10 to-green-500/10 border-emerald-500/20 hover:border-emerald-500/40',
+    'Новостройки': 'from-emerald-500/10 to-green-500/10 border-emerald-500/20 hover:border-emerald-500/40',
+    'Вторичное жильё': 'from-emerald-500/10 to-green-500/10 border-emerald-500/20 hover:border-emerald-500/40',
     'Автомобили': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
+    'С пробегом': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
+    'Автосалон': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
+    'Бозор (Авто с пробегом)': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
+    'Автосалон (Новые авто)': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
     'Услуги': 'from-cyan-500/10 to-teal-500/10 border-cyan-500/20 hover:border-cyan-500/40',
 };
 
@@ -60,7 +72,7 @@ export function CategoryModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-end sm:items-start justify-center sm:pt-20 p-0 sm:px-4">
+        <div className="fixed inset-0 z-[500] flex items-end sm:items-start justify-center sm:pt-20 p-0 sm:px-4">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
