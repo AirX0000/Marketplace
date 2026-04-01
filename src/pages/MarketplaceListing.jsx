@@ -946,8 +946,8 @@ export function MarketplaceListing() {
                                 <p className="text-sm">Нажмите на одну из категорий выше, чтобы просмотреть предложения.</p>
                             </div>
                         ) : loading ? (
-                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                {[...Array(6)].map((_, i) => (
+                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                {[...Array(8)].map((_, i) => (
                                     <ProductSkeleton key={i} />
                                 ))}
                             </div>
@@ -962,7 +962,7 @@ export function MarketplaceListing() {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                         {marketplaces.map((item) => (
                                             <MarketplaceCard key={item.id} marketplace={item} />
                                         ))}

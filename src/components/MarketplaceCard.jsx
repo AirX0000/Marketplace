@@ -54,7 +54,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         <img
                             src={getImageUrl(marketplace.images || marketplace.image) || "/images/car_mock.png"}
                             alt={`${displayName} - ${marketplace.region} | Autohouse`}
-                            loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-500 group-hover:scale-110"
+                            loading="lazy" decoding="async" className="h-full w-full object-contain transition-all duration-500 group-hover:scale-105"
                             onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.src = "/images/car_mock.png";
@@ -156,7 +156,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                     <img
                         src={getImageUrl(marketplace.images || marketplace.image) || "/images/car_mock.png"}
                         alt={`${displayName} - ${marketplace.region} | Autohouse`}
-                        loading="lazy" decoding="async" className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy" decoding="async" className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                         onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = "/images/car_mock.png";
@@ -193,7 +193,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col p-4 md:p-5">
+                <div className="flex flex-1 flex-col p-4 md:p-4">
                     <div className="mb-2 flex items-center justify-between">
                         <div className="flex items-center gap-1">
                             <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] md:text-xs font-semibold border-primary/20 bg-primary/10 text-primary">
@@ -283,7 +283,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
 
 
                     <Link to={`/marketplaces/${marketplace.slug || marketplace.id}`} className="mb-2 block">
-                        <h3 className="line-clamp-1 text-sm md:text-lg font-bold text-foreground group-hover:text-primary transition-colors">{displayName}</h3>
+                        <h3 className="line-clamp-1 text-sm md:text-base font-bold text-foreground group-hover:text-primary transition-colors">{displayName}</h3>
                     </Link>
 
                     {/* Attributes Display */}
@@ -324,7 +324,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
 
                     <div className="flex flex-col md:flex-row md:items-center justify-between border-t border-border pt-3 mt-auto gap-3">
                         <div className="flex flex-col">
-                            <div className="font-black text-foreground text-base md:text-xl tracking-tighter leading-none">
+                            <div className="font-black text-foreground text-base md:text-lg tracking-tighter leading-none">
                                 {(Math.round((marketplace.price || 4999000) * (1 - (marketplace.discount || 0) / 100))).toLocaleString()} Sum
                             </div>
                             <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">
