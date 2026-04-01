@@ -127,7 +127,7 @@ export function Header() {
 
                     {/* Search - Global */}
                     {(!isAuthenticated || isBuyer() || user?.role === 'SUPER_ADMIN') && (
-                        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-2 md:mx-4 items-center min-w-0">
+                        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-2 md:mx-4 items-center min-w-[280px]">
                                 <div className="relative w-full flex items-center group bg-slate-100 dark:bg-slate-900 rounded-2xl border border-transparent dark:border-slate-800 transition-all hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50">
                                     <button
                                         type="button"
@@ -150,16 +150,15 @@ export function Header() {
                                     <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
                                         <button
                                             type="submit"
-                                            className="h-10 px-6 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20"
+                                            className="h-10 px-3 lg:px-6 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20"
                                         >
-                                            {t('common.find', 'Найти')}
+                                            <span className="hidden lg:inline">{t('common.find', 'Найти')}</span>
+                                            <Search className="lg:hidden h-4 w-4" />
                                         </button>
                                     </div>
                                 </div>
                         </form>
                     )}
-
-                    <div className="flex-1" />
 
                     {/* Right Side Actions */}
                     <div className="flex items-center gap-1 md:gap-2">
@@ -173,10 +172,10 @@ export function Header() {
 
                         <Link
                             to="/post-ad"
-                            className="flex items-center gap-1.5 bg-emerald-600 text-white px-2.5 py-2 rounded-xl text-[10px] md:text-sm font-black md:font-bold uppercase tracking-tight md:tracking-normal shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 active:scale-95 transition-all mr-1 md:mr-2"
+                            className="flex items-center gap-1.5 bg-emerald-600 text-white px-2.5 py-2 rounded-xl text-[10px] md:text-sm font-black md:font-bold uppercase tracking-tight md:tracking-normal shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 active:scale-95 transition-all mr-1 md:mr-2 shrink-0 pr-3"
                         >
                             <Plus size={16} className="shrink-0" />
-                            <span className="leading-none whitespace-nowrap hidden md:inline">{t('common.add_listing', 'Разместить объявление')}</span>
+                            <span className="leading-none whitespace-nowrap hidden 2xl:inline">{t('common.add_listing', 'Разместить объявление')}</span>
                         </Link>
 
                         <div className="hidden md:block">

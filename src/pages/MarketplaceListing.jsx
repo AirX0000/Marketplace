@@ -139,7 +139,7 @@ export function MarketplaceListing() {
                     }
                 });
 
-                // Merge with STATIC structures for subcategories if missing
+                // Merge with STATIC structures for subcategories
                 let merged = [...normalized];
                 STATIC_CATEGORIES.forEach(staticCat => {
                     const index = merged.findIndex(c => (typeof c === 'string' ? c : c.name) === staticCat.name);
@@ -148,10 +148,22 @@ export function MarketplaceListing() {
                         if (typeof existing === 'string') {
                             merged[index] = { name: existing, sub: staticCat.sub };
                         } else {
-                            if (!existing.sub) existing.sub = [];
-                            staticCat.sub.forEach(s => {
-                                if (!existing.sub.includes(s)) existing.sub.push(s);
-                            });
+                            // If API returns many subcategories, we strictly stick to our defined structure
+                            // OR merge them while avoiding English/Russian duplicates
+                            const combinedSub = [...staticCat.sub];
+                            if (existing.sub) {
+                                existing.sub.forEach(s => {
+                                    const sl = s.toLowerCase();
+                                    // Only add from API if it's not logically covered by our static list
+                                    const isRedundant = combinedSub.some(st => 
+                                        st.toLowerCase() === sl || 
+                                        (sl === 'apartment' && st === 'Новостройки') ||
+                                        (sl === 'house' && st === 'Дома')
+                                    );
+                                    if (!isRedundant) combinedSub.push(s);
+                                });
+                            }
+                            merged[index] = { ...existing, sub: combinedSub };
                         }
                     } else {
                         merged.push(staticCat);
@@ -821,7 +833,7 @@ export function MarketplaceListing() {
 
                         {/* Pill Categories for Real Estate */}
                         {isRealEstateCategory && (
-                            <div className="flex gap-2 overflow-x-auto pb-6 no-scrollbar scroll-smooth">
+                            <div className="flex flex-wrap gap-2 mb-8 items-center">
                                 {(() => {
                                     const currCat = categories.find(c => (c.name || c) === filters.category);
                                     const pills = currCat?.sub ? ["Все", ...currCat.sub] : ["Все", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда", "Участки"];
