@@ -108,7 +108,7 @@ export function Header() {
                     isScrolled ? "h-16 shadow-sm" : "h-20"
                 )}
             >
-                <div className="container flex h-full items-center gap-4">
+                <div className="container flex h-full items-center gap-2 md:gap-4 px-2 md:px-4">
                     <Link to="/" className="flex-none flex items-center mr-4 group">
                         <img src="/logo-full.png" alt="Autohouse" className="h-8 md:h-10 w-auto object-contain transition-transform group-hover:scale-105" />
                     </Link>
@@ -127,7 +127,7 @@ export function Header() {
 
                     {/* Search - Global */}
                     {(!isAuthenticated || isBuyer() || user?.role === 'SUPER_ADMIN') && (
-                        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl mx-2 md:mx-8 items-center">
+                        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-2 md:mx-4 items-center min-w-0">
                                 <div className="relative w-full flex items-center group bg-slate-100 dark:bg-slate-900 rounded-2xl border border-transparent dark:border-slate-800 transition-all hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50">
                                     <button
                                         type="button"
@@ -165,10 +165,10 @@ export function Header() {
                     <div className="flex items-center gap-1 md:gap-2">
                         <Link
                             to="/mortgage"
-                            className="hidden md:flex items-center gap-1.5 bg-orange-500/10 text-orange-600 px-3 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-orange-500/20 active:scale-95 transition-all mr-1 md:mr-2"
+                            className="hidden md:flex items-center gap-1.5 bg-orange-500/10 text-orange-600 px-3 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-orange-500/20 active:scale-95 transition-all mr-1 md:mr-2 shrink-0"
                         >
                             <Building2 size={16} className="shrink-0" />
-                            <span>{t('home.mortgage', 'Ипотека')}</span>
+                            <span className="hidden xl:inline">{t('home.mortgage', 'Ипотека')}</span>
                         </Link>
 
                         <Link
@@ -204,7 +204,7 @@ export function Header() {
                         {/* Notification Bell */}
                         {isAuthenticated && <NotificationBell />}
 
-                        <div className="w-px h-6 bg-border mx-2 hidden md:block" />
+                        <div className="w-px h-6 bg-border mx-1 hidden lg:block" />
 
                         {/* User Profile / Login */}
                         {isAuthenticated ? (
