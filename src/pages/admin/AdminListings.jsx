@@ -225,7 +225,7 @@ export function AdminListings() {
                     >
                         <option value="ALL">Все категории</option>
                         <option value="Недвижимость">Недвижимость</option>
-                        <option value="Cars">Транспорт</option>
+                        <option value="Транспорт">Транспорт</option>
                         <option value="Services">Услуги</option>
                     </select>
                 </div>
@@ -317,10 +317,10 @@ export function AdminListings() {
                                     // 2. Category Filter
                                     if (categoryFilter !== 'ALL') {
                                         // Simple mapping for main categories
-                                        if (categoryFilter === 'Недвижимость' && !['Houses', 'Apartments', 'Commercial', 'Land', 'Novostroyka', 'New Building', 'Private House'].includes(item.category)) return false;
-                                        if (categoryFilter === 'Cars' && !['Cars', 'Transport', 'Moto', 'Trucks', 'Dealer', 'Private Auto'].includes(item.category)) return false;
+                                        if (categoryFilter === 'Недвижимость' && !['Недвижимость', 'Houses', 'Apartments', 'Commercial', 'Land', 'Novostroyka', 'New Building', 'Private House', 'Вторичное жильё', 'Новостройки'].includes(item.category)) return false;
+                                        if (categoryFilter === 'Транспорт' && !['Транспорт', 'Cars', 'Transport', 'Moto', 'Trucks', 'Dealer', 'Private Auto', 'Автосалон', 'С пробегом'].includes(item.category)) return false;
                                         // Direct match fallback
-                                        if (!['Недвижимость', 'Cars'].includes(categoryFilter) && item.category !== categoryFilter) return false;
+                                        if (!['Недвижимость', 'Транспорт'].includes(categoryFilter) && item.category !== categoryFilter) return false;
                                     }
 
                                     // 3. Search Filter
