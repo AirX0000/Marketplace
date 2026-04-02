@@ -127,6 +127,11 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                             </div>
                             </div>
                             <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    navigate(`/marketplaces/${marketplace.slug || marketplace.id}#contact-sidebar`);
+                                }}
                                 className={`inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-medium transition-all duration-300 active:scale-95 bg-emerald-600 text-white hover:bg-emerald-700 relative z-10`}
                             >
                                 Заказать
@@ -334,6 +339,11 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                         </div>
 
                         <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                navigate(`/marketplaces/${marketplace.slug || marketplace.id}#contact-sidebar`);
+                            }}
                             className={`flex h-9 md:h-10 items-center justify-center rounded-xl px-4 text-xs md:text-sm font-bold transition-all duration-300 shadow-sm active:scale-95 bg-emerald-600 text-white hover:bg-emerald-700 relative z-10`}
                         >
                             Заказать

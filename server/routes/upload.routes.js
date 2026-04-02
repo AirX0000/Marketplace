@@ -26,15 +26,15 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 50 * 1024 * 1024 }, // Increased to 50MB for high-res phone photos
     fileFilter: (req, file, cb) => {
-        // Accept all types of images, including HEIC/HEIF from iPhones
+        // Accept all types of images, including HEIC/HEIF from iPhones and modern formats like AVIF
         const isImage = file.mimetype.startsWith('image/') || 
-                        /heic|heif/i.test(file.mimetype) ||
-                        /heic|heif|jpeg|jpg|png|webp|bmp|gif/i.test(path.extname(file.originalname));
+                        /heic|heif|avif|tiff|svg/i.test(file.mimetype) ||
+                        /heic|heif|jpeg|jpg|png|webp|bmp|gif|avif|tiff|svg|jfif|jpe/i.test(path.extname(file.originalname));
         
         if (isImage) {
             return cb(null, true);
         }
-        cb(new Error('Разрешены только изображения (jpeg, png, webp, heic и т.д.)!'));
+        cb(new Error('Разрешены только изображения (jpeg, png, webp, heic, avif и т.д.)!'));
     }
 });
 

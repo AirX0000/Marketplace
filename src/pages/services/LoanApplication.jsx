@@ -355,7 +355,7 @@ export function LoanApplication() {
                                         <div key={field} className="space-y-2">
                                             <label className="text-sm font-bold text-slate-700">{label}</label>
                                             <label className={`w-full h-28 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 hover:border-orange-400 transition-all group ${uploadedFiles[field] ? 'border-emerald-400 bg-emerald-50' : 'border-slate-300 bg-slate-50'}`}>
-                                                <input type="file" className="hidden" accept=".png,.jpg,.jpeg,.pdf" onChange={handleFileUpload(field)} />
+                                                <input type="file" className="hidden" accept="image/*,.pdf" onChange={handleFileUpload(field)} />
                                                 {uploadedFiles[field] ? (
                                                     <>
                                                         <Check size={24} className="text-emerald-500 mb-1" />
