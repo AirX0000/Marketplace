@@ -259,10 +259,20 @@ class MarketplaceService {
 
     async getCategories() {
         const categories = await prisma.category.findMany();
-        return categories.map(c => ({
-            ...c,
-            sub: JSON.parse(c.subcategories || "[]")
+        
+        // Fetch counts for each category
+        const categoriesWithCounts = await Promise.all(categories.map(async (c) => {
+            const count = await prisma.marketplace.count({
+                where: { category: c.name, status: 'APPROVED' }
+            });
+            return {
+                ...c,
+                count,
+                sub: JSON.parse(c.subcategories || "[]")
+            };
         }));
+
+        return categoriesWithCounts;
     }
 
 

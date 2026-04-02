@@ -49,13 +49,14 @@ export function MarketplaceListing() {
         sort: searchParams.get('sort') || "popular"
     });
 
-    // Categories state
     const [categories, setCategories] = useState([]); // Full category objects
-    const [regions, setRegions] = useState(["Все", "г.Ташкент", "Ташкентская область", "Самаркандская область", "Бухарская область", "Андижанская область", "Ферганская область"]);
-    const catLowerState = (filters.category || "").toLowerCase();
-    const isRealEstateCategory = ["недвижимость", "ko'chmas mulk", "real estate", "house", "apartment", "houses", "land", "new building", "private house", "новостройки", "вторичные", "вторичное жильё", "участки", "аренда"].includes(catLowerState);
-    const isAutoCategory = ["автомобили", "avtomobillar", "cars", "car", "auto", "transport", "dealer", "private auto", "автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)"].includes(catLowerState);
-    const isServicesCategory = ["услуги", "xizmatlar", "services"].includes(catLowerState);
+    const [regions, setRegions] = useState(["Все"]);
+    
+    const catName = filters.category || "Все";
+    const isRealEstateCategory = ["недвижимость", "real estate"].includes(catName.toLowerCase());
+    const isAutoCategory = ["транспорт", "автомобили", "cars", "transport"].includes(catName.toLowerCase());
+    const isServicesCategory = ["услуги", "services"].includes(catName.toLowerCase());
+    const isElectronicsCategory = ["электроника", "electronics"].includes(catName.toLowerCase());
 
     // Load categories from backend or use defaults
     useEffect(() => {
@@ -65,117 +66,14 @@ export function MarketplaceListing() {
             }
         }).catch(err => console.error("Failed to fetch regions", err));
 
-        // Fallback static categories in case API is empty or we want to enforce structure
-        const STATIC_CATEGORIES = [
-            {
-                name: "Недвижимость",
-                sub: [
-                    "Новостройки",
-                    "Вторичные",
-                    "Нежилое помещение",
-                    "Аренда",
-                    "Участки"
-                ]
-            },
-            {
-                name: "Автомобили",
-                sub: [
-                    "Автосалон",
-                    "С пробегом",
-                    "Новый без пробега"
-                ]
-            },
-            {
-                name: "Услуги",
-                sub: [
-                    "Страхование",
-                    "Оценка",
-                    "Нотариус",
-                    "Риелтор"
-                ]
-            }
-        ];
-
         api.getCategories().then(data => {
             if (data && data.length > 0) {
-                // Normalize and merge categories
-                let normalized = [];
-                const seenNames = new Set();
-
-                // Advanced Grouping / Merging
-                const CATEGORY_MAP = {
-                    'Real Estate': 'Недвижимость',
-                    'RealEstate': 'Недвижимость',
-                    'Properties': 'Недвижимость',
-                    'Apartment': 'Недвижимость',
-                    'House': 'Недвижимость'
-                };
-
-                // Helper to get normalized name
-                const getNormalizedName = (item) => {
-                    const rawName = typeof item === 'string' ? item : (item.name || "");
-                    return CATEGORY_MAP[rawName] || rawName;
-                };
-
-                data.forEach(item => {
-                    const name = getNormalizedName(item);
-                    if (!name) return;
-
-                    if (seenNames.has(name)) {
-                        const existing = normalized.find(c => (typeof c === 'string' ? c : c.name) === name);
-                        if (typeof existing === 'object' && typeof item === 'object' && item.sub) {
-                            if (!existing.sub) existing.sub = [];
-                            item.sub.forEach(s => {
-                                if (!existing.sub.includes(s)) existing.sub.push(s);
-                            });
-                        }
-                    } else {
-                        seenNames.add(name);
-                        if (typeof item === 'object') {
-                            normalized.push({ ...item, name });
-                        } else {
-                            normalized.push(name);
-                        }
-                    }
-                });
-
-                // Merge with STATIC structures for subcategories
-                let merged = [...normalized];
-                STATIC_CATEGORIES.forEach(staticCat => {
-                    const index = merged.findIndex(c => (typeof c === 'string' ? c : c.name) === staticCat.name);
-                    if (index !== -1) {
-                        const existing = merged[index];
-                        if (typeof existing === 'string') {
-                            merged[index] = { name: existing, sub: staticCat.sub };
-                        } else {
-                            // If API returns many subcategories, we strictly stick to our defined structure
-                            // OR merge them while avoiding English/Russian duplicates
-                            const combinedSub = [...staticCat.sub];
-                            if (existing.sub) {
-                                existing.sub.forEach(s => {
-                                    const sl = s.toLowerCase();
-                                    // Only add from API if it's not logically covered by our static list
-                                    const isRedundant = combinedSub.some(st => 
-                                        st.toLowerCase() === sl || 
-                                        (sl === 'apartment' && st === 'Новостройки') ||
-                                        (sl === 'house' && st === 'Дома')
-                                    );
-                                    if (!isRedundant) combinedSub.push(s);
-                                });
-                            }
-                            merged[index] = { ...existing, sub: combinedSub };
-                        }
-                    } else {
-                        merged.push(staticCat);
-                    }
-                });
-                setCategories(merged);
-            } else {
-                setCategories(STATIC_CATEGORIES);
+                // Filter categories with at least 1 product as per user request
+                const activeCats = data.filter(c => c.count > 0);
+                setCategories(activeCats);
             }
         }).catch(err => {
-            console.error("Failed to load categories, using static", err);
-            setCategories(STATIC_CATEGORIES);
+            console.error("Failed to load categories", err);
         });
     }, []);
 
@@ -211,14 +109,14 @@ export function MarketplaceListing() {
             const cat = newFilters.category;
             const catL = cat.toLowerCase();
             
-            const realEstateSubs = ["новостройки", "вторичные", "вторичное жильё", "нежилое помещение", "аренда", "участки"];
-            const autoSubs = ["автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)"];
+            const realEstateSubs = ["новостройки", "вторичные", "вторичное жильё", "нежилое помещение", "аренда", "участки", "внешний вид", "дизайн"];
+            const autoSubs = ["автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)", "мотоциклы", "спецтехника"];
             
             if (realEstateSubs.includes(catL)) {
                 newFilters.category = "Недвижимость";
                 newFilters.subcategory = cat;
             } else if (autoSubs.includes(catL)) {
-                newFilters.category = "Автомобили";
+                newFilters.category = "Транспорт";
                 newFilters.subcategory = cat;
             }
 
@@ -246,15 +144,14 @@ export function MarketplaceListing() {
 
             if (catLower !== "все" && catLower !== "all" && catLower !== "") {
                 if (isRealEstate) {
-                    // Match any subcategory of Real Estate OR the main category itself
-                    params.category = "Real Estate,Недвижимость,Квартиры,Дома,Коммерческая,Земля,Apartments,Houses,New Building,Private House,Property,Вторичные,Вторичное жильё,Новостройки,Нежилое помещение,Аренда,Участки";
+                    params.category = "Недвижимость";
                 } else if (isAuto) {
-                    // Match any subcategory of Cars OR the main category itself
-                    params.category = "Transport,Cars,Автомобили,Авто,Автосалон,С пробегом,Новый без пробега,Dealer,Private Auto,Vehicle,Бозор (Авто с пробегом),Автосалон (Новые авто)";
+                    params.category = "Транспорт";
                 } else if (isServices) {
-                    params.category = "Услуги,Services,Страхование,Оценка,Нотариус,Риелтор,Realtor";
+                    params.category = "Услуги";
+                } else if (isElectronicsCategory) {
+                    params.category = "Электроника";
                 } else {
-                    // Fallback: send the category string as is
                     params.category = filters.category;
                 }
 
@@ -414,6 +311,34 @@ export function MarketplaceListing() {
         }
     }
 
+    const translateCategory = (name) => {
+        if (name === "Все") return t('common.all', 'Все');
+        const keyMap = {
+            'Транспорт': 'cat_transport',
+            'Недвижимость': 'cat_real_estate',
+            'Услуги': 'cat_services',
+            'Электроника': 'cat_electronics'
+        };
+        const key = keyMap[name] || name.toLowerCase();
+        return t(`ads.${key}`, name);
+    };
+
+    const translateSubcategory = (name) => {
+        const subKeyMap = {
+            'Бозор (Авто с пробегом)': 'sub_used_cars',
+            'Автосалон (Новые авто)': 'sub_new_cars',
+            'Мотоциклы': 'sub_moto',
+            'Спецтехника': 'sub_special',
+            'Вторичное жильё': 'sub_resale',
+            'Новостройки': 'sub_new_build',
+            'Аренда': 'sub_rent',
+            'Участки': 'sub_land',
+            'Коммерческая недвижимость': 'sub_commercial'
+        };
+        const key = subKeyMap[name];
+        return key ? t(`ads.${key}`, name) : name;
+    };
+
     const updateFilter = (key, value) => {
         setFilters(prev => ({ ...prev, [key]: value }));
     };
@@ -495,33 +420,40 @@ export function MarketplaceListing() {
                         )}>
                             <div className="flex items-center justify-between mb-4 pb-2 border-b lg:border-none border-border">
                                 <h3 className="flex items-center text-lg font-semibold text-slate-900 dark:text-white">
-                                    <Filter className="mr-2 h-4 w-4" /> Фильтры
-                                </h3>
-                                <div className="flex items-center gap-4">
-                                    <button onClick={clearFilters} className="text-xs text-muted-foreground hover:text-primary underline">
-                                        Сбросить
-                                    </button>
-                                    {isMobileFiltersOpen && (
-                                        <button onClick={() => setIsMobileFiltersOpen(false)} className="lg:hidden p-2 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white">
-                                            <X className="h-4 w-4" />
-                                        </button>
-                                    )}
+                                    <Filter className="mr-2 h-4 w-4" /> Фильт                            <div className="space-y-6">
+                                {/* Categories */}
+                                <div>
+                                    <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Категории</h4>
+                                    <div className="space-y-2">
+                                        <label className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
+                                            <input
+                                                type="radio"
+                                                name="category"
+                                                checked={filters.category === "Все"}
+                                                onChange={() => {
+                                                    setFilters(prev => ({ ...prev, category: "Все", subcategory: "" }));
+                                                }}
+                                                className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                                            />
+                                            <span>{t('common.all', 'Все')}</span>
+                                        </label>
+                                        {categories.map((catObj) => (
+                                            <label key={catObj.id || catObj.name} className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
+                                                <input
+                                                    type="radio"
+                                                    name="category"
+                                                    checked={filters.category === catObj.name}
+                                                    onChange={() => {
+                                                        setFilters(prev => ({ ...prev, category: catObj.name, subcategory: "" }));
+                                                    }}
+                                                    className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                                                />
+                                                <span>{translateCategory(catObj.name)}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Search */}
-                            <div className="relative mb-6">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <input
-                                    type="text"
-                                    placeholder="Поиск..."
-                                    value={filters.search}
-                                    onChange={(e) => updateFilter('search', e.target.value)}
-                                    className="w-full rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                                />
-                            </div>
-
-                            <div className="space-y-6">
                                 {/* Region */}
                                 <div>
                                     <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Регион</h4>
@@ -541,134 +473,41 @@ export function MarketplaceListing() {
                                     </div>
                                 </div>
 
-                                {/* Real Estate Filters */}
-                                {isRealEstateCategory && (
-                                    <div className="space-y-6 animate-in slide-in-from-left-2 fade-in">
-                                        {/* Rooms */}
-                                        <div>
-                                            <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Количество комнат</h4>
-                                            <div className="flex gap-2">
-                                                {['1', '2', '3', '4+'].map(r => (
-                                                    <button
-                                                        key={r}
-                                                        onClick={() => updateFilter('rooms', filters.rooms === r ? "" : r)}
-                                                        className={`flex-1 h-9 rounded-lg border text-sm font-medium transition-all ${filters.rooms === r ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-500'}`}
-                                                    >
-                                                        {r}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Area */}
-                                        <div>
-                                            <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Площадь (м²)</h4>
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="number"
-                                                    placeholder="От"
-                                                    value={filters.minArea}
-                                                    onChange={(e) => updateFilter('minArea', e.target.value)}
-                                                    className="w-full rounded-md border border-input px-3 py-1 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                                />
-                                                <span className="text-muted-foreground self-center dark:text-slate-400">-</span>
-                                                <input
-                                                    type="number"
-                                                    placeholder="До"
-                                                    value={filters.maxArea}
-                                                    onChange={(e) => updateFilter('maxArea', e.target.value)}
-                                                    className="w-full rounded-md border border-input px-3 py-1 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Car Filters */}
-                                {isAutoCategory && (
-                                    <div className="space-y-6 animate-in slide-in-from-left-2 fade-in">
-                                        {/* Year */}
-                                        <div>
-                                            <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Год выпуска</h4>
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="number"
-                                                    placeholder="От"
-                                                    value={filters.minYear}
-                                                    onChange={(e) => updateFilter('minYear', e.target.value)}
-                                                    className="w-full rounded-md border border-input px-3 py-1 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                                />
-                                                <span className="text-muted-foreground self-center dark:text-slate-400">-</span>
-                                                <input
-                                                    type="number"
-                                                    placeholder="До"
-                                                    value={filters.maxYear}
-                                                    onChange={(e) => updateFilter('maxYear', e.target.value)}
-                                                    className="w-full rounded-md border border-input px-3 py-1 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Mileage */}
-                                        <div>
-                                            <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Пробег (км)</h4>
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="number"
-                                                    placeholder="От"
-                                                    value={filters.minMileage}
-                                                    onChange={(e) => updateFilter('minMileage', e.target.value)}
-                                                    className="w-full rounded-md border border-input px-3 py-1 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                                />
-                                                <span className="text-muted-foreground self-center dark:text-slate-400">-</span>
-                                                <input
-                                                    type="number"
-                                                    placeholder="До"
-                                                    value={filters.maxMileage}
-                                                    onChange={(e) => updateFilter('maxMileage', e.target.value)}
-                                                    className="w-full rounded-md border border-input px-3 py-1 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Brand */}
-                                        <div>
-                                            <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Марка</h4>
-                                            <input
-                                                type="text"
-                                                placeholder="Например, Toyota"
-                                                value={filters.brand}
-                                                onChange={(e) => updateFilter('brand', e.target.value)}
-                                                className="w-full rounded-md border border-input px-3 py-2 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                            />
-                                        </div>
-
-                                        {/* Color */}
-                                        <div>
-                                            <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Цвет</h4>
-                                            <input
-                                                type="text"
-                                                placeholder="Например, Белый"
-                                                value={filters.color}
-                                                onChange={(e) => updateFilter('color', e.target.value)}
-                                                className="w-full rounded-md border border-input px-3 py-2 text-sm bg-background dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-
-
-
                                 {/* Subcategories Filter */}
-                                {filters.category !== "Все" && categories.find(c => (c.name || c) === filters.category)?.sub && (
+                                {filters.category !== "Все" && categories.find(c => c.name === filters.category)?.sub && (
                                     <div className="animate-in slide-in-from-left-2 fade-in">
                                         <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">
-                                            {filters.category === "Автомобили" ? "Тип кузова" :
+                                            {filters.category === "Транспорт" ? "Тип транспорта" :
                                                 filters.category === "Услуги" ? "Вид услуги" :
                                                     "Тип недвижимости"}
                                         </h4>
                                         <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
                                             <label className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
+                                                <input
+                                                    type="radio"
+                                                    name="subcategory"
+                                                    checked={filters.subcategory === ""}
+                                                    onChange={() => updateFilter('subcategory', "")}
+                                                    className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                                                />
+                                                <span>Все</span>
+                                            </label>
+                                            {categories.find(c => c.name === filters.category)?.sub?.map((sub) => (
+                                                <label key={sub} className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
+                                                    <input
+                                                        type="radio"
+                                                        name="subcategory"
+                                                        checked={filters.subcategory === sub}
+                                                        onChange={() => updateFilter('subcategory', sub)}
+                                                        className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                                                    />
+                                                    <span>{translateSubcategory(sub)}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+-slate-700 dark:text-slate-300">
                                                 <input
                                                     type="radio"
                                                     name="subcategory"
@@ -687,7 +526,7 @@ export function MarketplaceListing() {
                                                         onChange={() => updateFilter('subcategory', sub)}
                                                         className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
                                                     />
-                                                    <span>{sub}</span>
+                                                    <span>{translateSubcategory(sub)}</span>
                                                 </label>
                                             ))}
                                         </div>
@@ -751,12 +590,12 @@ export function MarketplaceListing() {
                             <div>
                                 <h1 className="text-3xl font-bold tracking-tight mb-2 text-slate-900 dark:text-white">
                                     {isRealEstateCategory
-                                        ? "Недвижимость"
+                                        ? t('ads.cat_real_estate', 'Недвижимость')
                                         : isAutoCategory
-                                            ? "Автомобили"
+                                            ? t('ads.cat_transport', 'Транспорт')
                                             : isServicesCategory
-                                                ? "Услуги"
-                                                : "Каталог"}
+                                                ? t('ads.cat_services', 'Услуги')
+                                                : t('common.catalog', 'Каталог')}
                                 </h1>
                                 <p className="text-muted-foreground text-sm dark:text-slate-400">
                                     Найдено {marketplaces.length} результатов.
@@ -848,7 +687,7 @@ export function MarketplaceListing() {
                                                     : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-600 hover:text-emerald-600 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:hover:border-emerald-500 hover:shadow-sm'
                                                     }`}
                                             >
-                                                {pill}
+                                                {pill === "Все" ? t('common.all', 'Все') : translateSubcategory(pill)}
                                             </button>
                                         );
                                     });

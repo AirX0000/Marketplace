@@ -1,35 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { X, Home, Car, Laptop, Shirt, Sofa, Smartphone, Watch, Book, Dumbbell, Palette, Wrench, Briefcase, Building2, Sparkles } from 'lucide-react';
+import { X, Home, Car, Laptop, Briefcase, Building2, Sparkles, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../lib/api';
 
 const categoryIcons = {
     'Недвижимость': Building2,
-    'Новостройки': Home,
-    'Вторичное жильё': Building2,
-    'Автомобили': Car,
-    'С пробегом': Car,
-    'Автосалон': Car,
-    'Бозор (Авто с пробегом)': Car,
-    'Автосалон (Новые авто)': Car,
+    'Транспорт': Car,
     'Услуги': Briefcase,
+    'Электроника': Laptop,
 };
 
 const categoryColors = {
     'Недвижимость': 'from-emerald-500/10 to-green-500/10 border-emerald-500/20 hover:border-emerald-500/40',
-    'Новостройки': 'from-emerald-500/10 to-green-500/10 border-emerald-500/20 hover:border-emerald-500/40',
-    'Вторичное жильё': 'from-emerald-500/10 to-green-500/10 border-emerald-500/20 hover:border-emerald-500/40',
-    'Автомобили': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
-    'С пробегом': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
-    'Автосалон': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
-    'Бозор (Авто с пробегом)': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
-    'Автосалон (Новые авто)': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
+    'Транспорт': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
     'Услуги': 'from-cyan-500/10 to-teal-500/10 border-cyan-500/20 hover:border-cyan-500/40',
+    'Электроника': 'from-purple-500/10 to-indigo-500/10 border-purple-500/20 hover:border-purple-500/40',
 };
 
 export function CategoryModal({ isOpen, onClose }) {
+    const { t } = useTranslation();
     const [categories, setCategories] = useState([]);
-    const [totalListings, setTotalListings] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -41,27 +32,10 @@ export function CategoryModal({ isOpen, onClose }) {
     const loadCategories = async () => {
         try {
             setLoading(true);
-            const response = await api.getMarketplaces({ limit: 1000 });
-
-            // Count items per category
-            const categoryCounts = {};
-            let total = 0;
-
-            if (response.listings) {
-                response.listings.forEach(item => {
-                    const category = item.category || 'Другое';
-                    categoryCounts[category] = (categoryCounts[category] || 0) + 1;
-                    total++;
-                });
-            }
-
-            // Convert to array and sort by count
-            const categoryArray = Object.entries(categoryCounts)
-                .map(([name, count]) => ({ name, count }))
-                .sort((a, b) => b.count - a.count);
-
-            setCategories(categoryArray);
-            setTotalListings(total);
+            const data = await api.getCategories();
+            // Filter categories with at least 1 product
+            const activeCats = data.filter(c => c.count > 0);
+            setCategories(activeCats);
         } catch (error) {
             console.error('Failed to load categories:', error);
         } finally {
@@ -69,7 +43,20 @@ export function CategoryModal({ isOpen, onClose }) {
         }
     };
 
+    const translateCategory = (name) => {
+        const keyMap = {
+            'Транспорт': 'cat_transport',
+            'Недвижимость': 'cat_real_estate',
+            'Услуги': 'cat_services',
+            'Электроника': 'cat_electronics'
+        };
+        const key = keyMap[name] || name.toLowerCase();
+        return t(`ads.${key}`, name);
+    };
+
     if (!isOpen) return null;
+
+    const totalListings = categories.reduce((sum, c) => sum + c.count, 0);
 
     return (
         <div className="fixed inset-0 z-[500] flex items-end sm:items-start justify-center sm:pt-20 p-0 sm:px-4">
@@ -86,10 +73,10 @@ export function CategoryModal({ isOpen, onClose }) {
                     <div>
                         <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                             <Sparkles className="h-6 w-6 text-primary" />
-                            Каталог товаров
+                            {t('common.catalog', 'Каталог товаров')}
                         </h2>
                         <p className="text-sm text-slate-400 mt-1">
-                            {totalListings.toLocaleString('ru-RU')} предложений
+                            {totalListings.toLocaleString('ru-RU')} {t('common.listings_count', 'предложений')}
                         </p>
                     </div>
                     <button
@@ -103,10 +90,12 @@ export function CategoryModal({ isOpen, onClose }) {
                 {/* Categories Grid */}
                 <div className="p-6 max-h-[70vh] overflow-y-auto">
                     {loading ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {[...Array(8)].map((_, i) => (
-                                <div key={i} className="h-32 bg-slate-800/50 rounded-xl animate-pulse" />
-                            ))}
+                        <div className="flex items-center justify-center py-20">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        </div>
+                    ) : categories.length === 0 ? (
+                        <div className="text-center py-20 text-slate-400">
+                            {t('home.no_products', 'Нет доступных категорий')}
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -127,10 +116,10 @@ export function CategoryModal({ isOpen, onClose }) {
                                             </div>
                                             <div>
                                                 <h3 className="font-semibold text-white text-sm leading-tight">
-                                                    {category.name}
+                                                    {translateCategory(category.name)}
                                                 </h3>
                                                 <p className="text-xs text-slate-400 mt-1">
-                                                    {category.count.toLocaleString('ru-RU')} {category.count === 1 ? 'предложение' : category.count < 5 ? 'предложения' : 'предложений'}
+                                                    {category.count.toLocaleString('ru-RU')} {t('common.offer', 'предложение')}
                                                 </p>
                                             </div>
                                         </div>
@@ -151,7 +140,7 @@ export function CategoryModal({ isOpen, onClose }) {
                             className="mt-6 flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed border-slate-600 hover:border-primary hover:bg-primary/5 transition-all group"
                         >
                             <span className="text-slate-300 group-hover:text-primary font-medium">
-                                Посмотреть все товары
+                                {t('common.view_all_products', 'Посмотреть все товары')}
                             </span>
                             <Sparkles className="h-5 w-5 text-slate-400 group-hover:text-primary" />
                         </Link>

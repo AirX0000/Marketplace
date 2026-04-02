@@ -173,7 +173,8 @@
         "sub_new_build": "Новостройки",
         "sub_rent": "Аренда",
         "sub_land": "Участки",
-        "sub_commercial": "Коммерческая недвижимость"
+        "sub_commercial": "Коммерческая недвижимость",
+        "cat_electronics": "Электроника"
     },
     "seo": {
         "home_title": "Autohouse.uz — Автомобили и недвижимость в Узбекистане",

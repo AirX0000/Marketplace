@@ -173,7 +173,8 @@
         "sub_new_build": "Novostroyka",
         "sub_rent": "Ijaraga berish",
         "sub_land": "Uchastkalar",
-        "sub_commercial": "Tijorat ko'chmas mulki"
+        "sub_commercial": "Tijorat ko'chmas mulki",
+        "cat_electronics": "Elektronika"
     },
     "seo": {
         "home_title": "Autohouse.uz — O'zbekistondagi avtomobillar va ko'chmas mulk",
