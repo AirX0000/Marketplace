@@ -25,11 +25,42 @@ export const ProductInfo = ({
     isAuto, 
     attrs, 
     selectedColor, 
+    setSelectedColor,
     displayDescription, 
     marketplace
 }) => {
+    const colors = attrs?.colors || [];
+
     return (
         <div className="space-y-8">
+            {/* Color Selection (if available) */}
+            {colors.length > 0 && (
+                <section className="bg-[#191624] rounded-[32px] p-8 md:p-10 shadow-2xl border border-white/5 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-transparent to-transparent pointer-events-none" />
+                    <h2 className="text-xl font-black text-white uppercase tracking-tighter italic mb-6 relative z-10">Доступные цвета</h2>
+                    <div className="flex flex-wrap gap-4 relative z-10">
+                        {colors.map((color, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => setSelectedColor(color)}
+                                className={cn(
+                                    "group flex items-center gap-3 px-4 py-2 rounded-2xl border transition-all duration-300",
+                                    selectedColor?.name === color.name 
+                                        ? "bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/20" 
+                                        : "bg-white/5 border-white/5 text-slate-400 hover:bg-white/10"
+                                )}
+                            >
+                                <div 
+                                    className="w-5 h-5 rounded-full border border-white/20 shadow-sm"
+                                    style={{ backgroundColor: color.hex || '#ccc' }}
+                                />
+                                <span className="text-[10px] font-black uppercase tracking-widest italic">{color.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                </section>
+            )}
+
             {/* Technical Specs Grid (Auto Only) */}
             {isAuto && (
                 <section className="bg-[#191624] rounded-[32px] p-8 md:p-12 shadow-2xl border border-white/5 relative overflow-hidden group">

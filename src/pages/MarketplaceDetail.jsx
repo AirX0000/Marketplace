@@ -61,6 +61,10 @@ export function MarketplaceDetail() {
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const [selectedColor, setSelectedColor] = useState(null);
+    const handleColorSelect = (color) => {
+        setSelectedColor(color);
+        if (color.image) setActiveImage(color.image);
+    };
     const [selectedMod, setSelectedMod] = useState(null);
     const [isWatchingPrice, setIsWatchingPrice] = useState(false);
     const [priceHistory, setPriceHistory] = useState([]);
@@ -238,6 +242,7 @@ export function MarketplaceDetail() {
                             isAuto={isAuto}
                             attrs={attrs}
                             selectedColor={selectedColor}
+                            setSelectedColor={handleColorSelect}
                             displayDescription={displayDescription}
                             marketplace={marketplace}
                         />
