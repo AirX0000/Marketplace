@@ -25,15 +25,23 @@ exports.getListingById = asyncHandler(async (req, res) => {
 });
 
 exports.getCategories = asyncHandler(async (req, res) => {
+    // Force refresh if requested or if cache is empty
+    if (req.query.refresh === 'true') {
+        cache.del(cache.KEYS.CATEGORIES);
+    }
+    
     const cachedCategories = cache.get(cache.KEYS.CATEGORIES);
-    if (cachedCategories) return res.json(cachedCategories);
+    if (cachedCategories && cachedCategories.length > 2) return res.json(cachedCategories);
 
     try {
         const categories = await marketplaceService.getCategories();
-        cache.set(cache.KEYS.CATEGORIES, categories);
+        if (categories && categories.length > 0) {
+            cache.set(cache.KEYS.CATEGORIES, categories);
+        }
         res.json(categories);
     } catch (e) {
-        // Fallback if table doesn't exist yet or other error
+        console.error('Error fetching categories:', e);
+        // Fallback
         res.json([
             { id: '1', name: 'Транспорт', slug: 'transport', count: 0 },
             { id: '2', name: 'Недвижимость', slug: 'real-estate', count: 0 },
