@@ -6,16 +6,28 @@ import { api } from '../lib/api';
 
 const categoryIcons = {
     'Недвижимость': Building2,
+    'Real Estate': Building2,
     'Транспорт': Car,
+    'Transport': Car,
+    'Cars': Car,
+    'Машины': Car,
     'Услуги': Briefcase,
+    'Services': Briefcase,
     'Электроника': Laptop,
+    'Electronics': Laptop,
 };
 
 const categoryColors = {
     'Недвижимость': 'from-emerald-500/10 to-green-500/10 border-emerald-500/20 hover:border-emerald-500/40',
+    'Real Estate': 'from-emerald-500/10 to-green-500/10 border-emerald-500/20 hover:border-emerald-500/40',
     'Транспорт': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
+    'Transport': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
+    'Cars': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
+    'Машины': 'from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40',
     'Услуги': 'from-cyan-500/10 to-teal-500/10 border-cyan-500/20 hover:border-cyan-500/40',
+    'Services': 'from-cyan-500/10 to-teal-500/10 border-cyan-500/20 hover:border-cyan-500/40',
     'Электроника': 'from-purple-500/10 to-indigo-500/10 border-purple-500/20 hover:border-purple-500/40',
+    'Electronics': 'from-purple-500/10 to-indigo-500/10 border-purple-500/20 hover:border-purple-500/40',
 };
 
 export function CategoryModal({ isOpen, onClose }) {
@@ -43,13 +55,23 @@ export function CategoryModal({ isOpen, onClose }) {
     };
 
     const translateCategory = (name) => {
+        const lowerName = name.toLowerCase();
+        
+        // Specific overrides or mappings
+        if (lowerName === 'real estate' || lowerName === 'недвижимость') return t('ads.cat_real_estate', 'Недвижимость');
+        if (lowerName === 'transport' || lowerName === 'транспорт' || lowerName === 'cars' || lowerName === 'автомобили' || lowerName === 'машины') {
+             return t('ads.cat_transport', 'Машины');
+        }
+        if (lowerName === 'services' || lowerName === 'услуги') return t('ads.cat_services', 'Услуги');
+        if (lowerName === 'electronics' || lowerName === 'электроника') return t('ads.cat_electronics', 'Электроника');
+
         const keyMap = {
             'Транспорт': 'cat_transport',
             'Недвижимость': 'cat_real_estate',
             'Услуги': 'cat_services',
             'Электроника': 'cat_electronics'
         };
-        const key = keyMap[name] || name.toLowerCase();
+        const key = keyMap[name] || lowerName.replace(/\s+/g, '_');
         return t(`ads.${key}`, name);
     };
 

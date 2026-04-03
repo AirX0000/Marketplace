@@ -35,31 +35,44 @@ export function CatalogMenu({ isOpen, onClose }) {
     };
 
     const translateCategory = (name) => {
+        const lowerName = name.toLowerCase();
+        
+        // Specific overrides or mappings
+        if (lowerName === 'real estate' || lowerName === 'недвижимость') return t('ads.cat_real_estate', 'Недвижимость');
+        if (lowerName === 'transport' || lowerName === 'транспорт' || lowerName === 'cars' || lowerName === 'автомобили' || lowerName === 'машины') {
+             return t('ads.cat_transport', 'Машины');
+        }
+        if (lowerName === 'services' || lowerName === 'услуги') return t('ads.cat_services', 'Услуги');
+        if (lowerName === 'electronics' || lowerName === 'электроника') return t('ads.cat_electronics', 'Электроника');
+
         const keyMap = {
             'Транспорт': 'cat_transport',
             'Недвижимость': 'cat_real_estate',
             'Услуги': 'cat_services',
             'Электроника': 'cat_electronics'
         };
-        const key = keyMap[name] || name.toLowerCase();
+        const key = keyMap[name] || lowerName.replace(/\s+/g, '_');
         return t(`ads.${key}`, name);
     };
 
     const translateSubcategory = (name) => {
+        if (!name) return "";
+        const lowerName = name.toLowerCase();
+
         // Many subcategories are already in translations under ads.sub_...
         // We can try to map them or use them as is
         const subKeyMap = {
-            'Бозор (Авто с пробегом)': 'sub_used_cars',
-            'Автосалон (Новые авто)': 'sub_new_cars',
-            'Мотоциклы': 'sub_moto',
-            'Спецтехника': 'sub_special',
-            'Вторичное жильё': 'sub_resale',
-            'Новостройки': 'sub_new_build',
-            'Аренда': 'sub_rent',
-            'Участки': 'sub_land',
-            'Коммерческая недвижимость': 'sub_commercial'
+            'бозор (авто с пробегом)': 'sub_used_cars',
+            'автосалон (новые авто)': 'sub_new_cars',
+            'мотоциклы': 'sub_moto',
+            'спецтехника': 'sub_special',
+            'вторичное жильё': 'sub_resale',
+            'новостройки': 'sub_new_build',
+            'аренда': 'sub_rent',
+            'участки': 'sub_land',
+            'коммерческая недвижимость': 'sub_commercial'
         };
-        const key = subKeyMap[name];
+        const key = subKeyMap[lowerName];
         return key ? t(`ads.${key}`, name) : name;
     };
 

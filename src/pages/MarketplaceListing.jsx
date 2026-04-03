@@ -62,8 +62,8 @@ export function MarketplaceListing() {
     const [regions, setRegions] = useState(["Все"]);
     
     const catName = filters.category || "Все";
-    const isRealEstateCategory = ["недвижимость", "real estate", "ko'chmas mulk"].includes(catName.toLowerCase());
-    const isAutoCategory = ["транспорт", "автомобили", "cars", "transport", "avtomobillar"].includes(catName.toLowerCase());
+    const isRealEstateCategory = ["недвижимость", "real estate", "ko'chmas mulk", "house", "apartment"].includes(catName.toLowerCase());
+    const isAutoCategory = ["транспорт", "автомобили", "cars", "transport", "avtomobillar", "авто", "car", "машины"].includes(catName.toLowerCase());
     const isServicesCategory = ["услуги", "services", "xizmatlar"].includes(catName.toLowerCase());
 
     // Initial Load
@@ -159,7 +159,7 @@ export function MarketplaceListing() {
 
             const catLower = (filters.category || "").toLowerCase();
             const isRealEstate = ["недвижимость", "ko'chmas mulk", "real estate", "house", "apartment", "houses", "land", "new building", "private house", "новостройки", "вторичные", "вторичное жильё", "участки", "аренда"].includes(catLower);
-            const isAuto = ["автомобили", "avtomobillar", "cars", "car", "auto", "transport", "dealer", "private auto", "автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)"].includes(catLower);
+            const isAuto = ["автомобили", "avtomobillar", "cars", "car", "auto", "transport", "dealer", "private auto", "автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)", "машины"].includes(catLower);
             const isServices = ["услуги", "xizmatlar", "services"].includes(catLower);
 
             if (catLower !== "все" && catLower !== "" && catLower !== "all") {
@@ -219,18 +219,41 @@ export function MarketplaceListing() {
     }
 
     const translateCategory = (name) => {
-        if (name === "Все") return t('common.all', 'Все');
-        const keyMap = { 'Транспорт': 'cat_transport', 'Недвижимость': 'cat_real_estate', 'Услуги': 'cat_services', 'Электроника': 'cat_electronics' };
-        return t(`ads.${keyMap[name] || name.toLowerCase()}`, name);
+        if (!name || name === "Все") return t('common.all', 'Все');
+        const lowerName = name.toLowerCase();
+        
+        // Specific overrides or mappings
+        if (lowerName === 'real estate' || lowerName === 'недвижимость') return t('ads.cat_real_estate', 'Недвижимость');
+        if (lowerName === 'transport' || lowerName === 'транспорт' || lowerName === 'cars' || lowerName === 'автомобили' || lowerName === 'машины') {
+             return t('ads.cat_transport', 'Машины');
+        }
+        if (lowerName === 'services' || lowerName === 'услуги') return t('ads.cat_services', 'Услуги');
+        if (lowerName === 'electronics' || lowerName === 'электроника') return t('ads.cat_electronics', 'Электроника');
+
+        const keyMap = {
+            'Транспорт': 'cat_transport',
+            'Недвижимость': 'cat_real_estate',
+            'Услуги': 'cat_services',
+            'Электроника': 'cat_electronics'
+        };
+        const key = keyMap[name] || lowerName.replace(/\s+/g, '_');
+        return t(`ads.${key}`, name);
     };
 
     const translateSubcategory = (name) => {
+        if (!name) return "";
+        const lowerName = name.toLowerCase();
         const subKeyMap = {
-            'Бозор (Авто с пробегом)': 'sub_used_cars', 'Автосалон (Новые авто)': 'sub_new_cars',
-            'Вторичное жильё': 'sub_resale', 'Новостройки': 'sub_new_build', 'Аренда': 'sub_rent',
-            'Участки': 'sub_land', 'Коммерческая недвижимость': 'sub_commercial'
+            'бозор (авто с пробегом)': 'sub_used_cars', 
+            'автосалон (новые авто)': 'sub_new_cars',
+            'вторичное жильё': 'sub_resale', 
+            'новостройки': 'sub_new_build', 
+            'аренда': 'sub_rent',
+            'участки': 'sub_land', 
+            'коммерческая недвижимость': 'sub_commercial'
         };
-        return subKeyMap[name] ? t(`ads.${subKeyMap[name]}`, name) : name;
+        const key = subKeyMap[lowerName];
+        return key ? t(`ads.${key}`, name) : name;
     };
 
     const updateFilter = (key, value) => {
