@@ -16,7 +16,11 @@
         "add_listing": "E'lon berish",
         "add_listing_nav": "E'lon",
         "generate_ai_desc": "AI orqali tavsif yaratish",
-        "ai_generating": "Yaratilmoqda..."
+        "ai_generating": "Yaratilmoqda...",
+        "from": "Dan",
+        "to": "Gacha",
+        "all": "Barchasi",
+        "reset_filters": "Barchasini o'chirish"
     },
     "home": {
         "hero_title": "Ideal uy yoki avtomobilni toping",
@@ -174,7 +178,11 @@
         "sub_rent": "Ijaraga berish",
         "sub_land": "Uchastkalar",
         "sub_commercial": "Tijorat ko'chmas mulki",
-        "cat_electronics": "Elektronika"
+        "cat_electronics": "Elektronika",
+        "transmission": "KPP",
+        "body_type": "Kuzov",
+        "filter_title": "Filtrlar",
+        "apply_results": "Natijalarni ko'rsatish"
     },
     "seo": {
         "home_title": "Autohouse.uz — O'zbekistondagi avtomobillar va ko'chmas mulk",

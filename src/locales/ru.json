@@ -16,7 +16,11 @@
         "add_listing": "Разместить объявление",
         "add_listing_nav": "Подать",
         "generate_ai_desc": "Создать описание через ИИ",
-        "ai_generating": "Генерация..."
+        "ai_generating": "Генерация...",
+        "from": "От",
+        "to": "До",
+        "all": "Все",
+        "reset_filters": "Сбросить все"
     },
     "home": {
         "hero_title": "Найдите идеальный дом или автомобиль",
@@ -174,7 +178,11 @@
         "sub_rent": "Аренда",
         "sub_land": "Участки",
         "sub_commercial": "Коммерческая недвижимость",
-        "cat_electronics": "Электроника"
+        "cat_electronics": "Электроника",
+        "transmission": "КПП",
+        "body_type": "Кузов",
+        "filter_title": "Фильтры",
+        "apply_results": "Показать результаты"
     },
     "seo": {
         "home_title": "Autohouse.uz — Автомобили и недвижимость в Узбекистане",

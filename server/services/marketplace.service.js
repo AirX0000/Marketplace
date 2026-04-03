@@ -100,52 +100,55 @@ class MarketplaceService {
         }
 
         // --- JSON Filtering (Cars & Real Estate) ---
-        // We use path-based filtering for JSON fields. 
-        // We detect the category group more broadly to apply these filters.
         const catLower = (category || "").toLowerCase();
-        const isAutoGroup = ["cars", "transport", "автомобили", "транспорт", "avtomobil", "avto", "с пробегом", "автосалон"].some(s => catLower.includes(s));
-        const isRealEstateGroup = ["real estate", "apartments", "houses", "недвижимость", "uy", "joy", "новостройки", "вторичные", "вторичное жильё", "аренда"].some(s => catLower.includes(s));
+        const isAutoGroup = ["cars", "transport", "автомобили", "транспорт", "avtomobil", "avto", "с пробегом", "автосалон", "бозор", "moto"].some(s => catLower.includes(s));
+        const isRealEstateGroup = ["real estate", "apartments", "houses", "недвижимость", "uy", "joy", "новостройки", "вторичные", "вторичное жильё", "аренда", "участки"].some(s => catLower.includes(s));
 
         if (isAutoGroup) {
-            if (minYear || maxYear || minMileage || maxMileage || (transmission && transmission !== 'Все') || (bodyType && bodyType !== 'Все')) {
-                // If we already have attributes filter (e.g. from tag), we need to be careful.
-                // For simplicity, we merge into 'where.attributes' if it's already an AND/OR or just an object.
+            if (minYear || maxYear || minMileage || maxMileage || brand || (transmission && transmission !== 'Все') || (bodyType && bodyType !== 'Все')) {
                 const carFilters = [];
                 
-                if (minYear) carFilters.push({ path: ['specs', 'year'], gte: parseInt(minYear) });
-                if (maxYear) carFilters.push({ path: ['specs', 'year'], lte: parseInt(maxYear) });
-                if (minMileage) carFilters.push({ path: ['specs', 'mileage'], gte: parseInt(minMileage) });
-                if (maxMileage) carFilters.push({ path: ['specs', 'mileage'], lte: parseInt(maxMileage) });
-                if (transmission && transmission !== 'Все') carFilters.push({ path: ['specs', 'transmission'], equals: transmission });
-                if (bodyType && bodyType !== 'Все') carFilters.push({ path: ['specs', 'bodyType'], equals: bodyType });
+                if (minYear) carFilters.push({ path: ['year'], gte: parseInt(minYear) });
+                if (maxYear) carFilters.push({ path: ['year'], lte: parseInt(maxYear) });
+                if (minMileage) carFilters.push({ path: ['mileage'], gte: parseInt(minMileage) });
+                if (maxMileage) carFilters.push({ path: ['mileage'], lte: parseInt(maxMileage) });
+                
+                if (brand) carFilters.push({ path: ['brand'], equals: brand }); // We can use equals or specific mode if supported
+                if (transmission && transmission !== 'Все') carFilters.push({ path: ['transmission'], equals: transmission });
+                if (bodyType && bodyType !== 'Все') carFilters.push({ path: ['bodyType'], equals: bodyType });
 
                 if (carFilters.length > 0) {
                     if (!where.AND) where.AND = [];
-                    carFilters.forEach(f => where.AND.push({ attributes: f }));
+                    carFilters.forEach(f => where.AND.push({ specs: f }));
                 }
             }
         }
 
         if (isRealEstateGroup) {
             const reFilters = [];
-            if (minArea) reFilters.push({ path: ['specs', 'area'], gte: parseInt(minArea) });
-            if (maxArea) reFilters.push({ path: ['specs', 'area'], lte: parseInt(maxArea) });
+            if (minArea) reFilters.push({ path: ['area'], gte: parseInt(minArea) });
+            if (maxArea) reFilters.push({ path: ['area'], lte: parseInt(maxArea) });
+            
             if (rooms && rooms !== 'Все' && rooms !== '') {
-                const roomVal = parseInt(rooms);
-                if (!isNaN(roomVal)) {
-                    reFilters.push({ path: ['specs', 'rooms'], equals: roomVal });
+                if (rooms === '4+') {
+                    reFilters.push({ path: ['rooms'], gte: 4 });
+                } else {
+                    const roomVal = parseInt(rooms);
+                    if (!isNaN(roomVal)) {
+                        reFilters.push({ path: ['rooms'], equals: roomVal });
+                    }
                 }
             }
             if (floor && floor !== 'Все' && floor !== '') {
                 const floorVal = parseInt(floor);
                 if (!isNaN(floorVal)) {
-                    reFilters.push({ path: ['specs', 'floor'], equals: floorVal });
+                    reFilters.push({ path: ['floor'], equals: floorVal });
                 }
             }
 
             if (reFilters.length > 0) {
                 if (!where.AND) where.AND = [];
-                reFilters.forEach(f => where.AND.push({ attributes: f }));
+                reFilters.forEach(f => where.AND.push({ specs: f }));
             }
         }
 

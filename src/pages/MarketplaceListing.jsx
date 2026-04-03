@@ -52,7 +52,8 @@ export function MarketplaceListing() {
         minMileage: searchParams.get('minMileage') || "",
         maxMileage: searchParams.get('maxMileage') || "",
         brand: searchParams.get('brand') || "",
-        color: searchParams.get('color') || "",
+        transmission: searchParams.get('transmission') || "Все",
+        bodyType: searchParams.get('bodyType') || "Все",
         bounds: searchParams.get('bounds') || "",
         sort: searchParams.get('sort') || "popular"
     });
@@ -75,8 +76,8 @@ export function MarketplaceListing() {
 
         api.getCategories().then(data => {
             if (data && data.length > 0) {
-                const activeCats = data.filter(c => c.count > 0);
-                setCategories(activeCats);
+                // Show all categories in the listing too
+                setCategories(data);
             }
         }).catch(err => console.error("Failed to load categories", err));
     }, []);
@@ -98,7 +99,8 @@ export function MarketplaceListing() {
             minMileage: searchParams.get('minMileage') || "",
             maxMileage: searchParams.get('maxMileage') || "",
             brand: searchParams.get('brand') || "",
-            color: searchParams.get('color') || "",
+            transmission: searchParams.get('transmission') || "Все",
+            bodyType: searchParams.get('bodyType') || "Все",
             bounds: searchParams.get('bounds') || "",
             sort: searchParams.get('sort') || "popular"
         };
@@ -152,6 +154,8 @@ export function MarketplaceListing() {
             if (filters.region !== "Все") params.region = filters.region;
             if (filters.bounds) params.bounds = filters.bounds;
             if (filters.sort) params.sort = filters.sort;
+            if (filters.transmission && filters.transmission !== "Все") params.transmission = filters.transmission;
+            if (filters.bodyType && filters.bodyType !== "Все") params.bodyType = filters.bodyType;
 
             const catLower = (filters.category || "").toLowerCase();
             const isRealEstate = ["недвижимость", "ko'chmas mulk", "real estate", "house", "apartment", "houses", "land", "new building", "private house", "новостройки", "вторичные", "вторичное жильё", "участки", "аренда"].includes(catLower);
@@ -187,39 +191,17 @@ export function MarketplaceListing() {
 
             if (filters.minPrice) params.minPrice = filters.minPrice;
             if (filters.maxPrice) params.maxPrice = filters.maxPrice;
+            if (filters.minYear) params.minYear = filters.minYear;
+            if (filters.maxYear) params.maxYear = filters.maxYear;
+            if (filters.minMileage) params.minMileage = filters.minMileage;
+            if (filters.maxMileage) params.maxMileage = filters.maxMileage;
+            if (filters.brand) params.brand = filters.brand;
+            if (filters.minArea) params.minArea = filters.minArea;
+            if (filters.maxArea) params.maxArea = filters.maxArea;
+            if (filters.rooms) params.rooms = filters.rooms;
 
             const response = await api.getMarketplaces(params);
-            let filtered = response.listings || [];
-
-            // Client-side filtering for extended attributes (since they are in JSON)
-            if (isRealEstate || isAuto) {
-                filtered = filtered.filter(p => {
-                    let attrs = {};
-                    try {
-                        attrs = typeof p.attributes === 'string' ? JSON.parse(p.attributes) : p.attributes || {};
-                    } catch(e) { return true; }
-                    const specs = attrs.specs || {};
-
-                    if (isRealEstate) {
-                        if (filters.rooms) {
-                            if (filters.rooms === '4+') {
-                                if (!specs.rooms || Number(specs.rooms) < 4) return false;
-                            } else if (Number(specs.rooms) !== Number(filters.rooms)) return false;
-                        }
-                        if (filters.minArea && (!specs.area || Number(specs.area) < Number(filters.minArea))) return false;
-                        if (filters.maxArea && (!specs.area || Number(specs.area) > Number(filters.maxArea))) return false;
-                    }
-
-                    if (isAuto) {
-                        if (filters.minYear && (!specs.year || Number(specs.year) < Number(filters.minYear))) return false;
-                        if (filters.maxYear && (!specs.year || Number(specs.year) > Number(filters.maxYear))) return false;
-                        if (filters.minMileage && (!specs.mileage || Number(specs.mileage) < Number(filters.minMileage))) return false;
-                        if (filters.maxMileage && (!specs.mileage || Number(specs.mileage) > Number(filters.maxMileage))) return false;
-                        if (filters.brand && (!specs.brand || !specs.brand.toLowerCase().includes(filters.brand.toLowerCase()))) return false;
-                    }
-                    return true;
-                });
-            }
+            const filtered = response.listings || [];
 
             if (pageNum === 1) setMarketplaces(filtered);
             else setMarketplaces(prev => [...prev, ...filtered]);
@@ -263,7 +245,8 @@ export function MarketplaceListing() {
         setFilters({
             search: "", region: "Все", category: "Все", minPrice: "", maxPrice: "",
             minArea: "", maxArea: "", rooms: "", minYear: "", maxYear: "",
-            minMileage: "", maxMileage: "", brand: "", color: "", sort: "popular"
+            minMileage: "", maxMileage: "", brand: "", color: "", 
+            transmission: t('common.all'), bodyType: t('common.all'), sort: "popular"
         });
         setSearchParams({});
     };
@@ -290,21 +273,21 @@ export function MarketplaceListing() {
                         )}>
                             <div className="flex items-center justify-between mb-2">
                                 <h3 className="flex items-center text-lg font-bold text-slate-900 dark:text-white">
-                                    <Filter className="mr-2 h-4 w-4 text-primary" /> Фильтры
+                                    <Filter className="mr-2 h-4 w-4 text-primary" /> {t('ads.filter_title')}
                                 </h3>
                                 {isMobileFiltersOpen && <button onClick={() => setIsMobileFiltersOpen(false)}><X className="h-5 w-5 text-slate-400" /></button>}
                             </div>
 
                             <div className="space-y-8">
                                 <div>
-                                    <h4 className="text-xs font-black uppercase text-slate-400 mb-4">Категория</h4>
+                                    <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.category')}</h4>
                                     <div className="space-y-3">
                                         <label className="flex items-center gap-3 text-sm cursor-pointer group">
                                             <div className={cn("w-5 h-5 rounded border flex items-center justify-center transition-all", filters.category === "Все" ? "bg-primary border-primary text-white" : "border-slate-200 dark:border-slate-700")}>
                                                 {filters.category === "Все" && <Check size={12} />}
                                             </div>
                                             <input type="radio" className="hidden" checked={filters.category === "Все"} onChange={() => updateFilter("category", "Все")} />
-                                            <span className={filters.category === "Все" ? "text-primary font-bold" : "text-slate-600 dark:text-slate-400"}>Все</span>
+                                            <span className={filters.category === "Все" ? "text-primary font-bold" : "text-slate-600 dark:text-slate-400"}>{t('common.all')}</span>
                                         </label>
                                         {categories.map(cat => (
                                             <label key={cat.name} className="flex items-center gap-3 text-sm cursor-pointer group">
@@ -319,15 +302,15 @@ export function MarketplaceListing() {
                                 </div>
 
                                 <div>
-                                    <h4 className="text-xs font-black uppercase text-slate-400 mb-4">Регион</h4>
+                                    <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.region')}</h4>
                                     <select value={filters.region} onChange={e => updateFilter('region', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold">
-                                        {regions.map(r => <option key={r} value={r}>{r}</option>)}
+                                        {regions.map(r => <option key={r} value={r}>{r === 'Все' ? t('common.all') : r}</option>)}
                                     </select>
                                 </div>
 
                                 {filters.category !== "Все" && categories.find(c => c.name === filters.category)?.sub && (
                                     <div>
-                                        <h4 className="text-xs font-black uppercase text-slate-400 mb-4">Подкатегория</h4>
+                                        <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.subcategory')}</h4>
                                         <div className="space-y-3">
                                             {categories.find(c => c.name === filters.category).sub.map(sub => (
                                                 <label key={sub} className="flex items-center gap-3 text-sm cursor-pointer group">
@@ -343,20 +326,97 @@ export function MarketplaceListing() {
                                 )}
 
                                 <div>
-                                    <h4 className="text-xs font-black uppercase text-slate-400 mb-4">Цена</h4>
+                                    <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.price')}</h4>
                                     <div className="grid grid-cols-2 gap-2">
-                                        <input type="number" placeholder="От" value={filters.minPrice} onChange={e => updateFilter('minPrice', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
-                                        <input type="number" placeholder="До" value={filters.maxPrice} onChange={e => updateFilter('maxPrice', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                        <input type="number" placeholder={t('common.from')} value={filters.minPrice} onChange={e => updateFilter('minPrice', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                        <input type="number" placeholder={t('common.to')} value={filters.maxPrice} onChange={e => updateFilter('maxPrice', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
                                     </div>
                                 </div>
 
+                                {/* Auto Specific Filters */}
+                                {isAutoCategory && (
+                                    <>
+                                        <div>
+                                            <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.year')}</h4>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <input type="number" placeholder={t('common.from')} value={filters.minYear} onChange={e => updateFilter('minYear', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                                <input type="number" placeholder={t('common.to')} value={filters.maxYear} onChange={e => updateFilter('maxYear', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.mileage')}</h4>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <input type="number" placeholder={t('common.from')} value={filters.minMileage} onChange={e => updateFilter('minMileage', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                                <input type="number" placeholder={t('common.to')} value={filters.maxMileage} onChange={e => updateFilter('maxMileage', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.brand')}</h4>
+                                            <input type="text" placeholder="Напр: BMW, Chevrolet" value={filters.brand} onChange={e => updateFilter('brand', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.transmission')}</h4>
+                                            <select value={filters.transmission} onChange={e => updateFilter('transmission', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold">
+                                                <option value="Все">{t('common.all')}</option>
+                                                <option value="Автомат">{isUz ? 'Avtomat' : 'Автомат'}</option>
+                                                <option value="Механика">{isUz ? 'Mexanika' : 'Механика'}</option>
+                                                <option value="Вариатор">{isUz ? 'Variator' : 'Вариатор'}</option>
+                                                <option value="Робот">{isUz ? 'Robot' : 'Робот'}</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.body_type')}</h4>
+                                            <select value={filters.bodyType} onChange={e => updateFilter('bodyType', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold">
+                                                <option value="Все">{t('common.all')}</option>
+                                                <option value="Седан">{isUz ? 'Sedan' : 'Седан'}</option>
+                                                <option value="Внедорожник">{isUz ? 'Yo’ltanlamas' : 'Внедорожник'}</option>
+                                                <option value="Хэтчбек">{isUz ? 'Xetchbek' : 'Хэтчбек'}</option>
+                                                <option value="Купе">{isUz ? 'Kupe' : 'Купе'}</option>
+                                                <option value="Минивэн">{isUz ? 'Miniven' : 'Минивэн'}</option>
+                                            </select>
+                                        </div>
+                                    </>
+                                )}
+
+                                {/* Real Estate Specific Filters */}
+                                {isRealEstateCategory && (
+                                    <>
+                                        <div>
+                                            <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.rooms')}</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {['1', '2', '3', '4+'].map(num => (
+                                                    <button
+                                                        key={num}
+                                                        onClick={() => updateFilter('rooms', filters.rooms === num ? "" : num)}
+                                                        className={cn(
+                                                            "h-10 w-12 rounded-xl border text-sm font-bold transition-all",
+                                                            filters.rooms === num 
+                                                                ? "bg-primary border-primary text-white shadow-lg shadow-primary/25" 
+                                                                : "border-slate-200 dark:border-slate-800 hover:border-primary/50"
+                                                        )}
+                                                    >
+                                                        {num}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.area')}</h4>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <input type="number" placeholder={t('common.from')} value={filters.minArea} onChange={e => updateFilter('minArea', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                                <input type="number" placeholder={t('common.to')} value={filters.maxArea} onChange={e => updateFilter('maxArea', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
                                 <button onClick={clearFilters} className="w-full pt-4 border-t border-slate-100 dark:border-slate-800 text-sm font-bold text-slate-400 hover:text-red-500 flex items-center justify-center gap-2 transition-colors">
-                                    <RotateCw size={14} /> Сбросить все
+                                    <RotateCw size={14} /> {t('common.reset_filters')}
                                 </button>
                             </div>
 
                             {isMobileFiltersOpen && (
-                                <button onClick={() => setIsMobileFiltersOpen(false)} className="mt-auto w-full h-14 bg-primary text-white rounded-2xl font-black shadow-xl">Показать результаты</button>
+                                <button onClick={() => setIsMobileFiltersOpen(false)} className="mt-auto w-full h-14 bg-primary text-white rounded-2xl font-black shadow-xl">{t('ads.apply_results')}</button>
                             )}
                         </div>
                     </aside>

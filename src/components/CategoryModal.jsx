@@ -33,9 +33,8 @@ export function CategoryModal({ isOpen, onClose }) {
         try {
             setLoading(true);
             const data = await api.getCategories();
-            // Filter categories with at least 1 product
-            const activeCats = data.filter(c => c.count > 0);
-            setCategories(activeCats);
+            // Show all categories in the modal, even if empty, to allow browsing
+            setCategories(data);
         } catch (error) {
             console.error('Failed to load categories:', error);
         } finally {

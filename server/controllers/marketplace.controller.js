@@ -35,9 +35,9 @@ exports.getCategories = asyncHandler(async (req, res) => {
     } catch (e) {
         // Fallback if table doesn't exist yet or other error
         res.json([
-            { id: '1', name: 'Транспорт', slug: 'transport' },
-            { id: '2', name: 'Недвижимость', slug: 'real-estate' },
-            { id: '3', name: 'Услуги', slug: 'services' },
+            { id: '1', name: 'Транспорт', slug: 'transport', count: 0 },
+            { id: '2', name: 'Недвижимость', slug: 'real-estate', count: 0 },
+            { id: '3', name: 'Услуги', slug: 'services', count: 0 },
         ]);
     }
 });
