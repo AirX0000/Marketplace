@@ -5,21 +5,32 @@ import { MarketplaceCard } from '../components/MarketplaceCard';
 import { ProductSkeleton } from '../components/ui/ProductSkeleton';
 import { MapSearch } from '../components/MapSearch';
 import { useCompare } from '../context/CompareContext';
-import { LayoutGrid, Map as MapIcon, RotateCw, Filter, ArrowUpDown, Search, SortAsc, List as ListIcon, Shield, Calculator, FileText, Building2, Briefcase, ArrowLeft, X } from 'lucide-react';
+import { 
+    LayoutGrid, Map as MapIcon, RotateCw, Filter, ArrowUpDown, 
+    Search, SortAsc, List as ListIcon, Shield, Calculator, 
+    FileText, Building2, Briefcase, ArrowLeft, X, Check 
+} from 'lucide-react';
 import { api } from '../lib/api';
-import { cn } from '../lib/utils'; // Assuming cn utility is available here
-import { Link } from 'react-router-dom'; // Assuming Link is available for the new card structure
+import { cn } from '../lib/utils';
 import { useTranslation } from 'react-i18next';
 
 export function MarketplaceListing() {
     const { t, i18n } = useTranslation();
     const isUz = i18n.language === 'uz';
     const [searchParams, setSearchParams] = useSearchParams();
-    const [marketplaces, setMarketplaces] = useState([]);
+    const { addToCompare } = useCompare();
+    
+    // Pagination & Loading States
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [marketplaces, setMarketplaces] = useState([]);
+    
+    // UI States
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'map'
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-    const { addToCompare } = useCompare();
+    const observerRef = React.useRef();
 
     const getInitialCategory = () => {
         const param = searchParams.get('category');
@@ -33,32 +44,28 @@ export function MarketplaceListing() {
         minPrice: searchParams.get('minPrice') || "",
         maxPrice: searchParams.get('maxPrice') || "",
         minArea: searchParams.get('minArea') || "",
-        subcategory: searchParams.get('subcategory') || "", // Add subcategory state
         maxArea: searchParams.get('maxArea') || "",
-        rooms: searchParams.get('attr_rooms') || searchParams.get('rooms') || "",
-
-        // Car Filters
+        subcategory: searchParams.get('subcategory') || "",
+        rooms: searchParams.get('rooms') || searchParams.get('attr_rooms') || "",
         minYear: searchParams.get('minYear') || "",
         maxYear: searchParams.get('maxYear') || "",
         minMileage: searchParams.get('minMileage') || "",
         maxMileage: searchParams.get('maxMileage') || "",
         brand: searchParams.get('brand') || "",
         color: searchParams.get('color') || "",
-
         bounds: searchParams.get('bounds') || "",
         sort: searchParams.get('sort') || "popular"
     });
 
-    const [categories, setCategories] = useState([]); // Full category objects
+    const [categories, setCategories] = useState([]); 
     const [regions, setRegions] = useState(["Все"]);
     
     const catName = filters.category || "Все";
     const isRealEstateCategory = ["недвижимость", "real estate"].includes(catName.toLowerCase());
     const isAutoCategory = ["транспорт", "автомобили", "cars", "transport"].includes(catName.toLowerCase());
     const isServicesCategory = ["услуги", "services"].includes(catName.toLowerCase());
-    const isElectronicsCategory = ["электроника", "electronics"].includes(catName.toLowerCase());
 
-    // Load categories from backend or use defaults
+    // Initial Load
     useEffect(() => {
         api.getRegions().then(data => {
             if (data && data.length > 0) {
@@ -68,17 +75,14 @@ export function MarketplaceListing() {
 
         api.getCategories().then(data => {
             if (data && data.length > 0) {
-                // Filter categories with at least 1 product as per user request
                 const activeCats = data.filter(c => c.count > 0);
                 setCategories(activeCats);
             }
-        }).catch(err => {
-            console.error("Failed to load categories", err);
-        });
+        }).catch(err => console.error("Failed to load categories", err));
     }, []);
 
+    // Sync URL -> State
     useEffect(() => {
-        // Sync filters from URL when params change
         const newFilters = {
             search: searchParams.get('search') || "",
             region: searchParams.get('region') || "Все",
@@ -86,85 +90,83 @@ export function MarketplaceListing() {
             minPrice: searchParams.get('minPrice') || "",
             maxPrice: searchParams.get('maxPrice') || "",
             minArea: searchParams.get('minArea') || "",
-
             maxArea: searchParams.get('maxArea') || "",
-            subcategory: searchParams.get('subcategory') || "", // Add subcategory sync
-            rooms: searchParams.get('attr_rooms') || searchParams.get('rooms') || "",
-
-            // Car Filters
+            subcategory: searchParams.get('subcategory') || "",
+            rooms: searchParams.get('rooms') || searchParams.get('attr_rooms') || "",
             minYear: searchParams.get('minYear') || "",
             maxYear: searchParams.get('maxYear') || "",
             minMileage: searchParams.get('minMileage') || "",
             maxMileage: searchParams.get('maxMileage') || "",
             brand: searchParams.get('brand') || "",
             color: searchParams.get('color') || "",
-
             bounds: searchParams.get('bounds') || "",
             sort: searchParams.get('sort') || "popular"
         };
-        // Only update if actually different to avoid loops
+        
         if (JSON.stringify(newFilters) !== JSON.stringify(filters)) {
-            // Smart normalization: If the category from URL is actually a subcategory, 
-            // set the correct parent category and subcategory filter
-            const cat = newFilters.category;
-            const catL = cat.toLowerCase();
-            
-            const realEstateSubs = ["новостройки", "вторичные", "вторичное жильё", "нежилое помещение", "аренда", "участки", "внешний вид", "дизайн"];
-            const autoSubs = ["автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)", "мотоциклы", "спецтехника"];
-            
-            if (realEstateSubs.includes(catL)) {
-                newFilters.category = "Недвижимость";
-                newFilters.subcategory = cat;
-            } else if (autoSubs.includes(catL)) {
-                newFilters.category = "Транспорт";
-                newFilters.subcategory = cat;
-            }
-
             setFilters(newFilters);
         }
     }, [searchParams]);
 
+    // Filters Change -> Reset Pagination & Load
     useEffect(() => {
-        loadMarketplaces();
+        setPage(1);
+        setHasMore(true);
+        loadMarketplaces(1);
     }, [filters]);
 
-    async function loadMarketplaces() {
-        setLoading(true);
+    // Infinite Scroll
+    const loadMore = () => {
+        if (!loading && !loadingMore && hasMore) {
+            const nextPage = page + 1;
+            setPage(nextPage);
+            loadMarketplaces(nextPage);
+        }
+    };
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            entries => {
+                if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+                    loadMore();
+                }
+            },
+            { threshold: 0.1 }
+        );
+        if (observerRef.current) observer.observe(observerRef.current);
+        return () => {
+            if (observerRef.current) observer.unobserve(observerRef.current);
+        };
+    }, [hasMore, loading, loadingMore, page]);
+
+    async function loadMarketplaces(pageNum = 1) {
+        if (pageNum === 1) setLoading(true);
+        else setLoadingMore(true);
+
         try {
-            const params = {};
+            const params = {
+                page: pageNum,
+                limit: 12
+            };
             if (filters.search) params.search = filters.search;
             if (filters.region !== "Все") params.region = filters.region;
             if (filters.bounds) params.bounds = filters.bounds;
-
+            if (filters.sort) params.sort = filters.sort;
 
             const catLower = (filters.category || "").toLowerCase();
             const isRealEstate = ["недвижимость", "ko'chmas mulk", "real estate", "house", "apartment", "houses", "land", "new building", "private house", "новостройки", "вторичные", "вторичное жильё", "участки", "аренда"].includes(catLower);
             const isAuto = ["автомобили", "avtomobillar", "cars", "car", "auto", "transport", "dealer", "private auto", "автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)"].includes(catLower);
             const isServices = ["услуги", "xizmatlar", "services"].includes(catLower);
 
-            if (catLower !== "все" && catLower !== "all" && catLower !== "") {
-                if (isRealEstate) {
-                    params.category = "Недвижимость";
-                } else if (isAuto) {
-                    params.category = "Транспорт";
-                } else if (isServices) {
-                    params.category = "Услуги";
-                } else if (isElectronicsCategory) {
-                    params.category = "Электроника";
-                } else {
-                    params.category = filters.category;
-                }
+            if (catLower !== "все" && catLower !== "" && catLower !== "all") {
+                if (isRealEstate) params.category = "Недвижимость";
+                else if (isAuto) params.category = "Транспорт";
+                else if (isServices) params.category = "Услуги";
+                else params.category = filters.category;
 
-                // If a subcategory is selected OR if the category itself is a subcategory, 
-                // override with specific subcategory mapping
                 const currentSub = filters.subcategory || (isRealEstate && filters.category !== "Недвижимость" ? filters.category : "") || (isAuto && filters.category !== "Автомобили" ? filters.category : "");
-
                 if (currentSub) {
-                    params.category = currentSub;
-                    
                     const subL = currentSub.toLowerCase();
-
-                    // Specific mapping for car categories that match DB values
                     if (subL === "новый без пробега" || subL === "автосалон" || subL === "автосалон (новые авто)") {
                         params.category = "Автосалон,Новый без пробега,Автосалон (Новые авто)";
                     } else if (subL === "с пробегом" || subL === "бозор (авто с пробегом)") {
@@ -172,666 +174,259 @@ export function MarketplaceListing() {
                     } else if (subL === "вторичные" || subL === "вторичное жильё") {
                         params.category = "Вторичные,Вторичное жильё,Вторичка";
                     } else if (subL === "новостройки") {
-                        params.category = "Новостройки,New Building,Infinity Luxury Residence,Golden House"; // Added more variants
+                        params.category = "Новостройки,New Building,Infinity Luxury Residence,Golden House";
                     } else if (subL === "нежилое помещение") {
                         params.category = "Нежилое помещение,Коммерческая недвижимость,Коммерческая";
                     } else if (subL === "участки") {
                         params.category = "Участки,Земля,Land";
+                    } else {
+                        params.category = currentSub;
                     }
                 }
             }
 
             if (filters.minPrice) params.minPrice = filters.minPrice;
+            if (filters.maxPrice) params.maxPrice = filters.maxPrice;
 
-            // Execute API Call
             const response = await api.getMarketplaces(params);
             let filtered = response.listings || [];
 
-            if (filters.minPrice) {
-                filtered = filtered.filter(p => p.price >= Number(filters.minPrice));
-            }
-            if (filters.maxPrice) {
-                filtered = filtered.filter(p => p.price <= Number(filters.maxPrice));
-            }
-
-            // Real Estate Filtering (Client-side)
-            if (isRealEstate) {
-                console.log("Filtering Real Estate. Total items:", filtered.length);
+            // Client-side filtering for extended attributes (since they are in JSON)
+            if (isRealEstate || isAuto) {
                 filtered = filtered.filter(p => {
+                    let attrs = {};
                     try {
-                        let attrs = {};
-                        if (typeof p.attributes === 'string') {
-                            try { attrs = JSON.parse(p.attributes); } catch (e) { console.warn("JSON parse failed", e); return true; }
-                        } else if (typeof p.attributes === 'object' && p.attributes !== null) {
-                            attrs = p.attributes;
-                        }
+                        attrs = typeof p.attributes === 'string' ? JSON.parse(p.attributes) : p.attributes || {};
+                    } catch(e) { return true; }
+                    const specs = attrs.specs || {};
 
-                        const specs = attrs.specs || {};
-                        const pCat = (p.category || "").toLowerCase();
-
-                        // Ensure item is actually Real Estate
-                        if (!pCat.match(/real estate|недвижимость|квартир|дом|земля|участ|аренд|новострой|вторич/)) return false;
-
-                        // Subcategory (Type) Filter
-                        const currentSub = filters.subcategory || (filters.category !== "Недвижимость" ? filters.category : "");
-                        if (currentSub && currentSub !== "Все") {
-                            const subL = currentSub.toLowerCase();
-                            const pType = (attrs.type || specs.type || "").toLowerCase();
-
-                            // Match if category name contains subcategory, OR if attributes.type matches
-                            const matchesSub = pCat.includes(subL) || pType.includes(subL);
-                            
-                            // Special cases
-                            if (subL === "новостройки") {
-                                if (!matchesSub && !pCat.includes("new building") && !pType.includes("new building")) {
-                                    if (!specs.yearBuilt || Number(specs.yearBuilt) < 2024) return false;
-                                }
-                            } else if (subL === "вторичные" || subL === "вторичное жильё") {
-                                if (!matchesSub && !pCat.includes("вторич") && !pType.includes("вторич")) return false;
-                            } else if (subL === "аренда") {
-                                if (!pCat.includes("аренда") && !pType.includes("rent") && !p.name.toLowerCase().includes("аренд")) return false;
-                            } else if (!matchesSub) {
-                                return false;
-                            }
-                        }
-
-                        // Room Filter
+                    if (isRealEstate) {
                         if (filters.rooms) {
                             if (filters.rooms === '4+') {
                                 if (!specs.rooms || Number(specs.rooms) < 4) return false;
-                            } else {
-                                if (Number(specs.rooms) !== Number(filters.rooms)) return false;
-                            }
+                            } else if (Number(specs.rooms) !== Number(filters.rooms)) return false;
                         }
-
-                        // Area Filter
                         if (filters.minArea && (!specs.area || Number(specs.area) < Number(filters.minArea))) return false;
                         if (filters.maxArea && (!specs.area || Number(specs.area) > Number(filters.maxArea))) return false;
-
-                        return true;
-                    } catch (e) {
-                        console.error("Filter error", e);
-                        return true;
                     }
-                });
-            }
 
-            // Car Filtering (Client-side)
-            if (isAuto) {
-                console.log("Filtering Cars");
-                filtered = filtered.filter(p => {
-                    try {
-                        let attrs = {};
-                        if (typeof p.attributes === 'string') {
-                            try { attrs = JSON.parse(p.attributes); } catch (e) { return true; }
-                        } else if (typeof p.attributes === 'object' && p.attributes !== null) {
-                            attrs = p.attributes;
-                        }
-
-                        const specs = attrs.specs || {};
-                        const pCat = (p.category || "").toLowerCase();
-
-                        // Ensure item is actually Auto
-                        if (!pCat.match(/transport|cars|авто|машин|седан|кроссовер|внедорож/)) return false;
-
-                        // Year Filter
+                    if (isAuto) {
                         if (filters.minYear && (!specs.year || Number(specs.year) < Number(filters.minYear))) return false;
                         if (filters.maxYear && (!specs.year || Number(specs.year) > Number(filters.maxYear))) return false;
-
-                        // Mileage Filter
                         if (filters.minMileage && (!specs.mileage || Number(specs.mileage) < Number(filters.minMileage))) return false;
                         if (filters.maxMileage && (!specs.mileage || Number(specs.mileage) > Number(filters.maxMileage))) return false;
-
-                        // Brand & Color Filter
                         if (filters.brand && (!specs.brand || !specs.brand.toLowerCase().includes(filters.brand.toLowerCase()))) return false;
-                        if (filters.color && (!specs.color || !specs.color.toLowerCase().includes(filters.color.toLowerCase()))) return false;
-
-                        return true;
-                    } catch (e) {
-                        console.error("Car Filter error", e);
-                        return true;
                     }
+                    return true;
                 });
             }
 
-            // Client-side sorting
-            if (filters.sort === 'price_asc') {
-                filtered.sort((a, b) => a.price - b.price);
-            } else if (filters.sort === 'price_desc') {
-                filtered.sort((a, b) => b.price - a.price);
-            } else if (filters.sort === 'newest') {
-                filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            }
+            if (pageNum === 1) setMarketplaces(filtered);
+            else setMarketplaces(prev => [...prev, ...filtered]);
 
-            setMarketplaces(filtered);
+            if (response.pagination) setHasMore(pageNum < response.pagination.pages);
+            else setHasMore(filtered.length >= 12);
+
         } catch (error) {
             console.error("Failed to load marketplaces", error);
         } finally {
             setLoading(false);
+            setLoadingMore(false);
         }
     }
 
     const translateCategory = (name) => {
         if (name === "Все") return t('common.all', 'Все');
-        const keyMap = {
-            'Транспорт': 'cat_transport',
-            'Недвижимость': 'cat_real_estate',
-            'Услуги': 'cat_services',
-            'Электроника': 'cat_electronics'
-        };
-        const key = keyMap[name] || name.toLowerCase();
-        return t(`ads.${key}`, name);
+        const keyMap = { 'Транспорт': 'cat_transport', 'Недвижимость': 'cat_real_estate', 'Услуги': 'cat_services', 'Электроника': 'cat_electronics' };
+        return t(`ads.${keyMap[name] || name.toLowerCase()}`, name);
     };
 
     const translateSubcategory = (name) => {
         const subKeyMap = {
-            'Бозор (Авто с пробегом)': 'sub_used_cars',
-            'Автосалон (Новые авто)': 'sub_new_cars',
-            'Мотоциклы': 'sub_moto',
-            'Спецтехника': 'sub_special',
-            'Вторичное жильё': 'sub_resale',
-            'Новостройки': 'sub_new_build',
-            'Аренда': 'sub_rent',
-            'Участки': 'sub_land',
-            'Коммерческая недвижимость': 'sub_commercial'
+            'Бозор (Авто с пробегом)': 'sub_used_cars', 'Автосалон (Новые авто)': 'sub_new_cars',
+            'Вторичное жильё': 'sub_resale', 'Новостройки': 'sub_new_build', 'Аренда': 'sub_rent',
+            'Участки': 'sub_land', 'Коммерческая недвижимость': 'sub_commercial'
         };
-        const key = subKeyMap[name];
-        return key ? t(`ads.${key}`, name) : name;
+        return subKeyMap[name] ? t(`ads.${subKeyMap[name]}`, name) : name;
     };
 
     const updateFilter = (key, value) => {
         setFilters(prev => ({ ...prev, [key]: value }));
+        const nextParams = new URLSearchParams(searchParams);
+        if (value && value !== "Все") nextParams.set(key, value);
+        else nextParams.delete(key);
+        if (key === 'category') nextParams.delete('subcategory');
+        setSearchParams(nextParams, { replace: true });
     };
 
     const clearFilters = () => {
         setFilters({
-            search: "",
-            region: "Все",
-            category: "Все",
-            minPrice: "",
-            maxPrice: "",
-            minArea: "",
-            maxArea: "",
-            rooms: "",
-            // Car Reset
-            minYear: "",
-            maxYear: "",
-            minMileage: "",
-            maxMileage: "",
-            brand: "",
-            color: "",
-            sort: "popular"
+            search: "", region: "Все", category: "Все", minPrice: "", maxPrice: "",
+            minArea: "", maxArea: "", rooms: "", minYear: "", maxYear: "",
+            minMileage: "", maxMileage: "", brand: "", color: "", sort: "popular"
         });
         setSearchParams({});
     };
 
-    const filteredMarketplaces = marketplaces; // Use this for the new structure
-
     return (
         <div className="bg-background min-h-screen py-8">
-            {/* Dynamic SEO per category */}
             <Helmet>
-                <title>
-                    {isRealEstateCategory
-                        ? (isUz ? 'O\'zbekistonda ko\'chmas mulk sotib olish — kvartiralar, uylar | Autohouse.uz' : 'Купить недвижимость в Узбекистане — квартиры, дома, участки | Autohouse.uz')
-                        : isAutoCategory
-                            ? (isUz ? 'O\'zbekistonda avtomobil sotib olish — yangi va b/u moshinalar | Autohouse.uz' : 'Купить автомобиль в Узбекистане — новые и б/у авто, цены | Autohouse.uz')
-                            : isServicesCategory
-                                ? (isUz ? 'Xizmatlar — sug\'urta, notarius, baholash | Autohouse.uz' : 'Услуги — страхование, нотариус, оценка, реалтор | Autohouse.uz')
-                                : filters.search
-                                    ? `${isUz ? 'Qidiruv' : 'Поиск'}: «${filters.search}» — Autohouse.uz`
-                                    : (isUz ? 'E\'lonlar katalogi — Avto va ko\'chmas mulk | Autohouse.uz' : 'Каталог объявлений — Купить авто, недвижимость в Узбекистане | Autohouse.uz')}
-                </title>
-                <meta name="description" content={
-                    isRealEstateCategory
-                        ? (isUz ? 'Toshkent va O\'zbekistonda ko\'chmas mulk sotuvi. Yangi uylar yoki ikkinchi qo\'l kvartiralarni sotib oling.' : 'Продажа недвижимости в Ташкенте и Узбекистане. Купить квартиру в новостройке или вторичку. Огромный выбор домов и участков на Autohouse.uz.')
-                        : isAutoCategory
-                            ? (isUz ? 'O\'zbekistonda yangi va ishlatilgan avtomobillar sotuvi. Moshinalarni bo\'lib to\'lashga yoki avtosalondan sotib oling.' : 'Продажа новых и б/у автомобилей в Узбекистане. Купить машину в рассрочку или через автосалон. Проверенные объявления на Autohouse.uz.')
-                            : (isUz ? 'Autohouse.uz — O\'zbekistonda avto va ko\'chmas mulk sotib olishning eng yaxshi usuli.' : 'Маркетплейс Autohouse.uz — лучший способ купить или продать авто, недвижимость и запчасти в Узбекистане.')
-                } />
-                <meta name="keywords" content={isUz ? "avto sotib olish Toshkent, moshina bozori, uy sotish, ko'chmas mulk narxlari, Autohouse" : "купить авто Ташкент, продажа машин Узбекистан, купить квартиру Ташкент, недвижимость цены, авторынок, Autohouse"} />
-                <link rel="canonical" href={`https://autohouse.uz/marketplaces${filters.category !== 'Все' ? `?category=${encodeURIComponent(filters.category)}` : ''}`} />
-                <meta property="og:title" content={isUz ? "E'lonlar katalogi | Autohouse.uz" : "Каталог объявлений | Autohouse.uz"} />
-                <meta property="og:description" content={isUz ? "O'zbekistonda avto va ko'chmas mulk sotuvi bo'yicha eng yaxshi takliflar." : "Лучшие предложения по продаже авто и недвижимости в Узбекистане."} />
-                <meta property="og:type" content="website" />
-                <meta property="og:site_name" content="Autohouse.uz" />
+                <title>{filters.search ? `Поиск: ${filters.search}` : t('common.catalog', 'Каталог')} | Autohouse.uz</title>
             </Helmet>
-            <div className="container mx-auto">
-                <div className="flex flex-col lg:flex-row gap-8">
 
-                    {/* Sidebar / Mobile Filters Modal */}
+            <div className="container mx-auto px-4">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    
+                    {/* Sidebar */}
                     <aside className={cn(
                         "flex-shrink-0 z-[200] lg:block lg:w-64 lg:static",
                         isMobileFiltersOpen ? "fixed inset-0" : "hidden"
                     )}>
-                        {/* Backdrop for mobile */}
-                        {isMobileFiltersOpen && (
-                            <div 
-                                className="absolute inset-0 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity" 
-                                onClick={() => setIsMobileFiltersOpen(false)} 
-                            />
-                        )}
-
+                        {isMobileFiltersOpen && <div className="absolute inset-0 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setIsMobileFiltersOpen(false)} />}
+                        
                         <div className={cn(
-                            "bg-white dark:bg-slate-800 shadow-sm border-slate-100 dark:border-slate-700 flex flex-col",
-                            isMobileFiltersOpen 
-                                ? "absolute bottom-0 w-full h-[85vh] rounded-t-3xl p-6 overflow-y-auto animate-in slide-in-from-bottom duration-300"
-                                : "rounded-xl border p-6 space-y-8"
+                            "bg-white dark:bg-slate-900 shadow-xl lg:shadow-none border-slate-100 dark:border-slate-800 flex flex-col h-full lg:h-auto",
+                            isMobileFiltersOpen ? "absolute bottom-0 w-full h-[85vh] rounded-t-3xl p-6 overflow-y-auto" : "rounded-2xl border p-6 space-y-8"
                         )}>
-                            <div className="flex items-center justify-between mb-4 pb-2 border-b lg:border-none border-border">
-                                <h3 className="flex items-center text-lg font-semibold text-slate-900 dark:text-white">
-                                    <Filter className="mr-2 h-4 w-4" /> Фильт                            <div className="space-y-6">
-                                {/* Categories */}
-                                <div>
-                                    <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Категории</h4>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
-                                            <input
-                                                type="radio"
-                                                name="category"
-                                                checked={filters.category === "Все"}
-                                                onChange={() => {
-                                                    setFilters(prev => ({ ...prev, category: "Все", subcategory: "" }));
-                                                }}
-                                                className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                                            />
-                                            <span>{t('common.all', 'Все')}</span>
-                                        </label>
-                                        {categories.map((catObj) => (
-                                            <label key={catObj.id || catObj.name} className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
-                                                <input
-                                                    type="radio"
-                                                    name="category"
-                                                    checked={filters.category === catObj.name}
-                                                    onChange={() => {
-                                                        setFilters(prev => ({ ...prev, category: catObj.name, subcategory: "" }));
-                                                    }}
-                                                    className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                                                />
-                                                <span>{translateCategory(catObj.name)}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Region */}
-                                <div>
-                                    <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Регион</h4>
-                                    <div className="space-y-2">
-                                        {regions.map((region) => (
-                                            <label key={region} className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary transition-colors text-slate-700 dark:text-slate-300">
-                                                <input
-                                                    type="radio"
-                                                    name="region"
-                                                    checked={filters.region === region}
-                                                    onChange={() => updateFilter('region', region)}
-                                                    className="h-4 w-4 border-gray-300 text-primary focus:ring-primary dark:bg-slate-700 dark:border-slate-600"
-                                                />
-                                                <span>{region}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Subcategories Filter */}
-                                {filters.category !== "Все" && categories.find(c => c.name === filters.category)?.sub && (
-                                    <div className="animate-in slide-in-from-left-2 fade-in">
-                                        <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">
-                                            {filters.category === "Транспорт" ? "Тип транспорта" :
-                                                filters.category === "Услуги" ? "Вид услуги" :
-                                                    "Тип недвижимости"}
-                                        </h4>
-                                        <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-                                            <label className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
-                                                <input
-                                                    type="radio"
-                                                    name="subcategory"
-                                                    checked={filters.subcategory === ""}
-                                                    onChange={() => updateFilter('subcategory', "")}
-                                                    className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                                                />
-                                                <span>Все</span>
-                                            </label>
-                                            {categories.find(c => c.name === filters.category)?.sub?.map((sub) => (
-                                                <label key={sub} className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
-                                                    <input
-                                                        type="radio"
-                                                        name="subcategory"
-                                                        checked={filters.subcategory === sub}
-                                                        onChange={() => updateFilter('subcategory', sub)}
-                                                        className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                                                    />
-                                                    <span>{translateSubcategory(sub)}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
--slate-700 dark:text-slate-300">
-                                                <input
-                                                    type="radio"
-                                                    name="subcategory"
-                                                    checked={filters.subcategory === ""}
-                                                    onChange={() => updateFilter('subcategory', "")}
-                                                    className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                                                />
-                                                <span>Все</span>
-                                            </label>
-                                            {categories.find(c => (c.name || c) === filters.category)?.sub?.map((sub) => (
-                                                <label key={sub} className="flex items-center space-x-2 text-sm cursor-pointer hover:text-primary text-slate-700 dark:text-slate-300">
-                                                    <input
-                                                        type="radio"
-                                                        name="subcategory"
-                                                        checked={filters.subcategory === sub}
-                                                        onChange={() => updateFilter('subcategory', sub)}
-                                                        className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                                                    />
-                                                    <span>{translateSubcategory(sub)}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Price Range */}
-                                <div>
-                                    <h4 className="text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Цена (Sum)</h4>
-                                    <div className="flex gap-2">
-                                        <select
-                                            value={filters.minPrice}
-                                            onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-                                            className="w-full rounded-md border border-slate-200 dark:border-slate-700 p-2 text-sm dark:bg-slate-700 dark:text-white"
-                                        >
-                                            <option value="">От</option>
-                                            <option value="1000000">1 млн</option>
-                                            <option value="5000000">5 млн</option>
-                                            <option value="10000000">10 млн</option>
-                                            <option value="20000000">20 млн</option>
-                                            <option value="50000000">50 млн</option>
-                                            <option value="100000000">100 млн</option>
-                                        </select>
-                                        <span className="text-muted-foreground self-center dark:text-slate-400">-</span>
-                                        <select
-                                            value={filters.maxPrice}
-                                            onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                                            className="w-full rounded-md border border-slate-200 dark:border-slate-700 p-2 text-sm dark:bg-slate-700 dark:text-white"
-                                        >
-                                            <option value="">До</option>
-                                            <option value="1000000">1 млн</option>
-                                            <option value="5000000">5 млн</option>
-                                            <option value="10000000">10 млн</option>
-                                            <option value="20000000">20 млн</option>
-                                            <option value="50000000">50 млн</option>
-                                            <option value="100000000">100 млн</option>
-                                            <option value="500000000">500 млн</option>
-                                            <option value="1000000000">1 млрд</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="flex items-center text-lg font-bold text-slate-900 dark:text-white">
+                                    <Filter className="mr-2 h-4 w-4 text-primary" /> Фильтры
+                                </h3>
+                                {isMobileFiltersOpen && <button onClick={() => setIsMobileFiltersOpen(false)}><X className="h-5 w-5 text-slate-400" /></button>}
                             </div>
-                            
-                            {/* Sticky Apply Button for Mobile */}
-                            {isMobileFiltersOpen && (
-                                <div className="sticky bottom-0 -mx-6 -mb-6 p-4 bg-white dark:bg-slate-800 border-t border-border mt-auto">
-                                    <button 
-                                        onClick={() => setIsMobileFiltersOpen(false)}
-                                        className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold shadow-lg shadow-primary/25"
-                                    >
-                                        Показать {marketplaces.length} результатов
-                                    </button>
+
+                            <div className="space-y-8">
+                                <div>
+                                    <h4 className="text-xs font-black uppercase text-slate-400 mb-4">Категория</h4>
+                                    <div className="space-y-3">
+                                        <label className="flex items-center gap-3 text-sm cursor-pointer group">
+                                            <div className={cn("w-5 h-5 rounded border flex items-center justify-center transition-all", filters.category === "Все" ? "bg-primary border-primary text-white" : "border-slate-200 dark:border-slate-700")}>
+                                                {filters.category === "Все" && <Check size={12} />}
+                                            </div>
+                                            <input type="radio" className="hidden" checked={filters.category === "Все"} onChange={() => updateFilter("category", "Все")} />
+                                            <span className={filters.category === "Все" ? "text-primary font-bold" : "text-slate-600 dark:text-slate-400"}>Все</span>
+                                        </label>
+                                        {categories.map(cat => (
+                                            <label key={cat.name} className="flex items-center gap-3 text-sm cursor-pointer group">
+                                                <div className={cn("w-5 h-5 rounded border flex items-center justify-center transition-all", filters.category === cat.name ? "bg-primary border-primary text-white" : "border-slate-200 dark:border-slate-700")}>
+                                                    {filters.category === cat.name && <Check size={12} />}
+                                                </div>
+                                                <input type="radio" className="hidden" checked={filters.category === cat.name} onChange={() => updateFilter("category", cat.name)} />
+                                                <span className={filters.category === cat.name ? "text-primary font-bold" : "text-slate-600 dark:text-slate-400"}>{translateCategory(cat.name)}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
+
+                                <div>
+                                    <h4 className="text-xs font-black uppercase text-slate-400 mb-4">Регион</h4>
+                                    <select value={filters.region} onChange={e => updateFilter('region', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold">
+                                        {regions.map(r => <option key={r} value={r}>{r}</option>)}
+                                    </select>
+                                </div>
+
+                                {filters.category !== "Все" && categories.find(c => c.name === filters.category)?.sub && (
+                                    <div>
+                                        <h4 className="text-xs font-black uppercase text-slate-400 mb-4">Подкатегория</h4>
+                                        <div className="space-y-3">
+                                            {categories.find(c => c.name === filters.category).sub.map(sub => (
+                                                <label key={sub} className="flex items-center gap-3 text-sm cursor-pointer group">
+                                                    <div className={cn("w-5 h-5 rounded border flex items-center justify-center transition-all", filters.subcategory === sub ? "bg-primary border-primary text-white" : "border-slate-200 dark:border-slate-700")}>
+                                                        {filters.subcategory === sub && <Check size={12} />}
+                                                    </div>
+                                                    <input type="radio" className="hidden" checked={filters.subcategory === sub} onChange={() => updateFilter('subcategory', sub)} />
+                                                    <span className={filters.subcategory === sub ? "text-primary font-bold" : "text-slate-600 dark:text-slate-400"}>{translateSubcategory(sub)}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <h4 className="text-xs font-black uppercase text-slate-400 mb-4">Цена</h4>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input type="number" placeholder="От" value={filters.minPrice} onChange={e => updateFilter('minPrice', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                        <input type="number" placeholder="До" value={filters.maxPrice} onChange={e => updateFilter('maxPrice', e.target.value)} className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm font-bold" />
+                                    </div>
+                                </div>
+
+                                <button onClick={clearFilters} className="w-full pt-4 border-t border-slate-100 dark:border-slate-800 text-sm font-bold text-slate-400 hover:text-red-500 flex items-center justify-center gap-2 transition-colors">
+                                    <RotateCw size={14} /> Сбросить все
+                                </button>
+                            </div>
+
+                            {isMobileFiltersOpen && (
+                                <button onClick={() => setIsMobileFiltersOpen(false)} className="mt-auto w-full h-14 bg-primary text-white rounded-2xl font-black shadow-xl">Показать результаты</button>
                             )}
                         </div>
                     </aside>
 
                     {/* Main Content */}
-                    <div className="flex-1">
-                        <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <main className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                             <div>
-                                <h1 className="text-3xl font-bold tracking-tight mb-2 text-slate-900 dark:text-white">
-                                    {isRealEstateCategory
-                                        ? t('ads.cat_real_estate', 'Недвижимость')
-                                        : isAutoCategory
-                                            ? t('ads.cat_transport', 'Транспорт')
-                                            : isServicesCategory
-                                                ? t('ads.cat_services', 'Услуги')
-                                                : t('common.catalog', 'Каталог')}
-                                </h1>
-                                <p className="text-muted-foreground text-sm dark:text-slate-400">
-                                    Найдено {marketplaces.length} результатов.
-                                </p>
+                                <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{translateCategory(filters.category)}</h1>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Найдено {marketplaces.length} предложений</p>
                             </div>
 
-                            {/* Sorting, View Toggle & Mobile Filters */}
-                            <div className="flex items-center gap-2 md:gap-4 flex-shrink-0 flex-wrap sm:flex-nowrap w-full sm:w-auto">
-                                <button
-                                    onClick={() => setIsMobileFiltersOpen(true)}
-                                    className="lg:hidden flex-1 sm:flex-none flex items-center justify-center gap-2 h-9 px-4 rounded-md border border-input bg-background/50 text-sm font-medium focus:outline-none"
-                                >
-                                    <Filter className="h-4 w-4" />
-                                    Фильтры
-                                </button>
-                                
-                                <div className="flex items-center gap-2 flex-1 sm:flex-none">
-                                    <SortAsc className="h-4 w-4 text-muted-foreground dark:text-slate-400" />
-                                    <select
-                                        value={filters.sort}
-                                        onChange={(e) => updateFilter('sort', e.target.value)}
-                                        className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-slate-800 dark:border-slate-700 dark:text-white"
-                                    >
-                                        <option value="popular">По популярности</option>
-                                        <option value="newest">Новинки</option>
-                                        <option value="price_asc">Сначала дешевые</option>
-                                        <option value="price_desc">Сначала дорогие</option>
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 rounded-xl px-3 border border-slate-100 dark:border-slate-800">
+                                    <SortAsc size={14} className="text-slate-400" />
+                                    <select value={filters.sort} onChange={e => updateFilter('sort', e.target.value)} className="h-10 bg-transparent text-sm font-bold outline-none">
+                                        <option value="popular">Популярные</option>
+                                        <option value="newest">Новые</option>
+                                        <option value="price_asc">Дешевле</option>
+                                        <option value="price_desc">Дороже</option>
                                     </select>
                                 </div>
-
-                                <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 border border-slate-200 dark:border-slate-700">
-                                    <button
-                                        onClick={() => setViewMode('list')}
-                                        className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow text-slate-900 dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'}`}
-                                        title="Список"
-                                    >
-                                        <ListIcon size={16} />
-                                    </button>
-                                    <button
-                                        onClick={() => setViewMode('map')}
-                                        className={`p-1.5 rounded-md transition-all ${viewMode === 'map' ? 'bg-white shadow text-slate-900 dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'}`}
-                                        title="Карта"
-                                    >
-                                        <MapIcon size={16} />
-                                    </button>
+                                
+                                <div className="hidden sm:flex bg-slate-50 dark:bg-slate-900 rounded-xl p-1 border border-slate-100 dark:border-slate-800">
+                                    <button onClick={() => setViewMode('grid')} className={cn("p-1.5 rounded-lg transition-all", viewMode === 'grid' ? "bg-white dark:bg-slate-800 shadow-sm text-primary" : "text-slate-400")}><LayoutGrid size={18} /></button>
+                                    <button onClick={() => setViewMode('map')} className={cn("p-1.5 rounded-lg transition-all", viewMode === 'map' ? "bg-white dark:bg-slate-800 shadow-sm text-primary" : "text-slate-400")}><MapIcon size={18} /></button>
                                 </div>
+                                
+                                <button onClick={() => setIsMobileFiltersOpen(true)} className="lg:hidden h-10 px-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-black flex items-center gap-2">
+                                    <Filter size={16} /> Фильтры
+                                </button>
                             </div>
                         </div>
 
-                        {/* Category Intro / Info */}
-                        {isRealEstateCategory && (
-                            <div className="mb-6 rounded-2xl border border-emerald-100 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-900/10 p-4 md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                                <div>
-                                    <div className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-600 mb-1">
-                                        Раздел: Недвижимость
-                                    </div>
-                                    <p className="text-sm text-emerald-900 dark:text-emerald-100">
-                                        Квартиры в новостройках и вторичном фонде, коммерческая недвижимость и участки. Подберите объект, сравните варианты и рассчитайте ипотеку.
-                                    </p>
-                                </div>
-                                <div className="flex flex-wrap gap-2 text-xs">
-                                    <span className="px-3 py-1 rounded-full bg-white text-emerald-700 border border-emerald-100">
-                                        Ипотечный калькулятор в карточке объекта
-                                    </span>
-                                    <span className="px-3 py-1 rounded-full bg-white text-emerald-700 border border-emerald-100">
-                                        Выгодные программы от банков и застройщиков
-                                    </span>
-                                    <span className="px-3 py-1 rounded-full bg-white text-emerald-700 border border-emerald-100">
-                                        Квартиры в рассрочку от застройщика
-                                    </span>
-                                </div>
+                        {loading && marketplaces.length === 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {[...Array(6)].map((_, i) => <ProductSkeleton key={i} />)}
                             </div>
-                        )}
-
-                        {/* Pill Categories for Real Estate */}
-                        {isRealEstateCategory && (
-                            <div className="flex flex-wrap gap-2 mb-8 items-center">
-                                {(() => {
-                                    const currCat = categories.find(c => (c.name || c) === filters.category);
-                                    const pills = currCat?.sub ? ["Все", ...currCat.sub] : ["Все", "Вторичные", "Новостройки", "Нежилое помещение", "Аренда", "Участки"];
-                                    return pills.map(pill => {
-                                        const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
-                                        return (
-                                            <button
-                                                key={pill}
-                                                onClick={() => updateFilter('subcategory', pill === "Все" ? "" : pill)}
-                                                className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${isActive
-                                                    ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/25 scale-105'
-                                                    : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-600 hover:text-emerald-600 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:hover:border-emerald-500 hover:shadow-sm'
-                                                    }`}
-                                            >
-                                                {pill === "Все" ? t('common.all', 'Все') : translateSubcategory(pill)}
-                                            </button>
-                                        );
-                                    });
-                                })()}
-                            </div>
-                        )}
-
-                        {isAutoCategory && (
-                            <div className="space-y-6 mb-8">
-                                <div className="rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-8 text-white shadow-xl shadow-blue-600/20 relative overflow-hidden group">
-                                    <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700"></div>
-                                    <div className="relative z-10">
-                                        <div className="text-xs font-bold uppercase tracking-[0.2em] text-blue-100 mb-3">
-                                            Машины от официальных дилеров
-                                        </div>
-                                        <h2 className="text-4xl font-black mb-4 tracking-tight leading-tight">
-                                            Найдите свой идеальный <br />
-                                            автомобиль в Ташкенте
-                                        </h2>
-                                        <div className="flex flex-wrap gap-2">
-                                            <span className="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold border border-white/10">
-                                                Выгодный автокредит
-                                            </span>
-                                            <span className="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold border border-white/10">
-                                                Trade-in
-                                            </span>
-                                            <span className="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold border border-white/10">
-                                                Рассрочка 0%
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Pill Categories for Cars */}
-                                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
-                                    {(() => {
-                                        const currCat = categories.find(c => (c.name || c) === filters.category);
-                                        const pills = currCat?.sub ? ["Все", ...currCat.sub] : ["Все", "Автосалон", "С пробегом", "Новый без пробега"];
-                                        
-                                        return pills.map(pill => {
-                                            const isActive = filters.subcategory === (pill === "Все" ? "" : pill);
-                                            return (
-                                                <button
-                                                    key={pill}
-                                                    onClick={() => updateFilter('subcategory', pill === "Все" ? "" : pill)}
-                                                    className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${isActive
-                                                        ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/25 scale-105'
-                                                        : 'bg-white border-slate-200 text-slate-600 hover:border-blue-600 hover:text-blue-600 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:hover:border-blue-500 hover:shadow-sm'
-                                                        }`}
-                                                >
-                                                    {pill}
-                                                </button>
-                                            );
-                                        });
-                                    })()}
-                                </div>
-                            </div>
-                        )}
-
-                        {isServicesCategory && !filters.subcategory && (
-                            <div className="mb-8">
-                                <div className="mb-6 text-center sm:text-left">
-                                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Каталог услуг</h2>
-                                    <p className="text-slate-500 dark:text-slate-400 text-sm">Выберите подходящую категорию услуг для решения ваших задач.</p>
-                                </div>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {["Страхование", "Оценка", "Нотариус", "Риелтор"].map(sub => {
-                                        let Icon = Briefcase;
-                                        if (sub === "Страхование") Icon = Shield;
-                                        if (sub === "Оценка") Icon = Calculator;
-                                        if (sub === "Нотариус") Icon = FileText;
-                                        if (sub === "Риелтор") Icon = Building2;
-
-                                        return (
-                                            <button
-                                                key={sub}
-                                                onClick={() => updateFilter('subcategory', sub)}
-                                                className="group flex flex-col items-center p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-cyan-500 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 cursor-pointer overflow-hidden relative"
-                                            >
-                                                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-500/10 to-teal-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
-                                                <div className="w-16 h-16 rounded-2xl bg-cyan-50 dark:bg-slate-700 text-cyan-600 dark:text-cyan-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-sm">
-                                                    <Icon size={28} strokeWidth={1.5} />
-                                                </div>
-                                                <span className="font-bold text-slate-800 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">{sub}</span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-
-                        {isServicesCategory && filters.subcategory && (
-                            <div className="mb-6 flex">
-                                <button
-                                    onClick={() => updateFilter('subcategory', '')}
-                                    className="flex items-center gap-2 text-sm text-cyan-700 hover:text-cyan-800 font-bold bg-cyan-50 hover:bg-cyan-100 px-5 py-2.5 rounded-xl transition-colors border border-cyan-100"
-                                >
-                                    <ArrowLeft size={16} /> Назад ко всем услугам
-                                </button>
-                            </div>
-                        )}
-
-                        {isServicesCategory && !filters.subcategory ? (
-                            <div className="text-center py-16 text-slate-400 border border-slate-200 dark:border-slate-700 border-dashed rounded-2xl bg-white dark:bg-slate-800 flex flex-col items-center shadow-sm">
-                                <Briefcase size={48} className="text-slate-300 mb-4" strokeWidth={1} />
-                                <h3 className="text-lg font-medium text-slate-600 dark:text-slate-300 mb-1">Выберите услугу</h3>
-                                <p className="text-sm">Нажмите на одну из категорий выше, чтобы просмотреть предложения.</p>
-                            </div>
-                        ) : loading ? (
-                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                {[...Array(8)].map((_, i) => (
-                                    <ProductSkeleton key={i} />
-                                ))}
+                        ) : marketplaces.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-24 text-center">
+                                <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-6 text-slate-300"><Search size={40} /></div>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Ничего не найдено</h3>
+                                <p className="text-slate-500 mb-8 max-w-xs">Попробуйте изменить параметры поиска или сбросить фильтры.</p>
+                                <button onClick={clearFilters} className="px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20">Сбросить фильтры</button>
                             </div>
                         ) : (
                             <>
-                                {/* View Mode Logic */}
                                 {viewMode === 'map' ? (
-                                    <div className="animate-in fade-in zoom-in-95 duration-300 h-[60vh] lg:h-[70vh] w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700">
-                                        <MapSearch
-                                            products={marketplaces}
-                                            onBoundsChange={(bounds) => updateFilter('bounds', bounds)}
-                                        />
+                                    <div className="h-[70vh] rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-inner">
+                                        <MapSearch products={marketplaces} onBoundsChange={b => updateFilter('bounds', b)} />
                                     </div>
                                 ) : (
-                                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                        {marketplaces.map((item) => (
-                                            <MarketplaceCard key={item.id} marketplace={item} />
-                                        ))}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                                        {marketplaces.map(item => <MarketplaceCard key={item.id} marketplace={item} />)}
+                                        {loadingMore && [...Array(4)].map((_, i) => <ProductSkeleton key={`lm-${i}`} />)}
                                     </div>
                                 )}
-
-                                {marketplaces.length === 0 && (
-                                    <div className="text-center py-20 text-muted-foreground border rounded-lg bg-muted/20 dark:bg-slate-800/20 dark:border-slate-700 dark:text-slate-400">
-                                        <div className="text-lg font-semibold">Ничего не найдено</div>
-                                        <p className="text-sm">Попробуйте изменить параметры поиска.</p>
-                                        <button onClick={clearFilters} className="mt-4 text-primary hover:underline">Сбросить фильтры</button>
-                                    </div>
-                                )}
+                                
+                                <div ref={observerRef} className="h-20 flex items-center justify-center mt-12">
+                                    {loadingMore && (
+                                        <div className="flex items-center gap-2 text-slate-400 font-bold animate-pulse">
+                                            <RotateCw size={16} className="animate-spin" /> Загрузка еще...
+                                        </div>
+                                    )}
+                                </div>
                             </>
                         )}
-                    </div>
-                </div >
-            </div >
-        </div >
+                    </main>
+                </div>
+            </div>
+        </div>
     );
 }

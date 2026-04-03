@@ -15,7 +15,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { cn } from '../lib/utils';
-import { Skeleton } from '../components/ui/Skeleton';
+import { Skeleton, DetailSkeleton } from '../components/ui/Skeleton';
 import { MakeOfferModal } from '../components/MakeOfferModal';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { Lightbox } from '../components/Lightbox';
@@ -138,18 +138,11 @@ export function MarketplaceDetail() {
         toast.success(exists ? "Удалено" : "Добавлено");
     };
 
-    if (loading) return (
-        <div className="min-h-screen bg-[#13111C] py-12">
-            <div className="container mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8 space-y-8"><Skeleton className="h-[500px] w-full rounded-[32px]" /></div>
-                <div className="lg:col-span-4 space-y-4"><Skeleton className="h-[400px] w-full rounded-[32px]" /></div>
-            </div>
-        </div>
-    );
+    if (loading) return <DetailSkeleton />;
 
     if (!marketplace) return (
-        <div className="min-h-screen bg-[#13111C] flex items-center justify-center p-4 text-center">
-            <div className="bg-[#191624] p-12 rounded-[3rem] border border-white/5 shadow-2xl max-w-md w-full">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4 text-center">
+            <div className="bg-card p-12 rounded-[3rem] border border-border shadow-2xl max-w-md w-full">
                 <AlertCircle size={48} className="text-red-500 mx-auto mb-6" />
                 <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-4">Объявление не найдено</h2>
                 <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mb-8">Возможно, оно было удалено или ссылка недействительна.</p>
@@ -162,7 +155,7 @@ export function MarketplaceDetail() {
     const attrs = marketplace.attributes || {};
 
     return (
-        <div className="min-h-screen bg-[#13111C] relative overflow-x-hidden">
+        <div className="min-h-screen bg-background relative overflow-x-hidden">
             <Helmet>
                 <title>{`${isUz ? (isAuto ? 'Avtomobil sotib olish' : 'Ko\'chmas mulk sotuvi') : (isAuto ? 'Купить автомобиль' : 'Продажа недвижимости')} ${displayName} | Autohouse`}</title>
                 <meta name="description" content={`${isUz ? (isAuto ? 'Avtomobil sotuvi' : 'Ko\'chmas mulk sotuvi') : (isAuto ? 'Продажа авто' : 'Продажа недвижимости')} ${displayName}. ${displayPrice > 0 ? `${isUz ? 'Narxi' : 'Цена'}: ${displayPrice.toLocaleString()} UZS.` : ''} ${displayDescription?.substring(0, 150)}...`} />
