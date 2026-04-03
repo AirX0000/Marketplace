@@ -34,5 +34,8 @@ router.patch('/listings/:id/trust', authenticateToken, authorizeRole(['ADMIN']),
 // Admin: Approve/Reject Listing
 router.patch('/listings/:id/status', authenticateToken, authorizeRole(['ADMIN']), marketplaceController.updateListingStatus);
 
+// Partners / Professionals
+router.get('/partners', marketplaceController.getPartners);
+
 module.exports = router;
 

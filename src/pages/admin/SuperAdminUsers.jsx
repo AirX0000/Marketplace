@@ -17,6 +17,8 @@ export function SuperAdminUsers() {
 
     // Add User Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
     const [newUser, setNewUser] = useState({
         name: '',
         email: '',
@@ -25,7 +27,8 @@ export function SuperAdminUsers() {
         role: 'USER',
         businessCategory: '',
         isPhoneVerified: true,
-        isForcedVerified: true
+        isForcedVerified: true,
+        isOfficial: false
     });
 
     useEffect(() => {
@@ -150,6 +153,20 @@ export function SuperAdminUsers() {
         }
     };
 
+    const handleUpdateUser = async (e) => {
+        e.preventDefault();
+        if (!selectedUser) return;
+        const loadingToast = toast.loading("Обновление пользователя...");
+        try {
+            await api.updateUser(selectedUser.id, selectedUser);
+            toast.success("Данные обновлены", { id: loadingToast });
+            setIsEditModalOpen(false);
+            loadUsers();
+        } catch (error) {
+            toast.error(error.message || "Ошибка обновления", { id: loadingToast });
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -264,6 +281,11 @@ export function SuperAdminUsers() {
                                                     <div className="text-xs text-muted-foreground flex flex-col">
                                                         <span>{user.email}</span>
                                                         <span>{user.phone}</span>
+                                                        {user.businessCategory && (
+                                                            <span className="text-primary font-bold mt-0.5 flex items-center gap-1">
+                                                                <Briefcase size={10} /> {user.businessCategory}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -301,6 +323,11 @@ export function SuperAdminUsers() {
                                                     'Не подтвержден'
                                                 )}
                                             </button>
+                                            {user.isOfficial && (
+                                                <div className="mt-1 flex items-center gap-1 text-[10px] font-black text-blue-500 uppercase">
+                                                    <Shield size={10} /> Официальный
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="p-4">
                                             <div className="flex flex-col gap-1">
@@ -322,6 +349,15 @@ export function SuperAdminUsers() {
                                             </div>
                                         </td>
                                         <td className="p-4 text-right">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedUser(user);
+                                                    setIsEditModalOpen(true);
+                                                }}
+                                                className="h-8 px-3 inline-flex items-center justify-center gap-2 rounded-lg border border-border text-xs font-medium hover:bg-muted transition-all mr-1"
+                                            >
+                                                Изменить
+                                            </button>
                                             <button
                                                 onClick={() => handleBlockToggle(user.id, !user.isBlocked, user.name)}
                                                 className={`h-8 px-3 inline-flex items-center justify-center gap-2 rounded-lg border text-xs font-medium transition-all ${user.isBlocked
@@ -494,6 +530,111 @@ export function SuperAdminUsers() {
                                     className="flex-1 h-12 px-4 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95"
                                 >
                                     Создать
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit User Modal */}
+            {isEditModalOpen && selectedUser && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/50">
+                            <h2 className="text-xl font-bold text-foreground">Редактировать профиль</h2>
+                            <button
+                                onClick={() => setIsEditModalOpen(false)}
+                                className="p-1.5 hover:bg-muted rounded-full transition-colors text-muted-foreground"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleUpdateUser} className="p-6 space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-muted-foreground">Имя</label>
+                                <input
+                                    required
+                                    type="text"
+                                    value={selectedUser.name || ""}
+                                    onChange={(e) => setSelectedUser({ ...selectedUser, name: e.target.value })}
+                                    className="w-full h-11 px-4 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                />
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-muted-foreground">Роль</label>
+                                    <select
+                                        value={selectedUser.role}
+                                        onChange={(e) => setSelectedUser({ ...selectedUser, role: e.target.value })}
+                                        className="w-full h-11 px-4 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm appearance-none bg-no-repeat bg-[right_1rem_center]"
+                                        style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundSize: '1.5em 1.5em' }}
+                                    >
+                                        <option value="USER">User</option>
+                                        <option value="PARTNER">Partner</option>
+                                        <option value="ADMIN">Admin</option>
+                                        <option value="SUPER_ADMIN">Super Admin</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-muted-foreground">Проф. Категория</label>
+                                    <select
+                                        disabled={selectedUser.role !== 'PARTNER'}
+                                        value={selectedUser.businessCategory || ""}
+                                        onChange={(e) => setSelectedUser({ ...selectedUser, businessCategory: e.target.value })}
+                                        className="w-full h-11 px-4 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm appearance-none disabled:opacity-50 bg-no-repeat bg-[right_1rem_center]"
+                                        style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundSize: '1.5em 1.5em' }}
+                                    >
+                                        <option value="">Без категории</option>
+                                        <option value="Риелтор">Риелтор</option>
+                                        <option value="Нотариус">Нотариус</option>
+                                        <option value="Оценка">Оценщик</option>
+                                        <option value="Страхование">Страхование</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 pt-2">
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="editVerified"
+                                        checked={selectedUser.isPhoneVerified}
+                                        onChange={(e) => setSelectedUser({ ...selectedUser, isPhoneVerified: e.target.checked })}
+                                        className="w-5 h-5 rounded border-border text-primary focus:ring-primary cursor-pointer transition-all"
+                                    />
+                                    <label htmlFor="editVerified" className="text-sm font-medium text-foreground cursor-pointer select-none">
+                                        Верифицирован
+                                    </label>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="editOfficial"
+                                        checked={selectedUser.isOfficial}
+                                        onChange={(e) => setSelectedUser({ ...selectedUser, isOfficial: e.target.checked })}
+                                        className="w-5 h-5 rounded border-border text-primary focus:ring-primary cursor-pointer transition-all"
+                                    />
+                                    <label htmlFor="editOfficial" className="text-sm font-black text-blue-600 cursor-pointer select-none flex items-center gap-1 uppercase text-[11px]">
+                                        <Shield size={14} /> Официальный статус
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditModalOpen(false)}
+                                    className="flex-1 h-12 px-4 rounded-xl border border-border font-bold text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+                                >
+                                    Отмена
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 h-12 px-4 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95"
+                                >
+                                    Сохранить
                                 </button>
                             </div>
                         </form>

@@ -313,6 +313,37 @@ class MarketplaceService {
             orderBy: { createdAt: 'asc' }
         });
     }
+
+    async getPartners(category) {
+        const where = {
+            role: 'PARTNER',
+            isBlocked: false
+        };
+
+        if (category && category !== 'Все' && category !== 'All') {
+            where.businessCategory = category;
+        }
+
+        return prisma.user.findMany({
+            where,
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                avatar: true,
+                storeName: true,
+                storeLogo: true,
+                businessCategory: true,
+                businessDescription: true,
+                isPhoneVerified: true,
+                isOfficial: true, // If we added this
+                createdAt: true,
+                rating: true, // We should add rating to User too or calculate it
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+    }
 }
 
 

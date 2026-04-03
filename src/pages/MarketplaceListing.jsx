@@ -13,6 +13,7 @@ import {
 import { api } from '../lib/api';
 import { cn } from '../lib/utils';
 import { useTranslation } from 'react-i18next';
+import { ServiceProviderCard } from '../components/ServiceProviderCard';
 
 export function MarketplaceListing() {
     const { t, i18n } = useTranslation();
@@ -26,6 +27,7 @@ export function MarketplaceListing() {
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [marketplaces, setMarketplaces] = useState([]);
+    const [providers, setProviders] = useState([]);
     
     // UI States
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'map'
@@ -209,6 +211,15 @@ export function MarketplaceListing() {
 
             if (response.pagination) setHasMore(pageNum < response.pagination.pages);
             else setHasMore(filtered.length >= 12);
+
+            // If Services, also fetch providers (once or in background)
+            if (isServices && pageNum === 1) {
+                api.getPartners(filters.subcategory || "Все").then(data => {
+                    setProviders(data || []);
+                }).catch(e => console.error("Failed to load providers:", e));
+            } else if (!isServices) {
+                setProviders([]);
+            }
 
         } catch (error) {
             console.error("Failed to load marketplaces", error);
@@ -474,6 +485,21 @@ export function MarketplaceListing() {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Professional Specialists Section */}
+                        {isServicesCategory && providers.length > 0 && (
+                            <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <h2 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
+                                        <Shield className="text-primary" size={20} /> Профессионалы и Специалисты
+                                    </h2>
+                                    <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {providers.map(p => <ServiceProviderCard key={p.id} provider={p} />)}
+                                </div>
+                            </div>
+                        )}
 
                         {loading && marketplaces.length === 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">

@@ -132,3 +132,9 @@ exports.getPriceHistory = asyncHandler(async (req, res) => {
     res.json(history);
 });
 
+exports.getPartners = asyncHandler(async (req, res) => {
+    const { category } = req.query;
+    const partners = await marketplaceService.getPartners(category);
+    res.json(partners);
+});
+

@@ -271,11 +271,13 @@ export const api = {
     // Super Admin
     getAdminStats: () => fetchAPI('/admin/stats'),
     getAdminUsers: () => fetchAPI('/admin/users'),
+    updateUser: (id, data) => fetchAPI(`/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     updateUserRole: (id, role) => fetchAPI(`/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
     updateUserBlock: (id, isBlocked) => fetchAPI(`/admin/users/${id}/block`, { method: 'PUT', body: JSON.stringify({ isBlocked }) }),
     updateUserVerification: (id, isVerified) => fetchAPI(`/admin/users/${id}/verify`, { method: 'PUT', body: JSON.stringify({ isVerified }) }),
     deleteUser: (id) => fetchAPI(`/admin/users/${id}`, { method: 'DELETE' }),
     createUser: (data) => fetchAPI('/admin/users', { method: 'POST', body: JSON.stringify(data) }),
+    getPartners: (category) => fetchAPI('/marketplace/partners', { params: { category } }),
 
     // Careers API
     getCareers: () => fetchAPI('/careers'),
