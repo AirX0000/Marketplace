@@ -36,7 +36,8 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
         }
     };
 
-    const price = marketplace.price || 4999000;
+    const isService = ["услуги", "services", "xizmatlar"].includes(marketplace.category?.toLowerCase());
+    const price = marketplace.price || 0;
     const discountedPrice = Math.round(price * (1 - (marketplace.discount || 0) / 100));
     const monthlyPayment = Math.round(price * 0.035);
 
@@ -95,27 +96,35 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mt-auto pt-6 border-t border-slate-50 dark:border-slate-800/50">
-                        <div className="space-y-1.5">
-                            {marketplace.discount > 0 && (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-slate-400 line-through font-bold">
-                                        {price.toLocaleString()} Sum
-                                    </span>
-                                    <span className="text-[10px] font-black text-white bg-rose-500 px-2 py-0.5 rounded-full">
-                                        -{marketplace.discount}%
-                                    </span>
+                        <div className="space-y-1.5 font-bold">
+                            {!isService ? (
+                                <>
+                                    {marketplace.discount > 0 && (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm text-slate-400 line-through font-bold">
+                                                {price.toLocaleString()} Sum
+                                            </span>
+                                            <span className="text-[10px] font-black text-white bg-rose-500 px-2 py-0.5 rounded-full">
+                                                -{marketplace.discount}%
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
+                                        {discountedPrice.toLocaleString()} <span className="text-sm font-bold text-slate-400 uppercase">Sum</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest">
+                                        <span className="text-purple-600 dark:text-purple-400">В РАССРОЧКУ</span>
+                                        <span className="text-slate-400">ОТ {monthlyPayment.toLocaleString()} <span className="text-[10px]">UZS/МЕС</span></span>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
+                                    {price > 0 ? `${price.toLocaleString()} UZS` : 'Цена по запросу'}
                                 </div>
                             )}
-                            <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
-                                {discountedPrice.toLocaleString()} <span className="text-sm font-bold text-slate-400 uppercase">Sum</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest">
-                                <span className="text-purple-600 dark:text-purple-400">В РАССРОЧКУ</span>
-                                <span className="text-slate-400">ОТ {monthlyPayment.toLocaleString()} <span className="text-[10px]">UZS/МЕС</span></span>
-                            </div>
                         </div>
                         <button onClick={(e) => { e.preventDefault(); navigate(`/marketplaces/${marketplace.slug || marketplace.id}#contact-sidebar`); }} className="h-14 px-10 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-sm active:scale-95 transition-all shadow-xl hover:shadow-primary/20">
-                            Консультация
+                            {isService ? 'Связаться' : 'Консультация'}
                         </button>
                     </div>
                 </div>
@@ -182,45 +191,70 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
                 </h3>
 
                 <div className="mb-6 min-h-[36px]">
-                    {(() => {
-                        const parsed = marketplace.attributes ? (typeof marketplace.attributes === 'string' ? JSON.parse(marketplace.attributes) : marketplace.attributes) : {};
-                        const specs = parsed.specs || parsed;
-                        
-                        if (specs.year || specs.mileage || specs.rooms || specs.area) {
-                            return (
-                                <div className="flex flex-wrap gap-2.5">
-                                    {(specs.year || specs.rooms) && (
-                                        <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 px-2.5 py-1 rounded-xl border border-slate-100 dark:border-slate-800">
-                                            {specs.year || `${specs.rooms} КОМН`}
-                                        </span>
-                                    )}
-                                    {(specs.mileage !== undefined || specs.area) && (
-                                        <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 px-2.5 py-1 rounded-xl border border-slate-100 dark:border-slate-800">
-                                            {specs.mileage !== undefined ? `${specs.mileage.toLocaleString()} КМ` : `${specs.area} М²`}
-                                        </span>
-                                    )}
-                                </div>
-                            );
-                        }
-                        return <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed font-medium">{displayDescription}</p>;
-                    })()}
+                        {(() => {
+                            const parsed = marketplace.attributes ? (typeof marketplace.attributes === 'string' ? JSON.parse(marketplace.attributes) : marketplace.attributes) : {};
+                            const specs = parsed.specs || parsed;
+                            
+                            if (isService) {
+                                return (
+                                    <div className="flex flex-wrap gap-2.5">
+                                        {specs.experience && (
+                                            <span className="text-[11px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                                                СТАЖ: {specs.experience} ЛЕТ
+                                            </span>
+                                        )}
+                                        {specs.license && (
+                                            <span className="text-[11px] font-black text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                                                ЛИЦЕНЗИЯ: {specs.license}
+                                            </span>
+                                        )}
+                                        {!specs.experience && !specs.license && (
+                                            <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed font-medium">Профессиональные услуги: {(marketplace.subcategory || marketplace.category)}</p>
+                                        )}
+                                    </div>
+                                );
+                            }
+
+                            if (specs.year || specs.mileage || specs.rooms || specs.area) {
+                                return (
+                                    <div className="flex flex-wrap gap-2.5">
+                                        {(specs.year || specs.rooms) && (
+                                            <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 px-2.5 py-1 rounded-xl border border-slate-100 dark:border-slate-800">
+                                                {specs.year || `${specs.rooms} КОМН`}
+                                            </span>
+                                        )}
+                                        {(specs.mileage !== undefined || specs.area) && (
+                                            <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 px-2.5 py-1 rounded-xl border border-slate-100 dark:border-slate-800">
+                                                {specs.mileage !== undefined ? `${specs.mileage.toLocaleString()} КМ` : `${specs.area} М²`}
+                                            </span>
+                                        )}
+                                    </div>
+                                );
+                            }
+                            return <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed font-medium">{displayDescription}</p>;
+                        })()}
                 </div>
 
                 <div className="mt-auto pt-5 border-t border-slate-50 dark:border-slate-800 flex flex-col gap-5">
                     <div className="flex flex-col">
                         <div className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
-                            {discountedPrice.toLocaleString()} <span className="text-xs font-bold text-slate-400 uppercase">Sum</span>
+                            {isService ? (price > 0 ? `${price.toLocaleString()} UZS` : 'По запросу') : `${discountedPrice.toLocaleString()} Sum`}
                         </div>
-                        <div className="mt-1 flex items-center gap-1.5 text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest opacity-80">
-                            В рассрочку от {monthlyPayment.toLocaleString()}
-                        </div>
+                        {!isService && (
+                            <div className="mt-1 flex items-center gap-1.5 text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest opacity-80">
+                                В рассрочку от {monthlyPayment.toLocaleString()}
+                            </div>
+                        )}
                     </div>
 
                     <button
                         onClick={(e) => { e.preventDefault(); navigate(`/marketplaces/${marketplace.slug || marketplace.id}#contact-sidebar`); }}
-                        className="h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-sm font-black transition-all active:scale-95 shadow-xl shadow-emerald-600/20"
+                        className={cn(
+                            "h-12 rounded-2xl text-sm font-black transition-all active:scale-95 shadow-xl",
+                            isService ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-slate-900/20" : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20"
+                        )}
                     >
-                        Заказать
+                        {isService ? 'Связаться' : 'Заказать'}
                     </button>
                 </div>
             </div>

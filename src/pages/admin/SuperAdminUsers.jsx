@@ -23,6 +23,7 @@ export function SuperAdminUsers() {
         phone: '',
         password: '',
         role: 'USER',
+        businessCategory: '',
         isPhoneVerified: true,
         isForcedVerified: true
     });
@@ -88,6 +89,7 @@ export function SuperAdminUsers() {
                 phone: '',
                 password: '',
                 role: 'USER',
+                businessCategory: '',
                 isPhoneVerified: true,
                 isForcedVerified: true
             });
@@ -432,12 +434,27 @@ export function SuperAdminUsers() {
                                     className="w-full h-11 px-4 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm appearance-none bg-no-repeat bg-[right_1rem_center]"
                                     style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundSize: '1.5em 1.5em' }}
                                 >
-                                    <option value="USER">User</option>
-                                    <option value="PARTNER">Partner (Seller)</option>
-                                    <option value="ADMIN">Admin</option>
                                     <option value="SUPER_ADMIN">Super Admin</option>
                                 </select>
                             </div>
+
+                            {newUser.role === 'PARTNER' && (
+                                <div className="space-y-1.5 animate-in slide-in-from-top-2">
+                                    <label className="text-sm font-semibold text-muted-foreground">Профессиональная Категория</label>
+                                    <select
+                                        value={newUser.businessCategory}
+                                        onChange={(e) => setNewUser({ ...newUser, businessCategory: e.target.value })}
+                                        className="w-full h-11 px-4 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm appearance-none bg-no-repeat bg-[right_1rem_center]"
+                                        style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundSize: '1.5em 1.5em' }}
+                                    >
+                                        <option value="">Без категории</option>
+                                        <option value="Риелтор">Риелтор</option>
+                                        <option value="Нотариус">Нотариус</option>
+                                        <option value="Оценка">Оценщик</option>
+                                        <option value="Страхование">Страхование</option>
+                                    </select>
+                                </div>
+                            )}
                             <div className="space-y-3 pt-2">
                                 <div className="flex items-center gap-3">
                                     <input

@@ -78,17 +78,25 @@ const REAL_ESTATE_TYPES = [
 const PROFESSIONAL_FIELDS = {
     'Риелтор': [
         { key: 'experience', label: 'Стаж работы (лет)', type: 'number' },
-        { key: 'deals', label: 'Успешных сделок', type: 'number' }
+        { key: 'deals', label: 'Успешных сделок', type: 'number' },
+        { key: 'languages', label: 'Языки общения', type: 'text', placeholder: 'Русский, Узбекский, English' },
+        { key: 'whatsapp', label: 'WhatsApp / Telegram Номер', type: 'text', placeholder: '+998 ...' }
     ],
     'Нотариус': [
-        { key: 'license', label: 'Номер лицензии', type: 'text' }
+        { key: 'license', label: 'Номер лицензии', type: 'text' },
+        { key: 'address', label: 'Адрес конторы', type: 'text', fullWidth: true },
+        { key: 'work_hours', label: 'Часы работы', type: 'text', placeholder: 'Пн-Пт 09:00 - 18:00' },
+        { key: 'whatsapp', label: 'WhatsApp / Telegram Номер', type: 'text', placeholder: '+998 ...' }
     ],
     'Оценка': [
         { key: 'license', label: 'Номер лицензии', type: 'text' },
-        { key: 'specialization', label: 'Специализация', type: 'text' }
+        { key: 'specialization', label: 'Специализация', type: 'text', placeholder: 'Недвижимость, Транспорт, Оборудование' },
+        { key: 'whatsapp', label: 'WhatsApp / Telegram Номер', type: 'text', placeholder: '+998 ...' }
     ],
     'Страхование': [
-        { key: 'policy_types', label: 'Виды полисов', type: 'text', placeholder: 'например, ОСАГО, КАСКО, Имущество' }
+        { key: 'policy_types', label: 'Виды полисов', type: 'text', placeholder: 'ОСАГО, КАСКО, Имущество, Жизнь', fullWidth: true },
+        { key: 'company', label: 'Страховая компания', type: 'text' },
+        { key: 'whatsapp', label: 'WhatsApp / Telegram Номер', type: 'text', placeholder: '+998 ...' }
     ]
 };
 

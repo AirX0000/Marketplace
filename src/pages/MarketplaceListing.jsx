@@ -62,9 +62,9 @@ export function MarketplaceListing() {
     const [regions, setRegions] = useState(["Все"]);
     
     const catName = filters.category || "Все";
-    const isRealEstateCategory = ["недвижимость", "real estate"].includes(catName.toLowerCase());
-    const isAutoCategory = ["транспорт", "автомобили", "cars", "transport"].includes(catName.toLowerCase());
-    const isServicesCategory = ["услуги", "services"].includes(catName.toLowerCase());
+    const isRealEstateCategory = ["недвижимость", "real estate", "ko'chmas mulk"].includes(catName.toLowerCase());
+    const isAutoCategory = ["транспорт", "автомобили", "cars", "transport", "avtomobillar"].includes(catName.toLowerCase());
+    const isServicesCategory = ["услуги", "services", "xizmatlar"].includes(catName.toLowerCase());
 
     // Initial Load
     useEffect(() => {
@@ -163,6 +163,7 @@ export function MarketplaceListing() {
             const isServices = ["услуги", "xizmatlar", "services"].includes(catLower);
 
             if (catLower !== "все" && catLower !== "" && catLower !== "all") {
+                // Map to database canonical names
                 if (isRealEstate) params.category = "Недвижимость";
                 else if (isAuto) params.category = "Транспорт";
                 else if (isServices) params.category = "Услуги";
@@ -308,17 +309,17 @@ export function MarketplaceListing() {
                                     </select>
                                 </div>
 
-                                {filters.category !== "Все" && categories.find(c => c.name === filters.category)?.sub && (
+                                {filters.category !== "Все" && categories.find(c => (c.name === filters.category || (isAutoCategory && c.name === 'Транспорт') || (isRealEstateCategory && c.name === 'Недвижимость') || (isServicesCategory && c.name === 'Услуги')) )?.sub && (
                                     <div>
                                         <h4 className="text-xs font-black uppercase text-slate-400 mb-4">{t('ads.subcategory')}</h4>
                                         <div className="space-y-3">
-                                            {categories.find(c => c.name === filters.category).sub.map(sub => (
+                                            {categories.find(c => (c.name === filters.category || (isAutoCategory && c.name === 'Транспорт') || (isRealEstateCategory && c.name === 'Недвижимость') || (isServicesCategory && c.name === 'Услуги')) ).sub.map(sub => (
                                                 <label key={sub} className="flex items-center gap-3 text-sm cursor-pointer group">
-                                                    <div className={cn("w-5 h-5 rounded border flex items-center justify-center transition-all", filters.subcategory === sub ? "bg-primary border-primary text-white" : "border-slate-200 dark:border-slate-700")}>
-                                                        {filters.subcategory === sub && <Check size={12} />}
+                                                    <div className={cn("w-5 h-5 rounded border flex items-center justify-center transition-all", (filters.subcategory === sub || (filters.subcategory === "" && sub === "Все")) ? "bg-primary border-primary text-white" : "border-slate-200 dark:border-slate-700")}>
+                                                        {(filters.subcategory === sub || (filters.subcategory === "" && sub === "Все")) && <Check size={12} />}
                                                     </div>
-                                                    <input type="radio" className="hidden" checked={filters.subcategory === sub} onChange={() => updateFilter('subcategory', sub)} />
-                                                    <span className={filters.subcategory === sub ? "text-primary font-bold" : "text-slate-600 dark:text-slate-400"}>{translateSubcategory(sub)}</span>
+                                                    <input type="radio" name="subcategory" className="hidden" checked={filters.subcategory === sub} onChange={() => updateFilter('subcategory', sub === "Все" ? "" : sub)} />
+                                                    <span className={(filters.subcategory === sub || (filters.subcategory === "" && sub === "Все")) ? "text-primary font-bold" : "text-slate-600 dark:text-slate-400"}>{translateSubcategory(sub)}</span>
                                                 </label>
                                             ))}
                                         </div>

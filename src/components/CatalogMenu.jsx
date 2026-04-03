@@ -22,7 +22,7 @@ export function CatalogMenu({ isOpen, onClose }) {
             setLoading(true);
             const data = await api.getCategories();
             // Filter categories with at least 1 product
-            const activeCats = data.filter(c => c.count > 0);
+            const activeCats = data; // Show all categories
             setCategories(activeCats);
             if (activeCats.length > 0) {
                 setActiveCategory(activeCats[0]);

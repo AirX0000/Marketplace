@@ -132,12 +132,9 @@ export function HomePage() {
         if (searchQuery.trim()) params.set('search', searchQuery.trim());
         if (searchRegion !== 'Все') params.set('region', searchRegion);
 
-        if (searchTab === 'realestate') {
-            params.set('category', 'Недвижимость');
-        } else if (searchTab === 'auto') {
-            params.set('category', 'Transport');
-        }
-
+        // No more hardcoded category, make search GLOBAL unless user explicitly chooses a tab
+        // If we add tabs back later, we can re-enable this.
+        
         navigate(`/marketplaces?${params.toString()}`);
     };
 
