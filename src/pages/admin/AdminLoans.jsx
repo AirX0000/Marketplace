@@ -131,11 +131,11 @@ export function AdminLoans() {
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                             <div>
                                                 <div className="text-slate-500 text-xs uppercase tracking-wider font-semibold mb-1">Сумма кредита</div>
-                                                <div className="font-bold text-slate-900">{loan.amount.toLocaleString()} UZS</div>
+                                                <div className="font-bold text-slate-900">{(Number(loan.amount) || 0).toLocaleString()} UZS</div>
                                             </div>
                                             <div>
                                                 <div className="text-slate-500 text-xs uppercase tracking-wider font-semibold mb-1">Первый взнос</div>
-                                                <div className="font-bold text-slate-900">{loan.downPayment.toLocaleString()} UZS</div>
+                                                <div className="font-bold text-slate-900">{(Number(loan.downPayment) || 0).toLocaleString()} UZS</div>
                                             </div>
                                             <div>
                                                 <div className="text-slate-500 text-xs uppercase tracking-wider font-semibold mb-1">Срок</div>

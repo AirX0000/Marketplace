@@ -180,8 +180,8 @@ export function AdminDashboard() {
                                     style={{ fontSize: 12 }}
                                 />
                                 <Tooltip
-                                    formatter={(value) => [`${value.toLocaleString()} Sum`, t('admin.finance', 'Выручка')]}
-                                    labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                                    formatter={(value) => [`${(Number(value) || 0).toLocaleString()} Sum`, t('admin.finance', 'Выручка')]}
+                                    labelFormatter={(label) => label ? new Date(label).toLocaleDateString() : '---'}
                                 />
                                 <Area type="monotone" dataKey="amount" stroke="#10b981" fillOpacity={1} fill="url(#colorRevenue)" />
                             </AreaChart>

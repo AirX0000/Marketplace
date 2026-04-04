@@ -79,55 +79,55 @@ export function AdminAutohousePay() {
 
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-emerald-200 transition-colors">
                     <div className="flex justify-between items-start mb-4">
                         <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
                             <Activity size={20} />
                         </div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400">Ликвидность платформы</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 font-mono">Liquidity</span>
                     </div>
                     <div>
-                        <div className="text-2xl font-black text-slate-900">{metrics.totalLiquidity.toLocaleString('ru-RU')}</div>
+                        <div className="text-2xl font-black text-slate-900 font-mono">{(Number(metrics.totalLiquidity) || 0).toLocaleString('ru-RU')}</div>
                         <div className="text-xs text-slate-500 font-bold mt-1">UZS на кошельках</div>
                     </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-blue-200 transition-colors">
                     <div className="flex justify-between items-start mb-4">
                         <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
                             <Users size={20} />
                         </div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400">Активные кошельки</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 font-mono">Active Wallets</span>
                     </div>
                     <div>
-                        <div className="text-2xl font-black text-slate-900">{metrics.activeWallets.toLocaleString()}</div>
-                        <div className="text-xs text-emerald-500 font-bold mt-1">+12 за неделю</div>
+                        <div className="text-2xl font-black text-slate-900 font-mono">{(Number(metrics.activeWallets) || 0).toLocaleString()}</div>
+                        <div className="text-xs text-blue-500 font-black mt-1">Оцифрованные счета</div>
                     </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-amber-200 transition-colors">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
                             <ShieldCheck size={20} />
                         </div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400">Средства в Escrow</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 font-mono">Escrow Volume</span>
                     </div>
                     <div>
-                        <div className="text-2xl font-black text-slate-900">{metrics.escrowLocked.toLocaleString('ru-RU')}</div>
-                        <div className="text-xs text-slate-500 font-bold mt-1">UZS заморожено</div>
+                        <div className="text-2xl font-black text-slate-900 font-mono">{(Number(metrics.escrowLocked) || 0).toLocaleString('ru-RU')}</div>
+                        <div className="text-xs text-amber-600 font-black mt-1">Безопасные сделки</div>
                     </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-rose-200 transition-colors">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
+                        <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
                             <ArrowUpRight size={20} />
                         </div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400">Транзакций сегодня</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 font-mono">Daily TX</span>
                     </div>
                     <div>
-                        <div className="text-2xl font-black text-slate-900">{metrics.transactionsToday}</div>
-                        <div className="text-xs text-slate-500 font-bold mt-1">Успешных операций</div>
+                        <div className="text-2xl font-black text-slate-900 font-mono">{(Number(metrics.transactionsToday) || 0).toLocaleString()}</div>
+                        <div className="text-xs text-rose-600 font-black mt-1">Операций сегодня</div>
                     </div>
                 </div>
             </div>
@@ -171,10 +171,10 @@ export function AdminAutohousePay() {
                                     <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="font-bold text-slate-900">{order.id}</div>
-                                            <div className="text-xs text-slate-400 mt-0.5">{new Date(order.date).toLocaleString('ru-RU')}</div>
+                                            <div className="text-xs text-slate-400 mt-0.5">{order.date ? new Date(order.date).toLocaleString('ru-RU') : '---'}</div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="font-black text-emerald-600">{order.amount.toLocaleString()} UZS</div>
+                                        <td className="p-4">
+                                            <div className="font-black text-emerald-600">{(Number(order.amount) || 0).toLocaleString()} UZS</div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="text-xs font-mono text-slate-500">Покуп: {order.sender?.name || order.senderId}</div>
@@ -254,7 +254,7 @@ export function AdminAutohousePay() {
                                     <tr key={i} className="hover:bg-slate-50/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="font-bold text-slate-900">{tx.id}</div>
-                                            <div className="text-xs text-slate-400 mt-0.5">{new Date(tx.createdAt || tx.date).toLocaleString('ru-RU')}</div>
+                                            <div className="text-xs text-slate-400 mt-0.5">{tx.createdAt || tx.date ? new Date(tx.createdAt || tx.date).toLocaleString('ru-RU') : '---'}</div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="text-[10px] font-black uppercase text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
@@ -264,10 +264,10 @@ export function AdminAutohousePay() {
                                         <td className="px-6 py-4">
                                             <span className="font-mono text-xs">{tx.sender?.name || tx.senderId}</span>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <span className={`font-black ${tx.amount > 0 ? 'text-emerald-600' : 'text-slate-900'}`}>
-                                                {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()} UZS
-                                            </span>
+                                        <td className="p-4">
+                                            <div className={`font-black ${tx.amount > 0 ? 'text-emerald-600' : 'text-slate-900'}`}>
+                                                {tx.amount > 0 ? '+' : ''}{(Number(tx.amount) || 0).toLocaleString()} UZS
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

@@ -153,7 +153,7 @@ export function AdminCompanies() {
                 />
                 <StatsCard
                     title="Общая Выручка"
-                    value={`${stats.totalRevenue.toLocaleString()} Sum`}
+                    value={`${(Number(stats.totalRevenue) || 0).toLocaleString()} Sum`}
                     icon={<UsersIcon className="h-4 w-4" />}
                     description="За все время"
                 />
