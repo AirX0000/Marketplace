@@ -8,7 +8,7 @@ import { useCompare } from '../context/CompareContext';
 import { 
     LayoutGrid, Map as MapIcon, RotateCw, Filter, ArrowUpDown, 
     Search, SortAsc, List as ListIcon, Shield, Calculator, 
-    FileText, Building2, Briefcase, ArrowLeft, X, Check 
+    FileText, Building2, Briefcase, ArrowLeft, X, Check, ShieldCheck 
 } from 'lucide-react';
 import { api } from '../lib/api';
 import { cn } from '../lib/utils';
@@ -67,6 +67,13 @@ export function MarketplaceListing() {
     const isRealEstateCategory = ["недвижимость", "real estate", "ko'chmas mulk", "house", "apartment"].includes(catName.toLowerCase());
     const isAutoCategory = ["транспорт", "автомобили", "cars", "transport", "avtomobillar", "авто", "car", "машины"].includes(catName.toLowerCase());
     const isServicesCategory = ["услуги", "services", "xizmatlar"].includes(catName.toLowerCase());
+
+    const serviceTypes = [
+        { id: 'realtor', name: 'Риелтор', icon: Building2, color: 'from-blue-500 to-cyan-400', desc: 'Поиск и продажа недвижимости' },
+        { id: 'notary', name: 'Нотариус', icon: FileText, color: 'from-amber-500 to-orange-400', desc: 'Удостоверение сделок и документов' },
+        { id: 'appraisal', name: 'Оценка', icon: Calculator, color: 'from-emerald-500 to-teal-400', desc: 'Оценка стоимости имущества' },
+        { id: 'insurance', name: 'Страхование', icon: ShieldCheck, color: 'from-indigo-500 to-purple-400', desc: 'Защита вашего имущества' },
+    ];
 
     // Initial Load
     useEffect(() => {
@@ -485,6 +492,54 @@ export function MarketplaceListing() {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Service Category Tiles */}
+                        {isServicesCategory && (
+                            <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {serviceTypes.map((service) => {
+                                        const isActive = filters.subcategory === service.name;
+                                        return (
+                                            <button
+                                                key={service.id}
+                                                onClick={() => updateFilter('subcategory', isActive ? "" : service.name)}
+                                                className={cn(
+                                                    "group relative flex flex-col items-center justify-center p-6 rounded-3xl border transition-all duration-300 overflow-hidden",
+                                                    isActive 
+                                                        ? "border-transparent text-white shadow-2xl shadow-primary/20 scale-[1.02]" 
+                                                        : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-primary/50 text-slate-600 dark:text-slate-400 shadow-sm"
+                                                )}
+                                            >
+                                                {isActive && <div className={cn("absolute inset-0 bg-gradient-to-br opacity-100 animate-in fade-in duration-500", service.color)} />}
+                                                {!isActive && <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-300", service.color)} />}
+                                                
+                                                <div className={cn(
+                                                    "relative w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110",
+                                                    isActive ? "bg-white/20" : "bg-slate-50 dark:bg-slate-800/50"
+                                                )} style={{ color: isActive ? 'white' : 'inherit' }}>
+                                                    <service.icon size={32} strokeWidth={isActive ? 2.5 : 2} className={!isActive ? "text-primary" : ""} />
+                                                </div>
+                                                
+                                                <span className="relative text-sm font-black tracking-tight uppercase">{service.name}</span>
+                                                <span className={cn(
+                                                    "relative text-[10px] text-center mt-1 font-medium opacity-70 leading-tight",
+                                                    isActive ? "text-white" : "text-slate-400"
+                                                )}>
+                                                    {service.desc}
+                                                </span>
+
+                                                {/* Active Indicator */}
+                                                {isActive && (
+                                                    <div className="absolute top-3 right-3">
+                                                        <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Professional Specialists Section */}
                         {isServicesCategory && providers.length > 0 && (
