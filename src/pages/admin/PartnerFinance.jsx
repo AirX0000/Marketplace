@@ -102,7 +102,7 @@ export function PartnerFinance() {
                                             </div>
                                         </td>
                                         <td className="p-4 text-slate-700">{tx.description}</td>
-                                        <td className="p-4 text-slate-700">{new Date(tx.date).toLocaleDateString()}</td>
+                                        <td className="p-4 text-slate-700">{tx.date ? new Date(tx.date).toLocaleDateString() : '---'}</td>
                                         <td className="p-4">
                                             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${tx.status === 'COMPLETED' ? 'bg-blue-600/100 text-blue-600 800' :
                                                     tx.status === 'PENDING' ? 'bg-slate-100 text-slate-800' :

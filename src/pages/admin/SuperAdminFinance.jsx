@@ -119,9 +119,11 @@ export function SuperAdminFinance() {
                                         <div className="text-xs text-slate-500">{tx.receiver?.email || tx.receiver?.phone}</div>
                                     </td>
                                     <td className="p-4 font-bold text-emerald-600">
-                                        +{tx.amount.toLocaleString()} UZS
+                                        +{(Number(tx.amount) || 0).toLocaleString()} UZS
                                     </td>
-                                    <td className="p-4 text-slate-600">{new Date(tx.createdAt).toLocaleString()}</td>
+                                    <td className="p-4 text-slate-600">
+                                        {tx.createdAt ? new Date(tx.createdAt).toLocaleString() : '---'}
+                                    </td>
                                     <td className="p-4 text-right space-x-2">
                                         <button
                                             onClick={() => handleApprove(tx.id)}

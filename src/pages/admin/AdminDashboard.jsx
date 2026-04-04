@@ -240,7 +240,7 @@ export function AdminDashboard() {
                                                 </div>
                                             </div>
                                             <div className="font-bold text-sm">
-                                                {partner.revenue.toLocaleString()} Sum
+                                                {(Number(partner.revenue) || 0).toLocaleString()} Sum
                                             </div>
                                         </div>
                                     ))}
@@ -304,13 +304,15 @@ export function AdminDashboard() {
                                                 }`}>
                                                 {activity.status}
                                             </span>
-                                            <span className="text-xs text-slate-700">{new Date(activity.date).toLocaleDateString()} {new Date(activity.date).toLocaleTimeString()}</span>
+                                            <span className="text-xs text-slate-700">
+                                                {activity.date ? new Date(activity.date).toLocaleDateString() : '---'} {activity.date ? new Date(activity.date).toLocaleTimeString() : ''}
+                                            </span>
                                         </div>
                                         <p className="text-sm font-medium leading-none">{activity.productName}</p>
                                         <p className="text-xs text-slate-700">Клиент: {activity.buyerName} ({activity.buyerEmail})</p>
                                     </div>
                                     <div className="font-bold text-blue-600 600">
-                                        +{activity.price.toLocaleString()} Sum
+                                        +{(Number(activity.price) || 0).toLocaleString()} Sum
                                     </div>
                                 </div>
                             ))}
