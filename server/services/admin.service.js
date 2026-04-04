@@ -4,7 +4,7 @@ const { safeUserSelect } = require('../utils/constants');
 
 class AdminService {
     async createUser(userData) {
-        const { email, phone, name, password, role, isPhoneVerified } = userData;
+        const { email, phone, name, password, role, isPhoneVerified, businessCategory, isForcedVerified } = userData;
 
         const normalizedEmail = email ? email.toLowerCase().trim() : undefined;
         const normalizedPhone = phone ? phone.replace(/\D/g, '') : undefined;
@@ -44,6 +44,8 @@ class AdminService {
                 password: hashedPassword,
                 role: role || 'USER',
                 isPhoneVerified: !!isPhoneVerified,
+                isForcedVerified: !!isForcedVerified,
+                businessCategory: businessCategory || null,
                 accountId: nextAccountId
             },
             select: safeUserSelect
@@ -71,6 +73,7 @@ class AdminService {
                 isBlocked: true,
                 isPhoneVerified: true,
                 isForcedVerified: true,
+                businessCategory: true,
                 createdAt: true,
                 orders: {
                     select: { id: true, total: true, createdAt: true }
@@ -92,6 +95,28 @@ class AdminService {
         return prisma.user.update({
             where: { id },
             data: { isBlocked },
+            select: safeUserSelect
+        });
+    }
+
+    async updateUser(id, userData) {
+        const { name, email, phone, role, isPhoneVerified, isForcedVerified, isOfficial, businessCategory } = userData;
+        
+        const normalizedEmail = email ? email.toLowerCase().trim() : undefined;
+        const normalizedPhone = phone ? phone.replace(/\D/g, '') : undefined;
+
+        return await prisma.user.update({
+            where: { id },
+            data: {
+                name,
+                email: normalizedEmail,
+                phone: normalizedPhone,
+                role,
+                isPhoneVerified: !!isPhoneVerified,
+                isForcedVerified: !!isForcedVerified,
+                isOfficial: !!isOfficial,
+                businessCategory: businessCategory || null
+            },
             select: safeUserSelect
         });
     }

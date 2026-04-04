@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
-import { Shield, User, Search, Store, Lock, Unlock, Mail, Calendar, Check, Trash2, UserPlus, X } from 'lucide-react';
+import { Shield, User, Search, Store, Lock, Unlock, Mail, Calendar, Check, Trash2, UserPlus, X, Briefcase, TrendingUp } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export function SuperAdminUsers() {
@@ -186,15 +186,20 @@ export function SuperAdminUsers() {
                         {urlCategory ? `Список зарегистрированных пользователей в категории ${urlCategory}` : 'Просмотр и управление всеми пользователями платформы'}
                     </p>
                 </div>
-                {!urlCategory && (
-                    <button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm font-medium"
-                    >
-                        <UserPlus size={18} />
-                        Добавить пользователя
-                    </button>
-                )}
+                <button
+                    onClick={() => {
+                        setNewUser({
+                            ...newUser,
+                            role: urlCategory ? 'PARTNER' : 'USER',
+                            businessCategory: urlCategory || ''
+                        });
+                        setIsAddModalOpen(true);
+                    }}
+                    className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm font-medium"
+                >
+                    <UserPlus size={18} />
+                    {urlCategory ? 'Добавить специалиста' : 'Добавить пользователя'}
+                </button>
             </div>
 
             {/* Filters and Search */}
@@ -470,11 +475,14 @@ export function SuperAdminUsers() {
                                     className="w-full h-11 px-4 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm appearance-none bg-no-repeat bg-[right_1rem_center]"
                                     style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundSize: '1.5em 1.5em' }}
                                 >
+                                    <option value="USER">User</option>
+                                    <option value="PARTNER">Partner</option>
+                                    <option value="ADMIN">Admin</option>
                                     <option value="SUPER_ADMIN">Super Admin</option>
                                 </select>
                             </div>
 
-                            {newUser.role === 'PARTNER' && (
+                            {(newUser.role === 'PARTNER' || newUser.role === 'ADMIN') && (
                                 <div className="space-y-1.5 animate-in slide-in-from-top-2">
                                     <label className="text-sm font-semibold text-muted-foreground">Профессиональная Категория</label>
                                     <select

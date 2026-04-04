@@ -11,6 +11,11 @@ exports.createUser = asyncHandler(async (req, res) => {
     res.status(201).json(user);
 });
 
+exports.updateUser = asyncHandler(async (req, res) => {
+    const user = await adminService.updateUser(req.params.id, req.body);
+    res.json(user);
+});
+
 exports.updateUserRole = asyncHandler(async (req, res) => {
     const user = await adminService.updateUserRole(req.params.id, req.body.role);
     res.json(user);
