@@ -425,7 +425,12 @@ function CategoryManager() {
 
     useEffect(() => { load(); }, []);
 
-    const load = () => api.getCategories().then(setCategories).catch(console.error);
+    const load = () => {
+        // Force refresh from DB when loading Admin Categories
+        api.getCategories({ params: { refresh: 'true' } })
+            .then(setCategories)
+            .catch(console.error);
+    };
 
     const handleAdd = async (e) => {
         e.preventDefault();

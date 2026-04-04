@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
 const http = require('http');
+const compression = require('compression');
 const { Server } = require('socket.io');
 require('dotenv').config();
 
@@ -66,6 +67,7 @@ app.use(helmet({
         },
     },
 }));
+app.use(compression());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -146,7 +148,10 @@ app.use('/api', apiRouter);
 // Sitemap.xml at root (for Google Search Console)
 app.get('/sitemap.xml', async (req, res) => {
     try {
-        const prisma = require('./config/database');
+        const { PrismaClient } = require('@prisma/client');
+        const prisma = new PrismaClient({
+            log: ['error', 'warn'],
+        });
         const baseUrl = 'https://autohouse.uz';
         const staticRoutes = ['/', '/catalog', '/marketplaces', '/about', '/contacts', '/blog', '/mortgage', '/partners', '/help'];
         const [marketplaces, blogs] = await Promise.all([
@@ -187,7 +192,13 @@ console.log('🔹 Static assets directory:', distPath);
 const jwt = require('jsonwebtoken'); // Added for Socket.io auth
 const env = require('./config/env');
 
-app.use(express.static(distPath));
+// Cache static assets (CSS, JS, Images) for 1 year if they are fingerprinted
+app.use(express.static(distPath, {
+    maxAge: '1y',
+    etag: true,
+    immutable: true,
+    index: false
+}));
 
 app.get('*', (req, res) => {
     // Disable caching for index.html to ensure users always get the latest version
