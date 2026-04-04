@@ -10,6 +10,7 @@ import { useShop } from '../context/ShopContext';
 import { useTheme } from '../context/ThemeContext';
 import { NotificationBell } from './NotificationBell';
 import { CommandPalette } from './CommandPalette';
+import { toast } from 'react-hot-toast';
 
 export function Header() {
     const { t, i18n } = useTranslation();
@@ -71,7 +72,7 @@ export function Header() {
 
     const startRecording = () => {
         if (!('webkitSpeechRecognition' in window)) {
-            alert("Ваш браузер не поддерживает голосовой поиск.");
+            toast.error('Ваш браузер не поддерживает голосовой поиск.');
             return;
         }
 

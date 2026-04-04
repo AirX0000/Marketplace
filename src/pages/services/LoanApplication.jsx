@@ -214,19 +214,19 @@ export function LoanApplication() {
                                             <div>
                                                 <div className="flex justify-between items-end mb-4">
                                                     <label className="text-sm font-bold text-slate-700">Loan Amount</label>
-                                                    <span className="text-2xl font-black text-orange-600">${loanAmount.toLocaleString()}</span>
+                                                    <span className="text-2xl font-black text-orange-600">{loanAmount.toLocaleString()} UZS</span>
                                                 </div>
                                                 <input type="range" min="5000" max="150000" step="1000" value={loanAmount} onChange={(e) => setLoanAmount(Number(e.target.value))} className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-600" />
-                                                <div className="flex justify-between text-xs text-slate-400 mt-2 font-medium"><span>$5,000</span><span>$150,000</span></div>
+                                                <div className="flex justify-between text-xs text-slate-400 mt-2 font-medium"><span>5 000 UZS</span><span>150 000 UZS</span></div>
                                             </div>
                                             {/* Downpayment */}
                                             <div>
                                                 <div className="flex justify-between items-end mb-4">
                                                     <label className="text-sm font-bold text-slate-700">Downpayment</label>
-                                                    <span className="text-2xl font-black text-orange-600">${downpayment.toLocaleString()}</span>
+                                                    <span className="text-2xl font-black text-orange-600">{downpayment.toLocaleString()} UZS</span>
                                                 </div>
                                                 <input type="range" min="0" max="50000" step="500" value={downpayment} onChange={(e) => setDownpayment(Number(e.target.value))} className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-600" />
-                                                <div className="flex justify-between text-xs text-slate-400 mt-2 font-medium"><span>$0</span><span>$50,000</span></div>
+                                                <div className="flex justify-between text-xs text-slate-400 mt-2 font-medium"><span>0 UZS</span><span>50 000 UZS</span></div>
                                             </div>
                                             {/* Loan Term */}
                                             <div>
@@ -250,15 +250,15 @@ export function LoanApplication() {
                                                 </h3>
                                                 <div className="space-y-4">
                                                     <div className="flex justify-between"><span className="text-sm text-slate-500 font-medium">Estimated APR</span><span className="text-sm font-bold text-slate-900">{estimatedAPR.toFixed(2)}%</span></div>
-                                                    <div className="flex justify-between"><span className="text-sm text-slate-500 font-medium">Principal Amount</span><span className="text-sm font-bold text-slate-900">${principalAmount.toLocaleString()}</span></div>
-                                                    <div className="flex justify-between"><span className="text-sm text-slate-500 font-medium">Monthly Interest</span><span className="text-sm font-bold text-slate-900">${monthlyInterest.toFixed(2)}</span></div>
+                                                    <div className="flex justify-between"><span className="text-sm text-slate-500 font-medium">Сумма кредита</span><span className="text-sm font-bold text-slate-900">{principalAmount.toLocaleString()} UZS</span></div>
+                                                    <div className="flex justify-between"><span className="text-sm text-slate-500 font-medium">Ежемесячный процент</span><span className="text-sm font-bold text-slate-900">{monthlyInterest.toFixed(2)} UZS</span></div>
                                                 </div>
                                                 <div className="h-px bg-slate-200 my-6"></div>
                                             </div>
                                             <div>
                                                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Estimated Monthly Payment</p>
                                                 <div className="flex items-baseline gap-2 text-orange-600">
-                                                    <span className="text-4xl font-black">${Math.round(monthlyPayment).toLocaleString()}</span>
+                                                    <span className="text-4xl font-black">{Math.round(monthlyPayment).toLocaleString()} UZS</span>
                                                     <span className="text-sm font-bold text-slate-500">/month</span>
                                                 </div>
                                             </div>
@@ -385,11 +385,11 @@ export function LoanApplication() {
                                         <h3 className="font-bold text-slate-800 mb-4">Параметры кредита</h3>
                                         <div className="grid grid-cols-2 gap-3 text-sm">
                                             <div><span className="text-slate-500">Тип:</span> <span className="font-bold">{loanType}</span></div>
-                                            <div><span className="text-slate-500">Сумма:</span> <span className="font-bold">${loanAmount.toLocaleString()}</span></div>
-                                            <div><span className="text-slate-500">Первонач. взнос:</span> <span className="font-bold">${downpayment.toLocaleString()}</span></div>
+                                            <div><span className="text-slate-500">Сумма:</span> <span className="font-bold">{loanAmount.toLocaleString()} UZS</span></div>
+                                            <div><span className="text-slate-500">Первонач. взнос:</span> <span className="font-bold">{downpayment.toLocaleString()} UZS</span></div>
                                             <div><span className="text-slate-500">Срок:</span> <span className="font-bold">{loanTerm} мес.</span></div>
                                             <div><span className="text-slate-500">Ставка:</span> <span className="font-bold">{estimatedAPR}%</span></div>
-                                            <div><span className="text-slate-500">Ежемесячно:</span> <span className="font-bold text-orange-600">${Math.round(monthlyPayment).toLocaleString()}</span></div>
+                                            <div><span className="text-slate-500">Ежемесячно:</span> <span className="font-bold text-orange-600">{Math.round(monthlyPayment).toLocaleString()} UZS</span></div>
                                         </div>
                                     </div>
                                     <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { useShop } from '../../context/ShopContext';
 import { Package, Search, Truck, CreditCard, CheckCircle, Loader2, Phone, MessageCircle } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export function AdminOrders() {
     const [orders, setOrders] = useState([]);
@@ -128,7 +129,7 @@ export function AdminOrders() {
                                                         await api.updateOrderItemStatus(item.id, newStatus);
                                                         setOrders(orders.map(o => o.id === item.id ? { ...o, status: newStatus } : o));
                                                     } catch (err) {
-                                                        alert('Failed to update status');
+                                                        toast.error('Не удалось обновить статус заказа');
                                                     }
                                                 }}
                                                 className="text-[11px] font-bold border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white cursor-pointer focus:ring-2 focus:ring-primary/20 outline-none"
@@ -145,7 +146,7 @@ export function AdminOrders() {
                                                 <button
                                                     disabled={confirming === item.order.id}
                                                     onClick={async () => {
-                                                        if (!confirm('Подтвердить сделку? Деньги будут переведены на ваш баланс.')) return;
+                                                        if (!window.confirm('Подтвердить сделку? Деньги будут переведены на ваш баланс.')) return;
                                                         setConfirming(item.order.id);
                                                         try {
                                                             await api.sellerConfirmOrder(item.order.id);
@@ -154,9 +155,9 @@ export function AdminOrders() {
                                                                     ? { ...o, order: { ...o.order, status: 'COMPLETED' } }
                                                                     : o
                                                             ));
-                                                            alert('✅ Сделка подтверждена! Средства переведены на ваш баланс.');
+                                                            toast.success('✅ Сделка подтверждена! Средства переведены на ваш баланс.');
                                                         } catch (err) {
-                                                            alert('Ошибка: ' + err.message);
+                                                            toast.error('Ошибка: ' + err.message);
                                                         } finally {
                                                             setConfirming(null);
                                                         }
@@ -209,7 +210,7 @@ export function AdminOrders() {
                                             await api.updateOrderItemStatus(item.id, newStatus);
                                             setOrders(orders.map(o => o.id === item.id ? { ...o, status: newStatus } : o));
                                         } catch (err) {
-                                            alert('Failed to update status');
+                                            toast.error('Не удалось обновить статус заказа');
                                         }
                                     }}
                                     className="text-[10px] font-black border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white uppercase tracking-widest"
@@ -272,9 +273,9 @@ export function AdminOrders() {
                                                     ? { ...o, order: { ...o.order, status: 'COMPLETED' } }
                                                     : o
                                             ));
-                                            alert('✅ Сделка подтверждена!');
+                                            toast.success('✅ Сделка подтверждена!');
                                         } catch (err) {
-                                            alert('Ошибка: ' + err.message);
+                                            toast.error('Ошибка: ' + err.message);
                                         } finally {
                                             setConfirming(null);
                                         }

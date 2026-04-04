@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Search, MessageCircle, Mail, Phone } from 'lucide-react';
 
+const SUPPORT_PHONE = '+998 71 200-00-00';
+const SUPPORT_PHONE_HREF = 'tel:+998712000000';
+const SUPPORT_EMAIL = 'support@autohouse.uz';
+
 const FAQS = [
     {
         category: "Покупки",
@@ -69,14 +73,14 @@ export function HelpFAQ() {
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm text-center border border-slate-100 dark:border-slate-700 hover:-translate-y-1 transition-transform">
                         <div className="h-12 w-12 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4"><Phone /></div>
                         <h3 className="font-bold text-slate-900 dark:text-white">Позвонить нам</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">+998 71 200-00-00</p>
-                        <a href="tel:+998712000000" className="text-emerald-600 dark:text-emerald-400 font-bold text-sm hover:underline">Позвонить</a>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">{SUPPORT_PHONE}</p>
+                        <a href={SUPPORT_PHONE_HREF} className="text-emerald-600 dark:text-emerald-400 font-bold text-sm hover:underline">Позвонить</a>
                     </div>
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm text-center border border-slate-100 dark:border-slate-700 hover:-translate-y-1 transition-transform">
                         <div className="h-12 w-12 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mx-auto mb-4"><Mail /></div>
                         <h3 className="font-bold text-slate-900 dark:text-white">Написать письмо</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">support@autohouse.uz</p>
-                        <a href="mailto:support@autohouse.uz" className="text-purple-600 dark:text-purple-400 font-bold text-sm hover:underline">Отправить</a>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">{SUPPORT_EMAIL}</p>
+                        <a href={`mailto:${SUPPORT_EMAIL}`} className="text-purple-600 dark:text-purple-400 font-bold text-sm hover:underline">Отправить</a>
                     </div>
                 </div>
 

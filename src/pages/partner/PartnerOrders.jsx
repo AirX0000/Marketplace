@@ -79,7 +79,7 @@ export function PartnerOrders() {
                                     </div>
                                 </div>
                                 <div className="text-lg lg:text-3xl font-black text-white px-8 py-4 bg-white/5 rounded-3xl border border-white/5 tracking-tighter">
-                                    {(order.total / 100).toLocaleString()} <span className="text-sm text-slate-500 ml-1">UZS</span>
+                                    {order.total.toLocaleString()} <span className="text-sm text-slate-500 ml-1">UZS</span>
                                 </div>
                             </div>
 
@@ -92,11 +92,11 @@ export function PartnerOrders() {
                                         <div className="flex-1 min-w-0">
                                             <div className="font-black text-lg truncate uppercase tracking-tight group-hover/item:text-purple-400 transition-colors">{item.marketplace?.name}</div>
                                             <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
-                                                {item.quantity} шт × <span className="text-slate-300">{(item.price / 100).toLocaleString()}</span>
+                                                {item.quantity} шт × <span className="text-slate-300">{item.price.toLocaleString()}</span>
                                             </div>
                                         </div>
                                         <div className="font-black text-lg tracking-tighter text-white">
-                                            {(item.total || (item.price * item.quantity) / 100).toLocaleString()}
+                                            {(item.total || item.price * item.quantity).toLocaleString()}
                                         </div>
                                     </div>
                                 ))}

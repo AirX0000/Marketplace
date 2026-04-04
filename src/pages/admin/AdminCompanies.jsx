@@ -61,7 +61,7 @@ export function AdminCompanies() {
                 totalCompanies: companiesWithData.length,
                 activeCompanies: companiesWithData.filter(c => c.productsCount > 0).length,
                 totalProducts: companiesWithData.reduce((sum, c) => sum + c.productsCount, 0),
-                totalRevenue: 15450000
+                totalRevenue: 0 // TODO: fetch from revenue API
             });
         } catch (error) {
             console.error("Failed to load companies", error);

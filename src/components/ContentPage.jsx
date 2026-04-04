@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import DOMPurify from 'dompurify';
 import { Loader2 } from 'lucide-react';
 
 export function ContentPage({ slug, defaultTitle, children }) {
@@ -30,7 +31,7 @@ export function ContentPage({ slug, defaultTitle, children }) {
                 <h1 className="text-3xl font-bold mb-6 text-slate-900 dark:text-white">{data.title || defaultTitle}</h1>
                 <div
                     className="prose dark:prose-invert max-w-none prose-headings:text-slate-900 dark:prose-headings:text-white text-slate-600 dark:text-slate-300 prose-a:text-emerald-600 dark:prose-a:text-emerald-400"
-                    dangerouslySetInnerHTML={{ __html: data.content }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data.content) }}
                 />
             </div>
         );

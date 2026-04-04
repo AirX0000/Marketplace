@@ -6,6 +6,7 @@ import { Star, Heart, Check, Share2, Flame, Clock } from 'lucide-react';
 import { getImageUrl, cn } from '../lib/utils';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-hot-toast';
 
 export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
     const { toggleFavorite, isFavorite } = useShop();
@@ -32,7 +33,7 @@ export function MarketplaceCard({ marketplace, viewMode = 'grid' }) {
             navigator.share({ title: marketplace.name, url }).catch(console.error);
         } else {
             navigator.clipboard.writeText(url);
-            alert('Ссылка скопирована!');
+            toast.success('Ссылка скопирована!');
         }
     };
 

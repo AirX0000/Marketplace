@@ -5,6 +5,7 @@ import { MOCK_POSTS } from './Blog';
 import { Calendar, User, Clock, ArrowLeft, Facebook, Twitter, Linkedin, Share2 } from 'lucide-react';
 import { api } from '../../lib/api';
 import { getImageUrl } from '../../lib/utils';
+import DOMPurify from 'dompurify';
 
 export function BlogDetail() {
     const { id } = useParams();
@@ -107,7 +108,7 @@ export function BlogDetail() {
                     <div className="lg:col-span-8 lg:order-2">
                         <div
                             className="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-600 prose-a:text-primary prose-img:rounded-2xl"
-                            dangerouslySetInnerHTML={{ __html: post.content }} // In real app, sanitize this!
+                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
                         />
 
                         <div className="mt-12 pt-8 border-t border-slate-100">

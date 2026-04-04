@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { toast } from 'react-hot-toast';
 
 // Fix for default marker icon not showing in React Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -48,7 +49,7 @@ const AddressMap = ({ onLocationSelect, initialPosition }) => {
     const handleLocateMe = () => {
         setLocating(true);
         if (!navigator.geolocation) {
-            alert("Геолокация не поддерживается вашим браузером");
+            toast.error('Геолокация не поддерживается вашим браузером');
             setLocating(false);
             return;
         }
@@ -68,7 +69,7 @@ const AddressMap = ({ onLocationSelect, initialPosition }) => {
                 if (error.code === 1) msg = "Доступ к геолокации запрещен. Разрешите доступ в настройках браузера.";
                 else if (error.code === 2) msg = "Спутниковая связь недоступна";
                 else if (error.code === 3) msg = "Время ожидания истекло";
-                alert(msg);
+                toast.error(msg);
                 setLocating(false);
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }

@@ -95,20 +95,10 @@ export function ChatPage() {
     const loadRooms = async () => {
         try {
             const data = await api.fetchAPI('/chat/rooms');
-            // Provide mock rooms if empty for visual parity with mockup
-            if (!data || data.length === 0) {
-                setRooms([
-                    { id: '1', partner: { name: 'Alexander Rossi', storeName: 'Alexander Rossi', avatar: 'https://i.pravatar.cc/100?img=11' }, lastMessage: 'Is the Porsche 911 still available?', updatedAt: new Date().toISOString() },
-                    { id: '2', partner: { name: 'Marina Silva', avatar: 'https://i.pravatar.cc/100?img=5' }, lastMessage: 'The financing documents are ready for your review...', updatedAt: new Date(Date.now() - 86400000).toISOString() },
-                    { id: '3', partner: { name: 'David Chen', avatar: 'https://i.pravatar.cc/100?img=12' }, lastMessage: "Thanks! I'll check the service history now.", updatedAt: new Date(Date.now() - 86400000 * 2).toISOString() },
-                    { id: '4', partner: { name: 'Sarah Jenkins', avatar: 'https://i.pravatar.cc/100?img=3' }, lastMessage: 'Can we schedule a test drive for Saturday morning?', updatedAt: new Date(Date.now() - 86400000 * 4).toISOString() },
-                ]);
-            } else {
-                setRooms(data);
-            }
+            setRooms(data || []);
             setLoading(false);
         } catch (error) {
-            toast.error("Failed to load chats");
+            toast.error('Не удалось загрузить чаты');
         }
     };
 

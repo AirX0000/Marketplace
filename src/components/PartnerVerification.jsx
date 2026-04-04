@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { ShieldCheck, AlertTriangle, Check, Clock, Upload } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export function PartnerVerification({ user, onRefreshProfile }) {
     const [kyc, setKyc] = useState(null);
@@ -44,9 +45,9 @@ export function PartnerVerification({ user, onRefreshProfile }) {
         try {
             await api.submitKYC(formData);
             loadKYC();
-            alert("Документы отправлены на проверку");
+            toast.success('Документы отправлены на проверку');
         } catch (e) {
-            alert("Ошибка отправки: " + e.message);
+            toast.error('Ошибка отправки: ' + e.message);
         }
     };
 
@@ -55,10 +56,10 @@ export function PartnerVerification({ user, onRefreshProfile }) {
         try {
             const res = await api.sendVerification();
             // In dev mode, we show the mock message
-            alert(res.message);
+            toast.info(res.message);
             setShowCodeInput(true);
         } catch (e) {
-            alert(e.message);
+            toast.error(e.message);
         } finally {
             setSmsLoading(false);
         }
@@ -67,11 +68,11 @@ export function PartnerVerification({ user, onRefreshProfile }) {
     const handleVerifyPhone = async () => {
         try {
             await api.verifyPhone(null, phoneCode);
-            alert("Телефон подтвержден!");
-            onRefreshProfile(); // Refresh parent user state to show green tick
+            toast.success('Телефон подтверждён!');
+            onRefreshProfile();
             setShowCodeInput(false);
         } catch (e) {
-            alert(e.message);
+            toast.error(e.message);
         }
     };
 
