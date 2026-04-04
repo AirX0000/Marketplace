@@ -11,13 +11,16 @@ export function AdminPartners() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
+        name: '',
         storeName: '',
         storeDescription: '',
         storeColor: '#3b82f6',
         businessCategory: '',
         phone: '',
-        businessDescription: ''
+        businessDescription: '',
+        licenseUrl: ''
     });
+    const [uploadingLicense, setUploadingLicense] = useState(false);
     const [serviceSubcategories, setServiceSubcategories] = useState([]);
 
     useEffect(() => {
@@ -94,7 +97,8 @@ export function AdminPartners() {
             storeColor: partner.storeColor || '#3b82f6',
             businessCategory: partner.businessCategory || '',
             phone: partner.phone || '',
-            businessDescription: partner.businessDescription || ''
+            businessDescription: partner.businessDescription || '',
+            licenseUrl: partner.licenseUrl || ''
         });
         setShowModal(true);
     };
@@ -110,8 +114,22 @@ export function AdminPartners() {
             storeColor: '#3b82f6',
             businessCategory: '',
             phone: '',
-            businessDescription: ''
+            businessDescription: '',
+            licenseUrl: ''
         });
+    };
+
+    const handleLicenseUpload = async (file) => {
+        try {
+            setUploadingLicense(true);
+            const { url } = await api.uploadImage(file);
+            setFormData({ ...formData, licenseUrl: url });
+            toast.success('Лицензия загружена');
+        } catch (e) {
+            toast.error('Ошибка загрузки лицензии');
+        } finally {
+            setUploadingLicense(false);
+        }
     };
 
     const filteredPartners = partners.filter(p =>
@@ -368,6 +386,42 @@ export function AdminPartners() {
                                     ))}
                                 </select>
                                 <p className="text-xs text-gray-500 mt-1">Определяет, в каком подразделе «Услуг» появится специалист.</p>
+                            </div>
+
+                            {/* License Upload */}
+                            <div className="pt-2 border-t border-slate-100 mt-4">
+                                <label className="block text-sm font-black text-slate-800 mb-2">Профессиональная Лицензия</label>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-24 h-24 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50 overflow-hidden shrink-0">
+                                        {formData.licenseUrl ? (
+                                            <img src={formData.licenseUrl} alt="License" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <Download className="text-slate-300" size={24} />
+                                        )}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-xs text-slate-500 mb-3">Загрузите фото или скан действующей лицензии (Риелтора, Нотариуса и т.д.)</p>
+                                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-xl text-sm font-bold cursor-pointer hover:bg-blue-100 transition-all border border-blue-100">
+                                            {uploadingLicense ? 'Загрузка...' : 'Выбрать файл'}
+                                            <input 
+                                                type="file" 
+                                                className="hidden" 
+                                                accept="image/*" 
+                                                onChange={(e) => e.target.files?.[0] && handleLicenseUpload(e.target.files[0])}
+                                                disabled={uploadingLicense}
+                                            />
+                                        </label>
+                                        {formData.licenseUrl && (
+                                            <button 
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, licenseUrl: '' })}
+                                                className="ml-3 text-xs font-bold text-red-500 hover:text-red-700"
+                                            >
+                                                Удалить
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Business Description / About */}

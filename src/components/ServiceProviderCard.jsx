@@ -45,6 +45,11 @@ export function ServiceProviderCard({ provider }) {
                                         <Star size={12} fill="currentColor" /> {provider.rating.toFixed(1)}
                                     </div>
                                 )}
+                                {provider.licenseUrl && (
+                                    <div className="flex items-center gap-1 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full text-[10px] font-bold border border-blue-100">
+                                        <Shield size={10} fill="currentColor" /> Лицензия проверена
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
