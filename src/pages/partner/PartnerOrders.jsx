@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { Package, Truck, CheckCircle, Clock } from 'lucide-react';
+import { getImageUrl } from '../../lib/utils';
 
 export function PartnerOrders() {
     const [orders, setOrders] = useState([]);
@@ -86,7 +87,7 @@ export function PartnerOrders() {
                                 {order.items.map(item => (
                                     <div key={item.id} className="flex gap-6 items-center bg-[#13111C] p-5 rounded-2xl border border-white/5 hover:border-purple-500/20 transition-all group/item">
                                         <div className="h-16 w-16 bg-[#191624] rounded-2xl border border-white/10 overflow-hidden shadow-xl group-hover/item:scale-105 transition-transform duration-500">
-                                            {item.marketplace?.image && <img src={item.marketplace.image} className="h-full w-full object-cover opacity-80 group-hover/item:opacity-100 transition-opacity" />}
+                                            {item.marketplace?.image && <img src={getImageUrl(item.marketplace.image)} className="h-full w-full object-cover opacity-80 group-hover/item:opacity-100 transition-opacity" />}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="font-black text-lg truncate uppercase tracking-tight group-hover/item:text-purple-400 transition-colors">{item.marketplace?.name}</div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, ArrowRight, Trash2 } from 'lucide-react';
+import { getImageUrl } from '../lib/utils';
 
 export function HistoryPage() {
     const [history, setHistory] = useState([]);
@@ -62,7 +63,7 @@ export function HistoryPage() {
                             <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
                                 {item.image ? (
                                     <img
-                                        src={item.image}
+                                        src={getImageUrl(item.image) || item.image}
                                         alt={item.name}
                                         className="h-full w-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                                     />

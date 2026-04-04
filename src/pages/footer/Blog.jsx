@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Clock } from 'lucide-react';
 import { api } from '../../lib/api';
+import { getImageUrl } from '../../lib/utils';
 
 export const MOCK_POSTS = [
     {
@@ -102,7 +103,7 @@ export function Blog() {
                                 {post.category || 'Статья'}
                             </span>
                             <img
-                                src={post.image}
+                                src={getImageUrl(post.image) || post.image}
                                 alt={post.title}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                             />

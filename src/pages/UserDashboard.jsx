@@ -13,6 +13,7 @@ import { MyListings } from '../components/dashboard/MyListings';
 import { PartnerOrders } from './partner/PartnerOrders';
 import { useShop } from '../context/ShopContext';
 import { api } from '../lib/api';
+import { getImageUrl } from '../lib/utils';
 import { notify } from '../lib/notify';
 
 import { AutohousePayDashboard } from './fintech/AutohousePayDashboard';
@@ -538,12 +539,12 @@ export function UserDashboard() {
                                         <div className="flex justify-between items-center mb-6">
                                             <div>
                                                 <h2 className="text-3xl font-black text-white flex items-center gap-2">
-                                                    My Favorites <span className="w-2 h-2 rounded-full bg-purple-500 mb-1"></span>
+                                                    Избранное <span className="w-2 h-2 rounded-full bg-purple-500 mb-1"></span>
                                                 </h2>
-                                                <p className="text-slate-400 text-sm mt-1">Manage your saved luxury vehicles and curated real estate portfolio.</p>
+                                                <p className="text-slate-400 text-sm mt-1">Управляйте сохранёнными объявлениями.</p>
                                             </div>
                                             <div className="hidden lg:flex bg-[#191624] p-1 rounded-full border border-white/5 shadow-sm">
-                                                {['All Items', 'Cars', 'Real Estate'].map((tab, i) => (
+                                                {['Все', 'Авто', 'Недвижимость'].map((tab, i) => (
                                                     <button key={tab} className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${i === 0 ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'}`}>
                                                         {tab}
                                                     </button>
@@ -559,7 +560,7 @@ export function UserDashboard() {
                                                         {/* Image Area */}
                                                         <div className="aspect-[4/3] bg-white relative">
                                                             <img
-                                                                src={fav.marketplace?.image || 'https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?q=80&w=1000'}
+                                                                src={getImageUrl(fav.marketplace?.image) || fav.marketplace?.image || 'https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?q=80&w=1000'}
                                                                 alt={fav.marketplace?.name}
                                                                 className="w-full h-full object-cover"
                                                             />
@@ -594,46 +595,38 @@ export function UserDashboard() {
                                                             </div>
                                                             <p className="text-sm text-slate-400 mb-6 truncate">{fav.marketplace?.description || 'Exclusive premium edition'}</p>
 
-                                                            {/* Specs Grid */}
+                                                            {/* Real Specs Grid from API */}
                                                             <div className="flex justify-between mb-8 opacity-70">
-                                                                {fav.marketplace?.category?.name === 'Real Estate' ? (
-                                                                    <>
-                                                                        <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
-                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Beds</span>
-                                                                            <span className="text-sm font-bold text-white">6</span>
+                                                                {fav.marketplace?.specs ? (
+                                                                    Object.entries(fav.marketplace.specs).slice(0, 3).map(([key, val]) => (
+                                                                        <div key={key} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">{key}</span>
+                                                                            <span className="text-sm font-bold text-white text-center leading-none">{String(val).slice(0, 8)}</span>
                                                                         </div>
-                                                                        <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
-                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Area</span>
-                                                                            <span className="text-sm font-bold text-white">8,500</span>
-                                                                        </div>
-                                                                        <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
-                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Type</span>
-                                                                            <span className="text-sm font-bold text-white">Villa</span>
-                                                                        </div>
-                                                                    </>
+                                                                    ))
                                                                 ) : (
                                                                     <>
                                                                         <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
-                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">0-60</span>
-                                                                            <span className="text-sm font-bold text-white">3.0s</span>
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Регион</span>
+                                                                            <span className="text-sm font-bold text-white text-center leading-tight">{fav.marketplace?.region || '—'}</span>
                                                                         </div>
                                                                         <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
-                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Speed</span>
-                                                                            <span className="text-sm font-bold text-white text-center leading-none">184<br /><span className="text-[8px] font-normal">mph</span></span>
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Год</span>
+                                                                            <span className="text-sm font-bold text-white">{fav.marketplace?.year || '—'}</span>
                                                                         </div>
                                                                         <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white/5">
-                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Year</span>
-                                                                            <span className="text-sm font-bold text-white">2024</span>
+                                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mb-1">Статус</span>
+                                                                            <span className="text-sm font-bold text-white">{fav.marketplace?.status === 'APPROVED' ? '✓' : '—'}</span>
                                                                         </div>
                                                                     </>
                                                                 )}
                                                             </div>
 
                                                             <Link
-                                                                to={`/marketplace/${fav.marketplaceId}`}
+                                                                to={`/marketplaces/${fav.marketplaceId}`}
                                                                 className="mt-auto w-full flex items-center justify-center gap-2 py-4 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-bold transition-all"
                                                             >
-                                                                {fav.marketplace?.category?.name === 'Real Estate' ? 'Contact Agent' : 'Add to Cart'}
+                                                                Перейти к объявлению
                                                             </Link>
                                                         </div>
                                                     </div>
@@ -647,18 +640,18 @@ export function UserDashboard() {
                                                     <div className="w-16 h-16 rounded-full bg-[#252236] group-hover:bg-purple-600/20 text-purple-500 flex items-center justify-center mb-4 transition-colors">
                                                         <Plus size={24} strokeWidth={3} />
                                                     </div>
-                                                    <h3 className="text-xl font-bold text-white mb-2">Discover New List</h3>
-                                                    <p className="text-slate-500 text-sm text-center">Find the best assets and save them here</p>
+                                                    <h3 className="text-xl font-bold text-white mb-2">Найти новое объявление</h3>
+                                                    <p className="text-slate-500 text-sm text-center">Просмотрите каталог и добавьте в избранное</p>
                                                 </Link>
 
                                             </div>
                                         ) : (
                                             <div className="bg-[#191624] rounded-3xl border border-white/5 shadow-sm p-16 text-center">
                                                 <Heart size={48} className="mx-auto text-purple-500/50 mb-6" />
-                                                <h3 className="text-2xl font-bold text-white mb-2">Your wishlist is empty</h3>
-                                                <p className="text-slate-400 mb-8 max-w-sm mx-auto">Discover extraordinary vehicles and premium real estate to add to your collection.</p>
+                                                <h3 className="text-2xl font-bold text-white mb-2">Список избранного пуст</h3>
+                                                <p className="text-slate-400 mb-8 max-w-sm mx-auto">Сохраняйте понравившиеся объявления, чтобы быстро к ним вернуться.</p>
                                                 <Link to="/marketplaces" className="inline-block px-8 py-4 bg-purple-600 text-white rounded-full font-bold hover:bg-purple-500 shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all active:scale-95">
-                                                    Explore Marketplace
+                                                    Перейти в каталог
                                                 </Link>
                                             </div>
                                         )}

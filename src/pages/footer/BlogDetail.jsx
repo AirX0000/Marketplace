@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { MOCK_POSTS } from './Blog';
 import { Calendar, User, Clock, ArrowLeft, Facebook, Twitter, Linkedin, Share2 } from 'lucide-react';
 import { api } from '../../lib/api';
+import { getImageUrl } from '../../lib/utils';
 
 export function BlogDetail() {
     const { id } = useParams();
@@ -41,7 +42,7 @@ export function BlogDetail() {
             <div className="h-[40vh] md:h-[50vh] relative w-full">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
                 <img
-                    src={post.image}
+                    src={getImageUrl(post.image) || post.image}
                     alt={post.title}
                     className="w-full h-full object-cover"
                 />
@@ -115,7 +116,7 @@ export function BlogDetail() {
                                 {MOCK_POSTS.filter(p => String(p.id) !== String(post.id)).slice(0, 2).map((related) => (
                                     <Link key={related.id} to={`/blog/${related.id}`} className="group flex items-start gap-4">
                                         <div className="h-24 w-24 rounded-lg overflow-hidden shrink-0">
-                                            <img src={related.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                            <img src={getImageUrl(related.image) || related.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                                         </div>
                                         <div>
                                             <div className="text-xs font-bold text-primary mb-1 uppercase">{related.category || 'Статья'}</div>

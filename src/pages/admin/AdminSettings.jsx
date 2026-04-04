@@ -3,6 +3,7 @@ import { api } from '../../lib/api';
 import { Plus, Trash2, Save, X, Settings, Globe, FolderTree, User, Mail, Camera, Check, AlertCircle, LogOut } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { useNavigate } from 'react-router-dom';
+import { getImageUrl } from '../../lib/utils';
 
 export function AdminSettings() {
     const [activeTab, setActiveTab] = useState('regions'); // regions, categories, profile, payments
@@ -626,7 +627,7 @@ function ProfileSettings() {
                     <div className="relative group mb-4">
                         <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner bg-slate-50">
                             {profile.avatar ? (
-                                <img src={profile.avatar} alt="Avatar" className="h-full w-full object-cover" />
+                                <img src={getImageUrl(profile.avatar)} alt="Avatar" className="h-full w-full object-cover" />
                             ) : (
                                 <div className="h-full w-full flex items-center justify-center text-slate-300">
                                     <User className="h-16 w-16" />
@@ -805,7 +806,7 @@ function BannerManager() {
                     <div className="flex gap-4 items-center">
                         <div className="h-24 w-44 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden bg-slate-50">
                             {form.imageUrl ? (
-                                <img src={form.imageUrl} className="h-full w-full object-cover" />
+                                <img src={getImageUrl(form.imageUrl) || form.imageUrl} className="h-full w-full object-cover" />
                             ) : (
                                 <Camera className="h-8 w-8 text-slate-300" />
                             )}
@@ -830,7 +831,7 @@ function BannerManager() {
                 {banners.map(b => (
                     <div key={b.id} className={`group relative bg-white rounded-2xl border overflow-hidden shadow-sm transition-all ${b.isActive ? 'border-slate-200' : 'border-slate-100 opacity-60'}`}>
                         <div className="h-32 overflow-hidden relative">
-                            <img src={b.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <img src={getImageUrl(b.imageUrl) || b.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             <div className="absolute top-2 right-2 flex gap-2">
                                 <button onClick={() => toggleStatus(b)} className={`p-1.5 rounded-lg ${b.isActive ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-600'}`}>
                                     <Check className="h-4 w-4" />

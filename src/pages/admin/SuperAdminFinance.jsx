@@ -66,8 +66,44 @@ export function SuperAdminFinance() {
     };
 
     const handleExport = () => {
-        // ... (Keep existing export logic or update later)
-        toast.success('Экспорт пока не реализован для реальных данных');
+        try {
+            // Build CSV rows
+            const now = new Date().toLocaleDateString('ru-RU');
+            const rows = [
+                ['Финансовый отчёт', now],
+                [],
+                ['Показатель', 'Значение (UZS)'],
+                ['Общая выручка', stats.totalRevenue?.toLocaleString() || 0],
+                ['Комиссия платформы', stats.platformCommission?.toLocaleString() || 0],
+                ['Ликвидность', stats.totalLiquidity?.toLocaleString() || 0],
+                ['Объём эскроу', stats.escrowVolume?.toLocaleString() || 0],
+                [],
+                ['Ожидающие депозиты'],
+                ['ID', 'Пользователь', 'Сумма', 'Статус', 'Дата'],
+                ...pendingDeposits.map(d => [
+                    d.id,
+                    d.user?.name || '—',
+                    d.amount?.toLocaleString() || 0,
+                    d.status || '—',
+                    d.createdAt ? new Date(d.createdAt).toLocaleDateString('ru-RU') : '—'
+                ])
+            ];
+
+            const csvContent = rows
+                .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+                .join('\n');
+
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `finance-report-${now.replace(/\./g, '-')}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+            toast.success('Отчёт скачан');
+        } catch (e) {
+            toast.error('Ошибка при создании отчёта');
+        }
     };
 
     if (loading) return <div className="p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;

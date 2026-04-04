@@ -102,7 +102,6 @@ export function HomePage() {
         async function load() {
             try {
                 const data = await api.getFeaturedMarketplaces();
-                console.log("Featured data received:", data);
                 // Handle both { listings: [...] } and [...] formats
                 const listings = Array.isArray(data) ? data : (data?.listings || []);
                 setFeatured(listings);

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { toast } from 'react-hot-toast';
 import { CheckCircle, XCircle, Clock, FileText, User, Car, Home, ChevronDown } from 'lucide-react';
+import { getImageUrl } from '../../lib/utils';
 
 const STATUS_CONFIG = {
     PENDING: { label: 'На рассмотрении', color: 'bg-amber-100 text-amber-800 border-amber-200', icon: Clock },
@@ -150,7 +151,7 @@ export function AdminLoans() {
                                         {loan.marketplace && (
                                             <div className="flex items-center gap-3 bg-white rounded-xl p-3 border border-slate-100">
                                                 {loan.marketplace.image && (
-                                                    <img src={loan.marketplace.image} className="h-12 w-12 rounded-lg object-cover" alt="" />
+                                                    <img src={getImageUrl(loan.marketplace.image)} className="h-12 w-12 rounded-lg object-cover" alt="" />
                                                 )}
                                                 <div>
                                                     <div className="text-xs text-slate-400">Объект</div>

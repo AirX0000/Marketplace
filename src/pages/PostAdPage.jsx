@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 import { X, Phone, Lock, User, Loader2 } from 'lucide-react';
 
 export function PostAdPage() {
-    const { isAuthenticated, login: shopLogin } = useShop();
+    const { isAuthenticated, login: shopLogin, user } = useShop();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [pendingData, setPendingData] = useState(null);
@@ -33,7 +33,9 @@ export function PostAdPage() {
         try {
             await api.createListing(data);
             toast.success('Объявление опубликовано!', { id: toastId });
-            navigate('/admin/listings');
+            // Admins/partners go to listings panel, regular users go to profile
+            const isUserAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' || user?.role === 'PARTNER';
+            navigate(isUserAdmin ? '/admin/listings' : '/profile?tab=listings');
         } catch (error) {
             toast.error(error.message || 'Ошибка публикации', { id: toastId });
         }

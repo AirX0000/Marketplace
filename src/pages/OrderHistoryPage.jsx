@@ -4,6 +4,7 @@ import { Package, Calendar, ChevronRight, CreditCard, Truck, ShieldCheck } from 
 import { Link, useNavigate } from 'react-router-dom';
 import { OrderTimeline } from '../components/OrderTimeline';
 import { CreateReturnModal } from '../components/CreateReturnModal';
+import { getImageUrl } from '../lib/utils';
 
 export function OrderHistoryPage() {
     const [orders, setOrders] = useState([]);
@@ -88,7 +89,7 @@ export function OrderHistoryPage() {
                                 {order.items.map((item) => (
                                     <div key={item.id} className="flex gap-4 items-center">
                                         <div className="h-16 w-16 bg-slate-100 rounded-md overflow-hidden flex-none border border-slate-200">
-                                            {item.marketplace?.image && <img src={item.marketplace.image} className="h-full w-full object-cover" />}
+                                            {item.marketplace?.image && <img src={getImageUrl(item.marketplace.image)} className="h-full w-full object-cover" />}
                                         </div>
                                         <div className="flex-1">
                                             <Link to={`/marketplaces/${item.marketplaceId}`} className="font-bold hover:underline text-slate-900">

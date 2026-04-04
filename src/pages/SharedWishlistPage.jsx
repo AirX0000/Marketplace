@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { MarketplaceCard } from '../components/MarketplaceCard';
 import { Heart, User, Lock } from 'lucide-react';
+import { getImageUrl } from '../lib/utils';
 
 export function SharedWishlistPage() {
     const { userId } = useParams();
@@ -41,7 +42,7 @@ export function SharedWishlistPage() {
             <div className="flex items-center gap-4 mb-8 pb-8 border-b">
                 <div className="h-16 w-16 rounded-full bg-slate-200 overflow-hidden">
                     {user.avatar ? (
-                        <img src={user.avatar} className="w-full h-full object-cover" />
+                        <img src={getImageUrl(user.avatar)} className="w-full h-full object-cover" />
                     ) : (
                         <User className="h-full w-full p-4 text-slate-400" />
                     )}

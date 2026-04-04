@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { Check, X, Clock, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../../lib/utils';
 
 export function PartnerOffers() {
     const [offers, setOffers] = useState([]);
@@ -50,7 +51,7 @@ export function PartnerOffers() {
                             {/* Product Info */}
                             <div className="flex items-center gap-4 flex-1">
                                 <div className="h-16 w-16 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
-                                    <img src={offer.marketplace.image} className="w-full h-full object-cover" />
+                                    <img src={getImageUrl(offer.marketplace.image)} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-slate-900">{offer.marketplace.name}</h3>
