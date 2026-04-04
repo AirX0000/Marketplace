@@ -278,7 +278,7 @@ export const api = {
     updateUserVerification: (id, isVerified) => fetchAPI(`/admin/users/${id}/verify`, { method: 'PUT', body: JSON.stringify({ isVerified }) }),
     deleteUser: (id) => fetchAPI(`/admin/users/${id}`, { method: 'DELETE' }),
     createUser: (data) => fetchAPI('/admin/users', { method: 'POST', body: JSON.stringify(data) }),
-    getPartners: (category) => fetchAPI('/marketplace/partners', { params: { category } }),
+    getPartners: (category) => fetchAPI('/partners', { params: { category } }),
 
     // Careers API
     getCareers: () => fetchAPI('/careers'),

@@ -441,7 +441,7 @@ class MarketplaceService {
                 businessCategory: true,
                 businessDescription: true,
                 isPhoneVerified: true,
-                isOfficial: true, // If we added this
+                isForcedVerified: true,
                 createdAt: true,
                 rating: true, // We should add rating to User too or calculate it
             },

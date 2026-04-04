@@ -114,7 +114,6 @@ class AdminService {
                 role,
                 isPhoneVerified: !!isPhoneVerified,
                 isForcedVerified: !!isForcedVerified,
-                isOfficial: !!isOfficial,
                 businessCategory: businessCategory || null
             },
             select: safeUserSelect

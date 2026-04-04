@@ -105,6 +105,7 @@ const apiRouter = express.Router();
 
 apiRouter.use('/', marketplaceRoutes); // provides /listings, /categories, /regions
 apiRouter.use('/user', userRoutes.userRouter);
+apiRouter.use('/admin/newsletter', newsletterRoutes);
 apiRouter.use('/admin', userRoutes.adminRouter);
 const adminFinanceRoutes = require('./routes/admin.finance');
 apiRouter.use('/admin/finance', adminFinanceRoutes);
@@ -137,7 +138,6 @@ apiRouter.use('/upload', uploadRoutes);
 apiRouter.use('/seo', seoRoutes);
 apiRouter.use('/leads', leadsRoutes);
 apiRouter.use('/banners', bannerRoutes);
-apiRouter.use('/admin/newsletter', newsletterRoutes);
 
 // Catch-all for API 404s before it hits the SPA index.html fallback
 apiRouter.use((req, res) => {

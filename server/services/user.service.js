@@ -185,7 +185,7 @@ class UserService {
                     },
                     take: 8,
                     orderBy: { views: 'desc' },
-                    include: { owner: { select: { id: true, name: true, storeName: true, isVerified: true } } }
+                    include: { owner: { select: { id: true, name: true, storeName: true, isForcedVerified: true } } }
                 });
             }
         }
@@ -199,7 +199,7 @@ class UserService {
                 },
                 take: 8 - recommended.length,
                 orderBy: { views: 'desc' },
-                include: { owner: { select: { id: true, name: true, storeName: true, isVerified: true } } }
+                include: { owner: { select: { id: true, name: true, storeName: true, isForcedVerified: true } } }
             });
             recommended = [...recommended, ...extra];
         }
