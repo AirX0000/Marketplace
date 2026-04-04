@@ -22,7 +22,6 @@ export function AdminCompanies() {
     const loadCompanies = async () => {
         try {
             setLoading(true);
-            console.log("Loading companies data...");
 
             // Parallel fetch for better performance
             const [allUsers, allListings] = await Promise.all([
@@ -30,12 +29,6 @@ export function AdminCompanies() {
                 api.getAdminMarketplaces({ status: 'ALL' })
             ]);
 
-            console.log("Data received:", {
-                usersType: typeof allUsers,
-                usersIsArray: Array.isArray(allUsers),
-                listingsType: typeof allListings,
-                listingsIsArray: Array.isArray(allListings)
-            });
 
             if (!Array.isArray(allUsers) || !Array.isArray(allListings)) {
                 console.error("Invalid data format received API");

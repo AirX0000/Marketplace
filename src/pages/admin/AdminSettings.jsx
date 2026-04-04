@@ -360,7 +360,6 @@ function RegionManager() {
             return;
         }
 
-        console.log(`Deleting region ${id}`);
         try {
             await api.deleteRegion(id);
             setDeleteConfirm(null);

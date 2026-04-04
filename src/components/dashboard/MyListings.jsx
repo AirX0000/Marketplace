@@ -247,7 +247,7 @@ export function MyListings() {
                                 <div className="col-span-12 lg:col-span-2 flex items-center justify-end gap-3 mt-6 lg:mt-0">
                                     {item.status === 'Sold' ? (
                                         <button
-                                            onClick={() => navigate(`/marketplace/${item.id}`)}
+                                            onClick={() => navigate(`/marketplaces/${item.id}`)}
                                             className="flex-1 lg:flex-none px-8 py-4 rounded-2xl border border-white/5 bg-white/5 text-[10px] font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest active:scale-95">
                                             Детали
                                         </button>
@@ -272,7 +272,7 @@ export function MyListings() {
                                                 Изменить
                                             </button>
                                             <button
-                                                onClick={() => navigate(`/marketplace/${item.id}`)}
+                                                onClick={() => navigate(`/marketplaces/${item.id}`)}
                                                 className="w-12 h-12 flex items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all shadow-xl shadow-emerald-500/10 active:scale-90">
                                                 <ExternalLink size={20} />
                                             </button>
