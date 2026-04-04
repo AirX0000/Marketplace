@@ -443,7 +443,6 @@ class MarketplaceService {
                 isPhoneVerified: true,
                 isForcedVerified: true,
                 createdAt: true,
-                rating: true, // We should add rating to User too or calculate it
             },
             orderBy: { createdAt: 'desc' }
         });

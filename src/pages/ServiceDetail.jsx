@@ -4,9 +4,10 @@ import { api } from '../lib/api';
 import { useShop } from '../context/ShopContext';
 import { toast } from 'react-hot-toast';
 import {
-    Briefcase, CalendarDays, Share2, Heart, Flag, Check, FileText, X, Send
+    Briefcase, CalendarDays, Share2, Heart, Flag, Check, FileText, X, Send, ArrowLeft, MapPin, Shield, MessageSquare
 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getImageUrl } from '../lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const SERVICE_ICONS = {
     'Риелтор': '🏡',
@@ -199,7 +200,7 @@ export function ServiceDetail() {
                         {/* Gallery */}
                         {service.image && (
                             <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm">
-                                <img src={service.image} alt={service.name} className="w-full h-64 object-cover" />
+                                <img src={getImageUrl(service.image)} alt={service.name} className="w-full h-64 object-cover" />
                             </div>
                         )}
 
@@ -216,7 +217,7 @@ export function ServiceDetail() {
                                             rel="noopener noreferrer"
                                             className="aspect-square rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:ring-2 hover:ring-blue-500 transition-all group"
                                         >
-                                            <img src={cert} alt={`Certificate ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            <img src={getImageUrl(cert)} alt={`Certificate ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                         </a>
                                     ))}
                                 </div>

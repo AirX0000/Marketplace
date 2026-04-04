@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Edit2, Trash2, Mail, Key, Store, Search, X } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, Mail, Key, Store, Search, X, Phone, Download } from 'lucide-react';
 import { api } from '../../lib/api';
+import { getImageUrl } from '../../lib/utils';
+import { toast } from 'react-hot-toast';
 
 export function AdminPartners() {
     const [partners, setPartners] = useState([]);
@@ -394,7 +396,7 @@ export function AdminPartners() {
                                 <div className="flex items-center gap-4">
                                     <div className="w-24 h-24 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50 overflow-hidden shrink-0">
                                         {formData.licenseUrl ? (
-                                            <img src={formData.licenseUrl} alt="License" className="w-full h-full object-cover" />
+                                            <img src={getImageUrl(formData.licenseUrl)} alt="License" className="w-full h-full object-cover" />
                                         ) : (
                                             <Download className="text-slate-300" size={24} />
                                         )}

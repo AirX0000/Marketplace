@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { LocationPicker } from '../LocationPicker';
+import { cn, getImageUrl } from '../../lib/utils';
 
 const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -715,7 +716,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                             <div className="flex flex-wrap gap-2">
                                                 {(formData.certificates || []).map((url, idx) => (
                                                     <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border group bg-background">
-                                                        <img src={url} className="w-full h-full object-cover" />
+                                                        <img src={getImageUrl(url)} className="w-full h-full object-cover" />
                                                         <button 
                                                             type="button" 
                                                             onClick={() => setFormData(prev => ({ ...prev, certificates: prev.certificates.filter((_, i) => i !== idx) }))}
@@ -769,7 +770,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
                                     <div className="grid grid-cols-4 gap-3">
                                         {formData.images.map((img, idx) => (
                                             <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-border group shadow-sm bg-background">
-                                                <img src={img} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                                <img src={getImageUrl(img)} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                     <button type="button" onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))} className="p-2 bg-background/90 text-red-600 rounded-full hover:bg-background transition-colors border border-border">
                                                         <Trash2 size={16} />
@@ -857,7 +858,7 @@ export function ListingModal({ listing, onClose, onSave, initialCategory, asPage
 
                                     <div className="flex gap-6 relative z-10">
                                         <div className="relative shrink-0">
-                                            <img src={formData.images[0]} className="h-32 w-32 rounded-[2.5rem] object-cover border-4 border-background shadow-2xl rotate-[-3deg]" />
+                                            <img src={getImageUrl(formData.images[0])} className="h-32 w-32 rounded-[2.5rem] object-cover border-4 border-background shadow-2xl rotate-[-3deg]" />
                                             <div className="absolute -top-2 -right-2 h-10 w-10 bg-primary rounded-full border-4 border-background flex items-center justify-center text-white shadow-lg">
                                                 <ImageIcon size={16} />
                                             </div>

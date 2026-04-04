@@ -223,7 +223,17 @@ export function AdminLayout() {
                             )}
                         >
                             <Store className="mr-3 h-5 w-5" />
-                            Партнеры
+                            Партнеры / Магазины
+                        </Link>
+                        <Link
+                            to="/admin/partners"
+                            className={cn(
+                                "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                                isActive('/admin/partners') ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 font-bold border border-indigo-100/50 bg-indigo-50/20"
+                            )}
+                        >
+                            <UserCircle className="mr-3 h-5 w-5" />
+                            Специалисты
                         </Link>
                     </>
                 )}

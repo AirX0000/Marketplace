@@ -89,9 +89,9 @@ export function SuperAdminFinance() {
 
             {/* Stats Cards */}
             <div className="grid gap-4 md:grid-cols-3">
-                <Card title="Общий Оборот" value={stats.totalRevenue} icon={DollarSign} color="text-blue-600" bg="bg-blue-50" />
-                <Card title="Доход Платформы (5%)" value={stats.platformCommission} icon={ArrowUpRight} color="text-emerald-600" bg="bg-emerald-50" />
-                <Card title="Общая Ликвидность" value={stats.totalLiquidity} icon={ArrowDownLeft} color="text-orange-600" bg="bg-orange-50" />
+                <Card title="Общий Оборот" value={stats?.totalRevenue || 0} icon={DollarSign} color="text-blue-600" bg="bg-blue-50" />
+                <Card title="Доход Платформы (5%)" value={stats?.platformCommission || 0} icon={ArrowUpRight} color="text-emerald-600" bg="bg-emerald-50" />
+                <Card title="Общая Ликвидность" value={stats?.totalLiquidity || 0} icon={ArrowDownLeft} color="text-orange-600" bg="bg-orange-50" />
             </div>
 
             {/* Pending Deposits Table */}

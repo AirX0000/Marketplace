@@ -144,7 +144,7 @@ export function MyGarage() {
                             {/* Car Image Area */}
                             <div className="sm:w-2/5 aspect-[4/3] sm:aspect-auto bg-[#13111C] relative overflow-hidden">
                                 <img
-                                    src={car.image || "https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?q=80&w=1000&auto=format&fit=crop"}
+                                    src={getImageUrl(car.image) || "https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?q=80&w=1000&auto=format&fit=crop"}
                                     alt={car.model}
                                     className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-1000 group-hover:opacity-100"
                                 />

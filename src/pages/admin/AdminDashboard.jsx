@@ -142,6 +142,14 @@ export function AdminDashboard() {
                             icon={<Store />}
                             sub={`${stats.totalProducts} товаров в каталоге`}
                         />
+                        <Link to="/admin/partners" className="block pt-1">
+                            <Card
+                                title="Специалисты"
+                                value="Управление"
+                                icon={<Shield className="text-indigo-600" />}
+                                sub="Риелторы, Нотариусы и др."
+                            />
+                        </Link>
                     </>
                 ) : (
                     <>
@@ -172,7 +180,7 @@ export function AdminDashboard() {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis
                                     dataKey="date"
-                                    tickFormatter={(str) => new Date(str).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                                    tickFormatter={(str) => str ? new Date(str).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '---'}
                                     style={{ fontSize: 12 }}
                                 />
                                 <YAxis
@@ -264,7 +272,7 @@ export function AdminDashboard() {
                                     <div key={product.id} className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <img
-                                                src={product.image}
+                                                src={getImageUrl(product.image)}
                                                 alt={product.name}
                                                 className="w-10 h-10 rounded-lg object-cover bg-muted"
                                             />
@@ -274,7 +282,7 @@ export function AdminDashboard() {
                                             </div>
                                         </div>
                                         <div className="font-bold text-sm">
-                                            {product.revenue?.toLocaleString()} Sum
+                                            {(Number(product.revenue) || 0).toLocaleString()} Sum
                                         </div>
                                     </div>
                                 ))}

@@ -201,15 +201,15 @@ export function SuperAdminEmails() {
                         <ul className="space-y-3 text-sm">
                             <li className="flex justify-between items-center pb-2 border-b border-blue-500/30">
                                 <span className="text-blue-100">Всего пользователей:</span>
-                                <span className="font-bold text-lg">{stats.totalUsers.toLocaleString()}</span>
+                                <span className="font-bold text-lg">{(stats?.totalUsers || 0).toLocaleString()}</span>
                             </li>
                             <li className="flex justify-between items-center pb-2 border-b border-blue-500/30">
                                 <span className="text-blue-100">Активных партнеров:</span>
-                                <span className="font-bold text-lg">{stats.activePartners.toLocaleString()}</span>
+                                <span className="font-bold text-lg">{(stats?.activePartners || 0).toLocaleString()}</span>
                             </li>
                             <li className="flex justify-between items-center">
                                 <span className="text-blue-100">Email подписчиков:</span>
-                                <span className="font-bold text-lg">{stats.subscribers.toLocaleString()}</span>
+                                <span className="font-bold text-lg">{(stats?.subscribers || 0).toLocaleString()}</span>
                             </li>
                         </ul>
                     </div>

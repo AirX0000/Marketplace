@@ -99,6 +99,7 @@ const uploadRoutes = require('./routes/upload.routes');
 const seoRoutes = require('./routes/seo.routes');
 const leadsRoutes = require('./routes/leads.routes');
 const bannerRoutes = require('./routes/banner.routes');
+const offerRoutes = require('./routes/offer.routes');
 
 // Mount all at /api
 const apiRouter = express.Router();
@@ -110,6 +111,7 @@ apiRouter.use('/admin', userRoutes.adminRouter);
 const adminFinanceRoutes = require('./routes/admin.finance');
 apiRouter.use('/admin/finance', adminFinanceRoutes);
 apiRouter.use('/orders', orderRoutes);
+apiRouter.use('/offers', offerRoutes);
 apiRouter.use('/', partnerRoutes); // partnerRoutes already has /partner and /partners internally
 apiRouter.use('/payment', paymentRoutes);
 apiRouter.use('/wallet', walletRoutes);

@@ -14,7 +14,7 @@ import { ReviewSection } from '../components/ReviewSection';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { cn } from '../lib/utils';
+import { cn, getImageUrl } from '../lib/utils';
 import { Skeleton, DetailSkeleton } from '../components/ui/Skeleton';
 import { MakeOfferModal } from '../components/MakeOfferModal';
 import { MarketplaceCard } from '../components/MarketplaceCard';
@@ -63,7 +63,7 @@ export function MarketplaceDetail() {
     const [selectedColor, setSelectedColor] = useState(null);
     const handleColorSelect = (color) => {
         setSelectedColor(color);
-        if (color.image) setActiveImage(color.image);
+        if (color.image) setActiveImage(getImageUrl(color.image));
     };
     const [selectedMod, setSelectedMod] = useState(null);
     const [isWatchingPrice, setIsWatchingPrice] = useState(false);
@@ -90,7 +90,12 @@ export function MarketplaceDetail() {
                 imagesArray = marketplace.images.startsWith('[') ? JSON.parse(marketplace.images) : [marketplace.images];
             }
         } catch (e) { console.error(e); }
-        return imagesArray.length > 0 ? imagesArray : [marketplace.imageUrl || marketplace.image || '/placeholder.jpg'];
+        
+        const finalImages = imagesArray.length > 0 
+            ? imagesArray 
+            : [marketplace.imageUrl || marketplace.image || '/placeholder.jpg'];
+            
+        return finalImages.map(img => getImageUrl(img));
     }, [marketplace]);
 
     const breadcrumbs = useMemo(() => [
@@ -107,7 +112,8 @@ export function MarketplaceDetail() {
             try {
                 const res = await api.getMarketplace(slug);
                 setMarketplace(res);
-                setActiveImage(res.imageUrl || res.image || (Array.isArray(res.images) ? res.images[0] : ''));
+                const initialImage = res.imageUrl || res.image || (Array.isArray(res.images) ? res.images[0] : '');
+                setActiveImage(getImageUrl(initialImage));
                 if (res.attributes?.colors?.length > 0) setSelectedColor(res.attributes.colors[0]);
                 if (res.attributes?.modifications?.length > 0) setSelectedMod(res.attributes.modifications[0]);
                 
@@ -169,7 +175,7 @@ export function MarketplaceDetail() {
                         "@type": isAuto ? "Car" : "RealEstateListing",
                         "name": displayName,
                         "description": displayDescription,
-                        "image": allImages[0]?.startsWith('http') ? allImages[0] : `https://autohouse.uz${allImages[0]}`,
+                        "image": allImages[0]?.startsWith('http') ? allImages[0] : (allImages[0] ? `https://autohouse.uz${allImages[0]}` : ''),
                         "offers": {
                             "@type": "Offer",
                             "price": displayPrice,
