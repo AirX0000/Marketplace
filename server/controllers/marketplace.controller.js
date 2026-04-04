@@ -26,17 +26,25 @@ exports.getListingById = asyncHandler(async (req, res) => {
 
 exports.getCategories = asyncHandler(async (req, res) => {
     // Force refresh if requested or if cache has incomplete list (we expect at least 4: Electronics, Transport, Real Estate, Services)
+    const CACHE_KEY = cache.KEYS.CATEGORIES || 'categories_list';
+    
     if (req.query.refresh === 'true') {
-        cache.del(cache.KEYS.CATEGORIES);
+        cache.del(CACHE_KEY);
     }
     
-    const cachedCategories = cache.get(cache.KEYS.CATEGORIES);
-    if (cachedCategories && cachedCategories.length >= 4) return res.json(cachedCategories);
+    const cachedCategories = cache.get(CACHE_KEY);
+    
+    // Self-healing: if cached list is missing "Транспорт" or has fewer than 4 items, force refresh
+    const isMissingCritical = cachedCategories && !cachedCategories.some(c => c.name === 'Транспорт' || c.name === 'Transport');
+
+    if (cachedCategories && cachedCategories.length >= 4 && !isMissingCritical) {
+        return res.json(cachedCategories);
+    }
 
     try {
         const categories = await marketplaceService.getCategories();
         if (categories && categories.length >= 4) {
-            cache.set(cache.KEYS.CATEGORIES, categories);
+            cache.set(CACHE_KEY, categories);
         }
         res.json(categories);
     } catch (e) {
