@@ -78,11 +78,25 @@ export function ServiceProviderCard({ provider }) {
             <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <MapPin size={12} />
-                    <span>Ташкент, Узбекистан</span>
+                    <span>{provider.city || provider.region || provider.businessAddress || 'Ташкент, Узбекистан'}</span>
                 </div>
-                <button className="inline-flex items-center gap-2 px-4 py-2 bg-primary dark:bg-primary/20 text-primary-foreground dark:text-primary rounded-xl text-xs font-black shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-95 transition-all">
-                    Связаться <ExternalLink size={12} />
-                </button>
+                {provider.phone ? (
+                    <a
+                        href={`tel:${provider.phone}`}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary dark:bg-primary/20 text-primary-foreground dark:text-primary rounded-xl text-xs font-black shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-95 transition-all"
+                    >
+                        Связаться <ExternalLink size={12} />
+                    </a>
+                ) : provider.email ? (
+                    <a
+                        href={`mailto:${provider.email}`}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary dark:bg-primary/20 text-primary-foreground dark:text-primary rounded-xl text-xs font-black shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-95 transition-all"
+                    >
+                        Написать <ExternalLink size={12} />
+                    </a>
+                ) : (
+                    <span className="text-xs text-muted-foreground font-medium">Контакт не указан</span>
+                )}
             </div>
         </div>
     );
