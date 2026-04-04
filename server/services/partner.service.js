@@ -78,7 +78,7 @@ class PartnerService {
                 lat: isNaN(parsedLat) ? null : parsedLat,
                 lng: isNaN(parsedLng) ? null : parsedLng,
                 stock: 1,
-                status: 'PENDING'
+                status: user.role === 'ADMIN' ? 'APPROVED' : 'PENDING'
             }
         });
 
