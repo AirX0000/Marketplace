@@ -42,14 +42,25 @@ class MarketplaceService {
             } else {
                 // If it's a single category, check if it's a "Parent" category with subcategories
                 try {
-                    const dbCategory = await prisma.category.findFirst({
+                    let dbCategory = await prisma.category.findFirst({
                         where: { name: { equals: effectiveCategory, mode: 'insensitive' } }
                     });
+
+                    // Reverse lookup: If name not found, check if it exists within subcategories of any parent
+                    if (!dbCategory) {
+                        const allCats = await prisma.category.findMany();
+                        dbCategory = allCats.find(c => {
+                            try {
+                                const subs = JSON.parse(c.subcategories || "[]");
+                                return Array.isArray(subs) && subs.some(s => s.toLowerCase() === effectiveCategory.toLowerCase());
+                            } catch (e) { return false; }
+                        });
+                    }
 
                     if (dbCategory && dbCategory.subcategories) {
                         try {
                             const subCats = JSON.parse(dbCategory.subcategories);
-                            let searchList = Array.isArray(subCats) ? [dbCategory.name, ...subCats] : [effectiveCategory];
+                            let searchList = Array.isArray(subCats) ? [dbCategory.name, ...subCats] : [dbCategory.name];
                             
                             // Add common variations/keywords for broad matching
                             const catLower = dbCategory.name.toLowerCase();
