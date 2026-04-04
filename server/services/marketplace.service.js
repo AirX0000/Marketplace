@@ -49,8 +49,16 @@ class MarketplaceService {
                     if (dbCategory && dbCategory.subcategories) {
                         try {
                             const subCats = JSON.parse(dbCategory.subcategories);
-                            const searchList = Array.isArray(subCats) ? [dbCategory.name, ...subCats] : [effectiveCategory];
+                            let searchList = Array.isArray(subCats) ? [dbCategory.name, ...subCats] : [effectiveCategory];
                             
+                            // Add common variations/keywords for broad matching
+                            const catLower = dbCategory.name.toLowerCase();
+                            if (catLower.includes('транспорт') || catLower.includes('transport')) {
+                                searchList = [...new Set([...searchList, "Автосалон", "Бозор", "С пробегом", "Машины", "Cars", "Transport", "Автосалон (Новые авто)", "Бозор (Авто с пробегом)", "АВТОСАЛОН", "БОЗОР"])];
+                            } else if (catLower.includes('недвижимость') || catLower.includes('real estate')) {
+                                searchList = [...new Set([...searchList, "Квартиры", "Дома", "Новостройки", "Вторичное жильё", "Участки", "Коммерческая недвижимость", "Novostroyka", "Houses", "Apartment", "Real Estate", "НОВОСТРОЙКИ"])];
+                            }
+
                             // Use OR with mode: 'insensitive' for each possible category name
                             andConditions.push({
                                 OR: searchList.map(cat => ({ category: { equals: cat, mode: 'insensitive' } }))

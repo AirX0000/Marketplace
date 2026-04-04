@@ -21,8 +21,9 @@ export function ShopProvider({ children }) {
     });
 
     const [favorites, setFavorites] = useState([]); // Array of IDs
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+     const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
     const [user, setUser] = useState(null);
+    const [loadingUser, setLoadingUser] = useState(!!localStorage.getItem('token'));
 
     // Persist cart
     useEffect(() => {
@@ -37,10 +38,12 @@ export function ShopProvider({ children }) {
         } else {
             setUser(null);
             setFavorites([]);
+            setLoadingUser(false);
         }
     }, [isAuthenticated]);
 
     const loadUser = async () => {
+        setLoadingUser(true);
         try {
             const userData = await api.getUserProfile();
             setUser(userData);
@@ -50,6 +53,8 @@ export function ShopProvider({ children }) {
             if (e.message?.includes('401') || e.message?.includes('Unauthorized')) {
                 logout();
             }
+        } finally {
+            setLoadingUser(false);
         }
     };
 
@@ -239,8 +244,9 @@ export function ShopProvider({ children }) {
             favorites,
             toggleFavorite,
             isFavorite,
-            checkAuth,
+             checkAuth,
             isAuthenticated,
+            loadingUser,
             user,
             login,
             logout,

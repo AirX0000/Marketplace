@@ -166,37 +166,11 @@ export function MarketplaceListing() {
             if (filters.transmission && filters.transmission !== "Все") params.transmission = filters.transmission;
             if (filters.bodyType && filters.bodyType !== "Все") params.bodyType = filters.bodyType;
 
-            const catLower = (filters.category || "").toLowerCase();
-            const isRealEstate = ["недвижимость", "ko'chmas mulk", "real estate", "house", "apartment", "houses", "land", "new building", "private house", "новостройки", "вторичные", "вторичное жильё", "участки", "аренда"].includes(catLower);
-            const isAuto = ["транспорт", "автомобили", "avtomobillar", "cars", "car", "auto", "transport", "dealer", "private auto", "автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)", "машины"].includes(catLower);
-            const isServices = ["услуги", "xizmatlar", "services"].includes(catLower);
-
-            if (catLower !== "все" && catLower !== "" && catLower !== "all") {
-                // Map to database canonical names
-                if (isRealEstate) params.category = "Недвижимость";
-                else if (isAuto) params.category = "Транспорт";
-                else if (isServices) params.category = "Услуги";
-                else params.category = filters.category;
-
-                const currentSub = filters.subcategory || (isRealEstate && filters.category !== "Недвижимость" ? filters.category : "") || (isAuto && filters.category !== "Автомобили" ? filters.category : "");
-                if (currentSub) {
-                    const subL = currentSub.toLowerCase();
-                    if (subL === "новый без пробега" || subL === "автосалон" || subL === "автосалон (новые авто)") {
-                        params.category = "Автосалон,Новый без пробега,Автосалон (Новые авто)";
-                    } else if (subL === "с пробегом" || subL === "бозор (авто с пробегом)") {
-                        params.category = "С пробегом,Бозор (Авто с пробегом)";
-                    } else if (subL === "вторичные" || subL === "вторичное жильё") {
-                        params.category = "Вторичные,Вторичное жильё,Вторичка";
-                    } else if (subL === "новостройки") {
-                        params.category = "Новостройки,New Building,Infinity Luxury Residence,Golden House";
-                    } else if (subL === "нежилое помещение") {
-                        params.category = "Нежилое помещение,Коммерческая недвижимость,Коммерческая";
-                    } else if (subL === "участки") {
-                        params.category = "Участки,Земля,Land";
-                    } else {
-                        params.category = currentSub;
-                    }
-                }
+             if (filters.category && filters.category !== "Все") {
+                params.category = filters.category;
+            }
+            if (filters.subcategory) {
+                params.category = filters.subcategory;
             }
 
             if (filters.minPrice) params.minPrice = filters.minPrice;
@@ -219,7 +193,8 @@ export function MarketplaceListing() {
             if (response.pagination) setHasMore(pageNum < response.pagination.pages);
             else setHasMore(filtered.length >= 12);
 
-            // If Services, also fetch providers (once or in background)
+             // If Services, also fetch providers (once or in background)
+            const isServices = ["услуги", "services"].includes((filters.category || "").toLowerCase());
             if (isServices && pageNum === 1) {
                 api.getPartners(filters.subcategory || "Все").then(data => {
                     setProviders(data || []);

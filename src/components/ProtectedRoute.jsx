@@ -2,7 +2,16 @@ import { Navigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 
 export function ProtectedRoute({ children, allowedRoles = [] }) {
-    const { user, isAuthenticated } = useShop();
+     const { user, isAuthenticated, loadingUser } = useShop();
+    
+    // While user data is being fetched (on reload), show a loader to prevent premature redirects
+    if (loadingUser) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center bg-background">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     // Check if user is authenticated
     if (!isAuthenticated) {
