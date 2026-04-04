@@ -168,7 +168,7 @@ export function MarketplaceListing() {
 
             const catLower = (filters.category || "").toLowerCase();
             const isRealEstate = ["недвижимость", "ko'chmas mulk", "real estate", "house", "apartment", "houses", "land", "new building", "private house", "новостройки", "вторичные", "вторичное жильё", "участки", "аренда"].includes(catLower);
-            const isAuto = ["автомобили", "avtomobillar", "cars", "car", "auto", "transport", "dealer", "private auto", "автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)", "машины"].includes(catLower);
+            const isAuto = ["транспорт", "автомобили", "avtomobillar", "cars", "car", "auto", "transport", "dealer", "private auto", "автосалон", "с пробегом", "новый без пробега", "бозор (авто с пробегом)", "автосалон (новые авто)", "машины"].includes(catLower);
             const isServices = ["услуги", "xizmatlar", "services"].includes(catLower);
 
             if (catLower !== "все" && catLower !== "" && catLower !== "all") {

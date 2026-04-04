@@ -6,7 +6,7 @@ console.log('🔹 [MarketplaceService] Database required.');
 class MarketplaceService {
     async getAllListings(filters) {
         const {
-            category, minPrice, maxPrice, region, sort, search, isFeatured, ids, tag,
+            category, minPrice, maxPrice, region, sort, search, isFeatured, ids, tag, subcategory,
             // Car Filters
             minYear, maxYear,
             minMileage, maxMileage,
@@ -20,12 +20,15 @@ class MarketplaceService {
 
         const where = { status: 'APPROVED' };
 
+        // Handle Category/Subcategory with case-insensitive match
         if (category && category !== 'All' && category !== 'Все') {
-            if (category.includes(',')) {
-                const categories = category.split(',').map(c => c.trim());
-                where.category = { in: categories };
+            const searchCategory = subcategory && subcategory !== 'Все' ? subcategory : category;
+            
+            if (searchCategory.includes(',')) {
+                const categories = searchCategory.split(',').map(c => c.trim());
+                where.category = { in: categories, mode: 'insensitive' };
             } else {
-                where.category = category;
+                where.category = { equals: searchCategory, mode: 'insensitive' };
             }
         }
 
@@ -117,6 +120,10 @@ class MarketplaceService {
                 if (transmission && transmission !== 'Все') carFilters.push({ path: ['transmission'], equals: transmission });
                 if (bodyType && bodyType !== 'Все') carFilters.push({ path: ['bodyType'], equals: bodyType });
 
+                if (subcategory && subcategory !== 'Все' && subcategory !== '') {
+                    carFilters.push({ path: ['type'], equals: subcategory });
+                }
+
                 if (carFilters.length > 0) {
                     if (!where.AND) where.AND = [];
                     carFilters.forEach(f => where.AND.push({ specs: f }));
@@ -144,6 +151,10 @@ class MarketplaceService {
                 if (!isNaN(floorVal)) {
                     reFilters.push({ path: ['floor'], equals: floorVal });
                 }
+            }
+
+            if (subcategory && subcategory !== 'Все' && subcategory !== '') {
+                reFilters.push({ path: ['type'], equals: subcategory });
             }
 
             if (reFilters.length > 0) {
