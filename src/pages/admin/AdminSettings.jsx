@@ -420,7 +420,8 @@ function CategoryManager() {
     const [categories, setCategories] = useState([]);
     const [newCatName, setNewCatName] = useState("");
     const [newCatSubs, setNewCatSubs] = useState("");
-    const [deleteConfirm, setDeleteConfirm] = useState(null); // ID of item to confirm delete
+    const [editingId, setEditingId] = useState(null);
+    const [deleteConfirm, setDeleteConfirm] = useState(null);
 
     useEffect(() => { load(); }, []);
 
@@ -431,30 +432,38 @@ function CategoryManager() {
         if (!newCatName.trim()) return;
         try {
             const subList = newCatSubs.split(',').map(s => s.trim()).filter(Boolean);
-            await api.createCategory({ name: newCatName, subcategories: subList });
+            if (editingId) {
+                await api.updateCategory(editingId, { name: newCatName, subcategories: subList });
+            } else {
+                await api.createCategory({ name: newCatName, subcategories: subList });
+            }
             setNewCatName("");
             setNewCatSubs("");
+            setEditingId(null);
             load();
         } catch (error) {
-            alert("Ошибка добавления категории");
+            alert("Ошибка " + (editingId ? "обновления" : "добавления") + " категории");
         }
+    };
+
+    const handleEdit = (category) => {
+        setEditingId(category.id);
+        setNewCatName(category.name);
+        setNewCatSubs(category.sub?.join(', ') || "");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleDelete = async (id) => {
         if (deleteConfirm !== id) {
             setDeleteConfirm(id);
-            // Auto-clear confirm after 3 seconds
             setTimeout(() => setDeleteConfirm(null), 3000);
             return;
         }
-
-        console.log(`Deleting category ${id}`);
         try {
             await api.deleteCategory(id);
             setDeleteConfirm(null);
             load();
         } catch (error) {
-            console.error("Delete failed:", error);
             alert("Ошибка удаления: " + error.message);
         }
     };
@@ -462,7 +471,7 @@ function CategoryManager() {
     return (
         <div className="space-y-6 max-w-3xl text-slate-900">
             <div className="p-6 border border-slate-200 rounded-xl bg-white shadow-sm">
-                <h3 className="font-bold text-slate-800 mb-4">Добавить Категорию</h3>
+                <h3 className="font-bold text-slate-800 mb-4">{editingId ? "Редактировать Категорию" : "Добавить Категорию"}</h3>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="space-y-1">
                         <label className="text-xs font-bold text-slate-500 ml-1">Название</label>
@@ -483,26 +492,40 @@ function CategoryManager() {
                         />
                     </div>
                 </div>
-                <button onClick={handleAdd} className="w-full h-11 bg-blue-600 text-white rounded-xl font-bold text-sm flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
-                    <Plus className="mr-2 h-4 w-4" /> Добавить Категорию
-                </button>
+                <div className="flex gap-2">
+                    <button onClick={handleAdd} className="flex-1 h-11 bg-blue-600 text-white rounded-xl font-bold text-sm flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
+                        {editingId ? <><Save className="mr-2 h-4 w-4" /> Сохранить изменения</> : <><Plus className="mr-2 h-4 w-4" /> Добавить Категорию</>}
+                    </button>
+                    {editingId && (
+                        <button onClick={() => { setEditingId(null); setNewCatName(""); setNewCatSubs(""); }} className="px-6 h-11 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all">
+                            Отмена
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="grid gap-4">
                 {categories.map(c => (
                     <div key={c.id} className="border border-slate-200 rounded-xl p-5 bg-white hover:border-blue-200 transition-colors shadow-sm">
                         <div className="flex justify-between items-start mb-3">
-                            <h4 className="font-bold text-lg text-slate-800">{c.name}</h4>
-                            <button
-                                onClick={() => handleDelete(c.id)}
-                                className={`transition-all duration-200 px-3 py-1.5 text-xs font-bold rounded-lg flex items-center gap-2 ${deleteConfirm === c.id ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-slate-400 hover:text-red-600 hover:bg-red-50'}`}
-                            >
-                                {deleteConfirm === c.id ? (
-                                    <>Подтвердить?</>
-                                ) : (
-                                    <Trash2 className="h-4 w-4" />
-                                )}
-                            </button>
+                            <div>
+                                <h4 className="font-bold text-lg text-slate-800">{c.name}</h4>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => handleEdit(c)}
+                                    className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                    title="Редактировать"
+                                >
+                                    <Settings className="h-4 w-4" />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(c.id)}
+                                    className={`transition-all duration-200 px-3 py-1.5 text-xs font-bold rounded-lg flex items-center gap-2 ${deleteConfirm === c.id ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-slate-400 hover:text-red-600 hover:bg-red-50'}`}
+                                >
+                                    {deleteConfirm === c.id ? <>Подтвердить?</> : <Trash2 className="h-4 w-4" />}
+                                </button>
+                            </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {c.sub?.map(sub => (

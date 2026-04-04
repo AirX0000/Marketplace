@@ -138,3 +138,10 @@ exports.getPartners = asyncHandler(async (req, res) => {
     res.json(partners);
 });
 
+exports.updateCategory = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const category = await marketplaceService.updateCategory(id, req.body);
+    cache.del(cache.KEYS.CATEGORIES); // Invalidate cache
+    res.json(category);
+});
+

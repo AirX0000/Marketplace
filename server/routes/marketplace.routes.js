@@ -13,6 +13,7 @@ router.get('/listings/:id', marketplaceController.getListingById);
 // Categories
 router.get('/categories', marketplaceController.getCategories);
 router.post('/categories', authenticateToken, authorizeRole(['ADMIN']), marketplaceController.createCategory);
+router.put('/categories/:id', authenticateToken, authorizeRole(['ADMIN']), marketplaceController.updateCategory);
 router.delete('/categories/:id', authenticateToken, authorizeRole(['ADMIN']), marketplaceController.deleteCategory);
 
 // Regions

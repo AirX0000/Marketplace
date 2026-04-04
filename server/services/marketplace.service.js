@@ -297,6 +297,17 @@ class MarketplaceService {
         return prisma.category.delete({ where: { id } });
     }
 
+    async updateCategory(id, data) {
+        const updateData = {};
+        if (data.name) updateData.name = data.name;
+        if (data.subcategories) updateData.subcategories = JSON.stringify(data.subcategories);
+        
+        return prisma.category.update({
+            where: { id },
+            data: updateData
+        });
+    }
+
     async createRegion(data) {
         return prisma.region.create({
             data: { name: data.name }

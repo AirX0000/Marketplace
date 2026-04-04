@@ -172,6 +172,7 @@ export const api = {
 
     getCategories: () => fetchAPI('/categories'),
     createCategory: (data) => fetchAPI('/categories', { method: 'POST', body: JSON.stringify(data) }),
+    updateCategory: (id, data) => fetchAPI(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     deleteCategory: (id) => fetchAPI(`/categories/${id}`, { method: 'DELETE' }),
 
     // Banners
