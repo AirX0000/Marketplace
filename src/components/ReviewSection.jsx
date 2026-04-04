@@ -3,6 +3,7 @@ import { api } from '../lib/api';
 import { useShop } from '../context/ShopContext';
 import { Star, Send, Trash2, User as UserIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { getImageUrl } from '../lib/utils';
 
 export function ReviewSection({ marketplaceId }) {
     const { user } = useShop();
@@ -115,7 +116,7 @@ export function ReviewSection({ marketplaceId }) {
                         <div key={review.id} className="flex gap-4 p-6 bg-white border rounded-2xl shadow-sm">
                             <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 shrink-0">
                                 {review.user?.avatar ? (
-                                    <img src={review.user.avatar} alt={`Avatar of ${review.user?.name || 'user'}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                                    <img src={getImageUrl(review.user.avatar)} alt={`Avatar of ${review.user?.name || 'user'}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-slate-400">
                                         <UserIcon className="w-6 h-6" />

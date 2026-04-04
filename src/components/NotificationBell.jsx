@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Bell, MessageSquare, TrendingDown, CheckCheck, X, ExternalLink } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../lib/utils';
 
 function timeAgo(dateStr) {
     try {
@@ -85,7 +86,7 @@ export function NotificationBell() {
                                     {/* Icon */}
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${!n.read ? 'bg-primary/10' : 'bg-muted'}`}>
                                         {n.avatar ? (
-                                            <img src={n.avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                            <img src={getImageUrl(n.avatar)} alt="" className="w-8 h-8 rounded-full object-cover" />
                                         ) : (
                                             <NotifIcon type={n.type} />
                                         )}

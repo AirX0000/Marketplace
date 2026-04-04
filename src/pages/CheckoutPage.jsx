@@ -6,7 +6,7 @@ import { checkoutSchema } from '../lib/schemas';
 import { CreditCard, Calendar, Check, ShieldCheck, ArrowRight, Truck, MapPin, User, Mail, Phone, Store, ChevronRight, AlertCircle, Loader2, Car, X, Wallet, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { api } from '../lib/api';
 import { EscrowInfo } from '../components/checkout/EscrowInfo';
-import { cn } from '../lib/utils';
+import { cn, getImageUrl } from '../lib/utils';
 import { useShop } from '../context/ShopContext';
 import CheckoutMap from '../components/CheckoutMap';
 import { PinModal } from '../components/fintech/PinModal';
@@ -314,7 +314,7 @@ export function CheckoutPage() {
                                 <div className="w-full bg-[#1E1B29] rounded-2xl border border-white/5 overflow-hidden mb-8">
                                     <div className="flex items-center gap-4 p-4 border-b border-white/5">
                                         <div className="w-24 h-16 bg-black rounded-lg overflow-hidden shrink-0">
-                                            <img src={latestItem.image} alt="Vehicle" className="w-full h-full object-cover" />
+                                            <img src={getImageUrl(latestItem.image)} alt="Vehicle" className="w-full h-full object-cover" />
                                         </div>
                                         <div className="text-left flex-grow">
                                             <div className="text-purple-500 text-xs font-bold tracking-wider mb-1">ORDER #AH-88291</div>
@@ -1168,7 +1168,7 @@ export function CheckoutPage() {
                                                 <div key={item.id} className="flex justify-between items-center group">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-10 h-10 rounded-xl bg-white/5 overflow-hidden">
-                                                            <img src={item.image} className="w-full h-full object-cover" />
+                                                            <img src={getImageUrl(item.image)} className="w-full h-full object-cover" />
                                                         </div>
                                                         <div>
                                                             <div className="text-xs font-black text-white group-hover:text-purple-400 transition-colors uppercase tracking-tight">{item.name}</div>

@@ -63,7 +63,7 @@ export function RecentlyViewed({ className }) {
                                 <div className="aspect-square relative overflow-hidden">
                                     {item.image ? (
                                         <img
-                                            src={item.image}
+                                            src={getImageUrl(item.image)}
                                             alt={item.name}
                                             className="h-full w-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                                         />

@@ -1,9 +1,12 @@
-import { ArrowLeft, MapPin, Calendar, Star, CheckCircle, MessageCircle, Phone, Share2, Info } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Star, CheckCircle, MessageCircle, Phone, Share2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { getImageUrl } from '../lib/utils';
 
 export function SellerHeader({ partner }) {
     const brandColor = partner.storeColor || "#7c3aed"; // Default purple
-    const coverImage = partner.storeBanner
-        ? `url(${partner.storeBanner})`
+    const bannerUrl = getImageUrl(partner.storeBanner);
+    const coverImage = bannerUrl
+        ? `url(${bannerUrl})`
         : 'linear-gradient(to right, #191624, #13111C)';
 
     return (
@@ -45,7 +48,7 @@ export function SellerHeader({ partner }) {
                         <div className="h-44 w-44 rounded-[2.5rem] border-4 border-[#13111C] bg-[#191624] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden relative z-10 p-2">
                             <div className="h-full w-full rounded-[1.8rem] overflow-hidden bg-white/5 flex items-center justify-center">
                                 {partner.storeLogo ? (
-                                    <img src={partner.storeLogo} alt={partner.storeName} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    <img src={getImageUrl(partner.storeLogo)} alt={partner.storeName} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                 ) : (
                                     <span className="font-black text-6xl text-white/10 uppercase tracking-tighter">
                                         {partner.storeName?.[0] || 'S'}

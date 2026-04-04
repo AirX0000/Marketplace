@@ -3,6 +3,7 @@ import { IMaskInput } from 'react-imask';
 import { api } from '../lib/api';
 import { User, Mail, Phone, Save, Camera, Settings, Check, AlertCircle, Building2, MapPin, Trash2, Plus, Bell, BellRing } from 'lucide-react';
 import { TopUpModal } from '../components/TopUpModal';
+import { getImageUrl } from '../lib/utils';
 
 export function ProfileSettingsPage() {
     const [profile, setProfile] = useState({ name: '', email: '', avatar: '', role: 'USER' });
@@ -217,7 +218,7 @@ export function ProfileSettingsPage() {
                         <div className="relative group mb-3">
                             <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-slate-100 shadow-inner bg-slate-50 mx-auto">
                                 {profile.avatar ? (
-                                    <img src={profile.avatar} alt={`Avatar of ${profile.name || 'user'}`} className="h-full w-full object-cover" />
+                                    <img src={getImageUrl(profile.avatar)} alt={`Avatar of ${profile.name || 'user'}`} className="h-full w-full object-cover" />
                                 ) : (
                                     <div className="h-full w-full flex items-center justify-center text-slate-300">
                                         <User className="h-16 w-16" />

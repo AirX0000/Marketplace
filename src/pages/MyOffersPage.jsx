@@ -3,6 +3,7 @@ import { api } from '../lib/api';
 import { Tag, Clock, CheckCircle, XCircle, ArrowRight, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { getImageUrl } from '../lib/utils';
 
 export function MyOffersPage() {
     const [offers, setOffers] = useState([]);
@@ -51,7 +52,7 @@ export function MyOffersPage() {
                             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
                                 <Link to={`/marketplaces/${offer.marketplace.id}`} className="flex gap-4 items-center group">
                                     <div className="h-16 w-16 bg-slate-100 rounded-xl overflow-hidden shrink-0">
-                                        {offer.marketplace.image && <img src={offer.marketplace.image} className="h-full w-full object-cover group-hover:scale-105 transition-transform" />}
+                                        {offer.marketplace.image && <img src={getImageUrl(offer.marketplace.image)} className="h-full w-full object-cover group-hover:scale-105 transition-transform" />}
                                     </div>
                                     <div>
                                         <div className="font-bold text-lg text-slate-900 group-hover:text-primary transition-colors mb-1">

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { FileText, Calendar, CheckCircle, XCircle, Clock, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../lib/utils';
 
 export function CreditApplicationsPage() {
     const [applications, setApplications] = useState([]);
@@ -73,7 +74,7 @@ export function CreditApplicationsPage() {
                                     {app.marketplace && (
                                         <Link to={`/marketplaces/${app.marketplace.id}`} className="group flex items-center gap-3 md:justify-end bg-slate-50 p-3 rounded-xl hover:bg-slate-100 transition-colors">
                                             <div className="h-10 w-10 bg-slate-200 rounded-lg overflow-hidden">
-                                                {app.marketplace.image && <img src={app.marketplace.image} className="h-full w-full object-cover" />}
+                                                {app.marketplace.image && <img src={getImageUrl(app.marketplace.image)} className="h-full w-full object-cover" />}
                                             </div>
                                             <div className="text-left">
                                                 <div className="text-xs text-slate-500">Объект</div>

@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { ListingModal } from './ListingModal';
 import { useShop } from '../../context/ShopContext';
+import { getImageUrl } from '../../lib/utils';
 
 export function MyListings() {
     const navigate = useNavigate();
@@ -197,7 +198,7 @@ export function MyListings() {
                                 {/* Product Info */}
                                 <div className="col-span-12 lg:col-span-4 flex items-center gap-4 lg:gap-6">
                                     <div className="min-w-[64px] w-[64px] h-[64px] lg:min-w-[80px] lg:w-[80px] lg:h-[80px] rounded-[1.2rem] lg:rounded-[1.8rem] overflow-hidden bg-[#13111C] p-1 border border-white/5 group-hover:border-purple-500/50 transition-all shadow-2xl relative">
-                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover rounded-[1rem] lg:rounded-[1.5rem] opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" />
+                                        <img src={getImageUrl(item.image)} alt={item.title} className="w-full h-full object-cover rounded-[1rem] lg:rounded-[1.5rem] opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
                                     </div>
                                     <div className="min-w-0 flex-1">

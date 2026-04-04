@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { X, Check, Minus, ShoppingCart, ArrowLeft, ShieldCheck, Scale, Zap, Info } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { toast } from 'react-hot-toast';
-import { cn } from '../lib/utils';
+import { cn, getImageUrl } from '../lib/utils';
 
 export function ComparePage() {
     const { compareItems, removeFromCompare, clearCompare } = useCompare();
@@ -133,7 +133,7 @@ export function ComparePage() {
 
                                             <div className="space-y-6">
                                                 <div className="aspect-[4/3] rounded-[2rem] overflow-hidden bg-[#13111C] border border-white/5 relative group/img">
-                                                    <img src={item.imageUrl || item.image || '/placeholder.png'} className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110" alt={item.name} />
+                                                    <img src={getImageUrl(item.imageUrl || item.image)} className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110" alt={item.name} />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-[#13111C] to-transparent opacity-60" />
                                                 </div>
 

@@ -3,6 +3,7 @@ import { Trash2, Plus, Minus, ArrowRight, Store, Calendar, CreditCard } from 'lu
 import { Link, useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { api } from '../lib/api';
+import { getImageUrl } from '../lib/utils';
 
 export function CartPage() {
     const { cartItems, updateQuantity, removeFromCart, cartTotal } = useShop();
@@ -59,7 +60,7 @@ export function CartPage() {
                         {cartItems.map((item) => (
                             <div key={item.id} className="flex gap-4 p-4 rounded-xl border bg-card relative group">
                                 <div className="h-24 w-24 flex-none rounded-md bg-muted overflow-hidden">
-                                    <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                                    <img src={getImageUrl(item.image)} alt={item.name} className="h-full w-full object-cover" />
                                 </div>
                                 <div className="flex-1 flex flex-col justify-between">
                                     <div>

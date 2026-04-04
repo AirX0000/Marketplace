@@ -5,7 +5,7 @@ import L from 'leaflet';
 import { Link } from 'react-router-dom';
 import { Search, SlidersHorizontal, Navigation, LayoutGrid, Map as MapIcon, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../lib/utils';
+import { cn, getImageUrl } from '../lib/utils';
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -121,7 +121,7 @@ export function MapSearch({ products, onBoundsChange, viewMode, setViewMode, act
                                             <div className="w-64 p-0">
                                                 <div className="relative h-36 w-full overflow-hidden">
                                                     <img
-                                                        src={product.image || product.imageUrl || '/placeholder.jpg'}
+                                                        src={getImageUrl(product.image || product.imageUrl || '/placeholder.jpg')}
                                                         alt={product.name}
                                                         className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                                                     />

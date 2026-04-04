@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { getImageUrl } from '../lib/utils';
 
 const NavItem = ({ icon, label, active, count, isShortcut, onClick }) => {
     if (isShortcut) {
