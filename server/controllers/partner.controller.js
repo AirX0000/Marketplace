@@ -25,7 +25,7 @@ exports.updateListing = asyncHandler(async (req, res) => {
 
 exports.deleteListing = asyncHandler(async (req, res) => {
     try {
-        await partnerService.deleteListing(req.user.userId, req.params.id);
+        await partnerService.deleteListing(req.user.userId, req.user.role, req.params.id);
         res.json({ message: "Listing deleted" });
     } catch (error) {
         res.status(404).json({ error: error.message });
@@ -49,7 +49,7 @@ exports.getCustomers = asyncHandler(async (req, res) => {
 
 exports.updateOrderItemStatus = asyncHandler(async (req, res) => {
     try {
-        const result = await partnerService.updateOrderItemStatus(req.user.userId, req.params.itemId, req.body.status);
+        const result = await partnerService.updateOrderItemStatus(req.user.userId, req.user.role, req.params.itemId, req.body.status);
         res.json(result);
     } catch (error) {
         res.status(404).json({ error: error.message });

@@ -10,7 +10,7 @@ class MarketplaceService {
             // Car Filters
             minYear, maxYear,
             minMileage, maxMileage,
-            transmission, bodyType,
+            transmission, bodyType, brand,
             // Real Estate Filters
             minArea, maxArea,
             rooms, floor, renovation,
@@ -19,46 +19,90 @@ class MarketplaceService {
         } = filters;
 
         const where = { status: 'APPROVED' };
+        const andConditions = [];
 
-        // Handle Category/Subcategory with case-insensitive match
+        // Handle Category/Subcategory with inclusive matching
         if (category && category !== 'All' && category !== 'Все') {
-            const searchCategory = subcategory && subcategory !== 'Все' ? subcategory : category;
+            let targetCategory = category;
             
-            if (searchCategory.includes(',')) {
-                const categories = searchCategory.split(',').map(c => c.trim());
-                where.category = { in: categories, mode: 'insensitive' };
+            // Handle common aliases for cars
+            if (targetCategory.toLowerCase() === 'машины' || targetCategory.toLowerCase() === 'cars') {
+                targetCategory = 'Транспорт';
+            }
+
+            // Subcategory takes priority if it's not "Все"
+            const effectiveCategory = subcategory && subcategory !== 'Все' ? subcategory : targetCategory;
+            
+            if (effectiveCategory.includes(',')) {
+                // If the frontend sends a CSV of categories
+                const categories = effectiveCategory.split(',').map(c => c.trim());
+                andConditions.push({
+                    OR: categories.map(cat => ({ category: { equals: cat, mode: 'insensitive' } }))
+                });
             } else {
-                where.category = { equals: searchCategory, mode: 'insensitive' };
+                // If it's a single category, check if it's a "Parent" category with subcategories
+                try {
+                    const dbCategory = await prisma.category.findFirst({
+                        where: { name: { equals: effectiveCategory, mode: 'insensitive' } }
+                    });
+
+                    if (dbCategory && dbCategory.subcategories) {
+                        try {
+                            const subCats = JSON.parse(dbCategory.subcategories);
+                            const searchList = Array.isArray(subCats) ? [dbCategory.name, ...subCats] : [effectiveCategory];
+                            
+                            // Use OR with mode: 'insensitive' for each possible category name
+                            andConditions.push({
+                                OR: searchList.map(cat => ({ category: { equals: cat, mode: 'insensitive' } }))
+                            });
+                        } catch (e) {
+                            andConditions.push({ category: { equals: effectiveCategory, mode: 'insensitive' } });
+                        }
+                    } else {
+                        andConditions.push({ category: { equals: effectiveCategory, mode: 'insensitive' } });
+                    }
+                } catch (err) {
+                    // Fallback to exact match on error
+                    andConditions.push({ category: { equals: effectiveCategory, mode: 'insensitive' } });
+                }
             }
         }
 
         if (search) {
-            where.OR = [
-                { name: { contains: search, mode: 'insensitive' } },
-                { description: { contains: search, mode: 'insensitive' } },
-                { vin: { contains: search, mode: 'insensitive' } },
-                { partNumber: { contains: search, mode: 'insensitive' } }
-            ];
+            andConditions.push({
+                OR: [
+                    { name: { contains: search, mode: 'insensitive' } },
+                    { description: { contains: search, mode: 'insensitive' } },
+                    { vin: { contains: search, mode: 'insensitive' } },
+                    { partNumber: { contains: search, mode: 'insensitive' } }
+                ]
+            });
+        }
+
+        if (andConditions.length > 0) {
+            where.AND = andConditions;
         }
 
         if (region && region !== 'All' && region !== 'Все') {
             const rLower = region.toLowerCase();
+            let regionFilter;
             if (rLower.includes('tashkent region') || rLower.includes('ташкентская') || rLower.includes('toshkent viloyati')) {
-                where.region = { in: ['Tashkent Region', 'Ташкентская область', 'Tashkent viloyati'] };
+                regionFilter = { in: ['Tashkent Region', 'Ташкентская область', 'Tashkent viloyati'] };
             } else if (rLower.includes('tashkent') || rLower.includes('ташкент') || rLower.includes('toshkent')) {
                 // Must be exact Tashkent city, but some people write 'г.Ташкент'
-                where.region = { in: ['Tashkent', 'Ташкент', 'г.Ташкент', 'Toshkent', 'г. Ташкент'] };
+                regionFilter = { in: ['Tashkent', 'Ташкент', 'г.Ташкент', 'Toshkent', 'г. Ташкент'] };
             } else if (rLower.includes('samarkand') || rLower.includes('самарканд') || rLower.includes('samarqand')) {
-                where.region = { in: ['Samarkand', 'Самарканд', 'Самаркандская область', 'Samarqand'] };
+                regionFilter = { in: ['Samarkand', 'Самарканд', 'Самаркандская область', 'Samarqand'] };
             } else if (rLower.includes('bukhara') || rLower.includes('бухара') || rLower.includes('buxoro')) {
-                where.region = { in: ['Bukhara', 'Бухара', 'Бухарская область', 'Buxoro'] };
+                regionFilter = { in: ['Bukhara', 'Бухара', 'Бухарская область', 'Buxoro'] };
             } else if (rLower.includes('andijan') || rLower.includes('андижан') || rLower.includes('andijon')) {
-                where.region = { in: ['Andijan', 'Андижан', 'Андижанская область', 'Andijon'] };
+                regionFilter = { in: ['Andijan', 'Андижан', 'Андижанская область', 'Andijon'] };
             } else if (rLower.includes('fergana') || rLower.includes('фергана') || rLower.includes('farg')) {
-                where.region = { in: ['Fergana', 'Фергана', 'Ферганская область', "Farg'ona", "Fargona"] };
+                regionFilter = { in: ['Fergana', 'Фергана', 'Ферганская область', "Farg'ona", "Fargona"] };
             } else {
-                where.region = region;
+                regionFilter = region;
             }
+            where.region = regionFilter;
         }
 
         if (isFeatured === 'true' || isFeatured === true) {
@@ -163,29 +207,39 @@ class MarketplaceService {
             }
         }
 
-        const marketplaces = await prisma.marketplace.findMany({
-            where,
-            include: { owner: { select: { name: true, phone: true, storeName: true } } },
-            orderBy: [
-                { isFeatured: 'desc' },
-                sort === 'price_asc' ? { price: 'asc' }
-                    : sort === 'price_desc' ? { price: 'desc' }
-                        : { createdAt: 'desc' }
-            ],
-            skip: (page - 1) * limit,
-            take: parseInt(limit)
-        });
+        const orderBy = [
+            { isFeatured: 'desc' },
+            sort === 'price_asc' ? { price: 'asc' }
+                : sort === 'price_desc' ? { price: 'desc' }
+                    : { createdAt: 'desc' }
+        ];
 
-        const total = await prisma.marketplace.count({ where });
-        return {
-            listings: marketplaces,
-            pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
-            }
-        };
+        try {
+            const listings = await prisma.marketplace.findMany({
+                where,
+                include: { owner: { select: { name: true, phone: true, storeName: true } } },
+                orderBy,
+                skip: (page - 1) * limit,
+                take: parseInt(limit)
+            });
+
+            const total = await prisma.marketplace.count({ where });
+
+            return {
+                listings,
+                pagination: {
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    total,
+                    pages: Math.ceil(total / limit)
+                }
+            };
+        } catch (error) {
+            console.error("❌ [MarketplaceService] findMany Error details:", error);
+            if (error.code) console.error("Prisma Error Code:", error.code);
+            if (error.meta) console.error("Prisma Error Meta:", error.meta);
+            throw error;
+        }
     }
 
     async getListingById(idOrSlug) {

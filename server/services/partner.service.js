@@ -97,7 +97,8 @@ class PartnerService {
         const listing = await prisma.marketplace.findUnique({ where: { id: listingId } });
         if (!listing) throw new Error("Listing not found");
 
-        if (listing.ownerId !== userId && role !== 'ADMIN') {
+        const isAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN';
+        if (listing.ownerId !== userId && !isAdmin) {
             throw new Error("Unauthorized");
         }
 
