@@ -13,6 +13,24 @@ export class ErrorBoundary extends React.Component {
 
     componentDidCatch(error, errorInfo) {
         console.error('ErrorBoundary caught an error:', error, errorInfo);
+        
+        // Check for chunk loading error which typically happens after a new deploy
+        const isChunkLoadFailed = error.name === 'ChunkLoadError' || 
+            (error.message && (
+                error.message.includes('Failed to fetch dynamically imported module') ||
+                error.message.includes('Loading chunk') ||
+                error.message.includes('MIME type of "text/html"')
+            ));
+
+        if (isChunkLoadFailed) {
+            const hasReloaded = sessionStorage.getItem('chunk_load_error_reload');
+            if (!hasReloaded) {
+                sessionStorage.setItem('chunk_load_error_reload', 'true');
+                window.location.reload();
+                return;
+            }
+        }
+
         Sentry.captureException(error, { extra: errorInfo });
     }
 
