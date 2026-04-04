@@ -54,9 +54,18 @@ class MarketplaceService {
                             // Add common variations/keywords for broad matching
                             const catLower = dbCategory.name.toLowerCase();
                             if (catLower.includes('транспорт') || catLower.includes('transport')) {
-                                searchList = [...new Set([...searchList, "Автосалон", "Бозор", "С пробегом", "Машины", "Cars", "Transport", "Автосалон (Новые авто)", "Бозор (Авто с пробегом)", "АВТОСАЛОН", "БОЗОР"])];
+                                searchList = [...new Set([...searchList, 
+                                    "Автосалон", "Бозор", "С пробегом", "Машины", "Cars", "Transport", 
+                                    "Автосалон (Новые авто)", "Бозор (Авто с пробегом)", "АВТОСАЛОН", "БОЗОР",
+                                    "Седан", "Внедорожник", "SUV", "Кроссовер", "Crossover", "Хэтчбек", "Hatchback", 
+                                    "Универсал", "Купе", "Coupe", "Кабриолет", "Минивэн", "Пикап", "Trucks", "Moto"
+                                ])];
                             } else if (catLower.includes('недвижимость') || catLower.includes('real estate')) {
-                                searchList = [...new Set([...searchList, "Квартиры", "Дома", "Новостройки", "Вторичное жильё", "Участки", "Коммерческая недвижимость", "Novostroyka", "Houses", "Apartment", "Real Estate", "НОВОСТРОЙКИ"])];
+                                searchList = [...new Set([...searchList, 
+                                    "Квартиры", "Дома", "Новостройки", "Вторичное жильё", "Участки", 
+                                    "Коммерческая недвижимость", "Novostroyka", "Houses", "Apartment", "Real Estate", 
+                                    "НОВОСТРОЙКИ", "Вторичка", "Аренда", "Участок"
+                                ])];
                             }
 
                             // Use OR with mode: 'insensitive' for each possible category name
@@ -156,8 +165,8 @@ class MarketplaceService {
 
         // --- JSON Filtering (Cars & Real Estate) ---
         const catLower = (category || "").toLowerCase();
-        const isAutoGroup = ["cars", "transport", "автомобили", "транспорт", "avtomobil", "avto", "с пробегом", "автосалон", "бозор", "moto"].some(s => catLower.includes(s));
-        const isRealEstateGroup = ["real estate", "apartments", "houses", "недвижимость", "uy", "joy", "новостройки", "вторичные", "вторичное жильё", "аренда", "участки"].some(s => catLower.includes(s));
+        const isAutoGroup = ["cars", "transport", "автомобили", "транспорт", "avtomobil", "avto", "с пробегом", "автосалон", "бозор", "moto", "машины", "седан", "sedan", "suv", "внедорожник"].some(s => catLower.includes(s));
+        const isRealEstateGroup = ["real estate", "apartments", "houses", "недвижимость", "uy", "joy", "новостройки", "вторичные", "вторичное жильё", "аренда", "участки", "вторичка", "квартира"].some(s => catLower.includes(s));
 
         if (isAutoGroup) {
             if (minYear || maxYear || minMileage || maxMileage || brand || (transmission && transmission !== 'Все') || (bodyType && bodyType !== 'Все')) {
