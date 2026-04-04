@@ -122,6 +122,7 @@ apiRouter.use('/settings', settingsRoutes);
 apiRouter.use('/support', supportRoutes);
 apiRouter.use('/centers', centersRoutes);
 apiRouter.use('/newsletter', newsletterRoutes);
+// Note: also mounted under /admin/newsletter below to match frontend admin calls
 apiRouter.use('/', contentRoutes); // Mount at root so /careers and /blog work as expected by the frontend
 // Auth routes (login/register/otp)
 try {
@@ -136,6 +137,7 @@ apiRouter.use('/upload', uploadRoutes);
 apiRouter.use('/seo', seoRoutes);
 apiRouter.use('/leads', leadsRoutes);
 apiRouter.use('/banners', bannerRoutes);
+apiRouter.use('/admin/newsletter', newsletterRoutes);
 
 // Catch-all for API 404s before it hits the SPA index.html fallback
 apiRouter.use((req, res) => {

@@ -11,14 +11,18 @@ export function AdminPartners() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        name: '',
         storeName: '',
         storeDescription: '',
-        storeColor: '#3b82f6'
+        storeColor: '#3b82f6',
+        businessCategory: '',
+        phone: '',
+        businessDescription: ''
     });
+    const [serviceSubcategories, setServiceSubcategories] = useState([]);
 
     useEffect(() => {
         loadPartners();
+        loadCategories();
     }, []);
 
     const loadPartners = async () => {
@@ -29,6 +33,20 @@ export function AdminPartners() {
             console.error('Failed to load partners:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const loadCategories = async () => {
+        try {
+            const categories = await api.getCategories();
+            const servicesCat = categories.find(c => 
+                ['услуги', 'services', 'xizmatlar'].includes(c.name.toLowerCase())
+            );
+            if (servicesCat && servicesCat.sub) {
+                setServiceSubcategories(servicesCat.sub);
+            }
+        } catch (error) {
+            console.error('Failed to load categories:', error);
         }
     };
 
@@ -73,7 +91,10 @@ export function AdminPartners() {
             name: partner.name || '',
             storeName: partner.storeName || '',
             storeDescription: partner.storeDescription || '',
-            storeColor: partner.storeColor || '#3b82f6'
+            storeColor: partner.storeColor || '#3b82f6',
+            businessCategory: partner.businessCategory || '',
+            phone: partner.phone || '',
+            businessDescription: partner.businessDescription || ''
         });
         setShowModal(true);
     };
@@ -86,7 +107,10 @@ export function AdminPartners() {
             name: '',
             storeName: '',
             storeDescription: '',
-            storeColor: '#3b82f6'
+            storeColor: '#3b82f6',
+            businessCategory: '',
+            phone: '',
+            businessDescription: ''
         });
     };
 
@@ -138,6 +162,7 @@ export function AdminPartners() {
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Партнер</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Категория</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Магазин</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Товары</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
@@ -155,6 +180,11 @@ export function AdminPartners() {
                                             <Mail className="h-4 w-4" />
                                             {partner.email}
                                         </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg border border-blue-100">
+                                            {partner.businessCategory || '—'}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-2">
@@ -260,6 +290,21 @@ export function AdminPartners() {
                                 />
                             </div>
 
+                            {/* Phone */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Номер телефона</label>
+                                <div className="relative">
+                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                    <input
+                                        type="tel"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="+998 90 123 45 67"
+                                    />
+                                </div>
+                            </div>
+
                             {/* Store Name */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Название Магазина</label>
@@ -305,6 +350,38 @@ export function AdminPartners() {
                                         placeholder="#3b82f6"
                                     />
                                 </div>
+                            </div>
+
+                            {/* Business Category (Specialization) */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Специализация (Категория услуг)
+                                </label>
+                                <select
+                                    value={formData.businessCategory}
+                                    onChange={(e) => setFormData({ ...formData, businessCategory: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="">Не выбрано (Общий партнер)</option>
+                                    {serviceSubcategories.map(sub => (
+                                        <option key={sub} value={sub}>{sub}</option>
+                                    ))}
+                                </select>
+                                <p className="text-xs text-gray-500 mt-1">Определяет, в каком подразделе «Услуг» появится специалист.</p>
+                            </div>
+
+                            {/* Business Description / About */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Описание услуг / О специалисте
+                                </label>
+                                <textarea
+                                    value={formData.businessDescription}
+                                    onChange={(e) => setFormData({ ...formData, businessDescription: e.target.value })}
+                                    rows={4}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Опишите опыт работы, квалификацию и предоставляемые услуги..."
+                                />
                             </div>
 
                             {/* Actions */}

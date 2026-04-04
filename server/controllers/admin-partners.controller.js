@@ -13,6 +13,9 @@ exports.getAllPartnerAccounts = asyncHandler(async (req, res) => {
             storeName: true,
             storeDescription: true,
             storeColor: true,
+            businessCategory: true,
+            phone: true,
+            businessDescription: true,
             createdAt: true,
             _count: {
                 select: { marketplaces: true }
@@ -26,7 +29,7 @@ exports.getAllPartnerAccounts = asyncHandler(async (req, res) => {
 
 // Create new partner account (admin only)
 exports.createPartnerAccount = asyncHandler(async (req, res) => {
-    const { email, password, name, storeName, storeDescription, storeColor } = req.body;
+    const { email, password, name, storeName, storeDescription, storeColor, businessCategory, phone, businessDescription } = req.body;
 
     // Validation
     if (!email || !password) {
@@ -51,13 +54,17 @@ exports.createPartnerAccount = asyncHandler(async (req, res) => {
             role: 'PARTNER',
             storeName: storeName || null,
             storeDescription: storeDescription || null,
-            storeColor: storeColor || '#3b82f6'
+            storeColor: storeColor || '#3b82f6',
+            businessCategory: businessCategory || null,
+            phone: phone || null,
+            businessDescription: businessDescription || null
         },
         select: {
             id: true,
             email: true,
             name: true,
-            storeName: true,
+            phone: true,
+            businessCategory: true,
             createdAt: true
         }
     });
@@ -68,7 +75,7 @@ exports.createPartnerAccount = asyncHandler(async (req, res) => {
 // Update partner account (admin only)
 exports.updatePartnerAccount = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { email, password, name, storeName, storeDescription, storeColor } = req.body;
+    const { email, password, name, storeName, storeDescription, storeColor, businessCategory, phone, businessDescription } = req.body;
 
     // Check if partner exists
     const partner = await prisma.user.findUnique({ where: { id } });
@@ -88,9 +95,12 @@ exports.updatePartnerAccount = asyncHandler(async (req, res) => {
     const updateData = {};
     if (email) updateData.email = email;
     if (name) updateData.name = name;
+    if (phone !== undefined) updateData.phone = phone;
     if (storeName !== undefined) updateData.storeName = storeName;
     if (storeDescription !== undefined) updateData.storeDescription = storeDescription;
     if (storeColor) updateData.storeColor = storeColor;
+    if (businessCategory !== undefined) updateData.businessCategory = businessCategory;
+    if (businessDescription !== undefined) updateData.businessDescription = businessDescription;
 
     // Hash new password if provided
     if (password) {
@@ -107,7 +117,10 @@ exports.updatePartnerAccount = asyncHandler(async (req, res) => {
             name: true,
             storeName: true,
             storeDescription: true,
-            storeColor: true
+            storeColor: true,
+            businessCategory: true,
+            businessDescription: true,
+            phone: true
         }
     });
 

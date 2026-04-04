@@ -8,7 +8,8 @@ export function SuperAdminFinance() {
     const [stats, setStats] = useState({
         totalRevenue: 0,
         platformCommission: 0,
-        pendingPayouts: 0,
+        totalLiquidity: 0,
+        escrowVolume: 0,
         chartData: []
     });
     const [pendingDeposits, setPendingDeposits] = useState([]);
@@ -26,7 +27,8 @@ export function SuperAdminFinance() {
             setStats(financeStats || {
                 totalRevenue: 0,
                 platformCommission: 0,
-                pendingPayouts: 0,
+                totalLiquidity: 0,
+                escrowVolume: 0,
                 chartData: []
             });
             setPendingDeposits(deposits || []);
@@ -89,7 +91,7 @@ export function SuperAdminFinance() {
             <div className="grid gap-4 md:grid-cols-3">
                 <Card title="Общий Оборот" value={stats.totalRevenue} icon={DollarSign} color="text-blue-600" bg="bg-blue-50" />
                 <Card title="Доход Платформы (5%)" value={stats.platformCommission} icon={ArrowUpRight} color="text-emerald-600" bg="bg-emerald-50" />
-                <Card title="Ожидают Выплаты" value={stats.pendingPayouts} icon={ArrowDownLeft} color="text-orange-600" bg="bg-orange-50" />
+                <Card title="Общая Ликвидность" value={stats.totalLiquidity} icon={ArrowDownLeft} color="text-orange-600" bg="bg-orange-50" />
             </div>
 
             {/* Pending Deposits Table */}
@@ -150,7 +152,9 @@ function Card({ title, value, icon: Icon, color, bg }) {
             <div className="flex items-center justify-between">
                 <div>
                     <p className="text-sm font-bold text-slate-500">{title}</p>
-                    <h2 className="text-2xl font-black mt-1 text-slate-900">{value.toLocaleString()} Sum</h2>
+                    <h2 className="text-2xl font-black mt-1 text-slate-900">
+                        {(Number(value) || 0).toLocaleString()} Sum
+                    </h2>
                 </div>
                 <div className={`p-3 rounded-xl ${bg} ${color}`}>
                     <Icon size={24} />
