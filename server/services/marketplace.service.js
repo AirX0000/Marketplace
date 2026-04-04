@@ -35,62 +35,62 @@ class MarketplaceService {
             
             if (effectiveCategory.includes(',')) {
                 // If the frontend sends a CSV of categories
-                const categories = effectiveCategory.split(',').map(c => c.trim());
-                andConditions.push({
-                    OR: categories.map(cat => ({ category: { equals: cat, mode: 'insensitive' } }))
-                });
-            } else {
-                // If it's a single category, check if it's a "Parent" category with subcategories
-                try {
-                    let dbCategory = await prisma.category.findFirst({
-                        where: { name: { equals: effectiveCategory, mode: 'insensitive' } }
+                const categories = effectiveCategory.split(',').map(c => c.trim()).filter(Boolean);
+                if (categories.length > 0) {
+                    andConditions.push({
+                        OR: categories.map(cat => ({ category: { equals: cat, mode: 'insensitive' } }))
                     });
+                }
+            } else {
+                // Single category processing
+                try {
+                    // Pre-check for known groups to optimize
+                    const catLowerParams = effectiveCategory.toLowerCase();
+                    const isTransportQuery = ["транспорт", "transport", "машины", "cars", "авто", "avto", "седан", "sedan", "suv", "внедорожник", "кроссовер"].some(s => catLowerParams.includes(s));
+                    const isRealEstateQuery = ["недвижимость", "real estate", "квартира", "дом", "участок", "новостройка", "вторичка"].some(s => catLowerParams.includes(s));
 
-                    // Reverse lookup: If name not found, check if it exists within subcategories of any parent
-                    if (!dbCategory) {
-                        const allCats = await prisma.category.findMany();
-                        dbCategory = allCats.find(c => {
+                    let searchList = [effectiveCategory];
+
+                    // Expansion for Transport
+                    if (isTransportQuery) {
+                        searchList = [...new Set([
+                            ...searchList, "Транспорт", "Transport", "Машины", "Cars", "Автомобили",
+                            "Бозор (Авто с пробегом)", "Автосалон (Новые авто)", "Седан", "Внедорожник", 
+                            "SUV", "Кроссовер", "Хэтчбек", "Универсал", "Купе", "Кабриолет", "Минивэн", "Пикап", "Trucks", "Moto"
+                        ])];
+                    } 
+                    // Expansion for Real Estate
+                    else if (isRealEstateQuery) {
+                        searchList = [...new Set([
+                            ...searchList, "Недвижимость", "Real Estate", "Квартиры", "Дома", "Новостройки", 
+                            "Вторичное жильё", "Участки", "Коммерческая недвижимость", "Вторичка", "Аренда"
+                        ])];
+                    }
+                    // Generic DB Lookup for other categories (e.g. Electronics, Services)
+                    else {
+                        const dbCategory = await prisma.category.findFirst({
+                            where: { name: { equals: effectiveCategory, mode: 'insensitive' } }
+                        });
+                        if (dbCategory && dbCategory.subcategories) {
                             try {
-                                const subs = JSON.parse(c.subcategories || "[]");
-                                return Array.isArray(subs) && subs.some(s => s.toLowerCase() === effectiveCategory.toLowerCase());
-                            } catch (e) { return false; }
+                                const subCats = JSON.parse(dbCategory.subcategories);
+                                if (Array.isArray(subCats)) {
+                                    searchList = [...new Set([dbCategory.name, ...subCats])];
+                                }
+                            } catch (e) {}
+                        }
+                    }
+
+                    // Apply the final OR filter
+                    if (searchList.length > 0) {
+                        andConditions.push({
+                            OR: searchList.filter(s => typeof s === 'string').map(cat => ({ 
+                                category: { equals: cat, mode: 'insensitive' } 
+                            }))
                         });
                     }
-
-                    if (dbCategory && dbCategory.subcategories) {
-                        try {
-                            const subCats = JSON.parse(dbCategory.subcategories);
-                            let searchList = Array.isArray(subCats) ? [dbCategory.name, ...subCats] : [dbCategory.name];
-                            
-                            // Add common variations/keywords for broad matching
-                            const catLower = dbCategory.name.toLowerCase();
-                            if (catLower.includes('транспорт') || catLower.includes('transport')) {
-                                searchList = [...new Set([...searchList, 
-                                    "Автосалон", "Бозор", "С пробегом", "Машины", "Cars", "Transport", 
-                                    "Автосалон (Новые авто)", "Бозор (Авто с пробегом)", "АВТОСАЛОН", "БОЗОР",
-                                    "Седан", "Внедорожник", "SUV", "Кроссовер", "Crossover", "Хэтчбек", "Hatchback", 
-                                    "Универсал", "Купе", "Coupe", "Кабриолет", "Минивэн", "Пикап", "Trucks", "Moto"
-                                ])];
-                            } else if (catLower.includes('недвижимость') || catLower.includes('real estate')) {
-                                searchList = [...new Set([...searchList, 
-                                    "Квартиры", "Дома", "Новостройки", "Вторичное жильё", "Участки", 
-                                    "Коммерческая недвижимость", "Novostroyka", "Houses", "Apartment", "Real Estate", 
-                                    "НОВОСТРОЙКИ", "Вторичка", "Аренда", "Участок"
-                                ])];
-                            }
-
-                            // Use OR with mode: 'insensitive' for each possible category name
-                            andConditions.push({
-                                OR: searchList.map(cat => ({ category: { equals: cat, mode: 'insensitive' } }))
-                            });
-                        } catch (e) {
-                            andConditions.push({ category: { equals: effectiveCategory, mode: 'insensitive' } });
-                        }
-                    } else {
-                        andConditions.push({ category: { equals: effectiveCategory, mode: 'insensitive' } });
-                    }
                 } catch (err) {
-                    // Fallback to exact match on error
+                    console.error("Category expansion error:", err);
                     andConditions.push({ category: { equals: effectiveCategory, mode: 'insensitive' } });
                 }
             }
