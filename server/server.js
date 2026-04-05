@@ -54,20 +54,20 @@ if (process.env.DATABASE_URL) {
 const app = express();
 const PORT = process.env.PORT || 3000; // Use DO provided port, fallback to 3000
 
-// Auto-sync DB schema on startup (production safe: idempotent prisma db push)
+// Auto-sync DB schema on startup (non-blocking, production only)
 if (process.env.NODE_ENV === 'production') {
-    const { execSync } = require('child_process');
-    try {
-        console.log('[DB] Syncing schema with database...');
-        execSync('npx prisma db push --accept-data-loss --skip-generate', {
-            cwd: __dirname,
-            stdio: 'pipe',
-            timeout: 30000
-        });
-        console.log('[DB] ✅ Schema synced successfully');
-    } catch (e) {
-        console.warn('[DB] ⚠️ Schema sync warning (non-fatal):', e.message?.slice(0, 200));
-    }
+    const { exec } = require('child_process');
+    exec('npx prisma db push --accept-data-loss --skip-generate', {
+        cwd: __dirname,
+        timeout: 60000,
+        env: { ...process.env }
+    }, (err, stdout, stderr) => {
+        if (err) {
+            console.warn('[DB] Schema sync warning (non-fatal):', err.message?.slice(0, 150));
+        } else {
+            console.log('[DB] ✅ Schema synced');
+        }
+    });
 }
 
 
