@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { Package, Truck, CheckCircle, Clock } from 'lucide-react';
 import { getImageUrl } from '../../lib/utils';
+import toast from 'react-hot-toast';
 
 export function PartnerOrders() {
     const [orders, setOrders] = useState([]);
@@ -27,7 +28,7 @@ export function PartnerOrders() {
             await api.updateOrderStatus(orderId, newStatus);
             setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
         } catch (error) {
-            alert("Не удалось обновить статус: " + error.message);
+            toast.error('Не удалось обновить статус: ' + error.message);
         }
     };
 

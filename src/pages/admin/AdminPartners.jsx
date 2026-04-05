@@ -73,7 +73,7 @@ export function AdminPartners() {
             resetForm();
             loadPartners();
         } catch (error) {
-            alert(error.message || 'Failed to save partner');
+            toast.error(error.message || 'Ошибка сохранения партнера');
         }
     };
 
@@ -84,7 +84,7 @@ export function AdminPartners() {
             await api.fetchAPI(`/admin/partners/${id}`, { method: 'DELETE' });
             loadPartners();
         } catch (error) {
-            alert('Failed to delete partner');
+            toast.error('Ошибка удаления партнера');
         }
     };
 

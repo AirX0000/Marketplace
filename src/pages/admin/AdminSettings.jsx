@@ -4,6 +4,7 @@ import { Plus, Trash2, Save, X, Settings, Globe, FolderTree, User, Mail, Camera,
 import { useShop } from '../../context/ShopContext';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../lib/utils';
+import toast from 'react-hot-toast';
 
 export function AdminSettings() {
     const [activeTab, setActiveTab] = useState('regions'); // regions, categories, profile, payments
@@ -101,10 +102,9 @@ function PaymentManager() {
         setLoading(true);
         try {
             await api.updateSettings(settings);
-            alert("Настройки сохранены!");
-        } catch (error) {
-            console.error(error);
-            alert("Ошибка сохранения настроек");
+            toast.success('Настройки сохранены!');
+        } catch (e) {
+            toast.error('Ошибка сохранения настроек');
         } finally {
             setLoading(false);
         }
@@ -348,7 +348,7 @@ function RegionManager() {
             setNewRegion("");
             load();
         } catch (error) {
-            alert("Ошибка добавления региона");
+            toast.error('Ошибка добавления региона');
         }
     };
 
@@ -366,7 +366,7 @@ function RegionManager() {
             load();
         } catch (error) {
             console.error("Delete failed:", error);
-            alert("Ошибка удаления: " + error.message);
+            toast.error('Ошибка удаления: ' + error.message);
         }
     };
 
@@ -447,7 +447,7 @@ function CategoryManager() {
             setEditingId(null);
             load();
         } catch (error) {
-            alert("Ошибка " + (editingId ? "обновления" : "добавления") + " категории");
+            toast.error('Ошибка ' + (editingId ? 'обновления' : 'добавления') + ' категории');
         }
     };
 
@@ -469,7 +469,7 @@ function CategoryManager() {
             setDeleteConfirm(null);
             load();
         } catch (error) {
-            alert("Ошибка удаления: " + error.message);
+            toast.error('Ошибка удаления: ' + error.message);
         }
     };
 
@@ -735,20 +735,20 @@ function BannerManager() {
             const data = await api.uploadImage(file);
             setForm(prev => ({ ...prev, imageUrl: data.url }));
         } catch (e) {
-            alert("Ошибка загрузки");
+            toast.error('Ошибка загрузки');
         } finally {
             setUploading(false);
         }
     };
 
     const handleCreate = async () => {
-        if (!form.imageUrl) return alert("Выберите изображение");
+        if (!form.imageUrl) { toast.error('Выберите изображение'); return; }
         try {
             await api.createBanner(form);
             setForm({ title: '', imageUrl: '', link: '', order: 0 });
             load();
         } catch (e) {
-            alert("Ошибка создания");
+            toast.error('Ошибка создания');
         }
     };
 
@@ -758,7 +758,7 @@ function BannerManager() {
             await api.deleteBanner(id);
             load();
         } catch (e) {
-            alert("Ошибка удаления");
+            toast.error('Ошибка удаления');
         }
     };
 
@@ -767,7 +767,7 @@ function BannerManager() {
             await api.updateBanner(banner.id, { isActive: !banner.isActive });
             load();
         } catch (e) {
-            alert("Ошибка изменения статуса");
+            toast.error('Ошибка изменения статуса');
         }
     };
 

@@ -42,27 +42,27 @@ export function MyGarage() {
             setCars([addedCar, ...cars]);
             setIsAddModalOpen(false);
             setNewCar({ brand: '', model: '', year: new Date().getFullYear(), plateNumber: '', vin: '' });
-            toast.success("Vehicle added to garage!");
+            toast.success('Автомобиль добавлен в гараж!');
         } catch (error) {
             console.error('Failed to add car:', error);
-            toast.error('Error adding vehicle');
+            toast.error('Ошибка добавления автомобиля');
         }
     };
 
     const handleDeleteCar = async (id) => {
-        if (!confirm('Are you sure you want to remove this vehicle?')) return;
+        if (!confirm('Вы уверены, что хотите удалить это авто?')) return;
         try {
             await api.deleteGarageCar(id);
             setCars(cars.filter(car => car.id !== id));
-            toast.success("Vehicle removed!");
+            toast.success('Автомобиль удалён!');
         } catch (error) {
             console.error('Failed to delete car:', error);
-            toast.error('Error removing vehicle');
+            toast.error('Ошибка удаления автомобиля');
         }
     };
 
     if (loading) {
-        return <div className="p-12 text-center text-slate-500 animate-pulse font-bold">Loading Garage Studio...</div>;
+        return <div className="p-12 text-center text-slate-500 animate-pulse font-bold">Загрузка гаража...</div>;
     }
 
     return (
@@ -99,7 +99,7 @@ export function MyGarage() {
 
                     <div className="flex justify-between items-end relative z-10">
                         <div>
-                            <div className="text-5xl font-black text-white tracking-tight">15,450,000</div>
+                            <div className="text-5xl font-black text-white tracking-tight">0</div>
                             <div className="text-indigo-100/70 text-sm font-bold mt-2 uppercase tracking-widest">UZS</div>
                         </div>
                         <button className="bg-white text-[#4F46E5] hover:bg-indigo-50 px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-[0_10px_20px_rgba(0,0,0,0.1)] active:scale-95 uppercase tracking-wider">
@@ -144,7 +144,7 @@ export function MyGarage() {
                             {/* Car Image Area */}
                             <div className="sm:w-2/5 aspect-[4/3] sm:aspect-auto bg-[#13111C] relative overflow-hidden">
                                 <img
-                                    src={getImageUrl(car.image) || "https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?q=80&w=1000&auto=format&fit=crop"}
+                                    src={"https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?q=80&w=1000&auto=format&fit=crop"}
                                     alt={car.model}
                                     className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-1000 group-hover:opacity-100"
                                 />

@@ -4,6 +4,7 @@ import { api } from '../lib/api';
 import { User, Mail, Phone, Save, Camera, Settings, Check, AlertCircle, Building2, MapPin, Trash2, Plus, Bell, BellRing } from 'lucide-react';
 import { TopUpModal } from '../components/TopUpModal';
 import { getImageUrl } from '../lib/utils';
+import toast from 'react-hot-toast';
 
 export function ProfileSettingsPage() {
     const [profile, setProfile] = useState({ name: '', email: '', avatar: '', role: 'USER' });
@@ -27,7 +28,7 @@ export function ProfileSettingsPage() {
 
     const handleTogglePush = async () => {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-            alert('Ваш браузер не поддерживает Push уведомления.');
+            toast.error('Ваш браузер не поддерживает Push уведомления.');
             return;
         }
         
@@ -133,17 +134,17 @@ export function ProfileSettingsPage() {
             setAddressModalOpen(false);
             setNewAddress({ name: '', fullName: '', phone: '', city: '', street: '', details: '', isDefault: false });
         } catch (error) {
-            alert("Ошибка добавления адреса");
+            toast.error('Ошибка добавления адреса');
         }
     };
 
     const handleDeleteAddress = async (id) => {
-        if (!confirm("Удалить этот адрес?")) return;
+        if (!confirm('Удалить этот адрес?')) return;
         try {
             await api.deleteAddress(id);
             setAddresses(addresses.filter(a => a.id !== id));
         } catch (error) {
-            alert("Ошибка удаления");
+            toast.error('Ошибка удаления адреса');
         }
     };
 
@@ -190,12 +191,12 @@ export function ProfileSettingsPage() {
         try {
             const res = await api.transfer(recipientId, Number(transferAmount));
             setProfile(prev => ({ ...prev, balance: res.balance }));
-            alert(`Успешно переведено ${transferAmount} сум пользователю ${recipientId}`);
+            toast.success(`Успешно переведено ${transferAmount} сум пользователю ${recipientId}`);
             setTransferModalOpen(false);
             setRecipientId('');
             setTransferAmount('');
         } catch (error) {
-            alert(error.message || "Ошибка перевода");
+            toast.error(error.message || 'Ошибка перевода');
         }
     };
 

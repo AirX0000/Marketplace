@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import toast from 'react-hot-toast';
 import { Package, Calendar, ChevronRight, CreditCard, Truck, ShieldCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { OrderTimeline } from '../components/OrderTimeline';
@@ -197,10 +198,10 @@ export function OrderHistoryPage() {
                                             if (window.confirm('Вы подтверждаете, что получили товар и претензий не имеете? Средства будут отправлены продавцу.')) {
                                                 try {
                                                     await api.confirmOrderReceipt(order.id);
-                                                    alert('Спасибо! Сделка завершена.');
+                                                    toast.success('Спасибо! Сделка завершена.');
                                                     window.location.reload();
                                                 } catch (e) {
-                                                    alert('Ошибка: ' + e.message);
+                                                    toast.error('Ошибка: ' + e.message);
                                                 }
                                             }
                                         }}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export function AdminPageEditor() {
     const { slug } = useParams();
@@ -43,10 +44,10 @@ export function AdminPageEditor() {
         setSaving(true);
         try {
             await api.updatePage(slug, { title, content });
-            alert("Сохранено!");
+            toast.success('Страница сохранена!');
         } catch (e) {
             console.error(e);
-            alert("Ошибка сохранения: " + e.message);
+            toast.error('Ошибка сохранения: ' + e.message);
         } finally {
             setSaving(false);
         }
