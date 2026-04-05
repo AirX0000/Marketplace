@@ -31,17 +31,22 @@ export default defineConfig({
         ]
       },
       workbox: {
+        // Immediately activate new SW and claim all clients
+        // This prevents stale chunk errors after deploys
+        skipWaiting: true,
+        clientsClaim: true,
         navigateFallback: '/index.html',
         navigateFallbackAllowlist: [/^(?!\/__).*/],
+        // Never cache /assets/ via navigateFallback — let the real 404 show
         navigateFallbackDenylist: [/^\/assets\//, /\.(js|css|png|jpg|jpeg|svg|gif|ico|webp|woff|woff2)$/],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
-            urlPattern: /^\/(api|uploads)\/.*/i,
+            urlPattern: /^\/(?:api|uploads)\/.*/i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-cache-v2',
+              cacheName: 'api-cache-v3',
               expiration: {
                 maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24 // 24 hours
