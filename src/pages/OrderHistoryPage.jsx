@@ -6,8 +6,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { OrderTimeline } from '../components/OrderTimeline';
 import { CreateReturnModal } from '../components/CreateReturnModal';
 import { getImageUrl } from '../lib/utils';
+import { useShop } from '../context/ShopContext';
+import { useConfirm } from '../components/ui/ConfirmDialog';
 
 export function OrderHistoryPage() {
+    const confirmAction = useConfirm();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [returnItem, setReturnItem] = useState(null);
@@ -195,7 +198,8 @@ export function OrderHistoryPage() {
                                 {['PAID', 'SHIPPED', 'ESCROW_HOLD'].includes(order.status) && (
                                     <button
                                         onClick={async () => {
-                                            if (window.confirm('Вы подтверждаете, что получили товар и претензий не имеете? Средства будут отправлены продавцу.')) {
+                                            const ok = await confirmAction('Вы подтверждаете, что получили товар и претензий не имеете? Средства будут отправлены продавцу.', { title: 'Подтверждение получения' });
+                                            if (ok) {
                                                 try {
                                                     await api.confirmOrderReceipt(order.id);
                                                     toast.success('Спасибо! Сделка завершена.');

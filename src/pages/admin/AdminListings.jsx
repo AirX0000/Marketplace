@@ -6,7 +6,10 @@ import { Link } from 'react-router-dom';
 import { ListingModal } from '../../components/dashboard/ListingModal';
 import { toast } from 'react-hot-toast';
 import { getImageUrl } from '../../lib/utils';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
+
 export function AdminListings() {
+    const confirm = useConfirm();
     const { user } = useShop();
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -45,7 +48,8 @@ export function AdminListings() {
     }
 
     const handleDelete = async (id) => {
-        if (confirm("Вы уверены, что хотите удалить этот товар?")) {
+        const ok = await confirm("Вы уверены, что хотите удалить этот товар?", { title: 'Удалить товар' });
+        if (ok) {
             try {
                 await api.deleteAdminListing(id);
                 setListings(listings.filter(l => l.id !== id));
@@ -127,7 +131,8 @@ export function AdminListings() {
             ? `Вы уверены, что хотите удалить ${selectedItems.length} товаров?`
             : `Вы уверены, что хотите ${action === 'APPROVED' ? 'одобрить' : 'отклонить'} ${selectedItems.length} товаров?`;
             
-        if (!confirm(confirmMsg)) return;
+        const ok = await confirm(confirmMsg, { title: 'Массовое действие' });
+        if (!ok) return;
 
         const loadingToast = toast.loading("Выполнение...");
         

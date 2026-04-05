@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { Plus, Edit2, Trash2, X } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function AdminCareers() {
+    const confirm = useConfirm();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -43,17 +46,18 @@ export function AdminCareers() {
             await loadJobs();
             closeModal();
         } catch (error) {
-            alert("Ошибка сохранения вакансии");
+            toast.error('Ошибка сохранения вакансии');
         }
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Удалить эту вакансию?')) return;
+        const ok = await confirm('Вы уверены, что хотите удалить эту вакансию?', { title: 'Удалить вакансию' });
+        if (!ok) return;
         try {
             await api.deleteCareer(id);
             await loadJobs();
         } catch (error) {
-            alert("Ошибка удаления");
+            toast.error('Ошибка удаления вакансии');
         }
     };
 

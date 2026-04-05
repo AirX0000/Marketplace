@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { Plus, Edit2, Trash2, X, Eye } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function AdminBlog() {
+    const confirm = useConfirm();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -42,17 +45,18 @@ export function AdminBlog() {
             await loadPosts();
             closeModal();
         } catch (error) {
-            alert("Ошибка сохранения статьи");
+            toast.error('Ошибка сохранения статьи');
         }
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Удалить эту статью?')) return;
+        const ok = await confirm('Вы уверены, что хотите удалить эту статью?', { title: 'Удалить статью' });
+        if (!ok) return;
         try {
             await api.deleteBlogPost(id);
             await loadPosts();
         } catch (error) {
-            alert("Ошибка удаления");
+            toast.error('Ошибка удаления статьи');
         }
     };
 

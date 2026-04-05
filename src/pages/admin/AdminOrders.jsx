@@ -3,8 +3,10 @@ import { api } from '../../lib/api';
 import { useShop } from '../../context/ShopContext';
 import { Package, Search, Truck, CreditCard, CheckCircle, Loader2, Phone, MessageCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function AdminOrders() {
+    const confirm = useConfirm();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -146,7 +148,8 @@ export function AdminOrders() {
                                                 <button
                                                     disabled={confirming === item.order.id}
                                                     onClick={async () => {
-                                                        if (!window.confirm('Подтвердить сделку? Деньги будут переведены на ваш баланс.')) return;
+                                                        const ok = await confirm('Подтвердить сделку? Деньги будут переведены на ваш баланс.', { title: 'Подтверждение сделки' });
+                                                        if (!ok) return;
                                                         setConfirming(item.order.id);
                                                         try {
                                                             await api.sellerConfirmOrder(item.order.id);
@@ -264,7 +267,8 @@ export function AdminOrders() {
                                 <button
                                     disabled={confirming === item.order.id}
                                     onClick={async () => {
-                                        if (!confirm('Подтвердить сделку? Деньги будут переведены на ваш баланс.')) return;
+                                        const ok = await confirm('Подтвердить сделку? Деньги будут переведены на ваш баланс.', { title: 'Подтверждение сделки' });
+                                        if (!ok) return;
                                         setConfirming(item.order.id);
                                         try {
                                             await api.sellerConfirmOrder(item.order.id);

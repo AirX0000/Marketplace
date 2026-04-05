@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, ArrowRight, Trash2 } from 'lucide-react';
 import { getImageUrl } from '../lib/utils';
+import { useConfirm } from '../components/ui/ConfirmDialog';
 
 export function HistoryPage() {
+    const confirm = useConfirm();
     const [history, setHistory] = useState([]);
 
     useEffect(() => {
@@ -17,8 +19,9 @@ export function HistoryPage() {
         }
     }, []);
 
-    const clearHistory = () => {
-        if (confirm('Очистить историю просмотров?')) {
+    const clearHistory = async () => {
+        const ok = await confirm('Очистить историю просмотров?', { title: 'Очистить историю' });
+        if (ok) {
             localStorage.removeItem('recentlyViewed');
             setHistory([]);
         }

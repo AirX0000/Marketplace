@@ -4,8 +4,10 @@ import { Car, Plus, Fuel, AlertTriangle, Shield, CreditCard, X, HandCoins, Trash
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { api } from '../../lib/api';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function MyGarage() {
+    const confirm = useConfirm();
     const [cars, setCars] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -50,7 +52,8 @@ export function MyGarage() {
     };
 
     const handleDeleteCar = async (id) => {
-        if (!confirm('Вы уверены, что хотите удалить это авто?')) return;
+        const ok = await confirm('Вы уверены, что хотите удалить это авто?', { title: 'Удалить авто' });
+        if (!ok) return;
         try {
             await api.deleteGarageCar(id);
             setCars(cars.filter(car => car.id !== id));

@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { Building2, Users as UsersIcon, Package, TrendingUp, Edit2, Trash2, Lock, Unlock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function AdminCompanies() {
+    const confirmAction = useConfirm();
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
@@ -73,7 +75,8 @@ export function AdminCompanies() {
 
     const handleBlockToggle = async (id, isBlocked, name) => {
         const action = isBlocked ? "отключение" : "активация";
-        if (!confirm(`Вы уверены, что хотите ${isBlocked ? 'отключить' : 'активировать'} компанию "${name}"?`)) return;
+        const ok = await confirmAction(`Вы уверены, что хотите ${isBlocked ? 'отключить' : 'активировать'} компанию "${name}"?`, { title: 'Статус компании' });
+        if (!ok) return;
 
         // Optimistic update
         setCompanies(prev => prev.map(c => c.id === id ? { ...c, isBlocked } : c));
@@ -91,7 +94,9 @@ export function AdminCompanies() {
     };
 
     const handleDelete = async (companyId, name) => {
-        if (window.confirm(`Вы уверены, что хотите УДАЛИТЬ компанию "${name}"?\n\nЭто действие необратимо! Если у компании есть заказы или товары с продажами, удаление будет невозможно.`)) {
+        const message = `Вы уверены, что хотите УДАЛИТЬ компанию "${name}"?\n\nЭто действие необратимо! Если у компании есть заказы или товары с продажами, удаление будет невозможно.`;
+        const ok = await confirmAction(message, { title: 'Удалить компанию' });
+        if (ok) {
             const loadingToast = toast.loading("Удаление компании...");
             try {
                 await api.deleteUser(companyId); // Partners are Users

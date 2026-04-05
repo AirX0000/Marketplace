@@ -5,6 +5,7 @@ import { useShop } from '../../context/ShopContext';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../lib/utils';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function AdminSettings() {
     const [activeTab, setActiveTab] = useState('regions'); // regions, categories, profile, payments
@@ -550,6 +551,7 @@ function CategoryManager() {
 }
 
 function ProfileSettings() {
+    const confirmAction = useConfirm();
     const { logout } = useShop();
     const navigate = useNavigate();
     const [profile, setProfile] = useState({ name: '', email: '', avatar: '' });
@@ -605,8 +607,9 @@ function ProfileSettings() {
         }
     };
 
-    const handleLogout = () => {
-        if (confirm("Вы действительно хотите выйти?")) {
+    const handleLogout = async () => {
+        const ok = await confirmAction("Вы действительно хотите выйти?", { title: 'Выход' });
+        if (ok) {
             logout();
             navigate('/login');
         }
@@ -718,6 +721,7 @@ function ProfileSettings() {
 }
 
 function BannerManager() {
+    const confirmAction = useConfirm();
     const [banners, setBanners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
@@ -753,7 +757,8 @@ function BannerManager() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm("Удалить баннер?")) return;
+        const ok = await confirmAction("Удалить баннер?", { title: 'Удалить баннер' });
+        if (!ok) return;
         try {
             await api.deleteBanner(id);
             load();

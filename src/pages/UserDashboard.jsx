@@ -15,11 +15,13 @@ import { useShop } from '../context/ShopContext';
 import { api } from '../lib/api';
 import { getImageUrl } from '../lib/utils';
 import { notify } from '../lib/notify';
+import { useConfirm } from '../components/ui/ConfirmDialog';
 
 import { AutohousePayDashboard } from './fintech/AutohousePayDashboard';
 
 export function UserDashboard() {
     const { user, logout, isAdmin } = useShop();
+    const confirmAction = useConfirm();
     const navigate = useNavigate();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState(() => {
@@ -142,7 +144,8 @@ export function UserDashboard() {
     };
 
     const confirmEscrowDelivery = async (orderId) => {
-        if (!window.confirm('Вы уверены, что получили товар? Средства будут безвозвратно переведены продавцу.')) return;
+        const ok = await confirmAction('Вы уверены, что получили товар? Средства будут безвозвратно переведены продавцу.', { title: 'Подтверждение получения' });
+        if (!ok) return;
         try {
             await api.confirmOrderReceipt(orderId);
             notify.success('Получение подтверждено! Сделка завершена.');
@@ -152,8 +155,9 @@ export function UserDashboard() {
         }
     };
 
-    const removeAddress = (id) => {
-        if (confirm('Удалить этот адрес?')) {
+    const removeAddress = async (id) => {
+        const ok = await confirmAction('Удалить этот адрес?', { title: 'Удалить адрес' });
+        if (ok) {
             setProfileData(prev => ({
                 ...prev,
                 addresses: prev.addresses.filter(a => a.id !== id)

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Activity, Users, ArrowUpRight, ArrowDownLeft, Search, CheckCircle, AlertOctagon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { api } from '../../lib/api';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function AdminAutohousePay() {
+    const confirm = useConfirm();
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('overview'); // overview, escrow, transactions
     
@@ -49,7 +51,8 @@ export function AdminAutohousePay() {
 
     const handleResolveDispute = async (transactionId, resolution) => {
         const actionText = resolution === 'SELLER' ? 'продавца' : 'покупателя';
-        if (!window.confirm(`Вы уверены, что хотите перевести средства в пользу ${actionText}?`)) return;
+        const ok = await confirm(`Вы уверены, что хотите перевести средства в пользу ${actionText}?`, { title: 'Разрешение спора' });
+        if (!ok) return;
         
         try {
             const action = resolution === 'SELLER' ? 'RELEASE' : 'REFUND';

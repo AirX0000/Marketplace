@@ -4,8 +4,10 @@ import { useShop } from '../context/ShopContext';
 import { Star, Send, Trash2, User as UserIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getImageUrl } from '../lib/utils';
+import { useConfirm } from '../components/ui/ConfirmDialog';
 
 export function ReviewSection({ marketplaceId }) {
+    const confirm = useConfirm();
     const { user } = useShop();
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -50,7 +52,8 @@ export function ReviewSection({ marketplaceId }) {
     };
 
     const handleDelete = async (reviewId) => {
-        if (!window.confirm("Удалить отзыв?")) return;
+        const ok = await confirm("Удалить отзыв?", { title: 'Удаление отзыва' });
+        if (!ok) return;
         try {
             await api.deleteReview(reviewId);
             setReviews(reviews.filter(r => r.id !== reviewId));

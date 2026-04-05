@@ -3,8 +3,10 @@ import { api } from '../../lib/api';
 import { MapPin, Plus, Trash2, Loader2, Store, Navigation, Search, X, Edit2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import AddressMap from '../../components/ui/AddressMap';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export default function AdminCenters() {
+    const confirm = useConfirm();
     const [centers, setCenters] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isCreating, setIsCreating] = useState(false);
@@ -81,7 +83,8 @@ export default function AdminCenters() {
     };
 
     const handleDelete = async (id, name) => {
-        if (!window.confirm(`Вы уверены, что хотите удалить точку "${name}"?`)) return;
+        const ok = await confirm(`Вы уверены, что хотите удалить точку "${name}"?`, { title: 'Удалить точку' });
+        if (!ok) return;
         try {
             await api.deleteCenter(id);
             toast.success("Точка удалена");

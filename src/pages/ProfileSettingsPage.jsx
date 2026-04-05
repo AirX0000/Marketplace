@@ -5,8 +5,10 @@ import { User, Mail, Phone, Save, Camera, Settings, Check, AlertCircle, Building
 import { TopUpModal } from '../components/TopUpModal';
 import { getImageUrl } from '../lib/utils';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../components/ui/ConfirmDialog';
 
 export function ProfileSettingsPage() {
+    const confirm = useConfirm();
     const [profile, setProfile] = useState({ name: '', email: '', avatar: '', role: 'USER' });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -139,7 +141,8 @@ export function ProfileSettingsPage() {
     };
 
     const handleDeleteAddress = async (id) => {
-        if (!confirm('Удалить этот адрес?')) return;
+        const ok = await confirm('Удалить этот адрес?', { title: 'Удалить адрес' });
+        if (!ok) return;
         try {
             await api.deleteAddress(id);
             setAddresses(addresses.filter(a => a.id !== id));

@@ -6,6 +6,7 @@ import { ShopProvider } from './context/ShopContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ModalProvider } from './context/ModalContext';
+import { ConfirmProvider } from './components/ui/ConfirmDialog';
 import { OfflinePage } from './pages/OfflinePage';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -105,6 +106,7 @@ function App() {
           <ShopProvider>
             <NotificationProvider>
               <ModalProvider>
+                <ConfirmProvider>
                 <CompareProvider>
                 <Toaster />
                 <Router basename="/">
@@ -227,6 +229,7 @@ function App() {
                   </div>
                 </Router>
                 </CompareProvider>
+                </ConfirmProvider>
               </ModalProvider>
             </NotificationProvider>
           </ShopProvider>

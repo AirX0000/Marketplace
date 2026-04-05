@@ -7,8 +7,10 @@ import { toast } from 'react-hot-toast';
 import { ListingModal } from './ListingModal';
 import { useShop } from '../../context/ShopContext';
 import { getImageUrl } from '../../lib/utils';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function MyListings() {
+    const confirm = useConfirm();
     const navigate = useNavigate();
     const { user } = useShop();
     const [listings, setListings] = useState([]);
@@ -49,7 +51,8 @@ export function MyListings() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Вы уверены, что хотите удалить это объявление?')) return;
+        const ok = await confirm('Вы уверены, что хотите удалить это объявление?', { title: 'Удалить объявление' });
+        if (!ok) return;
         try {
             await api.deleteListing(id);
             setListings(prev => prev.filter(l => l.id !== id));

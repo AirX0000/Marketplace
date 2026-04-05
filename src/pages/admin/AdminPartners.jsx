@@ -3,8 +3,10 @@ import { Users, Plus, Edit2, Trash2, Mail, Key, Store, Search, X, Phone, Downloa
 import { api } from '../../lib/api';
 import { getImageUrl } from '../../lib/utils';
 import { toast } from 'react-hot-toast';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function AdminPartners() {
+    const confirm = useConfirm();
     const [partners, setPartners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -78,7 +80,8 @@ export function AdminPartners() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Вы уверены? Это удалит партнера и все его товары!')) return;
+        const ok = await confirm('Вы уверены? Это удалит партнера и все его товары!', { title: 'Удаление партнера' });
+        if (!ok) return;
 
         try {
             await api.fetchAPI(`/admin/partners/${id}`, { method: 'DELETE' });

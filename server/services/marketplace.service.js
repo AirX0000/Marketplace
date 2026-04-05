@@ -352,15 +352,45 @@ class MarketplaceService {
 
         return review;
     }
-
     async getCategories() {
         const categories = await prisma.category.findMany();
         
         // Fetch counts for each category
         const categoriesWithCounts = await Promise.all(categories.map(async (c) => {
+            const catLowerParams = (c.name || '').toLowerCase();
+            const isTransportQuery = ["транспорт", "transport", "машины", "cars", "авто", "avto"].some(s => catLowerParams.includes(s));
+            const isRealEstateQuery = ["недвижимость", "real estate"].some(s => catLowerParams.includes(s));
+
+            let searchList = [c.name];
+            try {
+                const subCats = JSON.parse(c.subcategories || "[]");
+                if (Array.isArray(subCats)) {
+                    searchList = [...new Set([...searchList, ...subCats])];
+                }
+            } catch (e) {}
+
+            if (isTransportQuery) {
+                searchList = [...new Set([
+                    ...searchList, "Транспорт", "Transport", "Машины", "Cars", "Автомобили",
+                    "Бозор (Авто с пробегом)", "Автосалон (Новые авто)", "Седан", "Внедорожник", 
+                    "SUV", "Кроссовер", "Хэтчбек", "Универсал", "Купе", "Кабриолет", "Минивэн", "Пикап", "Trucks", "Moto"
+                ])];
+            } else if (isRealEstateQuery) {
+                searchList = [...new Set([
+                    ...searchList, "Недвижимость", "Real Estate", "Квартиры", "Дома", "Новостройки", 
+                    "Вторичное жильё", "Участки", "Коммерческая недвижимость", "Вторичка", "Аренда"
+                ])];
+            }
+
             const count = await prisma.marketplace.count({
-                where: { category: c.name, status: 'APPROVED' }
+                where: { 
+                    status: 'APPROVED',
+                    OR: searchList.filter(s => typeof s === 'string').map(cat => ({ 
+                        category: { equals: cat, mode: 'insensitive' } 
+                    }))
+                }
             });
+
             return {
                 ...c,
                 count,

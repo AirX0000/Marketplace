@@ -3,8 +3,10 @@ import { useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { Shield, User, Search, Store, Lock, Unlock, Mail, Calendar, Check, Trash2, UserPlus, X, Briefcase, TrendingUp } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function SuperAdminUsers() {
+    const confirmAction = useConfirm();
     const [searchParams] = useSearchParams();
     const urlRole = searchParams.get('role');
     const urlCategory = searchParams.get('category');
@@ -115,7 +117,8 @@ export function SuperAdminUsers() {
 
     const handleBlockToggle = async (id, isBlocked, name) => {
         const action = isBlocked ? "блокировка" : "разблокировка";
-        if (!confirm(`Вы уверены, что хотите ${isBlocked ? 'заблокировать' : 'разблокировать'} пользователя ${name}?`)) return;
+        const ok = await confirmAction(`Вы уверены, что хотите ${isBlocked ? 'заблокировать' : 'разблокировать'} пользователя ${name}?`, { title: 'Статус пользователя' });
+        if (!ok) return;
 
         const loadingToast = toast.loading(`${isBlocked ? 'Блокировка' : 'Разблокировка'} пользователя...`);
         try {
@@ -140,7 +143,9 @@ export function SuperAdminUsers() {
     };
 
     const handleDelete = async (userId, name) => {
-        if (window.confirm(`Вы уверены, что хотите УДАЛИТЬ пользователя ${name}?\n\nЭто действие необратимо! Будут удалены:\n- Профиль\n- Отзывы\n- Избранное\n- Тикеты\n\nЕсли у пользователя есть заказы или продажи, удаление будет отклонено.`)) {
+        const message = `Вы уверены, что хотите УДАЛИТЬ пользователя ${name}?\n\nЭто действие необратимо! Будут удалены:\n- Профиль\n- Отзывы\n- Избранное\n- Тикеты\n\nЕсли у пользователя есть заказы или продажи, удаление будет отклонено.`;
+        const ok = await confirmAction(message, { title: 'Удалить пользователя' });
+        if (ok) {
             const loadingToast = toast.loading("Удаление пользователя...");
             try {
                 await api.deleteUser(userId);

@@ -3,8 +3,10 @@ import { api } from '../../lib/api';
 import { DollarSign, ArrowUpRight, ArrowDownLeft, Calendar, Download } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 
 export function SuperAdminFinance() {
+    const confirm = useConfirm();
     const [stats, setStats] = useState({
         totalRevenue: 0,
         platformCommission: 0,
@@ -55,7 +57,8 @@ export function SuperAdminFinance() {
     };
 
     const handleReject = async (id) => {
-        if (!window.confirm("Отклонить этот депозит?")) return;
+        const ok = await confirm("Отклонить этот депозит?", { title: 'Отклонение депозита' });
+        if (!ok) return;
         try {
             await api.rejectDeposit(id);
             toast.success("Депозит отклонен");
