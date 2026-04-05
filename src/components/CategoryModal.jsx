@@ -30,8 +30,26 @@ const categoryColors = {
     'Electronics': 'from-purple-500/10 to-indigo-500/10 border-purple-500/20 hover:border-purple-500/40',
 };
 
+const getPluralForm = (count, i18n) => {
+    // Check current language, fallback to Russian pluralization rules
+    const lang = i18n?.language || 'ru';
+    if (lang.startsWith('en')) {
+        return count === 1 ? 'offer' : 'offers';
+    }
+    if (lang.startsWith('uz')) {
+        return 'ta taklif';
+    }
+    
+    // Russian pluralization
+    const pr = new Intl.PluralRules('ru-RU');
+    const rule = pr.select(count);
+    if (rule === 'one') return 'предложение';
+    if (rule === 'few') return 'предложения';
+    return 'предложений';
+};
+
 export function CategoryModal({ isOpen, onClose }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -97,7 +115,7 @@ export function CategoryModal({ isOpen, onClose }) {
                             {t('common.catalog', 'Каталог товаров')}
                         </h2>
                         <p className="text-sm text-slate-400 mt-1">
-                            {totalListings.toLocaleString('ru-RU')} {t('common.listings_count', 'предложений')}
+                            {totalListings.toLocaleString('ru-RU')} {getPluralForm(totalListings, i18n)}
                         </p>
                     </div>
                     <button
@@ -140,7 +158,7 @@ export function CategoryModal({ isOpen, onClose }) {
                                                     {translateCategory(category.name)}
                                                 </h3>
                                                 <p className="text-xs text-slate-400 mt-1">
-                                                    {category.count.toLocaleString('ru-RU')} {t('common.offer', 'предложение')}
+                                                    {category.count.toLocaleString('ru-RU')} {getPluralForm(category.count, i18n)}
                                                 </p>
                                             </div>
                                         </div>
