@@ -264,6 +264,9 @@ export function Header() {
                                                 <Link to="/profile?tab=overview" className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors text-foreground rounded-lg">
                                                     👤 Личный Кабинет
                                                 </Link>
+                                                <Link to="/wallet" className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors text-foreground rounded-lg font-bold">
+                                                    💳 Кошелёк
+                                                </Link>
                                                 <Link to="/profile?tab=garage" className="flex items-center justify-between px-3 py-2 text-sm hover:bg-muted transition-colors text-foreground rounded-lg font-bold">
                                                     <span className="flex items-center gap-3">🏎️ Мой Гараж</span>
                                                     <span className="text-[9px] bg-blue-500 text-white px-1.5 py-0.5 rounded-full font-black uppercase">New</span>

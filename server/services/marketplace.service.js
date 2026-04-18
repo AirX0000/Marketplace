@@ -360,6 +360,7 @@ class MarketplaceService {
             const catLowerParams = (c.name || '').toLowerCase();
             const isTransportQuery = ["транспорт", "transport", "машины", "cars", "авто", "avto"].some(s => catLowerParams.includes(s));
             const isRealEstateQuery = ["недвижимость", "real estate"].some(s => catLowerParams.includes(s));
+            const isServiceQuery = ["услуги", "services", "сервис"].some(s => catLowerParams.includes(s));
 
             let searchList = [c.name];
             try {
@@ -379,6 +380,10 @@ class MarketplaceService {
                 searchList = [...new Set([
                     ...searchList, "Недвижимость", "Real Estate", "Квартиры", "Дома", "Новостройки", 
                     "Вторичное жильё", "Участки", "Коммерческая недвижимость", "Вторичка", "Аренда"
+                ])];
+            } else if (isServiceQuery) {
+                searchList = [...new Set([
+                    ...searchList, "Услуги", "Services", "Сервис", "Риелтор", "Нотариус", "Оценка", "Страхование"
                 ])];
             }
 
