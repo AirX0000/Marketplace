@@ -23,10 +23,12 @@ function detectCardType(num) {
     return 'CARD';
 }
 function maskNumber(num) {
+    if (!num) return '**** **** **** ****';
     const n = num.replace(/\s/g, '');
     return `**** **** **** ${n.slice(-4)}`;
 }
 function formatCardInput(val) {
+    if (!val) return '';
     // add spaces every 4 digits
     return val.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
 }
@@ -138,7 +140,7 @@ function CardChip({ card, onRemove }) {
                     )}
                 </div>
             </div>
-            <p className="font-mono text-white text-sm tracking-widest mb-4 relative z-10">{maskNumber(card.number)}</p>
+            <p className="font-mono text-white text-sm tracking-widest mb-4 relative z-10">{maskNumber(card.cardNumber || card.number)}</p>
             <div className="flex justify-between items-end relative z-10">
                 <div>
                     <p className="text-white/40 text-[9px] uppercase tracking-widest font-bold">Держатель</p>
@@ -870,7 +872,7 @@ export function AutohousePayDashboard() {
                                 <option value="" className="bg-[#1E1B2E]">-- Выберите карту --</option>
                                 {cards.map(c => (
                                     <option key={c.id} value={c.id} className="bg-[#1E1B2E]">
-                                        {c.type} •••• {c.number.slice(-4)} {c.balance > 0 ? `(${Number(c.balance).toLocaleString('ru-RU')} UZS)` : ''}
+                                        {c.type} •••• {(c.cardNumber || c.number)?.slice(-4)} {c.balance > 0 ? `(${Number(c.balance).toLocaleString('ru-RU')} UZS)` : ''}
                                     </option>
                                 ))}
                             </select>
@@ -932,7 +934,7 @@ export function AutohousePayDashboard() {
                                 <option value="" className="bg-[#1E1B2E]">-- Выберите карту --</option>
                                 {cards.map(c => (
                                     <option key={c.id} value={c.id} className="bg-[#1E1B2E]">
-                                        {c.type} •••• {c.number.slice(-4)}
+                                        {c.type} •••• {(c.cardNumber || c.number)?.slice(-4)}
                                     </option>
                                 ))}
                             </select>

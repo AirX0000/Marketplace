@@ -310,7 +310,7 @@ export function UserDashboard() {
                                                                 <Package size={22} />
                                                             </div>
                                                             <div>
-                                                                <div className="font-bold text-white">Заказ #{order.id.slice(0, 8)}</div>
+                                                                <div className="font-bold text-white">Заказ #{order.id?.slice(0, 8)}</div>
                                                                 <div className="text-sm text-slate-400">{new Date(order.createdAt).toLocaleDateString()} • {order.items.length} товаров</div>
                                                             </div>
                                                         </div>
@@ -345,7 +345,7 @@ export function UserDashboard() {
                                                 <div key={order.id} className="bg-white/5 border border-white/5 rounded-3xl p-6 hover:border-purple-500/30 transition-all">
                                                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                                                         <div>
-                                                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Заказ #{order.id.slice(0, 8)}</div>
+                                                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Заказ #{order.id?.slice(0, 8)}</div>
                                                             <div className="text-sm text-slate-500">Оформлен {new Date(order.createdAt).toLocaleDateString()}</div>
                                                         </div>
                                                         <div className="flex items-center gap-4">
