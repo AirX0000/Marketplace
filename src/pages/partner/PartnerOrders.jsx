@@ -55,7 +55,7 @@ export function PartnerOrders() {
                             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 pb-8 border-b border-white/5 gap-6">
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-4">
-                                        <h3 className="font-black text-2xl tracking-tighter uppercase">Заказ #{order.id.slice(0, 8)}</h3>
+                                        <h3 className="font-black text-2xl tracking-tighter uppercase">Заказ #{order.id?.slice(0, 8)}</h3>
                                         <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border
                                             ${order.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/10' :
                                                 order.status === 'SHIPPED' ? 'bg-blue-500/10 text-blue-400 border-blue-500/10' :
