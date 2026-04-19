@@ -51,7 +51,7 @@ export function MyReturnsPage() {
                                                         'bg-yellow-100 text-yellow-700'}`}>
                                             {request.status}
                                         </span>
-                                        <span className="text-xs text-slate-400 font-mono">#{request.id.slice(0, 8)}</span>
+                                        <span className="text-xs text-slate-400 font-mono">#{request.id?.slice(0, 8)}</span>
                                     </div>
                                     <h3 className="font-bold text-slate-900 mb-1">{request.orderItem.marketplace.name}</h3>
                                     <p className="text-sm text-slate-600 mb-2">Причина: <span className="font-medium text-slate-800">{request.reason}</span></p>

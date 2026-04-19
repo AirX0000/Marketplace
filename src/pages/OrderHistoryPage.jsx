@@ -61,7 +61,7 @@ export function OrderHistoryPage() {
                                     </div>
                                     <div>
                                         <span className="block text-slate-500 text-xs uppercase tracking-wider font-semibold">Заказ #</span>
-                                        <span className="font-medium font-mono text-slate-700">{order.id.slice(0, 8)}</span>
+                                        <span className="font-medium font-mono text-slate-700">{order.id?.slice(0, 8)}</span>
                                     </div>
                                     {order.paymentMethod === 'INSTALLMENT' && (
                                         <div>

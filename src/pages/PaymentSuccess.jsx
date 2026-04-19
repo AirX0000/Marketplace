@@ -45,7 +45,7 @@ export function PaymentSuccess() {
                 </div>
                 <h2 className="text-3xl font-bold mb-4 text-slate-900">Оплата прошла успешно!</h2>
                 <p className="text-slate-700 mb-2">
-                    Заказ №{order?.id.slice(0, 8).toUpperCase()} оплачен
+                    Заказ №{order?.id?.slice(0, 8).toUpperCase()} оплачен
                 </p>
                 <p className="text-slate-600 mb-8 flex items-center justify-center gap-2">
                     <Package className="h-5 w-5" />

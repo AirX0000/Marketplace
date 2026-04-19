@@ -115,7 +115,7 @@ export function CreditApplicationsPage() {
                                 </div>
                                 <div>
                                     <div className="text-slate-500 text-xs uppercase tracking-wider font-semibold mb-1">ID Заявки</div>
-                                    <div className="font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded w-fit">{app.id.slice(0, 8)}</div>
+                                    <div className="font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded w-fit">{app.id?.slice(0, 8)}</div>
                                 </div>
                             </div>
                         </div>
