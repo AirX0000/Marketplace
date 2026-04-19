@@ -192,7 +192,7 @@ export function AdminCompanies() {
                                                 </div>
                                                 <div>
                                                     <div className="font-bold text-slate-900">{company.name}</div>
-                                                    <div className="text-xs text-slate-500">ID: {company.id.slice(0, 8)}</div>
+                                                    <div className="text-xs text-slate-500">ID: {company.id?.slice(0, 8)}</div>
                                                 </div>
                                             </div>
                                         </td>

@@ -155,7 +155,7 @@ export function AdminSupport() {
                             <div className="font-medium text-sm line-clamp-1 mb-1">{ticket.subject}</div>
                             <div className="flex justify-between items-center">
                                 <span className="text-xs text-slate-700 truncate max-w-[120px]">
-                                    {isAdmin ? (ticket.user?.name || ticket.userId) : `ID: ...${ticket.id.slice(-4)}`}
+                                    {isAdmin ? (ticket.user?.name || ticket.userId) : `ID: ...${ticket.id?.slice(-4)}`}
                                 </span>
                                 {ticket.priority === 'HIGH' && <span className="text-[10px] text-red-500 font-bold">HIGH</span>}
                             </div>

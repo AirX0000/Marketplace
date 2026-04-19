@@ -1145,7 +1145,7 @@ export function CheckoutPage() {
                                                     {formValues.cardDetails?.number && (
                                                         <div className="text-xs font-bold text-emerald-500 flex items-center gap-1.5">
                                                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                                            Карта привязана: **** {formValues.cardDetails.number.slice(-4)}
+                                                            Карта привязана: **** {formValues.cardDetails.number?.slice(-4)}
                                                         </div>
                                                     )}
                                                 </div>

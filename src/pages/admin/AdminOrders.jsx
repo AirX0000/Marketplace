@@ -29,7 +29,7 @@ export function AdminOrders() {
     const filteredOrders = orders.filter(item =>
         item.marketplace.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (item.order.contactName || item.order.user.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.order.id.includes(searchTerm)
+        (item.order?.id || '').includes(searchTerm)
     );
 
     return (
@@ -71,7 +71,7 @@ export function AdminOrders() {
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {filteredOrders.length > 0 ? filteredOrders.map((item) => (
                                     <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                        <td className="p-4 font-mono text-[10px] text-slate-400">#{item.order.id.slice(0, 8)}</td>
+                                        <td className="p-4 font-mono text-[10px] text-slate-400">#{item.order?.id?.slice(0, 8)}</td>
                                         <td className="p-4">
                                             <div className="flex flex-col">
                                                 <span className="font-bold text-slate-900 dark:text-white">{item.order.contactName || item.order.user.name || 'Гость'}</span>
@@ -202,7 +202,7 @@ export function AdminOrders() {
                         <div key={item.id} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-tighter block mb-1">Заказ #{item.order.id.slice(0, 8)}</span>
+                                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-tighter block mb-1">Заказ #{item.order?.id?.slice(0, 8)}</span>
                                     <h4 className="font-black text-slate-900 dark:text-white uppercase text-base leading-tight">{item.marketplace.name}</h4>
                                 </div>
                                 <select
